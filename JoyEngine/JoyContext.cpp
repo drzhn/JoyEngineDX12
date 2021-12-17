@@ -10,7 +10,7 @@ namespace JoyEngine
 
 	//DataManager* JoyContext::Data = nullptr;
 
-	//DescriptorSetManager* JoyContext::DescriptorSet = nullptr;
+	DescriptorManager* JoyContext::Descriptors = nullptr;
 
 	//ResourceManager* JoyContext::Resource = nullptr;
 
@@ -23,7 +23,7 @@ namespace JoyEngine
 		GraphicsManager* graphicsContext, 
 		//MemoryManager* memoryManager, 
 		//DataManager* dataManager,
-		//DescriptorSetManager* descriptorSetManager, 
+		DescriptorManager* descriptorManager, 
 		//ResourceManager* resourceManager, 
 		//SceneManager* sceneManager,
 		RenderManager* renderManager)
@@ -32,7 +32,7 @@ namespace JoyEngine
 		Graphics = graphicsContext;
 		//Memory = memoryManager;
 		//Data = dataManager;
-		//DescriptorSet = descriptorSetManager;
+		Descriptors = descriptorManager;
 		//Resource = resourceManager;
 		//Scene = sceneManager;
 		Render = renderManager;

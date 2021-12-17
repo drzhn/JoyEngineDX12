@@ -7,6 +7,7 @@
 
 //#include "MemoryManager/MemoryManager.h"
 //#include "ResourceManager/ResourceManager.h"
+#include "DescriptorManager/DescriptorManager.h"
 #include "GraphicsManager/GraphicsManager.h"
 
 #define GLM_FORCE_RADIANS
@@ -76,28 +77,15 @@ namespace JoyEngine
 
 		m_currentFrameIndex = m_swapChain->GetCurrentBackBufferIndex();
 
-		// Create descriptor heaps.
-		{
-			// Describe and create a render target view (RTV) descriptor heap.
-			D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-			rtvHeapDesc.NumDescriptors = FrameCount;
-			rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-			rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-			ASSERT_SUCC(
-				JoyContext::Graphics->GetDevice()->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_rtvHeap)));
-
-			m_rtvDescriptorSize = JoyContext::Graphics->GetDevice()->GetDescriptorHandleIncrementSize(
-				D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-		}
-
-		D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
-
 		// Create a RTV and a command allocator for each frame.
 		for (UINT n = 0; n < FrameCount; n++)
 		{
-			ASSERT_SUCC(m_swapChain->GetBuffer(n, IID_PPV_ARGS(&m_renderTargets[n])));
-			JoyContext::Graphics->GetDevice()->CreateRenderTargetView(m_renderTargets[n].Get(), nullptr, rtvHandle);
-			rtvHandle.ptr += m_rtvDescriptorSize;
+			ASSERT_SUCC(m_swapChain->GetBuffer(n, IID_PPV_ARGS(&m_renderTargets[n].resource)));
+			m_renderTargets[n].handle = JoyContext::Descriptors->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+			JoyContext::Graphics->GetDevice()->CreateRenderTargetView(
+				m_renderTargets[n].resource.Get(), 
+				nullptr, 
+				m_renderTargets[n].handle);
 		}
 	}
 
@@ -601,42 +589,37 @@ namespace JoyEngine
 	{
 		m_queue->ResetForFrame(m_currentFrameIndex);
 
-		auto m_commandList = m_queue->GetCommandList();
+		const auto commandList = m_queue->GetCommandList();
 		// Set necessary state.
-		m_commandList->RSSetViewports(1, &m_viewport);
-		m_commandList->RSSetScissorRects(1, &m_scissorRect);
+		commandList->RSSetViewports(1, &m_viewport);
+		commandList->RSSetScissorRects(1, &m_scissorRect);
 
 		// Indicate that the back buffer will be used as a render target.
 		D3D12_RESOURCE_BARRIER barrier1 = Transition(
-			m_renderTargets[m_currentFrameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT,
+			m_renderTargets[m_currentFrameIndex].resource.Get(), 
+			D3D12_RESOURCE_STATE_PRESENT,
 			D3D12_RESOURCE_STATE_RENDER_TARGET);
-		m_commandList->ResourceBarrier(1, &barrier1);
+		commandList->ResourceBarrier(1, &barrier1);
 
-		D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = m_rtvHeap->GetCPUDescriptorHandleForHeapStart();
-		rtvHandle.ptr += m_currentFrameIndex * m_rtvDescriptorSize;
-
-		m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
+		commandList->OMSetRenderTargets(1, &m_renderTargets[m_currentFrameIndex].handle, FALSE, nullptr);
 
 		// Record commands.
 		const float clearColor[] = {0.0f, 0.2f, 0.4f, 1.0f};
-		m_commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+		commandList->ClearRenderTargetView(m_renderTargets[m_currentFrameIndex].handle, clearColor, 0, nullptr);
 
 		// Indicate that the back buffer will now be used to present.
 		D3D12_RESOURCE_BARRIER barrier2 = Transition(
-			m_renderTargets[m_currentFrameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET,
+			m_renderTargets[m_currentFrameIndex].resource.Get(), 
+			D3D12_RESOURCE_STATE_RENDER_TARGET,
 			D3D12_RESOURCE_STATE_PRESENT);
-		m_commandList->ResourceBarrier(1, &barrier2);
+		commandList->ResourceBarrier(1, &barrier2);
 
-		ASSERT_SUCC(m_commandList->Close());
-
+		ASSERT_SUCC(commandList->Close());
 
 		m_queue->Execute();
 
-
 		// Present the frame.
 		ASSERT_SUCC(m_swapChain->Present(0, 0));
-
-
 
 		// Update the frame index.
 		m_currentFrameIndex = m_swapChain->GetCurrentBackBufferIndex();

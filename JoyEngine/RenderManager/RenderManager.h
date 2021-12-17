@@ -73,15 +73,20 @@ namespace JoyEngine
 		void CreateSyncObjects();
 
 	private:
+
+		struct ResourceDescriptor
+		{
+			ComPtr<ID3D12Resource> resource;
+			D3D12_CPU_DESCRIPTOR_HANDLE handle;
+		};
+
 		static const UINT FrameCount = 3;
 
 		//ResourceHandle<SharedMaterial> m_gBufferWriteSharedMaterial;
 		D3D12_VIEWPORT m_viewport;
 		D3D12_RECT m_scissorRect;
 		ComPtr<IDXGISwapChain3> m_swapChain;
-		ComPtr<ID3D12Resource> m_renderTargets[FrameCount];
-		ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
-		UINT m_rtvDescriptorSize;
+		ResourceDescriptor m_renderTargets[FrameCount];
 
 		//std::unique_ptr<Texture> m_depthAttachment;
 		//std::unique_ptr<Texture> m_positionAttachment;

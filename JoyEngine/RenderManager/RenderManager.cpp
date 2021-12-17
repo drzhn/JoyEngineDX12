@@ -46,11 +46,7 @@ namespace JoyEngine
 			static_cast<LONG>(height)
 		};
 
-		// Describe and create the command queue.
-		D3D12_COMMAND_QUEUE_DESC queueDesc = {};
-		queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
-		queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-		ASSERT_SUCC(JoyContext::Graphics->GetDevice()->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&m_commandQueue)));
+		m_queue = std::make_unique<CommandQueue>(D3D12_COMMAND_LIST_TYPE_DIRECT, JoyContext::Graphics->GetDevice(), FrameCount);
 
 		// Describe and create the swap chain.
 		DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
@@ -64,7 +60,7 @@ namespace JoyEngine
 
 		ComPtr<IDXGISwapChain1> swapChain;
 		ASSERT_SUCC(JoyContext::Graphics->GetFactory()->CreateSwapChainForHwnd(
-			m_commandQueue.Get(), // Swap chain needs the queue so that it can force a flush on it.
+			m_queue->GetQueue(), // Swap chain needs the queue so that it can force a flush on it.
 			JoyContext::Graphics->GetHWND(),
 			&swapChainDesc,
 			nullptr,
@@ -102,67 +98,14 @@ namespace JoyEngine
 			ASSERT_SUCC(m_swapChain->GetBuffer(n, IID_PPV_ARGS(&m_renderTargets[n])));
 			JoyContext::Graphics->GetDevice()->CreateRenderTargetView(m_renderTargets[n].Get(), nullptr, rtvHandle);
 			rtvHandle.ptr += m_rtvDescriptorSize;
-
-			ASSERT_SUCC(JoyContext::Graphics->GetDevice()->
-				CreateCommandAllocator(
-					D3D12_COMMAND_LIST_TYPE_DIRECT,
-					IID_PPV_ARGS(& m_commandAllocators[n])));
-		}
-
-		// Create the command list.
-		ASSERT_SUCC(JoyContext::Graphics->GetDevice()->CreateCommandList(
-			0,
-			D3D12_COMMAND_LIST_TYPE_DIRECT,
-			m_commandAllocators[m_currentFrameIndex].Get(),
-			nullptr,
-			IID_PPV_ARGS(&m_commandList)));
-
-		// Command lists are created in the recording state, but there is nothing
-		// to record yet. The main loop expects it to be closed, so close it now.
-		ASSERT_SUCC(m_commandList->Close());
-
-		// Create synchronization objects and wait until assets have been uploaded to the GPU.
-		{
-			ASSERT_SUCC(JoyContext::Graphics->GetDevice()->CreateFence(
-				m_currentFenceValue,
-				D3D12_FENCE_FLAG_NONE,
-				IID_PPV_ARGS(&m_fence)));
-
-			m_currentFenceValue++;
-
-			// Create an event handle to use for frame synchronization.
-			m_fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-			if (m_fenceEvent == nullptr)
-			{
-				ASSERT_SUCC(HRESULT_FROM_WIN32(GetLastError()));
-			}
-
-			// Wait for the command list to execute; we are reusing the same command 
-			// list in our main loop but for now, we just want to wait for setup to 
-			// complete before continuing.
-			WaitForGpu();
 		}
 	}
 
-	// Wait for pending GPU work to complete.
-	void RenderManager::WaitForGpu()
-	{
-		// Schedule a Signal command in the queue.
-		ASSERT_SUCC(m_commandQueue->Signal(m_fence.Get(), m_currentFenceValue));
 
-		// Wait until the fence has been processed.
-		ASSERT_SUCC(m_fence->SetEventOnCompletion(m_currentFenceValue, m_fenceEvent));
-		WaitForSingleObjectEx(m_fenceEvent, INFINITE, FALSE);
-
-		// Increment the fence value for the current frame.
-		m_currentFenceValue++;
-	}
 
 	void RenderManager::Stop()
 	{
-		WaitForGpu();
-
-		CloseHandle(m_fenceEvent);
+		m_queue = nullptr;
 	}
 
 	RenderManager::~RenderManager()
@@ -656,16 +599,9 @@ namespace JoyEngine
 
 	void RenderManager::Update()
 	{
-		// Command list allocators can only be reset when the associated 
-		// command lists have finished execution on the GPU; apps should use 
-		// fences to determine GPU execution progress.
-		ASSERT_SUCC(m_commandAllocators[m_currentFrameIndex]->Reset());
+		m_queue->ResetForFrame(m_currentFrameIndex);
 
-		// However, when ExecuteCommandList() is called on a particular command 
-		// list, that command list can then be reset at any time and must be before 
-		// re-recording.
-		ASSERT_SUCC(m_commandList->Reset(m_commandAllocators[m_currentFrameIndex].Get(), nullptr));
-
+		auto m_commandList = m_queue->GetCommandList();
 		// Set necessary state.
 		m_commandList->RSSetViewports(1, &m_viewport);
 		m_commandList->RSSetScissorRects(1, &m_scissorRect);
@@ -694,31 +630,18 @@ namespace JoyEngine
 		ASSERT_SUCC(m_commandList->Close());
 
 
-		ID3D12CommandList* ppCommandLists[] = {m_commandList.Get()};
-		m_commandQueue->ExecuteCommandLists(1, ppCommandLists);
+		m_queue->Execute();
 
 
 		// Present the frame.
 		ASSERT_SUCC(m_swapChain->Present(0, 0));
 
 
-		// Schedule a Signal command in the queue.
-		ASSERT_SUCC(m_commandQueue->Signal(m_fence.Get(), m_currentFenceValue));
 
 		// Update the frame index.
 		m_currentFrameIndex = m_swapChain->GetCurrentBackBufferIndex();
 
-		// If the next frame is not ready to be rendered yet, wait until it is ready.
-		if (m_fence->GetCompletedValue() < m_fenceValues[m_currentFrameIndex])
-		{
-			ASSERT_SUCC(m_fence->SetEventOnCompletion(m_fenceValues[m_currentFrameIndex], m_fenceEvent));
-			WaitForSingleObjectEx(m_fenceEvent, INFINITE, FALSE);
-		}
-
-		// Set the fence value for the next frame.
-		m_currentFenceValue++;
-
-		m_fenceValues[m_currentFrameIndex] = m_currentFenceValue;
+		m_queue->WaitForFence(m_currentFrameIndex);
 	}
 
 	//void RenderManager::DrawFrame()

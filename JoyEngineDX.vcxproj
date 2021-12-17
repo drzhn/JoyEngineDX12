@@ -145,6 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="JoyEngine\Common\CommandQueue.cpp" />
     <ClCompile Include="JoyEngine\Common\Serialization.cpp" />
     <ClCompile Include="JoyEngine\Common\SerializationUtils.cpp" />
     <ClCompile Include="JoyEngine\Common\Time.cpp" />
@@ -158,6 +159,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="JoyEngine\Common\Color.h" />
+    <ClInclude Include="JoyEngine\Common\CommandQueue.h" />
     <ClInclude Include="JoyEngine\Common\HashDefs.h" />
     <ClInclude Include="JoyEngine\Common\Resource.h" />
     <ClInclude Include="JoyEngine\Common\Serializable.h" />

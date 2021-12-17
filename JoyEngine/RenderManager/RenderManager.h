@@ -15,6 +15,8 @@
 //#include "Components/MeshRenderer.h"
 //#include "Components/Camera.h"
 
+#include "Common/CommandQueue.h"
+
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <wrl.h>
@@ -32,7 +34,6 @@ namespace JoyEngine
 		~RenderManager();
 
 		void Init();
-		void WaitForGpu();
 
 		void Start()
 		{
@@ -90,14 +91,8 @@ namespace JoyEngine
 		//std::set<SharedMaterial*> m_sharedMaterials;
 		//Camera* m_currentCamera;
 
-		ComPtr<ID3D12CommandAllocator> m_commandAllocators[FrameCount];
-		ComPtr<ID3D12CommandQueue> m_commandQueue;
-		ComPtr<ID3D12GraphicsCommandList> m_commandList;
-		UINT m_currentFrameIndex;
-		UINT m_currentFenceValue =0 ;
-		HANDLE m_fenceEvent;
-		ComPtr<ID3D12Fence> m_fence;
-		UINT64 m_fenceValues[FrameCount];
+		std::unique_ptr<CommandQueue> m_queue;
+		uint32_t m_currentFrameIndex;
 
 	};
 }

@@ -20,6 +20,8 @@
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <wrl.h>
+
+#include "Components/Camera.h"
 using Microsoft::WRL::ComPtr;
 
 namespace JoyEngine
@@ -49,9 +51,9 @@ namespace JoyEngine
 
 		//void UnregisterSharedMaterial(SharedMaterial* sharedMaterial);
 
-		//void RegisterCamera(Camera* camera);
+		void RegisterCamera(Camera* camera);
 
-		//void UnregisterCamera(Camera* camera);
+		void UnregisterCamera(Camera* camera);
 
 		//[[nodiscard]] Swapchain* GetSwapchain() const noexcept;
 
@@ -94,11 +96,13 @@ namespace JoyEngine
 
 
 		//std::set<SharedMaterial*> m_sharedMaterials;
-		//Camera* m_currentCamera;
+		Camera* m_currentCamera;
 
 		std::unique_ptr<CommandQueue> m_queue;
 		uint32_t m_currentFrameIndex;
 
+		uint32_t m_width;
+		uint32_t m_height;
 	};
 }
 

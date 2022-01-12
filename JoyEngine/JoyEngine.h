@@ -21,7 +21,7 @@ namespace JoyEngine
 
 	class ResourceManager;
 
-	//class SceneManager;
+	class SceneManager;
 
 	class RenderManager;
 
@@ -66,7 +66,7 @@ namespace JoyEngine
 		std::unique_ptr<DataManager> m_dataManager;
 		std::unique_ptr<DescriptorManager> m_descriptorSetManager;
 		std::unique_ptr<ResourceManager> m_resourceManager;
-		//std::unique_ptr<SceneManager> m_sceneManager;
+		std::unique_ptr<SceneManager> m_sceneManager;
 		std::unique_ptr<RenderManager> m_renderManager;
 	};
 }

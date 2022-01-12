@@ -39,6 +39,8 @@ namespace JoyEngine
 
 		[[nodiscard]] ComPtr<ID3D12Resource> GetBuffer() const noexcept;
 
+		void LoadData(std::ifstream& stream, uint32_t offset) const;
+
 		[[nodiscard]] bool IsLoaded() const noexcept override { return true; }
 	private:
 		uint64_t m_size = 0;

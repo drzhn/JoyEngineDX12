@@ -2,6 +2,7 @@
 
 #include "JoyContext.h"
 #include "GraphicsManager/GraphicsManager.h"
+#include "MemoryManager/MemoryManager.h"
 #include "Utils/Assert.h"
 
 namespace JoyEngine
@@ -57,5 +58,11 @@ namespace JoyEngine
 	ComPtr<ID3D12Resource> Buffer::GetBuffer() const noexcept
 	{
 		return m_buffer;
+	}
+
+	void Buffer::LoadData(std::ifstream& stream, uint32_t offset) const
+	{
+		ASSERT(!m_properties.IsCPUAccessible());
+		JoyContext::Memory->LoadDataToBuffer(stream, offset, m_size, m_buffer);
 	}
 }

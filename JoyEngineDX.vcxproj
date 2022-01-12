@@ -114,7 +114,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)JoyEngine;$(SolutionDir)Libs\rapidjson\include;$(SolutionDir)Libs\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -145,6 +145,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="JoyEngine\Components\Camera.cpp" />
+    <ClCompile Include="JoyEngine\Components\Component.cpp" />
+    <ClCompile Include="JoyEngine\Components\Light.cpp" />
+    <ClCompile Include="JoyEngine\Components\MeshRenderer.cpp" />
+    <ClCompile Include="JoyEngine\GameplayComponents\CameraBehaviour.cpp" />
+    <ClCompile Include="JoyEngine\GameplayComponents\RoomBehaviour.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\Buffer.cpp" />
     <ClCompile Include="JoyEngine\DataManager\DataManager.cpp" />
     <ClCompile Include="JoyEngine\DescriptorManager\DescriptorManager.cpp" />
@@ -158,6 +164,7 @@
     <ClCompile Include="JoyEngine\JoyEngine.cpp" />
     <ClCompile Include="JoyEngine\MemoryManager\MemoryManager.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\RenderManager.cpp" />
+    <ClCompile Include="JoyEngine\ResourceManager\Mesh.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\ResourceManager.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\Texture.cpp" />
     <ClCompile Include="JoyEngine\SceneManager\GameObject.cpp" />
@@ -168,7 +175,13 @@
     <ClCompile Include="WindowHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="JoyEngine\Components\Camera.h" />
+    <ClInclude Include="JoyEngine\Components\Component.h" />
+    <ClInclude Include="JoyEngine\Components\Light.h" />
+    <ClInclude Include="JoyEngine\Components\MeshRenderer.h" />
     <ClInclude Include="JoyEngine\d3dx12.h" />
+    <ClInclude Include="JoyEngine\GameplayComponents\CameraBehaviour.h" />
+    <ClInclude Include="JoyEngine\GameplayComponents\RoomBehaviour.h" />
     <ClInclude Include="JoyEngine\ResourceManager\Buffer.h" />
     <ClInclude Include="JoyEngine\DataManager\DataManager.h" />
     <ClInclude Include="JoyEngine\DescriptorManager\DescriptorManager.h" />
@@ -187,6 +200,7 @@
     <ClInclude Include="JoyEngine\MemoryManager\MemoryManager.h" />
     <ClInclude Include="JoyEngine\RenderManager\RenderManager.h" />
     <ClInclude Include="JoyEngine\RenderManager\JoyTypes.h" />
+    <ClInclude Include="JoyEngine\ResourceManager\Mesh.h" />
     <ClInclude Include="JoyEngine\ResourceManager\ResourceManager.h" />
     <ClInclude Include="JoyEngine\ResourceManager\Texture.h" />
     <ClInclude Include="JoyEngine\SceneManager\GameObject.h" />

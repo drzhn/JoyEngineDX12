@@ -19,9 +19,9 @@ namespace JoyEngine
 		~CommandQueue();
 
 		void WaitQueueIdle();
-		void ResetForFrame(uint32_t frameIndex = 1) const;
+		void ResetForFrame(uint32_t frameIndex = 0) const;
 		void Execute() const;
-		void WaitForFence(uint32_t frameIndex = 1);
+		void WaitForFence(uint32_t frameIndex = 0);
 
 		[[nodiscard]] ID3D12CommandQueue* GetQueue() const noexcept { return m_commandQueue.Get(); }
 		[[nodiscard]] ID3D12GraphicsCommandList* GetCommandList() const noexcept { return m_commandList.Get(); }

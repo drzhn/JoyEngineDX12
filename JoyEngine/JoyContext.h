@@ -9,7 +9,7 @@ namespace JoyEngine
 	class DataManager;
 	class DescriptorManager;
 	class ResourceManager;
-	//class SceneManager;
+	class SceneManager;
 	class RenderManager;
 
 	class JoyContext
@@ -22,7 +22,7 @@ namespace JoyEngine
 			DataManager* dataManager,
 			DescriptorManager* descriptorManager,
 			ResourceManager* resourceManager,
-			//SceneManager* sceneManager,
+			SceneManager* sceneManager,
 			RenderManager* renderManager
 		);
 
@@ -32,7 +32,7 @@ namespace JoyEngine
 		static DataManager* Data;
 		static DescriptorManager* Descriptors;
 		static ResourceManager* Resource;
-		//static SceneManager* Scene;
+		static SceneManager* Scene;
 		static RenderManager* Render;
 	};
 }

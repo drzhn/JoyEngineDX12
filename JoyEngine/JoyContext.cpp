@@ -14,7 +14,7 @@ namespace JoyEngine
 
 	ResourceManager* JoyContext::Resource = nullptr;
 
-	//SceneManager* JoyContext::Scene = nullptr;
+	SceneManager* JoyContext::Scene = nullptr;
 
 	RenderManager* JoyContext::Render = nullptr;
 
@@ -25,7 +25,7 @@ namespace JoyEngine
 		DataManager* dataManager,
 		DescriptorManager* descriptorManager, 
 		ResourceManager* resourceManager, 
-		//SceneManager* sceneManager,
+		SceneManager* sceneManager,
 		RenderManager* renderManager)
 	{
 		Input = inputManager;
@@ -34,7 +34,7 @@ namespace JoyEngine
 		Data = dataManager;
 		Descriptors = descriptorManager;
 		Resource = resourceManager;
-		//Scene = sceneManager;
+		Scene = sceneManager;
 		Render = renderManager;
 		
 	}

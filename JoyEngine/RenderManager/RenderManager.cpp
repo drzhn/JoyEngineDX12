@@ -22,20 +22,20 @@ namespace JoyEngine
 	void RenderManager::Init()
 	{
 		RECT rect;
-		int width = 0;
-		int height = 0;
 
 		if (GetWindowRect(JoyContext::Graphics->GetHWND(), &rect))
 		{
-			int width = rect.right - rect.left;
-			int height = rect.bottom - rect.top;
+			m_width = rect.right - rect.left;
+			m_height = rect.bottom - rect.top;
 		}
+
+		ASSERT(m_width != 0 && m_height != 0);
 
 		m_viewport = {
 			0.0f,
 			0.0f,
-			static_cast<float>(width),
-			static_cast<float>(height),
+			static_cast<float>(m_width),
+			static_cast<float>(m_height),
 			D3D12_MIN_DEPTH,
 			D3D12_MAX_DEPTH
 		};
@@ -43,17 +43,18 @@ namespace JoyEngine
 		m_scissorRect = {
 			0,
 			0,
-			static_cast<LONG>(width),
-			static_cast<LONG>(height)
+			static_cast<LONG>(m_width),
+			static_cast<LONG>(m_height)
 		};
 
-		m_queue = std::make_unique<CommandQueue>(D3D12_COMMAND_LIST_TYPE_DIRECT, JoyContext::Graphics->GetDevice(), FrameCount);
+		m_queue = std::make_unique<CommandQueue>(D3D12_COMMAND_LIST_TYPE_DIRECT, JoyContext::Graphics->GetDevice(),
+		                                         FrameCount);
 
 		// Describe and create the swap chain.
 		DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
 		swapChainDesc.BufferCount = FrameCount;
-		swapChainDesc.Width = width;
-		swapChainDesc.Height = height;
+		swapChainDesc.Width = m_width;
+		swapChainDesc.Height = m_height;
 		swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
@@ -83,12 +84,11 @@ namespace JoyEngine
 			ASSERT_SUCC(m_swapChain->GetBuffer(n, IID_PPV_ARGS(&m_renderTargets[n].resource)));
 			m_renderTargets[n].handle = JoyContext::Descriptors->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 			JoyContext::Graphics->GetDevice()->CreateRenderTargetView(
-				m_renderTargets[n].resource.Get(), 
-				nullptr, 
+				m_renderTargets[n].resource.Get(),
+				nullptr,
 				m_renderTargets[n].handle);
 		}
 	}
-
 
 
 	void RenderManager::Stop()
@@ -354,17 +354,17 @@ namespace JoyEngine
 	//	m_sharedMaterials.erase(meshRenderer);
 	//}
 
-	//void RenderManager::RegisterCamera(Camera* camera)
-	//{
-	//	m_currentCamera = camera;
-	//	m_commonDescriptorSetProvider->SetCamera(camera);
-	//}
+	void RenderManager::RegisterCamera(Camera* camera)
+	{
+		m_currentCamera = camera;
+		//m_commonDescriptorSetProvider->SetCamera(camera);
+	}
 
-	//void RenderManager::UnregisterCamera(Camera* camera)
-	//{
-	//	ASSERT(m_currentCamera == camera);
-	//	m_currentCamera = nullptr;
-	//}
+	void RenderManager::UnregisterCamera(Camera* camera)
+	{
+		ASSERT(m_currentCamera == camera);
+		m_currentCamera = nullptr;
+	}
 
 	//void RenderManager::CreateCommandBuffers()
 	//{
@@ -596,7 +596,7 @@ namespace JoyEngine
 
 		// Indicate that the back buffer will be used as a render target.
 		D3D12_RESOURCE_BARRIER barrier1 = Transition(
-			m_renderTargets[m_currentFrameIndex].resource.Get(), 
+			m_renderTargets[m_currentFrameIndex].resource.Get(),
 			D3D12_RESOURCE_STATE_PRESENT,
 			D3D12_RESOURCE_STATE_RENDER_TARGET);
 		commandList->ResourceBarrier(1, &barrier1);
@@ -609,7 +609,7 @@ namespace JoyEngine
 
 		// Indicate that the back buffer will now be used to present.
 		D3D12_RESOURCE_BARRIER barrier2 = Transition(
-			m_renderTargets[m_currentFrameIndex].resource.Get(), 
+			m_renderTargets[m_currentFrameIndex].resource.Get(),
 			D3D12_RESOURCE_STATE_RENDER_TARGET,
 			D3D12_RESOURCE_STATE_PRESENT);
 		commandList->ResourceBarrier(1, &barrier2);
@@ -707,12 +707,10 @@ namespace JoyEngine
 
 	//VkRenderPass RenderManager::GetMainRenderPass() const noexcept { return m_renderPass->GetRenderPass(); }
 
-	//float RenderManager::GetAspect() const noexcept
-	//{
-	//	ASSERT(m_swapchain != nullptr);
-	//	return static_cast<float>(m_swapchain->GetWidth()) /
-	//		static_cast<float>(m_swapchain->GetHeight());
-	//}
+	float RenderManager::GetAspect() const noexcept
+	{
+		return static_cast<float>(m_width) / static_cast<float>(m_height);
+	}
 
 	//Texture* RenderManager::GetGBufferPositionTexture() const noexcept
 	//{

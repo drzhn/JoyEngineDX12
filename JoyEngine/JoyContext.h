@@ -5,10 +5,10 @@ namespace JoyEngine
 {
 	class InputManager;
 	class GraphicsManager;
-	//class MemoryManager;
-	//class DataManager;
+	class MemoryManager;
+	class DataManager;
 	class DescriptorManager;
-	//class ResourceManager;
+	class ResourceManager;
 	//class SceneManager;
 	class RenderManager;
 
@@ -18,20 +18,20 @@ namespace JoyEngine
 		static void Init(
 			InputManager* inputManager,
 			GraphicsManager* graphicsContext,
-			//MemoryManager* memoryManager,
-			//DataManager* dataManager,
+			MemoryManager* memoryManager,
+			DataManager* dataManager,
 			DescriptorManager* descriptorManager,
-			//ResourceManager* resourceManager,
+			ResourceManager* resourceManager,
 			//SceneManager* sceneManager,
 			RenderManager* renderManager
 		);
 
 		static InputManager* Input;
 		static GraphicsManager* Graphics;
-		//static MemoryManager* Memory;
-		//static DataManager* Data;
+		static MemoryManager* Memory;
+		static DataManager* Data;
 		static DescriptorManager* Descriptors;
-		//static ResourceManager* Resource;
+		static ResourceManager* Resource;
 		//static SceneManager* Scene;
 		static RenderManager* Render;
 	};

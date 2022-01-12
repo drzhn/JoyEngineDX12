@@ -145,6 +145,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="JoyEngine\ResourceManager\Buffer.cpp" />
+    <ClCompile Include="JoyEngine\DataManager\DataManager.cpp" />
     <ClCompile Include="JoyEngine\DescriptorManager\DescriptorManager.cpp" />
     <ClCompile Include="JoyEngine\Common\CommandQueue.cpp" />
     <ClCompile Include="JoyEngine\Common\Serialization.cpp" />
@@ -154,11 +156,21 @@
     <ClCompile Include="JoyEngine\InputManager\InputManager.cpp" />
     <ClCompile Include="JoyEngine\JoyContext.cpp" />
     <ClCompile Include="JoyEngine\JoyEngine.cpp" />
+    <ClCompile Include="JoyEngine\MemoryManager\MemoryManager.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\RenderManager.cpp" />
+    <ClCompile Include="JoyEngine\ResourceManager\ResourceManager.cpp" />
+    <ClCompile Include="JoyEngine\ResourceManager\Texture.cpp" />
+    <ClCompile Include="JoyEngine\SceneManager\GameObject.cpp" />
+    <ClCompile Include="JoyEngine\SceneManager\Scene.cpp" />
+    <ClCompile Include="JoyEngine\SceneManager\SceneManager.cpp" />
+    <ClCompile Include="JoyEngine\SceneManager\Transform.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="WindowHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="JoyEngine\d3dx12.h" />
+    <ClInclude Include="JoyEngine\ResourceManager\Buffer.h" />
+    <ClInclude Include="JoyEngine\DataManager\DataManager.h" />
     <ClInclude Include="JoyEngine\DescriptorManager\DescriptorManager.h" />
     <ClInclude Include="JoyEngine\Common\Color.h" />
     <ClInclude Include="JoyEngine\Common\CommandQueue.h" />
@@ -172,8 +184,15 @@
     <ClInclude Include="JoyEngine\InputManager\InputManager.h" />
     <ClInclude Include="JoyEngine\JoyContext.h" />
     <ClInclude Include="JoyEngine\JoyEngine.h" />
+    <ClInclude Include="JoyEngine\MemoryManager\MemoryManager.h" />
     <ClInclude Include="JoyEngine\RenderManager\RenderManager.h" />
     <ClInclude Include="JoyEngine\RenderManager\JoyTypes.h" />
+    <ClInclude Include="JoyEngine\ResourceManager\ResourceManager.h" />
+    <ClInclude Include="JoyEngine\ResourceManager\Texture.h" />
+    <ClInclude Include="JoyEngine\SceneManager\GameObject.h" />
+    <ClInclude Include="JoyEngine\SceneManager\Scene.h" />
+    <ClInclude Include="JoyEngine\SceneManager\SceneManager.h" />
+    <ClInclude Include="JoyEngine\SceneManager\Transform.h" />
     <ClInclude Include="JoyEngine\Utils\Assert.h" />
     <ClInclude Include="JoyEngine\Utils\FileUtils.h" />
     <ClInclude Include="JoyEngine\Utils\GUID.h" />

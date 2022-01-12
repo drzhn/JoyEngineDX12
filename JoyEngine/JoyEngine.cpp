@@ -6,9 +6,9 @@
 
 //#include "SceneManager/SceneManager.h"
 #include "RenderManager/RenderManager.h"
-//#include "MemoryManager/MemoryManager.h"
-//#include "ResourceManager/ResourceManager.h"
-//#include "DataManager/DataManager.h"
+#include "MemoryManager/MemoryManager.h"
+#include "ResourceManager/ResourceManager.h"
+#include "DataManager/DataManager.h"
 #include "DescriptorManager/DescriptorManager.h"
 #include "GraphicsManager/GraphicsManager.h"
 #include "Common/Time.h"
@@ -23,29 +23,29 @@ namespace JoyEngine
 		m_windowHandle(windowHandle),
 		m_inputManager(new InputManager()),
 		m_graphicsContext(new GraphicsManager(instance, windowHandle)),
-		//m_memoryManager(new MemoryManager()),
-		//m_dataManager(new DataManager()),
+		m_memoryManager(new MemoryManager()),
+		m_dataManager(new DataManager()),
 		m_descriptorSetManager(new DescriptorManager()),
-		//m_resourceManager(new ResourceManager()),
+		m_resourceManager(new ResourceManager()),
 		//m_sceneManager(new SceneManager()),
 		m_renderManager(new RenderManager())
 	{
 		ASSERT(m_inputManager != nullptr);
 		ASSERT(m_graphicsContext != nullptr);
-		//ASSERT(m_memoryManager != nullptr);
-		//ASSERT(m_dataManager != nullptr);
+		ASSERT(m_memoryManager != nullptr);
+		ASSERT(m_dataManager != nullptr);
 		ASSERT(m_descriptorSetManager != nullptr);
-		//ASSERT(m_resourceManager != nullptr);
+		ASSERT(m_resourceManager != nullptr);
 		//ASSERT(m_sceneManager != nullptr);
 		ASSERT(m_renderManager != nullptr);
 
 		JoyContext::Init(
 			m_inputManager.get(),
 			m_graphicsContext.get(),
-			//m_memoryManager.get(),
-			//m_dataManager.get(),
+			m_memoryManager.get(),
+			m_dataManager.get(),
 			m_descriptorSetManager.get(),
-			//m_resourceManager.get(),
+			m_resourceManager.get(),
 			//m_sceneManager.get(),
 			m_renderManager.get()
 		);
@@ -57,7 +57,7 @@ namespace JoyEngine
 	{
 		Time::Init(m_deltaTimeHandler);
 
-		//m_memoryManager->Init();
+		m_memoryManager->Init();
 		m_descriptorSetManager->Init();
 		m_renderManager->Init();
 		//m_sceneManager->Init();
@@ -84,7 +84,7 @@ namespace JoyEngine
 
 	void JoyEngine::Stop() const noexcept
 	{
-		m_renderManager->Stop(); 
+		m_renderManager->Stop();
 	}
 
 	JoyEngine::~JoyEngine()
@@ -93,11 +93,11 @@ namespace JoyEngine
 		// will destroy managers in certain order
 		m_inputManager = nullptr;
 		//m_sceneManager = nullptr; // unregister mesh renderers, remove descriptor set, pipelines, pipeline layouts
-		//m_resourceManager = nullptr; //delete all scene render data (buffers, textures)
+		m_resourceManager = nullptr; //delete all scene render data (buffers, textures)
 		m_renderManager = nullptr; //delete swapchain, synchronisation, framebuffers
 		m_descriptorSetManager = nullptr;
-		//m_dataManager = nullptr;
-		//m_memoryManager = nullptr; //free gpu memory
+		m_dataManager = nullptr;
+		m_memoryManager = nullptr; //free gpu memory
 		m_graphicsContext = nullptr; //delete surface, device, instance
 		OutputDebugStringA("Context destroyed\n");
 	}

@@ -33,13 +33,17 @@ namespace JoyEngine
 
 	D3D12_CPU_DESCRIPTOR_HANDLE DescriptorManager::AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE type)
 	{
+
 		D3D12_CPU_DESCRIPTOR_HANDLE handle;
 
 		HeapEntry& entry = m_descriptorStorage[type];
 
+		ASSERT(entry.currentDescriptorIndex < DESCRIPTORS_COUNT)
+
 		handle.ptr = entry.heapStart.ptr + entry.currentDescriptorIndex * entry.descriptorSize;
 
 		entry.currentDescriptorIndex++;
+
 
 		return handle;
 	}

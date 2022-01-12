@@ -10,7 +10,7 @@ using Microsoft::WRL::ComPtr;
 
 namespace JoyEngine
 {
-#define DESCRIPTORS_COUNT 512 // I'm too lazy now for doing pool
+#define DESCRIPTORS_COUNT 512 // I'm too lazy now for writing pool
 
 	class DescriptorManager
 	{

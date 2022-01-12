@@ -6,13 +6,13 @@ namespace JoyEngine
 
 	GraphicsManager* JoyContext::Graphics = nullptr;
 
-	//MemoryManager* JoyContext::Memory = nullptr;
+	MemoryManager* JoyContext::Memory = nullptr;
 
-	//DataManager* JoyContext::Data = nullptr;
+	DataManager* JoyContext::Data = nullptr;
 
 	DescriptorManager* JoyContext::Descriptors = nullptr;
 
-	//ResourceManager* JoyContext::Resource = nullptr;
+	ResourceManager* JoyContext::Resource = nullptr;
 
 	//SceneManager* JoyContext::Scene = nullptr;
 
@@ -21,19 +21,19 @@ namespace JoyEngine
 	void JoyContext::Init(
 		InputManager* inputManager, 
 		GraphicsManager* graphicsContext, 
-		//MemoryManager* memoryManager, 
-		//DataManager* dataManager,
+		MemoryManager* memoryManager, 
+		DataManager* dataManager,
 		DescriptorManager* descriptorManager, 
-		//ResourceManager* resourceManager, 
+		ResourceManager* resourceManager, 
 		//SceneManager* sceneManager,
 		RenderManager* renderManager)
 	{
 		Input = inputManager;
 		Graphics = graphicsContext;
-		//Memory = memoryManager;
-		//Data = dataManager;
+		Memory = memoryManager;
+		Data = dataManager;
 		Descriptors = descriptorManager;
-		//Resource = resourceManager;
+		Resource = resourceManager;
 		//Scene = sceneManager;
 		Render = renderManager;
 		

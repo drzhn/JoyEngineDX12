@@ -164,8 +164,11 @@
     <ClCompile Include="JoyEngine\JoyEngine.cpp" />
     <ClCompile Include="JoyEngine\MemoryManager\MemoryManager.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\RenderManager.cpp" />
+    <ClCompile Include="JoyEngine\ResourceManager\Material.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\Mesh.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\ResourceManager.cpp" />
+    <ClCompile Include="JoyEngine\ResourceManager\Shader.cpp" />
+    <ClCompile Include="JoyEngine\ResourceManager\SharedMaterial.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\Texture.cpp" />
     <ClCompile Include="JoyEngine\SceneManager\GameObject.cpp" />
     <ClCompile Include="JoyEngine\SceneManager\Scene.cpp" />
@@ -201,8 +204,12 @@
     <ClInclude Include="JoyEngine\MemoryManager\MemoryManager.h" />
     <ClInclude Include="JoyEngine\RenderManager\RenderManager.h" />
     <ClInclude Include="JoyEngine\RenderManager\JoyTypes.h" />
+    <ClInclude Include="JoyEngine\ResourceManager\Material.h" />
     <ClInclude Include="JoyEngine\ResourceManager\Mesh.h" />
+    <ClInclude Include="JoyEngine\ResourceManager\ResourceHandle.h" />
     <ClInclude Include="JoyEngine\ResourceManager\ResourceManager.h" />
+    <ClInclude Include="JoyEngine\ResourceManager\Shader.h" />
+    <ClInclude Include="JoyEngine\ResourceManager\SharedMaterial.h" />
     <ClInclude Include="JoyEngine\ResourceManager\Texture.h" />
     <ClInclude Include="JoyEngine\SceneManager\GameObject.h" />
     <ClInclude Include="JoyEngine\SceneManager\Scene.h" />
@@ -213,6 +220,11 @@
     <ClInclude Include="JoyEngine\Utils\FileUtils.h" />
     <ClInclude Include="JoyEngine\Utils\GUID.h" />
     <ClInclude Include="WindowHandler.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="JoyData\shaders\vikingShader.hlsl">
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

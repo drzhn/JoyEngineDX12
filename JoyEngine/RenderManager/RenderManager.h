@@ -20,9 +20,11 @@
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <wrl.h>
+using Microsoft::WRL::ComPtr;
+
 
 #include "Components/Camera.h"
-using Microsoft::WRL::ComPtr;
+#include "ResourceManager/SharedMaterial.h"
 
 namespace JoyEngine
 {
@@ -47,9 +49,9 @@ namespace JoyEngine
 
 		void DrawFrame();
 
-		//void RegisterSharedMaterial(SharedMaterial* sharedMaterial);
+		void RegisterSharedMaterial(SharedMaterial* sharedMaterial);
 
-		//void UnregisterSharedMaterial(SharedMaterial* sharedMaterial);
+		void UnregisterSharedMaterial(SharedMaterial* sharedMaterial);
 
 		void RegisterCamera(Camera* camera);
 
@@ -92,10 +94,11 @@ namespace JoyEngine
 
 		//std::unique_ptr<Texture> m_depthAttachment;
 		//std::unique_ptr<Texture> m_positionAttachment;
+		//std::unique_ptr<Texture> m_positionAttachment;
 		//std::unique_ptr<Texture> m_normalAttachment;
 
 
-		//std::set<SharedMaterial*> m_sharedMaterials;
+		std::set<SharedMaterial*> m_sharedMaterials;
 		Camera* m_currentCamera;
 
 		std::unique_ptr<CommandQueue> m_queue;

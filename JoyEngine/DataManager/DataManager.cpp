@@ -10,8 +10,8 @@
 namespace JoyEngine
 {
 	DataManager::DataManager() :
-	//m_databaseFilename(R"(data_old.db)")
-	m_databaseFilename(R"(data.db)")
+		//m_databaseFilename(R"(data_old.db)")
+		m_databaseFilename(R"(data.db)")
 	{
 		ParseDatabase(m_pathDatabase, ReadFile(m_dataPath + m_databaseFilename).data());
 	}
@@ -27,6 +27,17 @@ namespace JoyEngine
 			ASSERT(false);
 		}
 		return m_pathDatabase[guid];
+	}
+
+	std::filesystem::path DataManager::GetAbsolutePath(GUID guid)
+	{
+		if (m_pathDatabase.find(guid) == m_pathDatabase.end())
+		{
+			ASSERT(false);
+		}
+		std::filesystem::path root = m_dataPath;
+		root += m_pathDatabase[guid];
+		return root;
 	}
 
 	void DataManager::ParseDatabase(std::map<GUID, std::filesystem::path>& pathDatabase, const char* data)

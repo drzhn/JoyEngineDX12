@@ -54,15 +54,17 @@ namespace JoyEngine
 
 		rapidjson::Document GetSerializedData(const GUID&, DataType);
 
+		std::filesystem::path GetAbsolutePath(GUID);
+
 	private:
 		const std::string m_dataPath = R"(D:\CppProjects\JoyEngineDX\JoyData\)";
 		const std::string m_databaseFilename;
 		std::map<GUID, std::filesystem::path> m_pathDatabase;
 
 	private:
-		void ParseDatabase(std::map<GUID, std::filesystem::path>& pathDatabase, const char* data);
-
 		const std::filesystem::path& GetPath(GUID);
+
+		void ParseDatabase(std::map<GUID, std::filesystem::path>& pathDatabase, const char* data);
 	};
 }
 

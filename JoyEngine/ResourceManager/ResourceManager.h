@@ -34,6 +34,15 @@ namespace JoyEngine {
             return GetResource<T>(guid);
         }
 
+        template<class T, typename... Args>
+        T* LoadResource(GUID guid, Args... args) {
+            if (!IsResourceLoaded(guid)) {
+                m_isResourceInUse.insert({ guid, std::make_unique<T>(guid, args...) });
+            }
+            m_isResourceInUse[guid]->IncreaseRefCount();
+            return GetResource<T>(guid);
+        }
+
         void UnloadResource(GUID guid) {
             if (IsResourceLoaded(guid)) {
                 m_isResourceInUse[guid]->DecreaseRefCount();

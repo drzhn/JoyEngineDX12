@@ -25,15 +25,14 @@ namespace JoyEngine
 			ASSERT_SUCC(JoyContext::Graphics->GetDevice()->
 				CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&entry.heap)));
 
-			entry.descriptorSize = JoyContext::Graphics->GetDevice()->GetDescriptorHandleIncrementSize(
-				type);
+			entry.descriptorSize =
+				JoyContext::Graphics->GetDevice()->GetDescriptorHandleIncrementSize(type);
 			entry.heapStart = entry.heap->GetCPUDescriptorHandleForHeapStart();
 		}
 	}
 
 	D3D12_CPU_DESCRIPTOR_HANDLE DescriptorManager::AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE type)
 	{
-
 		D3D12_CPU_DESCRIPTOR_HANDLE handle;
 
 		HeapEntry& entry = m_descriptorStorage[type];
@@ -43,7 +42,6 @@ namespace JoyEngine
 		handle.ptr = entry.heapStart.ptr + entry.currentDescriptorIndex * entry.descriptorSize;
 
 		entry.currentDescriptorIndex++;
-
 
 		return handle;
 	}

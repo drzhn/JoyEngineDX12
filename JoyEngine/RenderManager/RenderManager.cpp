@@ -340,19 +340,19 @@ namespace JoyEngine
 	//	}
 	//}
 
-	//void RenderManager::RegisterSharedMaterial(SharedMaterial* meshRenderer)
-	//{
-	//	m_sharedMaterials.insert(meshRenderer);
-	//}
+	void RenderManager::RegisterSharedMaterial(SharedMaterial* meshRenderer)
+	{
+		m_sharedMaterials.insert(meshRenderer);
+	}
 
-	//void RenderManager::UnregisterSharedMaterial(SharedMaterial* meshRenderer)
-	//{
-	//	if (m_sharedMaterials.find(meshRenderer) == m_sharedMaterials.end())
-	//	{
-	//		ASSERT(false);
-	//	}
-	//	m_sharedMaterials.erase(meshRenderer);
-	//}
+	void RenderManager::UnregisterSharedMaterial(SharedMaterial* meshRenderer)
+	{
+		if (m_sharedMaterials.find(meshRenderer) == m_sharedMaterials.end())
+		{
+			ASSERT(false);
+		}
+		m_sharedMaterials.erase(meshRenderer);
+	}
 
 	void RenderManager::RegisterCamera(Camera* camera)
 	{

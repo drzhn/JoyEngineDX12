@@ -60,8 +60,8 @@ namespace JoyEngine
 
 		ComPtr<ID3D12Resource> m_texture;
 
-		//VkImageView m_textureImageView = VK_NULL_HANDLE;
-		//VkSampler m_textureSampler = VK_NULL_HANDLE;
+		D3D12_CPU_DESCRIPTOR_HANDLE m_textureImageView = {};
+		D3D12_CPU_DESCRIPTOR_HANDLE m_textureSampler = {};
 	};
 }
 

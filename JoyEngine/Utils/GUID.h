@@ -2,6 +2,8 @@
 #define GUID_UTILS_H
 
 #include <string>
+#include "combaseapi.h"
+#include "Assert.h"
 
 namespace JoyEngine
 {
@@ -73,6 +75,13 @@ namespace JoyEngine
 			         guid.Data4[4], guid.Data4[5], guid.Data4[6], guid.Data4[7]);
 
 			return std::string{guid_cstr};
+		}
+
+		static GUID Random()
+		{
+			GUID guid;
+			ASSERT_SUCC(CoCreateGuid(reinterpret_cast<::GUID*>(&guid)));
+			return guid;
 		}
 	};
 }

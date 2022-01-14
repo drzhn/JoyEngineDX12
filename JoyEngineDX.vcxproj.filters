@@ -102,6 +102,15 @@
     <ClCompile Include="JoyEngine\Utils\DummyMaterialProvider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="JoyEngine\ResourceManager\Material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JoyEngine\ResourceManager\SharedMaterial.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JoyEngine\ResourceManager\Shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="JoyEngine\JoyContext.h">
@@ -215,5 +224,20 @@
     <ClInclude Include="JoyEngine\Utils\DummyMaterialProvider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="JoyEngine\ResourceManager\Material.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JoyEngine\ResourceManager\SharedMaterial.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JoyEngine\ResourceManager\ResourceHandle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JoyEngine\ResourceManager\Shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="JoyData\shaders\vikingShader.hlsl" />
   </ItemGroup>
 </Project>

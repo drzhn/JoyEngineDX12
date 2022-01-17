@@ -21,7 +21,7 @@ namespace JoyEngine
 {
 	void MemoryManager::Init()
 	{
-		m_queue = std::make_unique<CommandQueue>(D3D12_COMMAND_LIST_TYPE_COPY, JoyContext::Graphics->GetDevice());
+		m_queue = std::make_unique<CommandQueue>(D3D12_COMMAND_LIST_TYPE_DIRECT, JoyContext::Graphics->GetDevice());
 	}
 
 
@@ -59,7 +59,7 @@ namespace JoyEngine
 		CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
 			gpuImage.Get(),
 			D3D12_RESOURCE_STATE_COPY_DEST,
-			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+			D3D12_RESOURCE_STATE_GENERIC_READ
 		);
 		commandList->ResourceBarrier(1, &barrier);
 

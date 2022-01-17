@@ -7,6 +7,8 @@
 
 //#include "MemoryManager/MemoryManager.h"
 //#include "ResourceManager/ResourceManager.h"
+#include "JoyTypes.h"
+#include "Components/MeshRenderer.h"
 #include "DescriptorManager/DescriptorManager.h"
 #include "GraphicsManager/GraphicsManager.h"
 
@@ -78,15 +80,24 @@ namespace JoyEngine
 
 		m_currentFrameIndex = m_swapChain->GetCurrentBackBufferIndex();
 
+		D3D12_DESCRIPTOR_HEAP_DESC desc = {};
+		desc.NumDescriptors = FrameCount;
+		desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+
+		ASSERT_SUCC(JoyContext::Graphics->GetDevice()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&m_RTVDescriptorHeap)));
+		auto rtvDescriptorSize = JoyContext::Graphics->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+		D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = m_RTVDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
+
 		// Create a RTV and a command allocator for each frame.
 		for (UINT n = 0; n < FrameCount; n++)
 		{
 			ASSERT_SUCC(m_swapChain->GetBuffer(n, IID_PPV_ARGS(&m_renderTargets[n].resource)));
-			m_renderTargets[n].handle = JoyContext::Descriptors->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+			m_renderTargets[n].handle = rtvHandle;
 			JoyContext::Graphics->GetDevice()->CreateRenderTargetView(
 				m_renderTargets[n].resource.Get(),
 				nullptr,
 				m_renderTargets[n].handle);
+			rtvHandle.ptr += rtvDescriptorSize;
 		}
 	}
 
@@ -606,6 +617,44 @@ namespace JoyEngine
 		// Record commands.
 		const float clearColor[] = {0.0f, 0.2f, 0.4f, 1.0f};
 		commandList->ClearRenderTargetView(m_renderTargets[m_currentFrameIndex].handle, clearColor, 0, nullptr);
+
+
+		ASSERT(m_currentCamera != nullptr);
+		glm::mat4 view = m_currentCamera->GetViewMatrix();
+		glm::mat4 proj = m_currentCamera->GetProjMatrix();
+		for (auto const& sm : m_sharedMaterials)
+		{
+
+			commandList->SetPipelineState(sm->GetPipelineObject().Get());
+			commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+			for (const auto& mr : sm->GetMeshRenderers())
+			{
+				commandList->SetDescriptorHeaps(2, mr->GetMaterial()->GetHeaps().data());
+
+				commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+				commandList->IASetVertexBuffers(0, 1, mr->GetMesh()->GetVertexBufferView());
+				commandList->IASetIndexBuffer(mr->GetMesh()->GetIndexBufferView());
+
+				MVP mvp{
+					mr->GetTransform()->GetModelMatrix(),
+					view,
+					proj
+				};
+				for (auto param :mr->GetMaterial()->GetRootParams())
+				{
+					uint32_t index = param.first;
+					D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = param.second->GetGPUDescriptorHandleForHeapStart();
+
+					commandList->SetGraphicsRootDescriptorTable(index, gpuHandle);
+				}
+				commandList->SetGraphicsRoot32BitConstants(2, sizeof(MVP) / 4, &mvp, 0);
+				commandList->DrawIndexedInstanced(
+					mr->GetMesh()->GetIndexSize(), 
+					1, 
+					0, 0, 0);
+
+			}
+		}
 
 		// Indicate that the back buffer will now be used to present.
 		D3D12_RESOURCE_BARRIER barrier2 = Transition(

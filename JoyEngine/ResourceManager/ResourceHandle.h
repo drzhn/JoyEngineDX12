@@ -25,14 +25,10 @@ namespace JoyEngine
 
 		~ResourceHandle()
 		{
-			if (m_ptr != nullptr)
-			{
-				JoyContext::Resource->UnloadResource(m_guid);
-				m_ptr = nullptr;
-			}
+			Release();
 		}
 
-		void Clear()
+		void Release()
 		{
 			if (m_ptr != nullptr)
 			{
@@ -43,10 +39,7 @@ namespace JoyEngine
 
 		ResourceHandle<T>& operator=(GUID guid)
 		{
-			if (m_ptr != nullptr)
-			{
-				JoyContext::Resource->UnloadResource(m_guid);
-			}
+			Release();
 			m_guid = guid;
 			m_ptr = JoyContext::Resource->LoadResource<T>(m_guid);
 			return *this;

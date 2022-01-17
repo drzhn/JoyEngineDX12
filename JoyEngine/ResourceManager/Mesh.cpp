@@ -34,6 +34,18 @@ namespace JoyEngine
 		m_vertexBuffer->LoadData(m_modelStream, sizeof(uint32_t) + sizeof(uint32_t));
 
 		m_indexBuffer->LoadData(m_modelStream, sizeof(uint32_t) + sizeof(uint32_t) + verticesDataSize);
+
+		m_vertexBufferView = {
+			m_vertexBuffer->GetBuffer()->GetGPUVirtualAddress(),
+			verticesDataSize,
+			sizeof(Vertex)
+		};
+
+		m_indexBufferView = {
+			m_indexBuffer->GetBuffer()->GetGPUVirtualAddress(),
+			indicesDataSize,
+			DXGI_FORMAT_R32_UINT,
+		};
 	}
 
 	Mesh::~Mesh()

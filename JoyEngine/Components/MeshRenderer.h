@@ -4,6 +4,7 @@
 #include <optional>
 
 #include "Component.h"
+#include "ResourceManager/Material.h"
 #include "Utils/GUID.h"
 #include "Utils/Assert.h"
 #include "ResourceManager/Mesh.h"
@@ -31,13 +32,13 @@ namespace JoyEngine {
 
         [[nodiscard]]Mesh *GetMesh() const noexcept;
 
-        //[[nodiscard]]Material *GetMaterial() const noexcept;
+        [[nodiscard]]Material *GetMaterial() const noexcept;
 
         [[nodiscard]] bool IsReady() const noexcept;
 
     private:
         Mesh* m_mesh;
-        //Material* m_material;
+        Material* m_material;
     };
 }
 

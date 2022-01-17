@@ -4,16 +4,17 @@
 
 #include "ResourceManager/ResourceManager.h"
 #include "Common/Resource.h"
+#include "Utils/DummyMaterialProvider.h"
 
 namespace JoyEngine {
     void MeshRenderer::Enable() {
         //ASSERT(m_mesh != nullptr && m_material != nullptr);
-        //m_material->GetSharedMaterial()->RegisterMeshRenderer(this);
+        m_material->GetSharedMaterial()->RegisterMeshRenderer(this);
         m_enabled = true;
     }
 
     void MeshRenderer::Disable() {
-        //m_material->GetSharedMaterial()->UnregisterMeshRenderer(this);
+        m_material->GetSharedMaterial()->UnregisterMeshRenderer(this);
         m_enabled = false;
     }
 
@@ -21,7 +22,7 @@ namespace JoyEngine {
         if (m_enabled) {
             Disable();
         }
-        //JoyContext::Resource->UnloadResource(m_material->GetGuid());
+        JoyContext::Resource->UnloadResource(m_material->GetGuid());
         JoyContext::Resource->UnloadResource(m_mesh->GetGuid());
     }
 
@@ -37,15 +38,16 @@ namespace JoyEngine {
         //    JoyContext::Resource->UnloadResource(materialGuid);
         //}
         //m_material = JoyContext::Resource->LoadResource<Material>(materialGuid);
+        m_material = JoyContext::DummyMaterials->GetMaterial();
     }
 
     Mesh *MeshRenderer::GetMesh() const noexcept {
         return m_mesh;
     }
 
-    //Material *MeshRenderer::GetMaterial() const noexcept {
-    //    return m_material;
-    //}
+    Material *MeshRenderer::GetMaterial() const noexcept {
+        return m_material;
+    }
 
     bool MeshRenderer::IsReady() const noexcept
     {

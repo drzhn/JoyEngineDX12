@@ -18,6 +18,7 @@ namespace JoyEngine
 		DescriptorManager() = default;
 		void Init();
 		D3D12_CPU_DESCRIPTOR_HANDLE AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE type);
+
 	private:
 		struct HeapEntry
 		{

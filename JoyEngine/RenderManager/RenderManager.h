@@ -77,14 +77,14 @@ namespace JoyEngine
 		void CreateSyncObjects();
 
 	private:
+		static const UINT FrameCount = 3;
 
+		ComPtr<ID3D12DescriptorHeap> m_RTVDescriptorHeap;
 		struct ResourceDescriptor
 		{
 			ComPtr<ID3D12Resource> resource;
 			D3D12_CPU_DESCRIPTOR_HANDLE handle;
 		};
-
-		static const UINT FrameCount = 3;
 
 		//ResourceHandle<SharedMaterial> m_gBufferWriteSharedMaterial;
 		D3D12_VIEWPORT m_viewport;

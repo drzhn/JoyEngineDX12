@@ -17,7 +17,8 @@ namespace JoyEngine
 	struct MaterialData
 	{
 		GUID sharedMaterial;
-		std::map<uint32_t, D3D12_CPU_DESCRIPTOR_HANDLE> rootParams;
+		std::map<uint32_t, ID3D12DescriptorHeap*> rootParams;
+		std::vector<ID3D12DescriptorHeap*> heaps;
 	};
 
 	class Material final : public Resource
@@ -33,9 +34,12 @@ namespace JoyEngine
 		[[nodiscard]] SharedMaterial* GetSharedMaterial() const noexcept;
 
 		[[nodiscard]] bool IsLoaded() const noexcept override;
+		std::map<uint32_t, ID3D12DescriptorHeap*>& GetRootParams() { return m_rootParams; }
+		std::vector<ID3D12DescriptorHeap*>& GetHeaps() { return m_heaps; }
 	private :
 		ResourceHandle<SharedMaterial> m_sharedMaterial;
-		std::map<uint32_t, D3D12_CPU_DESCRIPTOR_HANDLE> m_rootParams;
+		std::map<uint32_t, ID3D12DescriptorHeap*> m_rootParams;
+		std::vector<ID3D12DescriptorHeap*> m_heaps;
 	};
 }
 

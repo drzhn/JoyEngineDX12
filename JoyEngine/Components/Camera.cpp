@@ -39,6 +39,6 @@ namespace JoyEngine
 		glm::vec3 eye = m_transform->GetPosition() + m_transform->GetRotation() * glm::vec3(0, 0, 1);
 		glm::vec3 up = m_transform->GetRotation() * glm::vec3(0, 1, 0);
 
-		return glm::lookAt(center, eye, up);
+		return  glm::lookAt(center, eye, up);
 	}
 }

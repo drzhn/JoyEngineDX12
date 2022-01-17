@@ -5,12 +5,17 @@
 #include <rapidjson/document.h>
 
 #include "JoyContext.h"
-#include "Common/HashDefs.h"
 #include "Common/SerializationUtils.h"
 #include "DataManager/DataManager.h"
 #include "GraphicsManager/GraphicsManager.h"
 #include "RenderManager/JoyTypes.h"
 #include "RenderManager/RenderManager.h"
+
+
+#include <d3d12.h>
+#include <dxgi1_6.h>
+#include <wrl.h>
+using Microsoft::WRL::ComPtr;
 
 namespace JoyEngine
 {

@@ -5,6 +5,7 @@
 
 #include <d3d12.h>
 #include <dxgi1_6.h>
+#include <fstream>
 #include <wrl.h>
 
 #include "d3dx12.h"
@@ -39,9 +40,17 @@ namespace JoyEngine
 		[[nodiscard]] ComPtr<ID3D12Resource> GetImage() noexcept { return m_texture; }
 
 
-		//[[nodiscard]] VkImageView& GetImageView() noexcept { return m_textureImageView; }
+		[[nodiscard]] D3D12_CPU_DESCRIPTOR_HANDLE GetImageViewCPUHandle() const noexcept { return m_textureImageView; }
 
-		//[[nodiscard]] VkSampler& GetSampler() noexcept { return m_textureSampler; }
+		[[nodiscard]] D3D12_CPU_DESCRIPTOR_HANDLE GetSampleCPUHandle() const noexcept { return m_textureSampler; }
+
+		[[nodiscard]] ID3D12DescriptorHeap* GetImageViewHeap() const noexcept { return m_srvDescriptorHeap.Get(); }
+
+		[[nodiscard]] ID3D12DescriptorHeap* GetSampleHeap() const noexcept { return m_samplerDescriptorHeap.Get(); }
+
+		[[nodiscard]] D3D12_GPU_DESCRIPTOR_HANDLE GetImageViewGPUHandle() const noexcept { return m_srvDescriptorHeap->GetGPUDescriptorHandleForHeapStart(); }
+
+		[[nodiscard]] D3D12_GPU_DESCRIPTOR_HANDLE GetSampleGPUHandle() const noexcept { return m_samplerDescriptorHeap->GetGPUDescriptorHandleForHeapStart(); }
 
 		[[nodiscard]] bool IsLoaded() const noexcept override { return true; }
 
@@ -60,8 +69,13 @@ namespace JoyEngine
 
 		ComPtr<ID3D12Resource> m_texture;
 
+		ComPtr<ID3D12DescriptorHeap> m_srvDescriptorHeap;
 		D3D12_CPU_DESCRIPTOR_HANDLE m_textureImageView = {};
+
+		ComPtr<ID3D12DescriptorHeap> m_samplerDescriptorHeap;
 		D3D12_CPU_DESCRIPTOR_HANDLE m_textureSampler = {};
+
+		std::ifstream m_textureStream;
 	};
 }
 

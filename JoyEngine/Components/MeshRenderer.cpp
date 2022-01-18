@@ -22,15 +22,12 @@ namespace JoyEngine {
         if (m_enabled) {
             Disable();
         }
-        JoyContext::Resource->UnloadResource(m_material->GetGuid());
-        JoyContext::Resource->UnloadResource(m_mesh->GetGuid());
+        //JoyContext::Resource->UnloadResource(m_material->GetGuid());
+        //JoyContext::Resource->UnloadResource(m_mesh->GetGuid());
     }
 
     void MeshRenderer::SetMesh(GUID meshGuid) {
-        if (m_mesh != nullptr) {
-            JoyContext::Resource->UnloadResource(meshGuid);
-        }
-        m_mesh = JoyContext::Resource->LoadResource<Mesh>(meshGuid);
+        m_mesh = meshGuid;
     }
 
     void MeshRenderer::SetMaterial(GUID materialGuid) {
@@ -38,7 +35,7 @@ namespace JoyEngine {
         //    JoyContext::Resource->UnloadResource(materialGuid);
         //}
         //m_material = JoyContext::Resource->LoadResource<Material>(materialGuid);
-        m_material = JoyContext::Resource->LoadResource<Material>(JoyContext::DummyMaterials->GetMaterialGuid());
+        m_material = JoyContext::DummyMaterials->GetMaterialGuid();
     }
 
     Mesh *MeshRenderer::GetMesh() const noexcept {

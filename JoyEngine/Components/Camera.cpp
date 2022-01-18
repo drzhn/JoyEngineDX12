@@ -32,7 +32,7 @@ namespace JoyEngine
 	{
 		glm::mat4 proj = glm::perspectiveRH_ZO(glm::radians(m_fov), m_aspect, m_near, m_far);
 		proj[1][1] *= -1;
-		proj[0][0] *= -1;
+		//proj[0][0] *= -1;
 		return proj;
 	}
 

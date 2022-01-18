@@ -10,36 +10,40 @@
 #include "ResourceManager/Mesh.h"
 //#include "ResourceManager/Material.h"
 
-namespace JoyEngine {
-    //class Material;
+namespace JoyEngine
+{
+	//class Material;
 
-    class MeshRenderer : public Component {
-    public:
-        MeshRenderer() = default;
+	class MeshRenderer : public Component
+	{
+	public:
+		MeshRenderer() = default;
 
-        void Enable() final;
+		void Enable() final;
 
-        void Disable() final;
+		void Disable() final;
 
-        void Update() final {};
+		void Update() final
+		{
+		};
 
-        ~MeshRenderer() override;
+		~MeshRenderer() override;
 
-        void SetMesh(GUID meshGuid);
+		void SetMesh(GUID meshGuid);
 
-        void SetMaterial(GUID materialGuid);
+		void SetMaterial(GUID materialGuid);
 
 
-        [[nodiscard]]Mesh *GetMesh() const noexcept;
+		[[nodiscard]] Mesh* GetMesh() const noexcept;
 
-        [[nodiscard]]Material *GetMaterial() const noexcept;
+		[[nodiscard]] Material* GetMaterial() const noexcept;
 
-        [[nodiscard]] bool IsReady() const noexcept;
+		[[nodiscard]] bool IsReady() const noexcept;
 
-    private:
-        Mesh* m_mesh;
-        Material* m_material;
-    };
+	private:
+		ResourceHandle<Mesh> m_mesh;
+		ResourceHandle<Material> m_material;
+	};
 }
 
 

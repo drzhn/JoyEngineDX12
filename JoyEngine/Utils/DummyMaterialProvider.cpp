@@ -15,17 +15,19 @@ using Microsoft::WRL::ComPtr;
 
 namespace JoyEngine
 {
+
+
 	void DummyMaterialProvider::Init()
 	{
-		GUID shaderGuid = GUID::StringToGuid("183d6cfe-ca85-4e0b-ab36-7b1ca0f99d34");
-		GUID sharedMaterialGuid = GUID::Random();
+		m_shaderGuid = GUID::StringToGuid("183d6cfe-ca85-4e0b-ab36-7b1ca0f99d34");
+		m_sharedMaterialGuid = GUID::Random();
 		m_materialGuid = GUID::Random();
 		GUID texture1Guid = GUID::StringToGuid("1d451f58-3f84-4b2b-8c6f-fe8e2821d7f0");
 
-		SharedMaterial* sharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
-			sharedMaterialGuid,
+		JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
+			m_sharedMaterialGuid,
 			{
-				shaderGuid,
+				m_shaderGuid,
 				true,
 				true,
 				true,
@@ -41,9 +43,15 @@ namespace JoyEngine
 		JoyContext::Resource->LoadResource<Material, MaterialData>(
 			m_materialGuid,
 			{
-				sharedMaterialGuid,
+				m_sharedMaterialGuid,
 				material1RootParams,
 				{texture1->GetImageViewHeap(),texture1->GetSampleHeap()}
 			});
+	}
+
+	DummyMaterialProvider::~DummyMaterialProvider()
+	{
+		JoyContext::Resource->UnloadResource(m_sharedMaterialGuid);
+		JoyContext::Resource->UnloadResource(m_materialGuid);
 	}
 }

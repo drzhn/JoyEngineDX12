@@ -10,12 +10,14 @@ namespace JoyEngine
 	{
 	public:
 		DummyMaterialProvider() = default;
-		~DummyMaterialProvider() = default;
+		~DummyMaterialProvider();
 		void Init();
 
 		[[nodiscard]] GUID GetMaterialGuid() const noexcept { return m_materialGuid; }
 	private:
 		GUID m_materialGuid;
+		GUID m_sharedMaterialGuid;
+		GUID m_shaderGuid;
 	};
 }
 

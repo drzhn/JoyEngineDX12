@@ -10,11 +10,13 @@ namespace JoyEngine {
         virtual void Enable() override;
         virtual void Disable() override;
         virtual void Update() override;
-        glm::mat4x4 GetProjMatrix();
-        glm::mat4x4 GetViewMatrix();
+        glm::mat4x4 GetProjMatrix() const;
+        glm::mat4x4 GetViewMatrix() const;
 
     private:
         float m_aspect;
+        float m_width;
+        float m_height;
         float m_fov;
         float m_near;
         float m_far;

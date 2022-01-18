@@ -1,6 +1,8 @@
 ﻿#ifndef DUMMY_MATERIAL_PROVIDER_H
 #define DUMMY_MATERIAL_PROVIDER_H
+
 #include "ResourceManager/Material.h"
+#include "Utils/GUID.h"
 
 namespace JoyEngine
 {
@@ -11,9 +13,9 @@ namespace JoyEngine
 		~DummyMaterialProvider() = default;
 		void Init();
 
-		[[nodiscard]] Material* GetMaterial() const noexcept { return m_material; }
+		[[nodiscard]] GUID GetMaterialGuid() const noexcept { return m_materialGuid; }
 	private:
-		Material* m_material;
+		GUID m_materialGuid;
 	};
 }
 

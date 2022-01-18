@@ -38,7 +38,7 @@ namespace JoyEngine {
         //    JoyContext::Resource->UnloadResource(materialGuid);
         //}
         //m_material = JoyContext::Resource->LoadResource<Material>(materialGuid);
-        m_material = JoyContext::DummyMaterials->GetMaterial();
+        m_material = JoyContext::Resource->LoadResource<Material>(JoyContext::DummyMaterials->GetMaterialGuid());
     }
 
     Mesh *MeshRenderer::GetMesh() const noexcept {

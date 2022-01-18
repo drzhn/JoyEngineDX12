@@ -60,6 +60,8 @@ namespace JoyEngine
 		//[[nodiscard]] Swapchain* GetSwapchain() const noexcept;
 
 		[[nodiscard]] float GetAspect() const noexcept;
+		[[nodiscard]] float GetWidth() const noexcept;
+		[[nodiscard]] float GetHeight() const noexcept;
 		//[[nodiscard]] Texture* GetGBufferPositionTexture() const noexcept;
 		//[[nodiscard]] Texture* GetGBufferNormalTexture() const noexcept;
 
@@ -85,6 +87,11 @@ namespace JoyEngine
 			ComPtr<ID3D12Resource> resource;
 			D3D12_CPU_DESCRIPTOR_HANDLE handle;
 		};
+
+		// Depth buffer.
+		ComPtr<ID3D12Resource> m_DepthBuffer;
+		// Descriptor heap for depth buffer.
+		ComPtr<ID3D12DescriptorHeap> m_DSVHeap;
 
 		//ResourceHandle<SharedMaterial> m_gBufferWriteSharedMaterial;
 		D3D12_VIEWPORT m_viewport;

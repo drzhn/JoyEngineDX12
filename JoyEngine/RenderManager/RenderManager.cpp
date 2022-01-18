@@ -13,7 +13,6 @@
 #include "GraphicsManager/GraphicsManager.h"
 
 #define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 
 namespace JoyEngine
 {
@@ -99,7 +98,58 @@ namespace JoyEngine
 				m_renderTargets[n].handle);
 			rtvHandle.ptr += rtvDescriptorSize;
 		}
+
+		// Create the descriptor heap for the depth-stencil view.
+		D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
+		dsvHeapDesc.NumDescriptors = 1;
+		dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+		dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+		ASSERT_SUCC(JoyContext::Graphics->GetDevice()->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_DSVHeap)));
+
+		// Flush any GPU commands that might be referencing the depth buffer.
+		m_queue->WaitQueueIdle();
+
+		// Resize screen dependent resources.
+		// Create a depth buffer.
+		D3D12_CLEAR_VALUE optimizedClearValue = {};
+		optimizedClearValue.Format = DXGI_FORMAT_D32_FLOAT;
+		optimizedClearValue.DepthStencil = { 1.0f, 0 };
+
+		const D3D12_HEAP_PROPERTIES depthMemoryProps =
+		{
+			D3D12_HEAP_TYPE_DEFAULT,
+			D3D12_CPU_PAGE_PROPERTY_UNKNOWN,
+			D3D12_MEMORY_POOL_UNKNOWN,
+			0,
+			0
+		};
+		const CD3DX12_RESOURCE_DESC depthBufferDesc = CD3DX12_RESOURCE_DESC::Tex2D(
+			DXGI_FORMAT_D32_FLOAT, m_width, m_height,
+			1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
+
+		ASSERT_SUCC(JoyContext::Graphics->GetDevice()->CreateCommittedResource(
+			&depthMemoryProps,
+			D3D12_HEAP_FLAG_NONE,
+			&depthBufferDesc,
+			D3D12_RESOURCE_STATE_DEPTH_WRITE,
+			&optimizedClearValue,
+			IID_PPV_ARGS(&m_DepthBuffer)
+		));
+
+		// Update the depth-stencil view.
+		D3D12_DEPTH_STENCIL_VIEW_DESC dsv = {};
+		dsv.Format = DXGI_FORMAT_D32_FLOAT;
+		dsv.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+		dsv.Texture2D.MipSlice = 0;
+		dsv.Flags = D3D12_DSV_FLAG_NONE;
+
+		JoyContext::Graphics->GetDevice()->CreateDepthStencilView(m_DepthBuffer.Get(), &dsv,
+			m_DSVHeap->GetCPUDescriptorHandleForHeapStart());
+
+
 	}
+
+
 
 
 	void RenderManager::Stop()
@@ -601,6 +651,7 @@ namespace JoyEngine
 		m_queue->ResetForFrame(m_currentFrameIndex);
 
 		const auto commandList = m_queue->GetCommandList();
+		auto dsv = m_DSVHeap->GetCPUDescriptorHandleForHeapStart();
 		// Set necessary state.
 		commandList->RSSetViewports(1, &m_viewport);
 		commandList->RSSetScissorRects(1, &m_scissorRect);
@@ -612,12 +663,15 @@ namespace JoyEngine
 			D3D12_RESOURCE_STATE_RENDER_TARGET);
 		commandList->ResourceBarrier(1, &barrier1);
 
-		commandList->OMSetRenderTargets(1, &m_renderTargets[m_currentFrameIndex].handle, FALSE, nullptr);
+		commandList->OMSetRenderTargets(
+			1, 
+			&m_renderTargets[m_currentFrameIndex].handle, 
+			FALSE, &dsv);
 
 		// Record commands.
 		const float clearColor[] = {0.0f, 0.2f, 0.4f, 1.0f};
 		commandList->ClearRenderTargetView(m_renderTargets[m_currentFrameIndex].handle, clearColor, 0, nullptr);
-
+		commandList->ClearDepthStencilView(m_DSVHeap.Get()->GetCPUDescriptorHandleForHeapStart(), D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 		ASSERT(m_currentCamera != nullptr);
 		glm::mat4 view = m_currentCamera->GetViewMatrix();
@@ -636,9 +690,9 @@ namespace JoyEngine
 				commandList->IASetIndexBuffer(mr->GetMesh()->GetIndexBufferView());
 
 				MVP mvp{
-					mr->GetTransform()->GetModelMatrix(),
-					view,
-					proj
+					(mr->GetTransform()->GetModelMatrix()),
+					(view),
+					(proj)
 				};
 				for (auto param :mr->GetMaterial()->GetRootParams())
 				{
@@ -759,6 +813,16 @@ namespace JoyEngine
 	float RenderManager::GetAspect() const noexcept
 	{
 		return static_cast<float>(m_width) / static_cast<float>(m_height);
+	}
+
+	float RenderManager::GetWidth() const noexcept
+	{
+		return static_cast<float>(m_width);
+	}
+
+	float RenderManager::GetHeight() const noexcept
+	{
+		return  static_cast<float>(m_height);
 	}
 
 	//Texture* RenderManager::GetGBufferPositionTexture() const noexcept

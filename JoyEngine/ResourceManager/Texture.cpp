@@ -11,7 +11,7 @@ namespace JoyEngine
 {
 	Texture::Texture(GUID guid) :
 		Resource(guid),
-		m_format(DXGI_FORMAT_R8G8B8A8_UNORM_SRGB),
+		m_format(DXGI_FORMAT_R8G8B8A8_UNORM),
 		m_usageFlags(D3D12_RESOURCE_STATE_COPY_DEST),
 		m_propertiesFlags(D3D12_HEAP_TYPE_DEFAULT)
 	{

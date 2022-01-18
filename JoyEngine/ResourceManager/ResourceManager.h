@@ -57,7 +57,7 @@ namespace JoyEngine {
         template<class T>
         T *GetResource(GUID guid) {
             ASSERT(IsResourceLoaded(guid));
-#ifdef DEBUG
+#ifdef _DEBUG
             T *ptr = dynamic_cast<T *>(m_isResourceInUse[guid].get());
             ASSERT(ptr != nullptr);
 #else

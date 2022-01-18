@@ -114,7 +114,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;NOMINMAX;GLM_FORCE_LEFT_HANDED;GLM_FORCE_DEPTH_ZERO_TO_ONE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)JoyEngine;$(SolutionDir)Libs\rapidjson\include;$(SolutionDir)Libs\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

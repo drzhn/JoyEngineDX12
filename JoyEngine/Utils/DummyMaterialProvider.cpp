@@ -11,7 +11,6 @@ using Microsoft::WRL::ComPtr;
 #include "ResourceManager/ResourceManager.h"
 #include "ResourceManager/ResourceHandle.h"
 #include "ResourceManager/SharedMaterial.h"
-#include "Utils/GUID.h"
 #include "Utils/Assert.h"
 
 namespace JoyEngine
@@ -20,7 +19,7 @@ namespace JoyEngine
 	{
 		GUID shaderGuid = GUID::StringToGuid("183d6cfe-ca85-4e0b-ab36-7b1ca0f99d34");
 		GUID sharedMaterialGuid = GUID::Random();
-		GUID materialGuid = GUID::Random();
+		m_materialGuid = GUID::Random();
 		GUID texture1Guid = GUID::StringToGuid("1d451f58-3f84-4b2b-8c6f-fe8e2821d7f0");
 
 		SharedMaterial* sharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
@@ -39,8 +38,8 @@ namespace JoyEngine
 			{1, texture1->GetSampleHeap()}
 		};
 
-		m_material = JoyContext::Resource->LoadResource<Material, MaterialData>(
-			materialGuid,
+		JoyContext::Resource->LoadResource<Material, MaterialData>(
+			m_materialGuid,
 			{
 				sharedMaterialGuid,
 				material1RootParams,

@@ -81,25 +81,26 @@ namespace JoyEngine
 	private:
 		static const UINT FrameCount = 3;
 
-		ComPtr<ID3D12DescriptorHeap> m_RTVDescriptorHeap;
-		struct ResourceDescriptor
-		{
-			ComPtr<ID3D12Resource> resource;
-			D3D12_CPU_DESCRIPTOR_HANDLE handle;
-		};
+		//ComPtr<ID3D12DescriptorHeap> m_RTVDescriptorHeap;
+		//struct ResourceDescriptor
+		//{
+		//	ComPtr<ID3D12Resource> resource;
+		//	D3D12_CPU_DESCRIPTOR_HANDLE handle;
+		//};
 
-		// Depth buffer.
-		ComPtr<ID3D12Resource> m_DepthBuffer;
-		// Descriptor heap for depth buffer.
-		ComPtr<ID3D12DescriptorHeap> m_DSVHeap;
+		//// Depth buffer.
+		//ComPtr<ID3D12Resource> m_DepthBuffer;
+		//// Descriptor heap for depth buffer.
+		//ComPtr<ID3D12DescriptorHeap> m_DSVHeap;
 
 		//ResourceHandle<SharedMaterial> m_gBufferWriteSharedMaterial;
 		D3D12_VIEWPORT m_viewport;
 		D3D12_RECT m_scissorRect;
 		ComPtr<IDXGISwapChain3> m_swapChain;
-		ResourceDescriptor m_renderTargets[FrameCount];
+		std::array<std::unique_ptr<Texture>,FrameCount> m_renderTargets;
+		//ResourceDescriptor m_renderTargets[FrameCount];
 
-		//std::unique_ptr<Texture> m_depthAttachment;
+		std::unique_ptr<Texture> m_depthAttachment;
 		//std::unique_ptr<Texture> m_positionAttachment;
 		//std::unique_ptr<Texture> m_positionAttachment;
 		//std::unique_ptr<Texture> m_normalAttachment;

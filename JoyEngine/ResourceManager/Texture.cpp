@@ -1,5 +1,7 @@
 ﻿#include "Texture.h"
 
+#include <utility>
+
 #include "JoyContext.h"
 #include "DataManager/DataManager.h"
 #include "DescriptorManager/DescriptorManager.h"
@@ -28,7 +30,8 @@ namespace JoyEngine
 		CreateImage();
 		CreateImageView();
 		CreateImageSampler();
-		JoyContext::Memory->LoadDataToImage(m_textureStream, sizeof(uint32_t) + sizeof(uint32_t), m_width, m_height, m_texture);
+		JoyContext::Memory->LoadDataToImage(m_textureStream, sizeof(uint32_t) + sizeof(uint32_t), m_width, m_height,
+		                                    m_texture);
 	}
 
 	Texture::Texture(
@@ -48,14 +51,36 @@ namespace JoyEngine
 		CreateImageSampler();
 	}
 
+	Texture::Texture(
+		ComPtr<ID3D12Resource> externalResource,
+		uint32_t width,
+		uint32_t height,
+		DXGI_FORMAT format,
+		D3D12_RESOURCE_STATES usage,
+		D3D12_HEAP_TYPE properties) :
+		m_width(width),
+		m_height(height),
+		m_format(format),
+		m_usageFlags(usage),
+		m_propertiesFlags(properties),
+		m_texture(std::move(externalResource))
+	{
+		CreateImageView();
+		CreateImageSampler();
+	}
+
 	void Texture::CreateImage()
 	{
+		D3D12_CLEAR_VALUE optimizedClearValue = {};
+		optimizedClearValue.Format = DXGI_FORMAT_D32_FLOAT;
+		optimizedClearValue.DepthStencil = {1.0f, 0};
+
 		D3D12_RESOURCE_DESC textureDesc = {};
 		textureDesc.MipLevels = 1;
 		textureDesc.Format = m_format;
 		textureDesc.Width = m_width;
 		textureDesc.Height = m_height;
-		textureDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
+		textureDesc.Flags = m_format == DXGI_FORMAT_D32_FLOAT ? D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL : D3D12_RESOURCE_FLAG_NONE;
 		// if we want texture to be both shader readable and render target, change this
 		textureDesc.DepthOrArraySize = 1;
 		textureDesc.SampleDesc.Count = 1;
@@ -67,33 +92,71 @@ namespace JoyEngine
 				D3D12_HEAP_FLAG_NONE,
 				&textureDesc,
 				m_usageFlags,
-				nullptr,
+				m_format == DXGI_FORMAT_D32_FLOAT ? &optimizedClearValue : nullptr,
 				IID_PPV_ARGS(&m_texture))
 		);
 	}
 
 	void Texture::CreateImageView()
 	{
-		// create descriptor heap for shader resource view
-		D3D12_DESCRIPTOR_HEAP_DESC descHeapCbvSrv = {};
-		descHeapCbvSrv.NumDescriptors = 1; // for SRV
-		descHeapCbvSrv.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-		descHeapCbvSrv.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-		ASSERT_SUCC(JoyContext::Graphics->GetDevice()->CreateDescriptorHeap(
-			&descHeapCbvSrv, 
-			IID_PPV_ARGS(&m_srvDescriptorHeap)));
+		auto heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+		auto flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 
-		// Describe and create a SRV for the texture.
-		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-		srvDesc.Format = m_format;
-		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-		srvDesc.Texture2D.MipLevels = 1;
-		m_textureImageView = m_srvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
-		JoyContext::Graphics->GetDevice()->CreateShaderResourceView(
-			m_texture.Get(),
-			&srvDesc,
-			m_textureImageView);
+		if ((m_usageFlags & D3D12_RESOURCE_STATE_RENDER_TARGET) != 0)
+		{
+			heapType = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+			flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+		}
+		if ((m_usageFlags & D3D12_RESOURCE_STATE_DEPTH_WRITE) != 0)
+		{
+			heapType = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+			flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+		}
+
+		// create descriptor heap for shader resource view
+		D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {
+			heapType,
+			1,
+			flags,
+			0
+		};
+		ASSERT_SUCC(JoyContext::Graphics->GetDevice()->CreateDescriptorHeap(
+			&heapDesc,
+			IID_PPV_ARGS(&m_resourceViewDescriptorHeap)));
+
+		m_textureImageView = m_resourceViewDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
+
+		if ((m_usageFlags & D3D12_RESOURCE_STATE_RENDER_TARGET) != 0)
+		{
+			JoyContext::Graphics->GetDevice()->CreateRenderTargetView(
+				m_texture.Get(),
+				nullptr,
+				m_textureImageView);
+		}
+		else if ((m_usageFlags & D3D12_RESOURCE_STATE_DEPTH_WRITE) != 0)
+		{
+			D3D12_DEPTH_STENCIL_VIEW_DESC dsv = {};
+			dsv.Format = DXGI_FORMAT_D32_FLOAT;
+			dsv.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+			dsv.Texture2D.MipSlice = 0;
+			dsv.Flags = D3D12_DSV_FLAG_NONE;
+
+			JoyContext::Graphics->GetDevice()->CreateDepthStencilView(m_texture.Get(), &dsv,
+				m_resourceViewDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+		}
+		else
+		{
+			// Describe and create a SRV for the texture.
+			D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+			srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+			srvDesc.Format = m_format;
+			srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+			srvDesc.Texture2D.MipLevels = 1;
+			JoyContext::Graphics->GetDevice()->CreateShaderResourceView(
+				m_texture.Get(),
+				&srvDesc,
+				m_textureImageView);
+		}
 	}
 
 	void Texture::CreateImageSampler()
@@ -104,7 +167,7 @@ namespace JoyEngine
 		descHeapSampler.Type = D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
 		descHeapSampler.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 		ASSERT_SUCC(JoyContext::Graphics->GetDevice()->CreateDescriptorHeap(
-			&descHeapSampler, 
+			&descHeapSampler,
 			IID_PPV_ARGS(&m_samplerDescriptorHeap)));
 
 		D3D12_SAMPLER_DESC samplerDesc = {};

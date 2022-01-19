@@ -49,7 +49,7 @@ namespace JoyEngine
 		const glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), m_localScale);
 
 		m_modelMatrix = translationMatrix * rotationMatrix * scaleMatrix;
-	}
+;	}
 
 	glm::vec3 Transform::GetPosition() const noexcept { return m_localPosition; }
 

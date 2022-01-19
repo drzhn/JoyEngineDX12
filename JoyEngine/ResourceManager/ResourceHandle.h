@@ -3,6 +3,7 @@
 
 #include "JoyContext.h"
 
+#include "Common/Resource.h"
 #include "ResourceManager/ResourceManager.h"
 #include "Utils/GUID.h"
 
@@ -21,6 +22,14 @@ namespace JoyEngine
 		explicit ResourceHandle(GUID guid): m_guid(guid)
 		{
 			m_ptr = JoyContext::Resource->LoadResource<T>(m_guid);
+		}
+
+		explicit ResourceHandle(T ptr)
+		{
+			Resource* resource = dynamic_cast<Resource*>(ptr);
+			ASSERT(resource != nullptr);
+			m_ptr = ptr;
+			m_guid = resource->GetGuid();
 		}
 
 		~ResourceHandle()

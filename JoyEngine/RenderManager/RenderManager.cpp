@@ -106,9 +106,6 @@ namespace JoyEngine
 		dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 		ASSERT_SUCC(JoyContext::Graphics->GetDevice()->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_DSVHeap)));
 
-		// Flush any GPU commands that might be referencing the depth buffer.
-		m_queue->WaitQueueIdle();
-
 		// Resize screen dependent resources.
 		// Create a depth buffer.
 		D3D12_CLEAR_VALUE optimizedClearValue = {};

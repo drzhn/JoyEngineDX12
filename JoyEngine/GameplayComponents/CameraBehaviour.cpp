@@ -23,8 +23,13 @@ namespace JoyEngine
 		float currentAngle = (JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_T) ? Time::GetDeltaTime() : 0) -
 			(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_Y) ? Time::GetDeltaTime() : 0);
 		glm::vec3 vec = glm::vec3(
+#ifdef GLM_FORCE_LEFT_HANDED
+			(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_D) ? Time::GetDeltaTime() : 0) -
+			(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_A) ? Time::GetDeltaTime() : 0),
+#else
 			(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_A) ? Time::GetDeltaTime() : 0) -
 			(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_D) ? Time::GetDeltaTime() : 0),
+#endif
 			(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_E) ? Time::GetDeltaTime() : 0) -
 			(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_Q) ? Time::GetDeltaTime() : 0),
 			(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_W) ? Time::GetDeltaTime() : 0) -

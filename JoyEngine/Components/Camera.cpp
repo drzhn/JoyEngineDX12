@@ -30,18 +30,22 @@ namespace JoyEngine
 
 	glm::mat4 Camera::GetProjMatrix() const
 	{
-		glm::mat4 proj = glm::perspectiveRH_ZO(glm::radians(m_fov), m_aspect, m_near, m_far);
-		proj[1][1] *= -1;
+		glm::mat4 proj = glm::perspectiveFovLH_ZO(glm::radians(m_fov), m_width, m_height, m_near, m_far);
+		//proj[1][1] *= -1;
 		//proj[0][0] *= -1;
 		return proj;
 	}
 
 	glm::mat4 Camera::GetViewMatrix() const
 	{
-		glm::vec3 center = m_transform->GetPosition();
-		glm::vec3 eye = m_transform->GetPosition() + m_transform->GetRotation() * glm::vec3(0, 0, 1);
-		glm::vec3 up = m_transform->GetRotation() * glm::vec3(0, 1, 0);
+		const glm::vec3 eye =   m_transform->GetPosition();
+		const glm::vec3 center = m_transform->GetPosition() + m_transform->GetRotation() * glm::vec3(0, 0, 1);
+		const glm::vec3 up = m_transform->GetRotation() * glm::vec3(0, 1, 0);
 
-		return  glm::lookAtRH(center, eye, up);
+		//const glm::vec3 eye = glm::vec3(0, 3, -3); // m_transform->GetPosition();
+		//const glm::vec3 center = glm::vec3(0, 0, 0); //m_transform->GetPosition() + m_transform->GetRotation() * glm::vec3(0, 0, 1);
+		//const glm::vec3 up = m_transform->GetRotation() * glm::vec3(0, 1, 0);
+
+		return glm::lookAtLH(eye, center, up);
 	}
 }

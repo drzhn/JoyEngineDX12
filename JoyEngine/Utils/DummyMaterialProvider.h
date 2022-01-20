@@ -15,15 +15,15 @@ namespace JoyEngine
 		void Init();
 
 		[[nodiscard]] GUID GetMaterialGuid() const noexcept { return m_materialHandle->GetGuid(); }
-		[[nodiscard]] SharedMaterial* GetGBufferSharedMaterialGuid() const noexcept { return m_gbufferWriteSharedMaterialGuid; }
+		[[nodiscard]] SharedMaterial* GetGBufferSharedMaterial() const noexcept { return m_gbufferWriteSharedMaterial; }
 	private:
 		ResourceHandle<Texture> m_textureHandle;
 		ResourceHandle<Material> m_materialHandle;
 		ResourceHandle<SharedMaterial> m_sharedMaterialHandle;
 		ResourceHandle<Shader> m_shaderHandle;
 
-		ResourceHandle<SharedMaterial> m_gbufferWriteSharedMaterialGuid;
-		ResourceHandle<Shader> m_gbufferWriteShaderGuid;
+		ResourceHandle<SharedMaterial> m_gbufferWriteSharedMaterial;
+		ResourceHandle<Shader> m_gbufferWriteShader;
 	};
 }
 

@@ -10,6 +10,8 @@ namespace JoyEngine
 	{
 		UINT createFactoryFlags = 0;
 #if defined(_DEBUG)
+		ASSERT_SUCC(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)));
+		debugController->EnableDebugLayer();
 		createFactoryFlags = DXGI_CREATE_FACTORY_DEBUG;
 #endif
 
@@ -82,13 +84,8 @@ namespace JoyEngine
 
 			ASSERT_SUCC(pInfoQueue->PushStorageFilter(&NewFilter));
 		}
+
+
 #endif
 	}
-
-	//GraphicsManager::~GraphicsManager()
-	//{
-	//	m_logicalDevice->Release();
-	//	m_physicalDevice->Release();
-	//	m_dxgiFactory->Release();
-	//}
 }

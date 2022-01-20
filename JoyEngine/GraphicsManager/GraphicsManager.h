@@ -34,20 +34,9 @@ namespace JoyEngine
 		ComPtr<IDXGIFactory4> m_dxgiFactory = nullptr;
 		ComPtr<IDXGIAdapter4> m_physicalDevice = nullptr;
 		ComPtr<ID3D12Device2> m_logicalDevice = nullptr;
-
-		//Allocator* m_allocator;
-		//VkInstance m_vkInstance;
-		//VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
-		//VkDevice m_logicalDevice;
-		//VkDebugUtilsMessengerEXT m_debugMessenger;
-		//VkSurfaceKHR m_surface;
-
-		//std::unique_ptr<QueueFamilyIndices> m_queueFamilyIndices;
-		//VkQueue m_graphicsQueue;
-		//VkQueue m_presentQueue;
-		//VkQueue m_transferQueue;
-
-		//VkCommandPool m_commandPool;
+#if defined(_DEBUG)
+		ComPtr<ID3D12Debug> debugController;
+#endif
 	};
 }
 

@@ -30,7 +30,7 @@ namespace JoyEngine
 
 	Buffer::Buffer(uint64_t size, D3D12_RESOURCE_STATES usage, D3D12_HEAP_TYPE properties):
 		m_size(size),
-		m_usage(usage),
+		m_currentResourceState(usage),
 		m_properties(properties)
 	{
 		const CD3DX12_RESOURCE_DESC bufferResourceDesc = CD3DX12_RESOURCE_DESC::Buffer(m_size);
@@ -39,7 +39,7 @@ namespace JoyEngine
 			&m_properties,
 			D3D12_HEAP_FLAG_NONE,
 			&bufferResourceDesc,
-			m_usage,
+			m_currentResourceState,
 			nullptr,
 			IID_PPV_ARGS(&m_buffer)));
 	}
@@ -60,9 +60,9 @@ namespace JoyEngine
 		return m_buffer;
 	}
 
-	void Buffer::LoadData(std::ifstream& stream, uint32_t offset) const
+	void Buffer::LoadData(std::ifstream& stream, uint32_t offset) 
 	{
 		ASSERT(!m_properties.IsCPUAccessible());
-		JoyContext::Memory->LoadDataToBuffer(stream, offset, m_size, m_buffer);
+		JoyContext::Memory->LoadDataToBuffer(stream, offset, m_size, this);
 	}
 }

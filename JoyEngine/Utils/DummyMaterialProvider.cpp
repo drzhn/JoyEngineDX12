@@ -43,7 +43,8 @@ namespace JoyEngine
 					true,
 					true,
 					true,
-					rootParameters
+					rootParameters,
+					1
 				});
 			m_textureHandle = JoyContext::Resource->LoadResource<Texture>(texture1Guid);
 
@@ -61,18 +62,23 @@ namespace JoyEngine
 		}
 
 		{
-			//m_gbufferWriteShaderGuid = GUID::StringToGuid("48ffacc9-5c00-4058-b359-cf72189896ac");
-			//m_gbufferWriteSharedMaterialGuid = GUID::Random();
+			const GUID gbufferWriteShaderGuid = GUID::StringToGuid("48ffacc9-5c00-4058-b359-cf72189896ac");
+			const GUID gbufferWriteSharedMaterialGuid = GUID::Random();
 
-			//JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
-			//	m_gbufferWriteSharedMaterialGuid,
-			//	{
-			//		m_gbufferWriteShaderGuid,
-			//		true,
-			//		true,
-			//		true,
-			//		true
-			//	});
+			std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters(1);
+			rootParameters[0].InitAsConstants(sizeof(MVP) / 4, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+
+			m_gbufferWriteSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
+				gbufferWriteSharedMaterialGuid,
+				{
+					gbufferWriteShaderGuid,
+					true,
+					true,
+					true,
+					true,
+					rootParameters,
+					2
+				});
 		}
 	}
 }

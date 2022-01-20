@@ -38,13 +38,15 @@ namespace JoyEngine
 		[[nodiscard]] std::unique_ptr<BufferMappedPtr> GetMappedPtr(uint64_t offset, uint64_t size) const;
 
 		[[nodiscard]] ComPtr<ID3D12Resource> GetBuffer() const noexcept;
-
-		void LoadData(std::ifstream& stream, uint32_t offset) const;
+		void LoadData(std::ifstream& stream, uint32_t offset);
 
 		[[nodiscard]] bool IsLoaded() const noexcept override { return true; }
+
+		[[nodiscard]] D3D12_RESOURCE_STATES GetCurrentResourceState() const noexcept { return m_currentResourceState; }
+		void SetCurrentResourceState(D3D12_RESOURCE_STATES newState) noexcept { m_currentResourceState = newState; }
 	private:
 		uint64_t m_size = 0;
-		D3D12_RESOURCE_STATES m_usage;
+		D3D12_RESOURCE_STATES m_currentResourceState;
 		CD3DX12_HEAP_PROPERTIES m_properties;
 
 		ComPtr<ID3D12Resource> m_buffer;

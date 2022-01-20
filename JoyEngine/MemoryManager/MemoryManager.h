@@ -4,6 +4,7 @@
 #include <fstream>
 
 #include "Common/CommandQueue.h"
+#include "ResourceManager/Buffer.h"
 
 namespace JoyEngine
 {
@@ -18,7 +19,7 @@ namespace JoyEngine
 
 		void Update();
 
-		void LoadDataToBuffer(std::ifstream& stream, uint64_t offset, uint64_t bufferSize, ComPtr<ID3D12Resource> gpuBuffer);
+		void LoadDataToBuffer(std::ifstream& stream, uint64_t offset, uint64_t bufferSize, Buffer* gpuBuffer);
 
 		void LoadDataToImage(
 			const unsigned char* data,

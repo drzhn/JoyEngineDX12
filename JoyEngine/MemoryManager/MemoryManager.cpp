@@ -19,11 +19,27 @@
 
 namespace JoyEngine
 {
+	inline D3D12_RESOURCE_BARRIER Transition(
+		_In_ ID3D12Resource* pResource,
+		D3D12_RESOURCE_STATES stateBefore,
+		D3D12_RESOURCE_STATES stateAfter,
+		UINT subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES,
+		D3D12_RESOURCE_BARRIER_FLAGS flags = D3D12_RESOURCE_BARRIER_FLAG_NONE) noexcept
+	{
+		D3D12_RESOURCE_BARRIER barrier = {};
+		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+		barrier.Flags = flags;
+		barrier.Transition.pResource = pResource;
+		barrier.Transition.StateBefore = stateBefore;
+		barrier.Transition.StateAfter = stateAfter;
+		barrier.Transition.Subresource = subresource;
+		return barrier;
+	}
+
 	void MemoryManager::Init()
 	{
 		m_queue = std::make_unique<CommandQueue>(D3D12_COMMAND_LIST_TYPE_DIRECT, JoyContext::Graphics->GetDevice());
 	}
-
 
 	void MemoryManager::LoadDataToImage(
 		std::ifstream& stream,
@@ -103,7 +119,7 @@ namespace JoyEngine
 		std::ifstream& stream,
 		uint64_t offset,
 		uint64_t bufferSize,
-		ComPtr<ID3D12Resource> gpuBuffer)
+		Buffer* gpuBuffer)
 	{
 		Buffer stagingBuffer = Buffer(bufferSize, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD);
 
@@ -119,14 +135,31 @@ namespace JoyEngine
 		m_queue->ResetForFrame();
 
 		const auto commandList = m_queue->GetCommandList();
+
+		D3D12_RESOURCE_STATES state = gpuBuffer->GetCurrentResourceState();
+
+		const D3D12_RESOURCE_BARRIER barrierBefore = Transition(
+			gpuBuffer->GetBuffer().Get(),
+			state,
+			D3D12_RESOURCE_STATE_COPY_DEST);
+
+		commandList->ResourceBarrier(1, &barrierBefore);
+		
 		UpdateSubresources(
 			commandList,
-			gpuBuffer.Get(),
+			gpuBuffer->GetBuffer().Get(),
 			stagingBuffer.GetBuffer().Get(),
 			0,
 			0,
 			1,
 			&bufferData);
+
+		const D3D12_RESOURCE_BARRIER barrierAfter = Transition(
+			gpuBuffer->GetBuffer().Get(),
+			D3D12_RESOURCE_STATE_COPY_DEST,
+			state);
+
+		commandList->ResourceBarrier(1, &barrierAfter);
 
 		ASSERT_SUCC(commandList->Close());
 

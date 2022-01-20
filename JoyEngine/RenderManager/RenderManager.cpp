@@ -11,6 +11,7 @@
 #include "Components/MeshRenderer.h"
 #include "DescriptorManager/DescriptorManager.h"
 #include "GraphicsManager/GraphicsManager.h"
+#include "Utils/DummyMaterialProvider.h"
 
 #define GLM_FORCE_RADIANS
 
@@ -440,7 +441,6 @@ namespace JoyEngine
 	//		for (const auto& mr : sm->GetMeshRenderers())
 	//		{
 	//			if (!mr->IsReady()) continue;
-
 	//			VkBuffer vertexBuffers[] = {
 	//				mr->GetMesh()->GetVertexBuffer()
 	//			};
@@ -630,55 +630,58 @@ namespace JoyEngine
 		glm::mat4 view = m_currentCamera->GetViewMatrix();
 		glm::mat4 proj = m_currentCamera->GetProjMatrix();
 
-		//{
-		//	// Drawing GBUFFER textures
+		{
+			// Drawing GBUFFER textures
 
-		//	D3D12_CPU_DESCRIPTOR_HANDLE gbufferHandles[] = {positionHandle, normalHandle};
-		//	commandList->OMSetRenderTargets(
-		//		2,
-		//		gbufferHandles,
-		//		FALSE, 
-		//		&dsvHandle);
+			D3D12_CPU_DESCRIPTOR_HANDLE gbufferHandles[] = {positionHandle, normalHandle};
+			commandList->OMSetRenderTargets(
+				2,
+				gbufferHandles,
+				FALSE,
+				&dsvHandle);
 
-		//	const float clearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
-		//	commandList->ClearRenderTargetView(positionHandle, clearColor, 0, nullptr);
-		//	commandList->ClearRenderTargetView(normalHandle, clearColor, 0, nullptr);
-		//	commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+			const float clearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
+			commandList->ClearRenderTargetView(positionHandle, clearColor, 0, nullptr);
+			commandList->ClearRenderTargetView(normalHandle, clearColor, 0, nullptr);
+			commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
-		//	for (auto const& sm : m_sharedMaterials)
-		//	{
-		//		commandList->SetPipelineState(sm->GetPipelineObject().Get());
-		//		commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
-		//		for (const auto& mr : sm->GetMeshRenderers())
-		//		{
-		//			commandList->SetDescriptorHeaps(
-		//				mr->GetMaterial()->GetHeaps().size(),
-		//				mr->GetMaterial()->GetHeaps().data());
+			auto sm = JoyContext::DummyMaterials->GetGBufferSharedMaterial();
 
-		//			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		//			commandList->IASetVertexBuffers(0, 1, mr->GetMesh()->GetVertexBufferView());
-		//			commandList->IASetIndexBuffer(mr->GetMesh()->GetIndexBufferView());
+			for (auto const& s : m_sharedMaterials)
+			{
 
-		//			MVP mvp{
-		//				(mr->GetTransform()->GetModelMatrix()),
-		//				(view),
-		//				(proj)
-		//			};
-		//			for (auto param : mr->GetMaterial()->GetRootParams())
-		//			{
-		//				uint32_t index = param.first;
-		//				D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = param.second->GetGPUDescriptorHandleForHeapStart();
+				commandList->SetPipelineState(sm->GetPipelineObject().Get());
+				commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+				for (const auto& mr : s->GetMeshRenderers())
+				{
+					//commandList->SetDescriptorHeaps(
+					//	mr->GetMaterial()->GetHeaps().size(),
+					//	mr->GetMaterial()->GetHeaps().data());
 
-		//				commandList->SetGraphicsRootDescriptorTable(index, gpuHandle);
-		//			}
-		//			commandList->SetGraphicsRoot32BitConstants(2, sizeof(MVP) / 4, &mvp, 0);
-		//			commandList->DrawIndexedInstanced(
-		//				mr->GetMesh()->GetIndexSize(),
-		//				1,
-		//				0, 0, 0);
-		//		}
-		//	}
-		//}
+					commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+					commandList->IASetVertexBuffers(0, 1, mr->GetMesh()->GetVertexBufferView());
+					commandList->IASetIndexBuffer(mr->GetMesh()->GetIndexBufferView());
+
+					MVP mvp{
+						(mr->GetTransform()->GetModelMatrix()),
+						(view),
+						(proj)
+					};
+					//for (auto param : mr->GetMaterial()->GetRootParams())
+					//{
+					//	uint32_t index = param.first;
+					//	D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = param.second->GetGPUDescriptorHandleForHeapStart();
+
+					//	commandList->SetGraphicsRootDescriptorTable(index, gpuHandle);
+					//}
+					commandList->SetGraphicsRoot32BitConstants(0, sizeof(MVP) / 4, &mvp, 0);
+					commandList->DrawIndexedInstanced(
+						mr->GetMesh()->GetIndexSize(),
+						1,
+						0, 0, 0);
+				}
+			}
+		}
 
 
 		{

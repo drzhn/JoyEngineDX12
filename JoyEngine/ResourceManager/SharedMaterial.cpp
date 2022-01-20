@@ -42,7 +42,7 @@ namespace JoyEngine
 		m_hasMVP(args.hasMVP), m_depthTest(args.depthTest), m_depthWrite(args.depthWrite)
 	{
 		CreateRootSignature(args.rootParams);
-		CreateGraphicsPipeline();
+		CreateGraphicsPipeline(args.numRenderTargets);
 		JoyContext::Render->RegisterSharedMaterial(this);
 	}
 
@@ -65,7 +65,7 @@ namespace JoyEngine
 		CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
 		rootSignatureDesc.Init_1_1(
 			rootParams.size(),
-			rootParams.data(),
+			rootParams.empty() ? nullptr : rootParams.data(),
 			0,
 			nullptr,
 			D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
@@ -80,7 +80,7 @@ namespace JoyEngine
 			IID_PPV_ARGS(&m_rootSignature)));
 	}
 
-	void SharedMaterial::CreateGraphicsPipeline()
+	void SharedMaterial::CreateGraphicsPipeline(uint32_t numRenderTargets)
 	{
 		// Create the vertex input layout
 		D3D12_INPUT_ELEMENT_DESC inputLayout[] = {
@@ -126,15 +126,17 @@ namespace JoyEngine
 			{inputLayout, _countof(inputLayout)},
 			{},
 			D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
-			1,
-			DXGI_FORMAT_R8G8B8A8_UNORM,
-			DXGI_FORMAT_UNKNOWN,
-			DXGI_FORMAT_UNKNOWN,
-			DXGI_FORMAT_UNKNOWN,
-			DXGI_FORMAT_UNKNOWN,
-			DXGI_FORMAT_UNKNOWN,
-			DXGI_FORMAT_UNKNOWN,
-			DXGI_FORMAT_UNKNOWN,
+			numRenderTargets,
+			{
+				numRenderTargets > 0 ? DXGI_FORMAT_R8G8B8A8_UNORM : DXGI_FORMAT_UNKNOWN,
+				numRenderTargets > 1 ? DXGI_FORMAT_R8G8B8A8_UNORM : DXGI_FORMAT_UNKNOWN,
+				numRenderTargets > 2 ? DXGI_FORMAT_R8G8B8A8_UNORM : DXGI_FORMAT_UNKNOWN,
+				numRenderTargets > 3 ? DXGI_FORMAT_R8G8B8A8_UNORM : DXGI_FORMAT_UNKNOWN,
+				numRenderTargets > 4 ? DXGI_FORMAT_R8G8B8A8_UNORM : DXGI_FORMAT_UNKNOWN,
+				numRenderTargets > 5 ? DXGI_FORMAT_R8G8B8A8_UNORM : DXGI_FORMAT_UNKNOWN,
+				numRenderTargets > 6 ? DXGI_FORMAT_R8G8B8A8_UNORM : DXGI_FORMAT_UNKNOWN,
+				numRenderTargets > 7 ? DXGI_FORMAT_R8G8B8A8_UNORM : DXGI_FORMAT_UNKNOWN
+			},
 			DXGI_FORMAT_D32_FLOAT,
 			{1, 0},
 			0,

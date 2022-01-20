@@ -19,6 +19,7 @@ namespace JoyEngine
 		bool depthTest;
 		bool depthWrite;
 		std::vector<CD3DX12_ROOT_PARAMETER1> rootParams;
+		uint32_t numRenderTargets;
 	};
 
 	class SharedMaterial final : public Resource
@@ -57,7 +58,7 @@ namespace JoyEngine
 
 	private:
 		void CreateRootSignature(const std::vector<CD3DX12_ROOT_PARAMETER1>& rootParams);
-		void CreateGraphicsPipeline();
+		void CreateGraphicsPipeline(uint32_t numRenderTargets);
 	};
 }
 

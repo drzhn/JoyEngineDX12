@@ -38,45 +38,34 @@ namespace JoyEngine
 
 	SharedMaterial::SharedMaterial(GUID guid, SharedMaterialArgs args) :
 		Resource(guid),
-		m_hasVertexInput(args.hasVertexInput),
+		m_shader(args.shader), m_hasVertexInput(args.hasVertexInput),
 		m_hasMVP(args.hasMVP), m_depthTest(args.depthTest), m_depthWrite(args.depthWrite)
 	{
-		m_shader = args.shader;
-
-		CreateRootSignature();
+		CreateRootSignature(args.rootParams);
 		CreateGraphicsPipeline();
 		JoyContext::Render->RegisterSharedMaterial(this);
 	}
 
-	void SharedMaterial::CreateRootSignature()
+	void SharedMaterial::CreateRootSignature(const std::vector<CD3DX12_ROOT_PARAMETER1>& rootParams)
 	{
 		D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = {};
 
 		// This is the highest version the sample supports. If CheckFeatureSupport succeeds, the HighestVersion returned will not be greater than this.
 		featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
 
-		if (FAILED(
-			JoyContext::Graphics->GetDevice()->CheckFeatureSupport(
-				D3D12_FEATURE_ROOT_SIGNATURE,
-				&featureData,
-				sizeof( featureData))))
+		if (FAILED(JoyContext::Graphics->GetDevice()->CheckFeatureSupport(
+			D3D12_FEATURE_ROOT_SIGNATURE,
+			&featureData,
+			sizeof( featureData))))
 		{
 			featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
 		}
 
-		CD3DX12_DESCRIPTOR_RANGE1 ranges[2];
-		ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
-		ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 0);
-
-		CD3DX12_ROOT_PARAMETER1 rootParameters[3];
-		rootParameters[0].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
-		rootParameters[1].InitAsDescriptorTable(1, &ranges[1], D3D12_SHADER_VISIBILITY_PIXEL);
-		rootParameters[2].InitAsConstants(sizeof(MVP) / 4, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
 
 		CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
 		rootSignatureDesc.Init_1_1(
-			_countof(rootParameters),
-			rootParameters,
+			rootParams.size(),
+			rootParams.data(),
 			0,
 			nullptr,
 			D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);

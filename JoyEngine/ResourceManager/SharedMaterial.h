@@ -18,6 +18,7 @@ namespace JoyEngine
 		bool hasMVP;
 		bool depthTest;
 		bool depthWrite;
+		std::vector<CD3DX12_ROOT_PARAMETER1> rootParams;
 	};
 
 	class SharedMaterial final : public Resource
@@ -55,7 +56,7 @@ namespace JoyEngine
 		ComPtr<ID3D12PipelineState> m_pipelineState;
 
 	private:
-		void CreateRootSignature();
+		void CreateRootSignature(const std::vector<CD3DX12_ROOT_PARAMETER1>& rootParams);
 		void CreateGraphicsPipeline();
 	};
 }

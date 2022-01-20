@@ -24,7 +24,7 @@ namespace JoyEngine
 			m_ptr = JoyContext::Resource->LoadResource<T>(m_guid);
 		}
 
-		explicit ResourceHandle(T ptr)
+		explicit ResourceHandle(T* ptr)
 		{
 			Resource* resource = dynamic_cast<Resource*>(ptr);
 			ASSERT(resource != nullptr);
@@ -51,6 +51,17 @@ namespace JoyEngine
 			Release();
 			m_guid = guid;
 			m_ptr = JoyContext::Resource->LoadResource<T>(m_guid);
+			return *this;
+		}
+
+		ResourceHandle<T>& operator=(T* ptr)
+		{
+			Release();
+			Resource* resource = dynamic_cast<Resource*>(ptr);
+			ASSERT(resource != nullptr);
+			m_ptr = ptr;
+			m_guid = resource->GetGuid();
+
 			return *this;
 		}
 

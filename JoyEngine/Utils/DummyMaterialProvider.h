@@ -2,6 +2,7 @@
 #define DUMMY_MATERIAL_PROVIDER_H
 
 #include "ResourceManager/Material.h"
+#include "ResourceManager/SharedMaterial.h"
 #include "Utils/GUID.h"
 
 namespace JoyEngine
@@ -10,17 +11,19 @@ namespace JoyEngine
 	{
 	public:
 		DummyMaterialProvider() = default;
-		~DummyMaterialProvider();
+		~DummyMaterialProvider() = default;
 		void Init();
 
-		[[nodiscard]] GUID GetMaterialGuid() const noexcept { return m_materialGuid; }
+		[[nodiscard]] GUID GetMaterialGuid() const noexcept { return m_materialHandle->GetGuid(); }
+		[[nodiscard]] SharedMaterial* GetGBufferSharedMaterialGuid() const noexcept { return m_gbufferWriteSharedMaterialGuid; }
 	private:
-		GUID m_materialGuid;
-		GUID m_sharedMaterialGuid;
-		GUID m_shaderGuid;
+		ResourceHandle<Texture> m_textureHandle;
+		ResourceHandle<Material> m_materialHandle;
+		ResourceHandle<SharedMaterial> m_sharedMaterialHandle;
+		ResourceHandle<Shader> m_shaderHandle;
 
-		GUID m_gbufferWriteSharedMaterialGuid;
-		GUID m_gbufferWriteShaderGuid;
+		ResourceHandle<SharedMaterial> m_gbufferWriteSharedMaterialGuid;
+		ResourceHandle<Shader> m_gbufferWriteShaderGuid;
 	};
 }
 

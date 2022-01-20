@@ -612,6 +612,9 @@ namespace JoyEngine
 		auto dsvHandle = m_depthAttachment->GetImageViewCPUHandle();
 		auto rtvHandle = m_renderTargets[m_currentFrameIndex]->GetImageViewCPUHandle();
 
+		auto positionHandle = m_positionAttachment->GetImageViewCPUHandle();
+		auto normalHandle = m_normalAttachment->GetImageViewCPUHandle();
+
 		// Set necessary state.
 		commandList->RSSetViewports(1, &m_viewport);
 		commandList->RSSetScissorRects(1, &m_scissorRect);
@@ -623,48 +626,105 @@ namespace JoyEngine
 			D3D12_RESOURCE_STATE_RENDER_TARGET);
 		commandList->ResourceBarrier(1, &barrier1);
 
-		commandList->OMSetRenderTargets(
-			1,
-			&rtvHandle,
-			FALSE, &dsvHandle);
-
-		// Record commands.
-		const float clearColor[] = {0.0f, 0.2f, 0.4f, 1.0f};
-		commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
-		commandList->ClearDepthStencilView(m_depthAttachment->GetImageViewCPUHandle(), D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
-
 		ASSERT(m_currentCamera != nullptr);
 		glm::mat4 view = m_currentCamera->GetViewMatrix();
 		glm::mat4 proj = m_currentCamera->GetProjMatrix();
-		for (auto const& sm : m_sharedMaterials)
+
+		//{
+		//	// Drawing GBUFFER textures
+
+		//	D3D12_CPU_DESCRIPTOR_HANDLE gbufferHandles[] = {positionHandle, normalHandle};
+		//	commandList->OMSetRenderTargets(
+		//		2,
+		//		gbufferHandles,
+		//		FALSE, 
+		//		&dsvHandle);
+
+		//	const float clearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
+		//	commandList->ClearRenderTargetView(positionHandle, clearColor, 0, nullptr);
+		//	commandList->ClearRenderTargetView(normalHandle, clearColor, 0, nullptr);
+		//	commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+
+		//	for (auto const& sm : m_sharedMaterials)
+		//	{
+		//		commandList->SetPipelineState(sm->GetPipelineObject().Get());
+		//		commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+		//		for (const auto& mr : sm->GetMeshRenderers())
+		//		{
+		//			commandList->SetDescriptorHeaps(
+		//				mr->GetMaterial()->GetHeaps().size(),
+		//				mr->GetMaterial()->GetHeaps().data());
+
+		//			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		//			commandList->IASetVertexBuffers(0, 1, mr->GetMesh()->GetVertexBufferView());
+		//			commandList->IASetIndexBuffer(mr->GetMesh()->GetIndexBufferView());
+
+		//			MVP mvp{
+		//				(mr->GetTransform()->GetModelMatrix()),
+		//				(view),
+		//				(proj)
+		//			};
+		//			for (auto param : mr->GetMaterial()->GetRootParams())
+		//			{
+		//				uint32_t index = param.first;
+		//				D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = param.second->GetGPUDescriptorHandleForHeapStart();
+
+		//				commandList->SetGraphicsRootDescriptorTable(index, gpuHandle);
+		//			}
+		//			commandList->SetGraphicsRoot32BitConstants(2, sizeof(MVP) / 4, &mvp, 0);
+		//			commandList->DrawIndexedInstanced(
+		//				mr->GetMesh()->GetIndexSize(),
+		//				1,
+		//				0, 0, 0);
+		//		}
+		//	}
+		//}
+
+
 		{
-			commandList->SetPipelineState(sm->GetPipelineObject().Get());
-			commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
-			for (const auto& mr : sm->GetMeshRenderers())
+			// Drawing main color
+
+			commandList->OMSetRenderTargets(
+				1,
+				&rtvHandle,
+				FALSE, &dsvHandle);
+
+			const float clearColor[] = {0.0f, 0.2f, 0.4f, 1.0f};
+			commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+			commandList->ClearDepthStencilView(m_depthAttachment->GetImageViewCPUHandle(), D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+
+			for (auto const& sm : m_sharedMaterials)
 			{
-				commandList->SetDescriptorHeaps(2, mr->GetMaterial()->GetHeaps().data());
-
-				commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-				commandList->IASetVertexBuffers(0, 1, mr->GetMesh()->GetVertexBufferView());
-				commandList->IASetIndexBuffer(mr->GetMesh()->GetIndexBufferView());
-
-				MVP mvp{
-					(mr->GetTransform()->GetModelMatrix()),
-					(view),
-					(proj)
-				};
-				for (auto param : mr->GetMaterial()->GetRootParams())
+				commandList->SetPipelineState(sm->GetPipelineObject().Get());
+				commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+				for (const auto& mr : sm->GetMeshRenderers())
 				{
-					uint32_t index = param.first;
-					D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = param.second->GetGPUDescriptorHandleForHeapStart();
+					commandList->SetDescriptorHeaps(
+						mr->GetMaterial()->GetHeaps().size(),
+						mr->GetMaterial()->GetHeaps().data());
 
-					commandList->SetGraphicsRootDescriptorTable(index, gpuHandle);
+					commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+					commandList->IASetVertexBuffers(0, 1, mr->GetMesh()->GetVertexBufferView());
+					commandList->IASetIndexBuffer(mr->GetMesh()->GetIndexBufferView());
+
+					MVP mvp{
+						(mr->GetTransform()->GetModelMatrix()),
+						(view),
+						(proj)
+					};
+					for (auto param : mr->GetMaterial()->GetRootParams())
+					{
+						uint32_t index = param.first;
+						D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = param.second->GetGPUDescriptorHandleForHeapStart();
+
+						commandList->SetGraphicsRootDescriptorTable(index, gpuHandle);
+					}
+					commandList->SetGraphicsRoot32BitConstants(2, sizeof(MVP) / 4, &mvp, 0);
+					commandList->DrawIndexedInstanced(
+						mr->GetMesh()->GetIndexSize(),
+						1,
+						0, 0, 0);
 				}
-				commandList->SetGraphicsRoot32BitConstants(2, sizeof(MVP) / 4, &mvp, 0);
-				commandList->DrawIndexedInstanced(
-					mr->GetMesh()->GetIndexSize(),
-					1,
-					0, 0, 0);
 			}
 		}
 

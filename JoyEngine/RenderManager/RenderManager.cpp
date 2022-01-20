@@ -95,6 +95,18 @@ namespace JoyEngine
 			DXGI_FORMAT_D32_FLOAT,
 			D3D12_RESOURCE_STATE_DEPTH_WRITE,
 			D3D12_HEAP_TYPE_DEFAULT);
+
+		m_positionAttachment = std::make_unique<Texture>(
+			m_width, m_height,
+			DXGI_FORMAT_R8G8B8A8_UNORM,
+			D3D12_RESOURCE_STATE_RENDER_TARGET,
+			D3D12_HEAP_TYPE_DEFAULT);
+
+		m_normalAttachment = std::make_unique<Texture>(
+			m_width, m_height,
+			DXGI_FORMAT_R8G8B8A8_UNORM,
+			D3D12_RESOURCE_STATE_RENDER_TARGET,
+			D3D12_HEAP_TYPE_DEFAULT);
 	}
 
 

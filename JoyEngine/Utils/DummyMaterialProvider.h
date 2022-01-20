@@ -18,6 +18,9 @@ namespace JoyEngine
 		GUID m_materialGuid;
 		GUID m_sharedMaterialGuid;
 		GUID m_shaderGuid;
+
+		GUID m_gbufferWriteSharedMaterialGuid;
+		GUID m_gbufferWriteShaderGuid;
 	};
 }
 

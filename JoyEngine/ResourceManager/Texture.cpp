@@ -80,8 +80,7 @@ namespace JoyEngine
 		textureDesc.Format = m_format;
 		textureDesc.Width = m_width;
 		textureDesc.Height = m_height;
-		textureDesc.Flags = m_format == DXGI_FORMAT_D32_FLOAT ? D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL : D3D12_RESOURCE_FLAG_NONE;
-		// if we want texture to be both shader readable and render target, change this
+		textureDesc.Flags = m_format == DXGI_FORMAT_D32_FLOAT ? D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL : D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
 		textureDesc.DepthOrArraySize = 1;
 		textureDesc.SampleDesc.Count = 1;
 		textureDesc.SampleDesc.Quality = 0;

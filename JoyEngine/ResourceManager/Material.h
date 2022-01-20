@@ -18,7 +18,6 @@ namespace JoyEngine
 	{
 		GUID sharedMaterial;
 		std::map<uint32_t, ID3D12DescriptorHeap*> rootParams;
-		std::vector<ID3D12DescriptorHeap*> heaps;
 	};
 
 	class Material final : public Resource

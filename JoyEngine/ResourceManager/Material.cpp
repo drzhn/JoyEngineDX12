@@ -19,11 +19,12 @@ namespace JoyEngine
 	}
 
 	Material::Material(GUID guid, MaterialData data) :
-		Resource(guid)
+		Resource(guid), m_sharedMaterial(data.sharedMaterial), m_rootParams(data.rootParams)
 	{
-		m_sharedMaterial = data.sharedMaterial;
-		m_rootParams = data.rootParams;
-		m_heaps = data.heaps;
+		for (const auto& rp : data.rootParams)
+		{
+			m_heaps.push_back(rp.second);
+		}
 	}
 
 	Material::~Material()

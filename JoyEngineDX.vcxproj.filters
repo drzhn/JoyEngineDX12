@@ -238,6 +238,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <None Include="JoyData\shaders\gbufferwrite.hlsl" />
     <None Include="JoyData\shaders\vikingShader.hlsl" />
   </ItemGroup>
 </Project>

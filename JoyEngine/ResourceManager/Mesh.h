@@ -19,9 +19,9 @@ namespace JoyEngine
 
 		~Mesh() final;
 
-		[[nodiscard]] size_t GetIndexSize() const noexcept { return m_indexSize; }
+		[[nodiscard]] uint32_t GetIndexSize() const noexcept { return m_indexSize; }
 
-		[[nodiscard]] size_t GetVertexSize() const noexcept { return m_vertexSize; }
+		[[nodiscard]] uint32_t GetVertexSize() const noexcept { return m_vertexSize; }
 
 		[[nodiscard]] ComPtr<ID3D12Resource> GetVertexBuffer() const noexcept { return m_vertexBuffer->GetBuffer(); }
 
@@ -35,8 +35,8 @@ namespace JoyEngine
 
 
 	private:
-		size_t m_indexSize;
-		size_t m_vertexSize;
+		uint32_t m_indexSize;
+		uint32_t m_vertexSize;
 
 		std::unique_ptr<Buffer> m_vertexBuffer;
 		std::unique_ptr<Buffer> m_indexBuffer;

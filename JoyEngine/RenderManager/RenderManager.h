@@ -33,9 +33,9 @@ namespace JoyEngine
 	class RenderManager
 	{
 	public:
-		RenderManager();
+		RenderManager() = default;
 
-		~RenderManager();
+		~RenderManager() = default;
 
 		void Init();
 

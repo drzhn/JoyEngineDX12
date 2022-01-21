@@ -26,14 +26,20 @@ namespace JoyEngine
 
 
 
-			CD3DX12_DESCRIPTOR_RANGE1 ranges[2];
+			CD3DX12_DESCRIPTOR_RANGE1 ranges[4];
 			ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
 			ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 0);
+			ranges[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+			ranges[3].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
 
-			std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters(3);
+
+			std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters(5);
 			rootParameters[0].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
 			rootParameters[1].InitAsDescriptorTable(1, &ranges[1], D3D12_SHADER_VISIBILITY_PIXEL);
 			rootParameters[2].InitAsConstants(sizeof(MVP) / 4, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+			rootParameters[3].InitAsDescriptorTable(1, &ranges[2], D3D12_SHADER_VISIBILITY_PIXEL);
+			rootParameters[4].InitAsDescriptorTable(1, &ranges[3], D3D12_SHADER_VISIBILITY_PIXEL);
+
 
 			m_sharedMaterialHandle = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
 				sharedMaterialGuid,
@@ -49,8 +55,8 @@ namespace JoyEngine
 			m_textureHandle = JoyContext::Resource->LoadResource<Texture>(texture1Guid);
 
 			const std::map<uint32_t, ID3D12DescriptorHeap*> material1RootParams = {
-				{0, m_textureHandle->GetImageViewHeap()},
-				{1, m_textureHandle->GetSampleHeap()}
+				{0, m_textureHandle->GetResourceView()->GetHeap()},
+				{1, m_textureHandle->GetSampleView()->GetHeap()}
 			};
 
 			m_materialHandle = JoyContext::Resource->LoadResource<Material, MaterialData>(

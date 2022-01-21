@@ -20,28 +20,36 @@ namespace JoyEngine
 
 	void CameraBehaviour::Update()
 	{
-		float currentAngle = (JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_T) ? Time::GetDeltaTime() : 0) -
-			(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_Y) ? Time::GetDeltaTime() : 0);
-		glm::vec3 vec = glm::vec3(
-#ifdef GLM_FORCE_LEFT_HANDED
-			(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_D) ? Time::GetDeltaTime() : 0) -
-			(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_A) ? Time::GetDeltaTime() : 0),
-#else
-			(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_A) ? Time::GetDeltaTime() : 0) -
-			(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_D) ? Time::GetDeltaTime() : 0),
-#endif
-			(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_E) ? Time::GetDeltaTime() : 0) -
-			(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_Q) ? Time::GetDeltaTime() : 0),
-			(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_W) ? Time::GetDeltaTime() : 0) -
-			(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_S) ? Time::GetDeltaTime() : 0));
+		float deltaTime = Time::GetDeltaTime();
 
-		const glm::vec3 vecWorld = m_transform->GetModelMatrix()* glm::vec4(vec, 0);
+		float deltaX =
+#ifdef GLM_FORCE_LEFT_HANDED
+			(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_D) ? deltaTime : 0) -
+			(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_A) ? deltaTime : 0);
+#else
+		(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_A) ? deltaTime : 0) -
+			(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_D) ? deltaTime : 0);
+#endif
+
+		float deltaZ = (JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_W) ? Time::GetDeltaTime() : 0) -
+			(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_S) ? Time::GetDeltaTime() : 0);
+
+		float deltaY = (JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_K) ? Time::GetDeltaTime() : 0) -
+			(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_M) ? Time::GetDeltaTime() : 0);
+
+		float deltaAngle = (JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_E) ? Time::GetDeltaTime() : 0) -
+			(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_Q) ? Time::GetDeltaTime() : 0);
+
+
+		glm::vec3 vec = glm::vec3(deltaX, deltaY, deltaZ);
+		
+		const glm::vec3 vecWorld = m_transform->GetRotation() * glm::vec4(deltaX,deltaY,deltaZ, 1);
 
 		m_transform->SetPosition(
 			m_transform->GetPosition() + vecWorld
 		);
 		m_transform->SetRotation(
-			glm::angleAxis(currentAngle, glm::vec3(0, 1, 0))*
+			glm::angleAxis(deltaAngle, glm::vec3(0, 1, 0)) *
 			m_transform->GetRotation()
 		);
 	}

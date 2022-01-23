@@ -93,13 +93,13 @@ namespace JoyEngine
 			D3D12_RESOURCE_STATE_DEPTH_WRITE,
 			D3D12_HEAP_TYPE_DEFAULT);
 
-		m_positionAttachment = std::make_unique<Texture>(
+		m_positionAttachment = std::make_unique<RenderTexture>(
 			m_width, m_height,
 			DXGI_FORMAT_R8G8B8A8_UNORM,
 			D3D12_RESOURCE_STATE_RENDER_TARGET,
 			D3D12_HEAP_TYPE_DEFAULT);
 
-		m_normalAttachment = std::make_unique<Texture>(
+		m_normalAttachment = std::make_unique<RenderTexture>(
 			m_width, m_height,
 			DXGI_FORMAT_R8G8B8A8_UNORM,
 			D3D12_RESOURCE_STATE_RENDER_TARGET,
@@ -233,6 +233,20 @@ namespace JoyEngine
 			}
 		}
 
+		// Indicate that the back buffer will now be used to present.
+		D3D12_RESOURCE_BARRIER positionToReadBarrier = Transition(
+			m_positionAttachment->GetImage().Get(),
+			D3D12_RESOURCE_STATE_RENDER_TARGET,
+			D3D12_RESOURCE_STATE_GENERIC_READ);
+		commandList->ResourceBarrier(1, &positionToReadBarrier);
+
+		// Indicate that the back buffer will now be used to present.
+		D3D12_RESOURCE_BARRIER normalToReadBarrier = Transition(
+			m_normalAttachment->GetImage().Get(),
+			D3D12_RESOURCE_STATE_RENDER_TARGET,
+			D3D12_RESOURCE_STATE_GENERIC_READ);
+		commandList->ResourceBarrier(1, &normalToReadBarrier);
+
 
 		{
 			// Drawing main color
@@ -252,6 +266,15 @@ namespace JoyEngine
 				commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
 				for (const auto& mr : sm->GetMeshRenderers())
 				{
+					//uint32_t size = mr->GetMaterial()->GetHeaps().size() + 2;
+					//std::vector<ID3D12DescriptorHeap*> heaps(size);
+					//for (uint32_t i = 0; i < mr->GetMaterial()->GetHeaps().size(); i++)
+					//{
+					//	heaps[i] = mr->GetMaterial()->GetHeaps()[i];
+					//}
+					//heaps[size - 2] = m_positionView->GetHeap();
+					//heaps[size - 1] = m_normalView->GetHeap();
+
 					commandList->SetDescriptorHeaps(
 						mr->GetMaterial()->GetHeaps().size(),
 						mr->GetMaterial()->GetHeaps().data());
@@ -272,6 +295,19 @@ namespace JoyEngine
 
 						commandList->SetGraphicsRootDescriptorTable(index, gpuHandle);
 					}
+
+					ID3D12DescriptorHeap* heaps1[1] = {m_positionAttachment->GetAttachmentView()->GetHeap()};
+					commandList->SetDescriptorHeaps(
+						1,
+						heaps1);
+					commandList->SetGraphicsRootDescriptorTable(3, m_positionAttachment->GetAttachmentView()->GetGPUHandle());
+
+					ID3D12DescriptorHeap* heaps2[1] = { m_normalAttachment->GetAttachmentView()->GetHeap() };
+					commandList->SetDescriptorHeaps(
+						1,
+						heaps2);
+					commandList->SetGraphicsRootDescriptorTable(4, m_normalAttachment->GetAttachmentView()->GetGPUHandle());
+
 					commandList->SetGraphicsRoot32BitConstants(2, sizeof(MVP) / 4, &mvp, 0);
 					commandList->DrawIndexedInstanced(
 						mr->GetMesh()->GetIndexSize(),
@@ -287,6 +323,21 @@ namespace JoyEngine
 			D3D12_RESOURCE_STATE_RENDER_TARGET,
 			D3D12_RESOURCE_STATE_PRESENT);
 		commandList->ResourceBarrier(1, &barrier2);
+
+
+		// Indicate that the back buffer will now be used to present.
+		D3D12_RESOURCE_BARRIER positionToRenderBarrier = Transition(
+			m_positionAttachment->GetImage().Get(),
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			D3D12_RESOURCE_STATE_RENDER_TARGET);
+		commandList->ResourceBarrier(1, &positionToRenderBarrier);
+
+		// Indicate that the back buffer will now be used to present.
+		D3D12_RESOURCE_BARRIER normalToRenderBarrier = Transition(
+			m_normalAttachment->GetImage().Get(),
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			D3D12_RESOURCE_STATE_RENDER_TARGET);
+		commandList->ResourceBarrier(1, &normalToRenderBarrier);
 
 		ASSERT_SUCC(commandList->Close());
 

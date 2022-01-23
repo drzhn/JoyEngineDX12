@@ -9,18 +9,13 @@
 #include "d3dx12.h"
 using Microsoft::WRL::ComPtr;
 
-#include "Texture.h"
-
-
 namespace JoyEngine
 {
-	class Texture;
-
 	class HeapHandle
 	{
 	public:
 		HeapHandle() = default;
-		HeapHandle(D3D12_DESCRIPTOR_HEAP_TYPE type, const Texture* texture);
+		HeapHandle(D3D12_DESCRIPTOR_HEAP_TYPE type, ID3D12Resource* resource, DXGI_FORMAT format);
 
 		[[nodiscard]] D3D12_DESCRIPTOR_HEAP_TYPE GetType() const noexcept { return m_type; }
 		[[nodiscard]] ID3D12DescriptorHeap* GetHeap() const noexcept { return m_descriptorHeap.Get(); }

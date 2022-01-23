@@ -89,8 +89,9 @@ namespace JoyEngine
 
 		std::unique_ptr<Texture> m_depthAttachment;
 
-		std::unique_ptr<Texture> m_positionAttachment;
-		std::unique_ptr<Texture> m_normalAttachment;
+		std::unique_ptr<RenderTexture> m_positionAttachment;
+		std::unique_ptr<RenderTexture> m_normalAttachment; 
+
 
 
 		std::set<SharedMaterial*> m_sharedMaterials;

@@ -15,9 +15,7 @@ using Microsoft::WRL::ComPtr;
 
 namespace JoyEngine
 {
-	class HeapHandle;
-
-	class Texture final : public Resource
+	class Texture : public Resource
 	{
 	public:
 		explicit Texture() = default;
@@ -69,6 +67,23 @@ namespace JoyEngine
 
 		std::unique_ptr<HeapHandle> m_resourceView;
 		std::unique_ptr<HeapHandle> m_samplerView;
+	};
+
+	class RenderTexture final: public Texture
+	{
+	public:
+		explicit RenderTexture(
+			uint32_t width,
+			uint32_t height,
+			DXGI_FORMAT format,
+			D3D12_RESOURCE_STATES usage,
+			D3D12_HEAP_TYPE properties
+		);
+
+		[[nodiscard]] HeapHandle* GetAttachmentView() const noexcept { return m_inputAttachmentView.get(); }
+
+	private:
+		std::unique_ptr<HeapHandle> m_inputAttachmentView; // additional view for using this texture as input attachment
 	};
 }
 

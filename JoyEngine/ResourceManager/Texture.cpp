@@ -104,20 +104,38 @@ namespace JoyEngine
 	{
 		if ((m_usageFlags & D3D12_RESOURCE_STATE_RENDER_TARGET) != 0)
 		{
-			m_resourceView = std::make_unique<HeapHandle>(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, this);
+			m_resourceView = std::make_unique<HeapHandle>(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, m_texture.Get(), m_format);
 		}
 		else if ((m_usageFlags & D3D12_RESOURCE_STATE_DEPTH_WRITE) != 0)
 		{
-			m_resourceView = std::make_unique<HeapHandle>(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, this);
+			m_resourceView = std::make_unique<HeapHandle>(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, m_texture.Get(), m_format);
 		}
 		else
 		{
-			m_resourceView = std::make_unique<HeapHandle>(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, this);
+			m_resourceView = std::make_unique<HeapHandle>(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, m_texture.Get(), m_format);
 		}
 	}
 
 	void Texture::CreateImageSampler()
 	{
-		m_samplerView = std::make_unique<HeapHandle>(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, this);
+		m_samplerView = std::make_unique<HeapHandle>(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, m_texture.Get(), m_format);
+	}
+
+	RenderTexture::RenderTexture(
+		uint32_t width,
+		uint32_t height,
+		DXGI_FORMAT format,
+		D3D12_RESOURCE_STATES usage,
+		D3D12_HEAP_TYPE properties):
+		Texture(width,
+		        height,
+		        format,
+		        usage,
+		        properties)
+	{
+		m_inputAttachmentView = std::make_unique<HeapHandle>(
+			D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+			this->GetImage().Get(),
+			this->GetFormat());
 	}
 }

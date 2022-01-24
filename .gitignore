@@ -27,10 +27,8 @@
 
 *.cache
 
-*.obj
-*.bin
+
 
 .idea/
 .vs/
 x64/
-JoyData/

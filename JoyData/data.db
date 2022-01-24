@@ -1,0 +1,33 @@
+{
+    "type": "database",
+    "database": [
+        {
+            "guid": "fc972e06-70d9-4271-8615-825003b43f74",
+            "path": "models/viking_room.obj"
+        },
+        {
+            "guid": "13dc6d97-5ced-4b99-b296-bb9e6df2242a",
+            "path": "models/male_head.obj"
+        },
+        {
+            "guid": "1d451f58-3f84-4b2b-8c6f-fe8e2821d7f0",
+            "path": "textures/viking_room.png"
+        },
+        {
+            "guid": "7e50aa82-5696-428c-a088-538fb78c0ee6",
+            "path": "textures/Chopping-Board.jpg"
+        },
+        {
+            "guid": "183d6cfe-ca85-4e0b-ab36-7b1ca0f99d34",
+            "path": "shaders/vikingShader.hlsl"
+        },
+        {
+            "guid": "48ffacc9-5c00-4058-b359-cf72189896ac",
+            "path": "shaders/gbufferwrite.hlsl"
+        },
+        {
+            "guid": "11dcfeba-c2b6-4c2e-a3c7-51054ff06f1d",
+            "path": "scenes/room.json"
+        }
+    ]
+}

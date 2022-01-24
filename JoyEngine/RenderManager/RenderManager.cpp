@@ -266,33 +266,21 @@ namespace JoyEngine
 				commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
 				for (const auto& mr : sm->GetMeshRenderers())
 				{
-					//uint32_t size = mr->GetMaterial()->GetHeaps().size() + 2;
-					//std::vector<ID3D12DescriptorHeap*> heaps(size);
-					//for (uint32_t i = 0; i < mr->GetMaterial()->GetHeaps().size(); i++)
-					//{
-					//	heaps[i] = mr->GetMaterial()->GetHeaps()[i];
-					//}
-					//heaps[size - 2] = m_positionView->GetHeap();
-					//heaps[size - 1] = m_normalView->GetHeap();
-
-					commandList->SetDescriptorHeaps(
-						mr->GetMaterial()->GetHeaps().size(),
-						mr->GetMaterial()->GetHeaps().data());
-
 					commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 					commandList->IASetVertexBuffers(0, 1, mr->GetMesh()->GetVertexBufferView());
 					commandList->IASetIndexBuffer(mr->GetMesh()->GetIndexBufferView());
 
 					MVP mvp{
-						(mr->GetTransform()->GetModelMatrix()),
-						(view),
-						(proj)
+						mr->GetTransform()->GetModelMatrix(),
+						view,
+						proj
 					};
 					for (auto param : mr->GetMaterial()->GetRootParams())
 					{
 						uint32_t index = param.first;
 						D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = param.second->GetGPUDescriptorHandleForHeapStart();
-
+						ID3D12DescriptorHeap* heaps[1] = {param.second};
+						commandList->SetDescriptorHeaps(1, heaps);
 						commandList->SetGraphicsRootDescriptorTable(index, gpuHandle);
 					}
 
@@ -302,7 +290,7 @@ namespace JoyEngine
 						heaps1);
 					commandList->SetGraphicsRootDescriptorTable(3, m_positionAttachment->GetAttachmentView()->GetGPUHandle());
 
-					ID3D12DescriptorHeap* heaps2[1] = { m_normalAttachment->GetAttachmentView()->GetHeap() };
+					ID3D12DescriptorHeap* heaps2[1] = {m_normalAttachment->GetAttachmentView()->GetHeap()};
 					commandList->SetDescriptorHeaps(
 						1,
 						heaps2);

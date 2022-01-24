@@ -1,0 +1,22 @@
+{
+    "type": "material",
+    "sharedMaterial": "74eac505-944d-45af-acdf-51bcb04fee30",
+    "bindings": [
+        {
+            "name": "color",
+            "data": [0.1, 0.2, 0.9, 1.0]
+        },
+        {
+            "name": "array",
+            "data": [1, 2, 3]
+        },
+        {
+            "name": "someFloat",
+            "data": 0.36
+        },
+        {
+            "name": "mainTexture",
+            "data": "7e50aa82-5696-428c-a088-538fb78c0ee6"
+        }
+    ]
+}

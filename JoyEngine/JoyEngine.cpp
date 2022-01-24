@@ -99,8 +99,8 @@ namespace JoyEngine
 		m_inputManager = nullptr;
 		m_sceneManager = nullptr; // unregister mesh renderers, remove descriptor set, pipelines, pipeline layouts
 		m_dummyMaterials = nullptr; //delete swapchain, synchronisation, framebuffers
-		m_resourceManager = nullptr; //delete all scene render data (buffers, textures)
 		m_renderManager = nullptr; //delete swapchain, synchronisation, framebuffers
+		m_resourceManager = nullptr; //delete all scene render data (buffers, textures)
 		//m_descriptorSetManager = nullptr;
 		m_dataManager = nullptr;
 		m_memoryManager = nullptr; //free gpu memory

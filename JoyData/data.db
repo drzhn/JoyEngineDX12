@@ -4,6 +4,10 @@
         {
             "guid": "fc972e06-70d9-4271-8615-825003b43f74",
             "path": "models/viking_room.obj"
+        },        
+		{
+            "guid": "7489a35d-1173-48cd-9ad0-606f13c33319",
+            "path": "models/Floor.obj"
         },
         {
             "guid": "13dc6d97-5ced-4b99-b296-bb9e6df2242a",
@@ -24,6 +28,9 @@
         {
             "guid": "48ffacc9-5c00-4058-b359-cf72189896ac",
             "path": "shaders/gbufferwrite.hlsl"
+        },        {
+            "guid": "f9da7adf-4ebb-4601-8437-a19c07e8471a",
+            "path": "shaders/lightprocessing.hlsl"
         },
         {
             "guid": "11dcfeba-c2b6-4c2e-a3c7-51054ff06f1d",

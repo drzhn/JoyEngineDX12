@@ -39,7 +39,8 @@ namespace JoyEngine
 	SharedMaterial::SharedMaterial(GUID guid, SharedMaterialArgs args) :
 		Resource(guid),
 		m_shader(args.shader), m_hasVertexInput(args.hasVertexInput),
-		m_hasMVP(args.hasMVP), m_depthTest(args.depthTest), m_depthWrite(args.depthWrite)
+		m_depthTest(args.depthTest), m_depthWrite(args.depthWrite),
+		m_depthComparisonFunc(args.depthComparisonFunc)
 	{
 		CreateRootSignature(args.rootParams);
 		CreateGraphicsPipeline(args.numRenderTargets);
@@ -114,9 +115,9 @@ namespace JoyEngine
 			UINT_MAX,
 			CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT),
 			{
-				TRUE,
-				D3D12_DEPTH_WRITE_MASK_ALL,
-				D3D12_COMPARISON_FUNC_LESS_EQUAL,
+				m_depthTest ? TRUE : FALSE,
+				m_depthWrite ? D3D12_DEPTH_WRITE_MASK_ALL : D3D12_DEPTH_WRITE_MASK_ZERO,
+				m_depthComparisonFunc,
 				FALSE,
 				0,
 				0,

@@ -15,9 +15,9 @@ namespace JoyEngine
 	{
 		GUID shader;
 		bool hasVertexInput;
-		bool hasMVP;
 		bool depthTest;
 		bool depthWrite;
+		D3D12_COMPARISON_FUNC depthComparisonFunc;
 		std::vector<CD3DX12_ROOT_PARAMETER1> rootParams;
 		uint32_t numRenderTargets;
 	};
@@ -49,9 +49,9 @@ namespace JoyEngine
 		ResourceHandle<Shader> m_shader;
 
 		bool m_hasVertexInput = false;
-		bool m_hasMVP = false;
 		bool m_depthTest = false;
 		bool m_depthWrite = false;
+		D3D12_COMPARISON_FUNC m_depthComparisonFunc;
 
 		ComPtr<ID3D12RootSignature> m_rootSignature;
 		ComPtr<ID3D12PipelineState> m_pipelineState;

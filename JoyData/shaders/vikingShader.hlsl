@@ -48,14 +48,14 @@ PSOutput PSMain(PSInput input) // : SV_TARGET
 	PSOutput output;
 	const float2 screenPosition = (input.clipPos.xy / input.clipPos.w);
 	const float4 mainColor = g_texture.Sample(g_sampler, input.uv);
-	const float4 worldNormal = normalTexture.Sample(g_sampler, screenPosition);// g_texture.Sample(g_sampler, input.uv);
+	const float4 worldNormal = normalTexture.Load(float3(input.position.xy, 0));// normalTexture.Sample(g_sampler, screenPosition);// g_texture.Sample(g_sampler, input.uv);
 	const float4 worldPos = positionTexture.Sample(g_sampler, screenPosition);// g_texture.Sample(g_sampler, input.uv);
 
 	float4 lightDir = normalize(lightPos - worldPos);
 	float diff = max(dot(worldNormal, lightDir), 0.0);
 	float ambient = 0.2f;
 
-	output.Color = mainColor * (ambient + diff);
+	output.Color = mainColor* (ambient + diff);
 
 	return output;
 }

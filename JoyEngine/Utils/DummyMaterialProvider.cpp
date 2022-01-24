@@ -18,6 +18,51 @@ namespace JoyEngine
 {
 	void DummyMaterialProvider::Init()
 	{
+		// GBuffer write shader
+		{
+			const GUID gbufferWriteShaderGuid = GUID::StringToGuid("48ffacc9-5c00-4058-b359-cf72189896ac"); //shaders/gbufferwrite.hlsl
+			const GUID gbufferWriteSharedMaterialGuid = GUID::Random();
+
+			std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters(1);
+			rootParameters[0].InitAsConstants(sizeof(MVP) / 4, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+
+			m_gbufferWriteSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
+				gbufferWriteSharedMaterialGuid,
+				{
+					gbufferWriteShaderGuid,
+					true,
+					true,
+					true,
+					D3D12_COMPARISON_FUNC_LESS_EQUAL,
+					rootParameters,
+					2
+				});
+		}
+
+
+		{
+			const GUID lightProcessingShaderGuid = GUID::StringToGuid("f9da7adf-4ebb-4601-8437-a19c07e8471a"); //shaders/lightprocessing.hlsl
+			const GUID lightProcessingSharedMaterialGuid = GUID::Random();
+
+
+			std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters(1);
+			rootParameters[0].InitAsConstants(sizeof(MVP) / 4, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+
+			m_lightProcessingSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
+				lightProcessingSharedMaterialGuid,
+				{
+					lightProcessingShaderGuid,
+					true,
+					true,
+					true,
+					D3D12_COMPARISON_FUNC_LESS_EQUAL,
+					rootParameters,
+					2
+				});
+		}
+
+
+		// Sample material
 		{
 			const GUID shaderGuid = GUID::StringToGuid("183d6cfe-ca85-4e0b-ab36-7b1ca0f99d34");
 			const GUID sharedMaterialGuid = GUID::Random();
@@ -36,7 +81,7 @@ namespace JoyEngine
 			std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters(5);
 			rootParameters[0].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
 			rootParameters[1].InitAsDescriptorTable(1, &ranges[1], D3D12_SHADER_VISIBILITY_PIXEL);
-			rootParameters[2].InitAsConstants(sizeof(MVP) / 4, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+			rootParameters[2].InitAsConstants(sizeof(MVP) / 4, 0, 0, D3D12_SHADER_VISIBILITY_ALL);
 			rootParameters[3].InitAsDescriptorTable(1, &ranges[2], D3D12_SHADER_VISIBILITY_PIXEL);
 			rootParameters[4].InitAsDescriptorTable(1, &ranges[3], D3D12_SHADER_VISIBILITY_PIXEL);
 
@@ -47,8 +92,8 @@ namespace JoyEngine
 					shaderGuid,
 					true,
 					true,
-					true,
-					true,
+					false,
+					D3D12_COMPARISON_FUNC_LESS_EQUAL,
 					rootParameters,
 					1
 				});
@@ -67,24 +112,5 @@ namespace JoyEngine
 				});
 		}
 
-		{
-			const GUID gbufferWriteShaderGuid = GUID::StringToGuid("48ffacc9-5c00-4058-b359-cf72189896ac");
-			const GUID gbufferWriteSharedMaterialGuid = GUID::Random();
-
-			std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters(1);
-			rootParameters[0].InitAsConstants(sizeof(MVP) / 4, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
-
-			m_gbufferWriteSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
-				gbufferWriteSharedMaterialGuid,
-				{
-					gbufferWriteShaderGuid,
-					true,
-					true,
-					true,
-					true,
-					rootParameters,
-					2
-				});
-		}
 	}
 }

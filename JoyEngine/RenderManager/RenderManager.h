@@ -20,6 +20,8 @@
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <wrl.h>
+
+#include "ResourceManager/Mesh.h"
 using Microsoft::WRL::ComPtr;
 
 
@@ -90,8 +92,9 @@ namespace JoyEngine
 		std::unique_ptr<Texture> m_depthAttachment;
 
 		std::unique_ptr<RenderTexture> m_positionAttachment;
-		std::unique_ptr<RenderTexture> m_normalAttachment; 
+		std::unique_ptr<RenderTexture> m_normalAttachment;
 
+		ResourceHandle<Mesh> m_planeMesh;
 
 
 		std::set<SharedMaterial*> m_sharedMaterials;

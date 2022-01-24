@@ -104,6 +104,8 @@ namespace JoyEngine
 			DXGI_FORMAT_R8G8B8A8_UNORM,
 			D3D12_RESOURCE_STATE_RENDER_TARGET,
 			D3D12_HEAP_TYPE_DEFAULT);
+
+		m_planeMesh = GUID::StringToGuid("7489a35d-1173-48cd-9ad0-606f13c33319");
 	}
 
 
@@ -181,9 +183,8 @@ namespace JoyEngine
 		glm::mat4 view = m_currentCamera->GetViewMatrix();
 		glm::mat4 proj = m_currentCamera->GetProjMatrix();
 
+		// Drawing GBUFFER textures
 		{
-			// Drawing GBUFFER textures
-
 			D3D12_CPU_DESCRIPTOR_HANDLE gbufferHandles[] = {positionHandle, normalHandle};
 			commandList->OMSetRenderTargets(
 				2,
@@ -204,10 +205,6 @@ namespace JoyEngine
 				commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
 				for (const auto& mr : s->GetMeshRenderers())
 				{
-					//commandList->SetDescriptorHeaps(
-					//	mr->GetMaterial()->GetHeaps().size(),
-					//	mr->GetMaterial()->GetHeaps().data());
-
 					commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 					commandList->IASetVertexBuffers(0, 1, mr->GetMesh()->GetVertexBufferView());
 					commandList->IASetIndexBuffer(mr->GetMesh()->GetIndexBufferView());
@@ -217,13 +214,7 @@ namespace JoyEngine
 						(view),
 						(proj)
 					};
-					//for (auto param : mr->GetMaterial()->GetRootParams())
-					//{
-					//	uint32_t index = param.first;
-					//	D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = param.second->GetGPUDescriptorHandleForHeapStart();
-
-					//	commandList->SetGraphicsRootDescriptorTable(index, gpuHandle);
-					//}
+					uint32_t var = 5;
 					commandList->SetGraphicsRoot32BitConstants(0, sizeof(MVP) / 4, &mvp, 0);
 					commandList->DrawIndexedInstanced(
 						mr->GetMesh()->GetIndexSize(),
@@ -233,23 +224,68 @@ namespace JoyEngine
 			}
 		}
 
-		// Indicate that the back buffer will now be used to present.
-		D3D12_RESOURCE_BARRIER positionToReadBarrier = Transition(
-			m_positionAttachment->GetImage().Get(),
-			D3D12_RESOURCE_STATE_RENDER_TARGET,
-			D3D12_RESOURCE_STATE_GENERIC_READ);
-		commandList->ResourceBarrier(1, &positionToReadBarrier);
-
-		// Indicate that the back buffer will now be used to present.
-		D3D12_RESOURCE_BARRIER normalToReadBarrier = Transition(
-			m_normalAttachment->GetImage().Get(),
-			D3D12_RESOURCE_STATE_RENDER_TARGET,
-			D3D12_RESOURCE_STATE_GENERIC_READ);
-		commandList->ResourceBarrier(1, &normalToReadBarrier);
-
-
+		// Transition normal and position texture to generic read state
 		{
-			// Drawing main color
+			// Indicate that the back buffer will now be used to present.
+			D3D12_RESOURCE_BARRIER positionToReadBarrier = Transition(
+				m_positionAttachment->GetImage().Get(),
+				D3D12_RESOURCE_STATE_RENDER_TARGET,
+				D3D12_RESOURCE_STATE_GENERIC_READ);
+			commandList->ResourceBarrier(1, &positionToReadBarrier);
+
+			// Indicate that the back buffer will now be used to present.
+			D3D12_RESOURCE_BARRIER normalToReadBarrier = Transition(
+				m_normalAttachment->GetImage().Get(),
+				D3D12_RESOURCE_STATE_RENDER_TARGET,
+				D3D12_RESOURCE_STATE_GENERIC_READ);
+			commandList->ResourceBarrier(1, &normalToReadBarrier);
+		}
+
+
+		// Light processing
+		//{
+
+		//	D3D12_CPU_DESCRIPTOR_HANDLE gbufferHandles[] = { positionHandle, normalHandle };
+		//	commandList->OMSetRenderTargets(
+		//		2,
+		//		gbufferHandles,
+		//		FALSE,
+		//		&dsvHandle);
+
+		//	const float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+		//	commandList->ClearRenderTargetView(positionHandle, clearColor, 0, nullptr);
+		//	commandList->ClearRenderTargetView(normalHandle, clearColor, 0, nullptr);
+		//	commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+
+		//	auto sm = JoyContext::DummyMaterials->GetGBufferSharedMaterial();
+
+		//	for (auto const& s : m_sharedMaterials)
+		//	{
+		//		commandList->SetPipelineState(sm->GetPipelineObject().Get());
+		//		commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+		//		for (const auto& mr : s->GetMeshRenderers())
+		//		{
+		//			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		//			commandList->IASetVertexBuffers(0, 1, mr->GetMesh()->GetVertexBufferView());
+		//			commandList->IASetIndexBuffer(mr->GetMesh()->GetIndexBufferView());
+
+		//			MVP mvp{
+		//				(mr->GetTransform()->GetModelMatrix()),
+		//				(view),
+		//				(proj)
+		//			};
+		//			uint32_t var = 5;
+		//			commandList->SetGraphicsRoot32BitConstants(0, sizeof(MVP) / 4, &mvp, 0);
+		//			commandList->DrawIndexedInstanced(
+		//				mr->GetMesh()->GetIndexSize(),
+		//				1,
+		//				0, 0, 0);
+		//		}
+		//	}
+		//}
+
+		// Drawing main color
+		{
 
 			commandList->OMSetRenderTargets(
 				1,
@@ -258,7 +294,8 @@ namespace JoyEngine
 
 			const float clearColor[] = {0.0f, 0.2f, 0.4f, 1.0f};
 			commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
-			commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+			// we've written depth in g-buffer generation step
+			//commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 			for (auto const& sm : m_sharedMaterials)
 			{
@@ -305,27 +342,31 @@ namespace JoyEngine
 			}
 		}
 
-		// Indicate that the back buffer will now be used to present.
-		D3D12_RESOURCE_BARRIER barrier2 = Transition(
-			m_renderTargets[m_currentFrameIndex]->GetImage().Get(),
-			D3D12_RESOURCE_STATE_RENDER_TARGET,
-			D3D12_RESOURCE_STATE_PRESENT);
-		commandList->ResourceBarrier(1, &barrier2);
+		// transition front buffer to present state
+		// transition normal and position buffers back to render target state
+		{
+			// Indicate that the back buffer will now be used to present.
+			D3D12_RESOURCE_BARRIER barrier2 = Transition(
+				m_renderTargets[m_currentFrameIndex]->GetImage().Get(),
+				D3D12_RESOURCE_STATE_RENDER_TARGET,
+				D3D12_RESOURCE_STATE_PRESENT);
+			commandList->ResourceBarrier(1, &barrier2);
 
 
-		// Indicate that the back buffer will now be used to present.
-		D3D12_RESOURCE_BARRIER positionToRenderBarrier = Transition(
-			m_positionAttachment->GetImage().Get(),
-			D3D12_RESOURCE_STATE_GENERIC_READ,
-			D3D12_RESOURCE_STATE_RENDER_TARGET);
-		commandList->ResourceBarrier(1, &positionToRenderBarrier);
+			// Indicate that the back buffer will now be used to present.
+			D3D12_RESOURCE_BARRIER positionToRenderBarrier = Transition(
+				m_positionAttachment->GetImage().Get(),
+				D3D12_RESOURCE_STATE_GENERIC_READ,
+				D3D12_RESOURCE_STATE_RENDER_TARGET);
+			commandList->ResourceBarrier(1, &positionToRenderBarrier);
 
-		// Indicate that the back buffer will now be used to present.
-		D3D12_RESOURCE_BARRIER normalToRenderBarrier = Transition(
-			m_normalAttachment->GetImage().Get(),
-			D3D12_RESOURCE_STATE_GENERIC_READ,
-			D3D12_RESOURCE_STATE_RENDER_TARGET);
-		commandList->ResourceBarrier(1, &normalToRenderBarrier);
+			// Indicate that the back buffer will now be used to present.
+			D3D12_RESOURCE_BARRIER normalToRenderBarrier = Transition(
+				m_normalAttachment->GetImage().Get(),
+				D3D12_RESOURCE_STATE_GENERIC_READ,
+				D3D12_RESOURCE_STATE_RENDER_TARGET);
+			commandList->ResourceBarrier(1, &normalToRenderBarrier);
+		}
 
 		ASSERT_SUCC(commandList->Close());
 

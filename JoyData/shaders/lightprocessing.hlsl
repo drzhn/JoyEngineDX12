@@ -32,26 +32,23 @@ ConstantBuffer<MVP> mvp : register(b0);
 
 static const float PI = 3.14159265f;
 
-float3 ProcessSphere(float2 uv, float radius)
+float3 ProcessCapsule(float2 uv, float radius, float height)
 {
-	float x = uv.x * 2 - 1;
-
+	const float x = uv.x * 2 - 1;
 	return float3(
-		radius * x,
+		x + sign(x) * height / 2,
 		radius * cos(PI * uv.y * 2) * sin(acos(x)),
 		radius * sin(PI * uv.y * 2) * sin(acos(x))
 	);
 }
 
-float3 ProcessCapsule(float2 uv, float radius, float height)
+float3 ProcessSpot(float2 uv, float angle, float height)
 {
-	float x = uv.x * 2 - 1;
-	float xPos = (height + 1) * x;
-
+	const float xyMultiplier = uv.y == 1 ? 0 : uv.y * height * tan(angle * PI / 360);
 	return float3(
-		x > 0 ? x + height / 2 : x - height / 2,
-		radius * cos(PI * uv.y * 2) * sin(acos(x)),
-		radius * sin(PI * uv.y * 2) * sin(acos(x))
+		sin(PI * uv.x * 2) * xyMultiplier,
+		cos(PI * uv.x * 2) * xyMultiplier,
+		uv.y * height
 	);
 }
 
@@ -61,7 +58,7 @@ PSInput VSMain(float3 position : POSITION, float3 color : COLOR, float3 normal :
 	float4x4 resMatrix = mul(mvp.projection, mul(mvp.view, mvp.model));
 
 	//position = ProcessSphere(uv, 1);
-	position = ProcessCapsule(uv, 1, 2);
+	position = ProcessSpot(uv, 60, 2);
 
 	result.position = mul(resMatrix, float4(position, 1));
 	//result.clipPos = ComputeNonStereoScreenPos(result.position);

@@ -2,7 +2,7 @@ struct PSInput
 {
 	float4 position : SV_POSITION;
 	float2 uv : TEXCOORD0;
-	float4 clipPos : TEXCOORD1;
+	//float4 clipPos : TEXCOORD1;
 };
 
 struct PSOutput
@@ -23,19 +23,48 @@ ConstantBuffer<MVP> mvp : register(b0);
 //Texture2D positionTexture : register(t1);
 //Texture2D normalTexture : register(t2);
 
-inline float4 ComputeNonStereoScreenPos(float4 pos) {
-	float4 o = pos * 0.5f;
-	o.xy = float2(o.x, o.y * -1) + o.w;
-	o.zw = pos.zw;
-	return o;
+//inline float4 ComputeNonStereoScreenPos(float4 pos) {
+//	float4 o = pos * 0.5f;
+//	o.xy = float2(o.x, o.y * -1) + o.w;
+//	o.zw = pos.zw;
+//	return o;
+//}
+
+static const float PI = 3.14159265f;
+
+float3 ProcessSphere(float2 uv, float radius)
+{
+	float x = uv.x * 2 - 1;
+
+	return float3(
+		radius * x,
+		radius * cos(PI * uv.y * 2) * sin(acos(x)),
+		radius * sin(PI * uv.y * 2) * sin(acos(x))
+	);
+}
+
+float3 ProcessCapsule(float2 uv, float radius, float height)
+{
+	float x = uv.x * 2 - 1;
+	float xPos = (height + 1) * x;
+
+	return float3(
+		x > 0 ? x + height / 2 : x - height / 2,
+		radius * cos(PI * uv.y * 2) * sin(acos(x)),
+		radius * sin(PI * uv.y * 2) * sin(acos(x))
+	);
 }
 
 PSInput VSMain(float3 position : POSITION, float3 color : COLOR, float3 normal : NORMAL, float2 uv : TEXCOORD)
 {
 	PSInput result;
 	float4x4 resMatrix = mul(mvp.projection, mul(mvp.view, mvp.model));
+
+	//position = ProcessSphere(uv, 1);
+	position = ProcessCapsule(uv, 1, 2);
+
 	result.position = mul(resMatrix, float4(position, 1));
-	result.clipPos = ComputeNonStereoScreenPos(result.position);
+	//result.clipPos = ComputeNonStereoScreenPos(result.position);
 	//result.clipPos.xy /= result.clipPos.w;
 	result.uv = uv;
 
@@ -44,7 +73,6 @@ PSInput VSMain(float3 position : POSITION, float3 color : COLOR, float3 normal :
 
 PSOutput PSMain(PSInput input) // : SV_TARGET
 {
-	float4 lightPos = float4(1, 2, 0, 1);
 	PSOutput output;
 	//const float2 screenPosition = (input.clipPos.xy / input.clipPos.w);
 	//const float4 mainColor = g_texture.Sample(g_sampler, input.uv);
@@ -54,7 +82,7 @@ PSOutput PSMain(PSInput input) // : SV_TARGET
 	//float diff = max(dot(worldNormal, lightDir), 0.0);
 	//float ambient = 0.2f;
 
-	output.Color = float4(1, 1, 1, 1);// mainColor* (ambient + diff);
+	output.Color = float4(input.uv, 0, 1); // mainColor* (ambient + diff);
 
 	return output;
 }

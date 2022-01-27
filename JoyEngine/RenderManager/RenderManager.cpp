@@ -164,7 +164,6 @@ namespace JoyEngine
 		const auto commandList = m_queue->GetCommandList();
 		auto dsvHandle = m_depthAttachment->GetResourceView()->GetHandle();
 		auto rtvHandle = m_renderTargets[m_currentFrameIndex]->GetResourceView()->GetHandle();
-
 		auto positionHandle = m_positionAttachment->GetResourceView()->GetHandle();
 		auto normalHandle = m_normalAttachment->GetResourceView()->GetHandle();
 
@@ -242,58 +241,56 @@ namespace JoyEngine
 		}
 
 
-		// Light processing
-		//{
+		//Light processing
+		{
+			commandList->OMSetRenderTargets(
+				1,
+				&rtvHandle,
+				FALSE,
+				&dsvHandle);
 
-		//	D3D12_CPU_DESCRIPTOR_HANDLE gbufferHandles[] = { positionHandle, normalHandle };
-		//	commandList->OMSetRenderTargets(
-		//		2,
-		//		gbufferHandles,
-		//		FALSE,
-		//		&dsvHandle);
+			const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
+			commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+			//commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
-		//	const float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-		//	commandList->ClearRenderTargetView(positionHandle, clearColor, 0, nullptr);
-		//	commandList->ClearRenderTargetView(normalHandle, clearColor, 0, nullptr);
-		//	commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+			auto sm = JoyContext::DummyMaterials->GetLightProcessingSharedMaterial();
 
-		//	auto sm = JoyContext::DummyMaterials->GetGBufferSharedMaterial();
+			for (auto const& s : m_sharedMaterials)
+			{
+				commandList->SetPipelineState(sm->GetPipelineObject().Get());
+				commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
 
-		//	for (auto const& s : m_sharedMaterials)
-		//	{
-		//		commandList->SetPipelineState(sm->GetPipelineObject().Get());
-		//		commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
-		//		for (const auto& mr : s->GetMeshRenderers())
-		//		{
-		//			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		//			commandList->IASetVertexBuffers(0, 1, mr->GetMesh()->GetVertexBufferView());
-		//			commandList->IASetIndexBuffer(mr->GetMesh()->GetIndexBufferView());
+				commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+				commandList->IASetVertexBuffers(0, 1, m_planeMesh->GetVertexBufferView());
+				commandList->IASetIndexBuffer(m_planeMesh->GetIndexBufferView());
 
-		//			MVP mvp{
-		//				(mr->GetTransform()->GetModelMatrix()),
-		//				(view),
-		//				(proj)
-		//			};
-		//			uint32_t var = 5;
-		//			commandList->SetGraphicsRoot32BitConstants(0, sizeof(MVP) / 4, &mvp, 0);
-		//			commandList->DrawIndexedInstanced(
-		//				mr->GetMesh()->GetIndexSize(),
-		//				1,
-		//				0, 0, 0);
-		//		}
-		//	}
-		//}
+				MVP mvp{
+					//glm::toMat4(glm::quat(glm::vec3(
+					//	glm::radians(180.0f),
+					//	glm::radians(0.f),
+					//	glm::radians(0.f)
+					//))),
+					glm::mat4(1.0f),
+					(view),
+					(proj)
+				};
+				commandList->SetGraphicsRoot32BitConstants(0, sizeof(MVP) / 4, &mvp, 0);
+				commandList->DrawIndexedInstanced(
+					m_planeMesh->GetIndexSize(),
+					1,
+					0, 0, 0);
+			}
+		}
 
 		// Drawing main color
 		{
-
 			commandList->OMSetRenderTargets(
 				1,
 				&rtvHandle,
 				FALSE, &dsvHandle);
 
 			const float clearColor[] = {0.0f, 0.2f, 0.4f, 1.0f};
-			commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+			//commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 			// we've written depth in g-buffer generation step
 			//commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 

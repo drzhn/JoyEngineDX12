@@ -36,7 +36,7 @@ float3 ProcessCapsule(float2 uv, float radius, float height)
 {
 	const float x = uv.x * 2 - 1;
 	return float3(
-		x + sign(x) * height / 2,
+		radius * x + sign(x) * height / 2,
 		radius * cos(PI * uv.y * 2) * sin(acos(x)),
 		radius * sin(PI * uv.y * 2) * sin(acos(x))
 	);
@@ -58,7 +58,8 @@ PSInput VSMain(float3 position : POSITION, float3 color : COLOR, float3 normal :
 	float4x4 resMatrix = mul(mvp.projection, mul(mvp.view, mvp.model));
 
 	//position = ProcessSphere(uv, 1);
-	position = ProcessSpot(uv, 60, 2);
+	position = ProcessCapsule(uv, 3, 0);
+	//position = ProcessSpot(uv, 60, 2);
 
 	result.position = mul(resMatrix, float4(position, 1));
 	//result.clipPos = ComputeNonStereoScreenPos(result.position);

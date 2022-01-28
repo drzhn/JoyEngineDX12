@@ -3,39 +3,41 @@
 
 #include <glm/glm.hpp>
 
+#include "Component.h"
+#include "RenderManager/JoyTypes.h"
 #include "Common/Color.h"
 
 namespace JoyEngine
 {
-	enum LightType
-	{
-		Point = 0,
-		Spot = 1
-	};
-
-	class Light
+	class Light : public Component
 	{
 	public:
+		Light(LightType lightType,
+		      float intensity,
+		      float radius,
+		      float height,
+		      float angle
+		);
 
-	protected:
-		float m_intensity;
-		Color m_color;
-	};
+		void Enable() override;
+		void Disable() override;
 
-	class PointLight : public Light
-	{
-	public:
+		void Update() override
+		{
+		}
+
+		[[nodiscard]] LightType GetLightType() const noexcept { return m_lightType; }
+		[[nodiscard]] float GetIntensity() const noexcept { return m_intensity; }
+		[[nodiscard]] float GetRadius() const noexcept { return m_radius; }
+		[[nodiscard]] float GetHeight() const noexcept { return m_height; }
+		[[nodiscard]] float GetAngle() const noexcept { return m_angle; }
+
 	private:
-		float m_radius;
-	};
-
-	class SpotLight : public Light
-	{
-	public:
-	private:
-		glm::vec3 m_direction;
-		float m_size;
-		float m_angle;
+		LightType m_lightType;
+		float m_intensity = 0;
+		float m_radius = 0;
+		float m_height = 0;
+		float m_angle = 0;
 	};
 }
 

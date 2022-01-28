@@ -21,6 +21,7 @@
 #include <dxgi1_6.h>
 #include <wrl.h>
 
+#include "Components/Light.h"
 #include "ResourceManager/Mesh.h"
 using Microsoft::WRL::ComPtr;
 
@@ -49,36 +50,21 @@ namespace JoyEngine
 
 		void Update();
 
-		void DrawFrame();
+		void RegisterSharedMaterial(SharedMaterial*);
 
-		void RegisterSharedMaterial(SharedMaterial* sharedMaterial);
+		void UnregisterSharedMaterial(SharedMaterial*);
 
-		void UnregisterSharedMaterial(SharedMaterial* sharedMaterial);
+		void RegisterLight(Light*);
+
+		void UnregisterLight(Light*);
 
 		void RegisterCamera(Camera* camera);
 
 		void UnregisterCamera(Camera* camera);
 
-		//[[nodiscard]] Swapchain* GetSwapchain() const noexcept;
-
 		[[nodiscard]] float GetAspect() const noexcept;
 		[[nodiscard]] float GetWidth() const noexcept;
 		[[nodiscard]] float GetHeight() const noexcept;
-		//[[nodiscard]] Texture* GetGBufferPositionTexture() const noexcept;
-		//[[nodiscard]] Texture* GetGBufferNormalTexture() const noexcept;
-
-	private:
-		void CreateRenderPass();
-
-		void CreateFramebuffers();
-
-		void CreateCommandBuffers();
-
-		void WriteCommandBuffers(uint32_t imageIndex) const;
-
-		void ResetCommandBuffers(uint32_t imageIndex) const;
-
-		void CreateSyncObjects();
 
 	private:
 		static const UINT FrameCount = 3;
@@ -98,6 +84,7 @@ namespace JoyEngine
 
 
 		std::set<SharedMaterial*> m_sharedMaterials;
+		std::set<Light*> m_lights;
 		Camera* m_currentCamera;
 
 		std::unique_ptr<CommandQueue> m_queue;

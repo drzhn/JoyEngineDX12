@@ -8,6 +8,7 @@
 #include "Components/Component.h"
 #include "Components/MeshRenderer.h"
 #include "Components/Camera.h"
+#include "Components/Light.h"
 #include "DataManager/DataManager.h"
 
 namespace JoyEngine
@@ -55,7 +56,24 @@ namespace JoyEngine
 				}
 				else if (type == "camera")
 				{
-					go->AddComponent(std::move(std::make_unique<Camera>()));
+					go->AddComponent(std::make_unique<Camera>());
+				}
+				else if (type == "light")
+				{
+					std::unique_ptr<Light> light;
+					std::string lightTypeStr = std::string(component["lightType"].GetString());
+					if (lightTypeStr == "point")
+					{
+						float intensity = component["intensity"].GetFloat();
+						float radius = component["radius"].GetFloat();
+
+						light = std::make_unique<Light>(LightType::Point, intensity, radius, 0, 0);
+					}
+					else
+					{
+						ASSERT(false);
+					}
+					go->AddComponent(std::move(light));
 				}
 			}
 			m_objects.push_back(std::move(go));

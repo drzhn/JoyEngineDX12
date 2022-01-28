@@ -114,19 +114,34 @@ namespace JoyEngine
 		m_queue = nullptr;
 	}
 
-	void RenderManager::RegisterSharedMaterial(SharedMaterial* meshRenderer)
+	void RenderManager::RegisterSharedMaterial(SharedMaterial* sm)
 	{
-		m_sharedMaterials.insert(meshRenderer);
+		m_sharedMaterials.insert(sm);
 	}
 
-	void RenderManager::UnregisterSharedMaterial(SharedMaterial* meshRenderer)
+	void RenderManager::UnregisterSharedMaterial(SharedMaterial* sm)
 	{
-		if (m_sharedMaterials.find(meshRenderer) == m_sharedMaterials.end())
+		if (m_sharedMaterials.find(sm) == m_sharedMaterials.end())
 		{
 			ASSERT(false);
 		}
-		m_sharedMaterials.erase(meshRenderer);
+		m_sharedMaterials.erase(sm);
 	}
+
+	void RenderManager::RegisterLight(Light* light)
+	{
+		m_lights.insert(light);
+	}
+
+	void RenderManager::UnregisterLight(Light* light)
+	{
+		if (m_lights.find(light) == m_lights.end())
+		{
+			ASSERT(false);
+		}
+		m_lights.erase(light);
+	}
+
 
 	void RenderManager::RegisterCamera(Camera* camera)
 	{

@@ -7,9 +7,9 @@
 namespace JoyEngine {
     class Camera : public Component {
     public:
-        virtual void Enable() override;
-        virtual void Disable() override;
-        virtual void Update() override;
+        void Enable() override;
+        void Disable() override;
+        void Update() override;
         glm::mat4x4 GetProjMatrix() const;
         glm::mat4x4 GetViewMatrix() const;
 

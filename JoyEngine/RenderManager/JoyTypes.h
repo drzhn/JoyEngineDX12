@@ -28,9 +28,10 @@ namespace JoyEngine
 		glm::mat4 proj;
 	};
 
+
+#pragma pack(push,16)
 	struct LightData
 	{
-		LightType lightType;
 		float intensity;
 		float radius;
 		float height;
@@ -38,6 +39,7 @@ namespace JoyEngine
 		glm::mat4 model;
 		glm::mat4 viewProj;
 	};
+#pragma pack(pop)
 
 	struct JoyData
 	{

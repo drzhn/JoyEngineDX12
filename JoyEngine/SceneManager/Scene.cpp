@@ -69,6 +69,22 @@ namespace JoyEngine
 
 						light = std::make_unique<Light>(LightType::Point, intensity, radius, 0, 0);
 					}
+					else if (lightTypeStr == "capsule")
+					{
+						float intensity = component["intensity"].GetFloat();
+						float radius = component["radius"].GetFloat();
+						float height = component["height"].GetFloat();
+
+						light = std::make_unique<Light>(LightType::Capsule, intensity, radius, height, 0);
+					}
+					else if (lightTypeStr == "spot")
+					{
+						float intensity = component["intensity"].GetFloat();
+						float angle = component["angle"].GetFloat();
+						float height = component["height"].GetFloat();
+
+						light = std::make_unique<Light>(LightType::Capsule, intensity, 0, height, angle);
+					}
 					else
 					{
 						ASSERT(false);

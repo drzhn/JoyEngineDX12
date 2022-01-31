@@ -38,12 +38,15 @@ namespace JoyEngine
 
 	SharedMaterial::SharedMaterial(GUID guid, SharedMaterialArgs args) :
 		Resource(guid),
-		m_shader(args.shader), m_hasVertexInput(args.hasVertexInput),
-		m_depthTest(args.depthTest), m_depthWrite(args.depthWrite),
+		m_shader(args.shader),
+		m_hasVertexInput(args.hasVertexInput),
+		m_depthTest(args.depthTest),
+		m_depthWrite(args.depthWrite),
+		m_cullMode(args.cullMode),
 		m_depthComparisonFunc(args.depthComparisonFunc)
 	{
 		CreateRootSignature(args.rootParams);
-		CreateGraphicsPipeline(args.numRenderTargets);
+		CreateGraphicsPipeline(args.renderTargetsFormats);
 		JoyContext::Render->RegisterSharedMaterial(this);
 	}
 
@@ -81,7 +84,7 @@ namespace JoyEngine
 			IID_PPV_ARGS(&m_rootSignature)));
 	}
 
-	void SharedMaterial::CreateGraphicsPipeline(uint32_t numRenderTargets)
+	void SharedMaterial::CreateGraphicsPipeline(const std::vector<DXGI_FORMAT>& renderTargetsFormats)
 	{
 		// Create the vertex input layout
 		D3D12_INPUT_ELEMENT_DESC inputLayout[] = {
@@ -103,6 +106,9 @@ namespace JoyEngine
 			},
 		};
 
+		CD3DX12_RASTERIZER_DESC rasterizerDesc = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+		rasterizerDesc.CullMode = m_cullMode;
+
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc = {
 			m_rootSignature.Get(),
 			CD3DX12_SHADER_BYTECODE(m_shader->GetVertexShadeModule().Get()),
@@ -113,7 +119,7 @@ namespace JoyEngine
 			{},
 			CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 			UINT_MAX,
-			CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT),
+			rasterizerDesc,
 			{
 				m_depthTest ? TRUE : FALSE,
 				m_depthWrite ? D3D12_DEPTH_WRITE_MASK_ALL : D3D12_DEPTH_WRITE_MASK_ZERO,
@@ -127,16 +133,17 @@ namespace JoyEngine
 			{inputLayout, _countof(inputLayout)},
 			{},
 			D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
-			numRenderTargets,
+			// i'm sorry
+			static_cast<uint32_t>(renderTargetsFormats.size()),
 			{
-				numRenderTargets > 0 ? DXGI_FORMAT_R8G8B8A8_UNORM : DXGI_FORMAT_UNKNOWN,
-				numRenderTargets > 1 ? DXGI_FORMAT_R8G8B8A8_UNORM : DXGI_FORMAT_UNKNOWN,
-				numRenderTargets > 2 ? DXGI_FORMAT_R8G8B8A8_UNORM : DXGI_FORMAT_UNKNOWN,
-				numRenderTargets > 3 ? DXGI_FORMAT_R8G8B8A8_UNORM : DXGI_FORMAT_UNKNOWN,
-				numRenderTargets > 4 ? DXGI_FORMAT_R8G8B8A8_UNORM : DXGI_FORMAT_UNKNOWN,
-				numRenderTargets > 5 ? DXGI_FORMAT_R8G8B8A8_UNORM : DXGI_FORMAT_UNKNOWN,
-				numRenderTargets > 6 ? DXGI_FORMAT_R8G8B8A8_UNORM : DXGI_FORMAT_UNKNOWN,
-				numRenderTargets > 7 ? DXGI_FORMAT_R8G8B8A8_UNORM : DXGI_FORMAT_UNKNOWN
+				renderTargetsFormats.size() > 0 ? renderTargetsFormats[0] : DXGI_FORMAT_UNKNOWN,
+				renderTargetsFormats.size() > 1 ? renderTargetsFormats[1] : DXGI_FORMAT_UNKNOWN,
+				renderTargetsFormats.size() > 2 ? renderTargetsFormats[2] : DXGI_FORMAT_UNKNOWN,
+				renderTargetsFormats.size() > 3 ? renderTargetsFormats[3] : DXGI_FORMAT_UNKNOWN,
+				renderTargetsFormats.size() > 4 ? renderTargetsFormats[4] : DXGI_FORMAT_UNKNOWN,
+				renderTargetsFormats.size() > 5 ? renderTargetsFormats[5] : DXGI_FORMAT_UNKNOWN,
+				renderTargetsFormats.size() > 6 ? renderTargetsFormats[6] : DXGI_FORMAT_UNKNOWN,
+				renderTargetsFormats.size() > 7 ? renderTargetsFormats[7] : DXGI_FORMAT_UNKNOWN
 			},
 			DXGI_FORMAT_D32_FLOAT,
 			{1, 0},

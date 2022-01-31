@@ -95,11 +95,17 @@ namespace JoyEngine
 
 		m_positionAttachment = std::make_unique<RenderTexture>(
 			m_width, m_height,
-			DXGI_FORMAT_R8G8B8A8_UNORM,
+			DXGI_FORMAT_R16G16B16A16_FLOAT,
 			D3D12_RESOURCE_STATE_RENDER_TARGET,
 			D3D12_HEAP_TYPE_DEFAULT);
 
 		m_normalAttachment = std::make_unique<RenderTexture>(
+			m_width, m_height,
+			DXGI_FORMAT_R16G16B16A16_FLOAT,
+			D3D12_RESOURCE_STATE_RENDER_TARGET,
+			D3D12_HEAP_TYPE_DEFAULT);
+
+		m_lightingAttachment = std::make_unique<RenderTexture>(
 			m_width, m_height,
 			DXGI_FORMAT_R8G8B8A8_UNORM,
 			D3D12_RESOURCE_STATE_RENDER_TARGET,
@@ -142,7 +148,6 @@ namespace JoyEngine
 		m_lights.erase(light);
 	}
 
-
 	void RenderManager::RegisterCamera(Camera* camera)
 	{
 		m_currentCamera = camera;
@@ -181,6 +186,7 @@ namespace JoyEngine
 		auto rtvHandle = m_renderTargets[m_currentFrameIndex]->GetResourceView()->GetHandle();
 		auto positionHandle = m_positionAttachment->GetResourceView()->GetHandle();
 		auto normalHandle = m_normalAttachment->GetResourceView()->GetHandle();
+		auto lightHandle = m_lightingAttachment->GetResourceView()->GetHandle();
 
 		// Set necessary state.
 		commandList->RSSetViewports(1, &m_viewport);
@@ -194,8 +200,8 @@ namespace JoyEngine
 		commandList->ResourceBarrier(1, &barrier1);
 
 		ASSERT(m_currentCamera != nullptr);
-		glm::mat4 view = m_currentCamera->GetViewMatrix();
-		glm::mat4 proj = m_currentCamera->GetProjMatrix();
+		const glm::mat4 view = m_currentCamera->GetViewMatrix();
+		const glm::mat4 proj = m_currentCamera->GetProjMatrix();
 
 		// Drawing GBUFFER textures
 		{
@@ -260,36 +266,48 @@ namespace JoyEngine
 		{
 			commandList->OMSetRenderTargets(
 				1,
-				&rtvHandle,
+				&lightHandle,
 				FALSE,
 				&dsvHandle);
 
-			const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
-			commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+			const float clearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
+			commandList->ClearRenderTargetView(lightHandle, clearColor, 0, nullptr);
 			//commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 			auto sm = JoyContext::DummyMaterials->GetLightProcessingSharedMaterial();
 
-			for (auto const& s : m_sharedMaterials)
+			commandList->SetPipelineState(sm->GetPipelineObject().Get());
+			commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+
+			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			commandList->IASetVertexBuffers(0, 1, m_planeMesh->GetVertexBufferView());
+			commandList->IASetIndexBuffer(m_planeMesh->GetIndexBufferView());
+
+			for (const auto& light : m_lights)
 			{
-				commandList->SetPipelineState(sm->GetPipelineObject().Get());
-				commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
-
-				commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-				commandList->IASetVertexBuffers(0, 1, m_planeMesh->GetVertexBufferView());
-				commandList->IASetIndexBuffer(m_planeMesh->GetIndexBufferView());
-
-				MVP mvp{
-					//glm::toMat4(glm::quat(glm::vec3(
-					//	glm::radians(180.0f),
-					//	glm::radians(0.f),
-					//	glm::radians(0.f)
-					//))),
-					glm::mat4(1.0f),
-					(view),
-					(proj)
+				LightData lightData{
+					// shut up!
+					light->GetIntensity(),
+					light->GetRadius(),
+					light->GetHeight(),
+					light->GetAngle(),
+					light->GetTransform()->GetModelMatrix(),
+					proj * view
 				};
-				commandList->SetGraphicsRoot32BitConstants(0, sizeof(MVP) / 4, &mvp, 0);
+
+				ID3D12DescriptorHeap* heaps1[1] = {m_positionAttachment->GetAttachmentView()->GetHeap()};
+				commandList->SetDescriptorHeaps(
+					1,
+					heaps1);
+				commandList->SetGraphicsRootDescriptorTable(1, m_positionAttachment->GetAttachmentView()->GetGPUHandle());
+
+				ID3D12DescriptorHeap* heaps2[1] = {m_normalAttachment->GetAttachmentView()->GetHeap()};
+				commandList->SetDescriptorHeaps(
+					1,
+					heaps2);
+				commandList->SetGraphicsRootDescriptorTable(2, m_normalAttachment->GetAttachmentView()->GetGPUHandle());
+
+				commandList->SetGraphicsRoot32BitConstants(0, sizeof(LightData) / 4, &lightData, 0);
 				commandList->DrawIndexedInstanced(
 					m_planeMesh->GetIndexSize(),
 					1,
@@ -297,7 +315,17 @@ namespace JoyEngine
 			}
 		}
 
-		// Drawing main color
+		// Transition light texture to generic read state
+		{
+			D3D12_RESOURCE_BARRIER lightToReadBarrier = Transition(
+				m_lightingAttachment->GetImage().Get(),
+				D3D12_RESOURCE_STATE_RENDER_TARGET,
+				D3D12_RESOURCE_STATE_GENERIC_READ);
+			commandList->ResourceBarrier(1, &lightToReadBarrier);
+
+		}
+
+		//Drawing main color
 		{
 			commandList->OMSetRenderTargets(
 				1,
@@ -305,7 +333,7 @@ namespace JoyEngine
 				FALSE, &dsvHandle);
 
 			const float clearColor[] = {0.0f, 0.2f, 0.4f, 1.0f};
-			//commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+			commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 			// we've written depth in g-buffer generation step
 			//commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
@@ -333,17 +361,11 @@ namespace JoyEngine
 						commandList->SetGraphicsRootDescriptorTable(index, gpuHandle);
 					}
 
-					ID3D12DescriptorHeap* heaps1[1] = {m_positionAttachment->GetAttachmentView()->GetHeap()};
+					ID3D12DescriptorHeap* heaps1[1] = {m_lightingAttachment->GetAttachmentView()->GetHeap()};
 					commandList->SetDescriptorHeaps(
 						1,
 						heaps1);
-					commandList->SetGraphicsRootDescriptorTable(3, m_positionAttachment->GetAttachmentView()->GetGPUHandle());
-
-					ID3D12DescriptorHeap* heaps2[1] = {m_normalAttachment->GetAttachmentView()->GetHeap()};
-					commandList->SetDescriptorHeaps(
-						1,
-						heaps2);
-					commandList->SetGraphicsRootDescriptorTable(4, m_normalAttachment->GetAttachmentView()->GetGPUHandle());
+					commandList->SetGraphicsRootDescriptorTable(3, m_lightingAttachment->GetAttachmentView()->GetGPUHandle());
 
 					commandList->SetGraphicsRoot32BitConstants(2, sizeof(MVP) / 4, &mvp, 0);
 					commandList->DrawIndexedInstanced(
@@ -365,19 +387,23 @@ namespace JoyEngine
 			commandList->ResourceBarrier(1, &barrier2);
 
 
-			// Indicate that the back buffer will now be used to present.
 			D3D12_RESOURCE_BARRIER positionToRenderBarrier = Transition(
 				m_positionAttachment->GetImage().Get(),
 				D3D12_RESOURCE_STATE_GENERIC_READ,
 				D3D12_RESOURCE_STATE_RENDER_TARGET);
 			commandList->ResourceBarrier(1, &positionToRenderBarrier);
 
-			// Indicate that the back buffer will now be used to present.
 			D3D12_RESOURCE_BARRIER normalToRenderBarrier = Transition(
 				m_normalAttachment->GetImage().Get(),
 				D3D12_RESOURCE_STATE_GENERIC_READ,
 				D3D12_RESOURCE_STATE_RENDER_TARGET);
 			commandList->ResourceBarrier(1, &normalToRenderBarrier);
+
+			D3D12_RESOURCE_BARRIER lightToRenderBarrier = Transition(
+				m_lightingAttachment->GetImage().Get(),
+				D3D12_RESOURCE_STATE_GENERIC_READ,
+				D3D12_RESOURCE_STATE_RENDER_TARGET);
+			commandList->ResourceBarrier(1, &lightToRenderBarrier);
 		}
 
 		ASSERT_SUCC(commandList->Close());

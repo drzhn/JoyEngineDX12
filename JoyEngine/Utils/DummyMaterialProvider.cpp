@@ -33,20 +33,29 @@ namespace JoyEngine
 					true,
 					true,
 					true,
+					D3D12_CULL_MODE_BACK,
 					D3D12_COMPARISON_FUNC_LESS_EQUAL,
 					rootParameters,
-					2
+					{
+						DXGI_FORMAT_R16G16B16A16_FLOAT,
+						DXGI_FORMAT_R16G16B16A16_FLOAT
+					}
 				});
 		}
 
-
+		// Light processing
 		{
 			const GUID lightProcessingShaderGuid = GUID::StringToGuid("f9da7adf-4ebb-4601-8437-a19c07e8471a"); //shaders/lightprocessing.hlsl
 			const GUID lightProcessingSharedMaterialGuid = GUID::Random();
 
+			CD3DX12_DESCRIPTOR_RANGE1 ranges[2];
+			ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
+			ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
 
-			std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters(1);
-			rootParameters[0].InitAsConstants(sizeof(MVP) / 4, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+			std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters(3);
+			rootParameters[0].InitAsConstants(sizeof(LightData) / 4, 0, 0, D3D12_SHADER_VISIBILITY_ALL);
+			rootParameters[1].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
+			rootParameters[2].InitAsDescriptorTable(1, &ranges[1], D3D12_SHADER_VISIBILITY_PIXEL);
 
 			m_lightProcessingSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
 				lightProcessingSharedMaterialGuid,
@@ -54,10 +63,13 @@ namespace JoyEngine
 					lightProcessingShaderGuid,
 					true,
 					true,
-					true,
-					D3D12_COMPARISON_FUNC_LESS_EQUAL,
+					false,
+					D3D12_CULL_MODE_FRONT,
+					D3D12_COMPARISON_FUNC_GREATER_EQUAL,
 					rootParameters,
-					2
+					{
+						DXGI_FORMAT_R8G8B8A8_UNORM
+					}
 				});
 		}
 
@@ -70,20 +82,17 @@ namespace JoyEngine
 			const GUID texture1Guid = GUID::StringToGuid("1d451f58-3f84-4b2b-8c6f-fe8e2821d7f0");
 
 
-
-			CD3DX12_DESCRIPTOR_RANGE1 ranges[4];
+			CD3DX12_DESCRIPTOR_RANGE1 ranges[3];
 			ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
 			ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 0);
 			ranges[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
-			ranges[3].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2, 0, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
 
 
-			std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters(5);
+			std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters(4);
 			rootParameters[0].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
 			rootParameters[1].InitAsDescriptorTable(1, &ranges[1], D3D12_SHADER_VISIBILITY_PIXEL);
 			rootParameters[2].InitAsConstants(sizeof(MVP) / 4, 0, 0, D3D12_SHADER_VISIBILITY_ALL);
 			rootParameters[3].InitAsDescriptorTable(1, &ranges[2], D3D12_SHADER_VISIBILITY_PIXEL);
-			rootParameters[4].InitAsDescriptorTable(1, &ranges[3], D3D12_SHADER_VISIBILITY_PIXEL);
 
 
 			m_sharedMaterialHandle = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
@@ -93,9 +102,12 @@ namespace JoyEngine
 					true,
 					true,
 					false,
+					D3D12_CULL_MODE_BACK,
 					D3D12_COMPARISON_FUNC_LESS_EQUAL,
 					rootParameters,
-					1
+					{
+						DXGI_FORMAT_R8G8B8A8_UNORM
+					}
 				});
 			m_textureHandle = JoyContext::Resource->LoadResource<Texture>(texture1Guid);
 
@@ -111,6 +123,5 @@ namespace JoyEngine
 					material1RootParams,
 				});
 		}
-
 	}
 }

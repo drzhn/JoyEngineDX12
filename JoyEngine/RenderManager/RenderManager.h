@@ -79,9 +79,9 @@ namespace JoyEngine
 
 		std::unique_ptr<RenderTexture> m_positionAttachment;
 		std::unique_ptr<RenderTexture> m_normalAttachment;
+		std::unique_ptr<RenderTexture> m_lightingAttachment;
 
 		ResourceHandle<Mesh> m_planeMesh;
-
 
 		std::set<SharedMaterial*> m_sharedMaterials;
 		std::set<Light*> m_lights;

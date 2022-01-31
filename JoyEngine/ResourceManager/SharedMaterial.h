@@ -17,9 +17,10 @@ namespace JoyEngine
 		bool hasVertexInput;
 		bool depthTest;
 		bool depthWrite;
+		D3D12_CULL_MODE cullMode;
 		D3D12_COMPARISON_FUNC depthComparisonFunc;
 		std::vector<CD3DX12_ROOT_PARAMETER1> rootParams;
-		uint32_t numRenderTargets;
+		std::vector<DXGI_FORMAT> renderTargetsFormats;
 	};
 
 	class SharedMaterial final : public Resource
@@ -55,10 +56,11 @@ namespace JoyEngine
 
 		ComPtr<ID3D12RootSignature> m_rootSignature;
 		ComPtr<ID3D12PipelineState> m_pipelineState;
+		D3D12_CULL_MODE m_cullMode;
 
 	private:
 		void CreateRootSignature(const std::vector<CD3DX12_ROOT_PARAMETER1>& rootParams);
-		void CreateGraphicsPipeline(uint32_t numRenderTargets);
+		void CreateGraphicsPipeline(const std::vector<DXGI_FORMAT>& renderTargetsFormats);
 	};
 }
 

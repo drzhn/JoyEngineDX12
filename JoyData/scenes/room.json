@@ -16,7 +16,7 @@
                     "material": "vikingMaterial1"
                 }
             ]
-        },
+        },        
         {
             "name": "head",
             "transform": {
@@ -63,7 +63,7 @@
         {
             "name": "point_light",
             "transform": {
-                "localPosition": [ 0.0, 0.0, 0.0 ],
+                "localPosition": [ 0.0, -1.0, 2.0 ],
                 "localRotation": [ 0.0, 0.0, 0.0 ],
                 "localScale": [ 1.0, 1.0, 1.0 ]
             },
@@ -72,7 +72,9 @@
                     "type": "light",
                     "lightType": "point",
                     "intensity": 1.0,
-                    "radius": 3
+                    "radius": 3,
+                    "height": 8,
+                    "angle" : 60
                 }
             ]
         }

@@ -87,9 +87,25 @@
             ]
         },
         {
-            "name": "point_light",
+            "name": "point_light1",
             "transform": {
                 "localPosition": [ 0.0, -1.0, 4.0 ],
+                "localRotation": [ 0.0, 0.0, 0.0 ],
+                "localScale": [ 1.0, 1.0, 1.0 ]
+            },
+            "components": [
+                {
+                    "type": "light",
+                    "lightType": "point",
+                    "intensity": 1.0,
+                    "radius": 3
+                }
+            ]
+        },
+        {
+            "name": "point_light2",
+            "transform": {
+                "localPosition": [ 2.0, -1.0, 4.0 ],
                 "localRotation": [ 0.0, 0.0, 0.0 ],
                 "localScale": [ 1.0, 1.0, 1.0 ]
             },

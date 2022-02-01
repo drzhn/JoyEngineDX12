@@ -7,3 +7,31 @@
                         "m_color": [ 0.4, 0.5, 0.8, 1.0 ]
                     }
                 }
+
+
+                        {
+            "name": "capsule_light",
+            "transform": {
+                "localPosition": [ 1.0, 0.0, 2.0 ],
+                "localRotation": [ 0.0, 0.0, 0.0 ],
+                "localScale": [ 1.0, 1.0, 1.0 ]
+            },
+            "components": [
+                {
+                    "type": "light",
+                    "lightType": "capsule",
+                    "intensity": 1.0,
+                    "radius": 2,
+                    "height": 8,
+                    "angle": 60
+                },
+                {
+                    "type": "component",
+                    "component": "RoomBehaviour",
+                    "fields": {
+                        "m_speed": 2,
+                        "m_color": [ 0.4, 0.5, 0.8, 1.0 ]
+                    }
+                }
+            ]
+        },

@@ -272,46 +272,69 @@ namespace JoyEngine
 
 			const float clearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
 			commandList->ClearRenderTargetView(lightHandle, clearColor, 0, nullptr);
-			//commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
-			auto sm = JoyContext::DummyMaterials->GetLightProcessingSharedMaterial();
-
-			commandList->SetPipelineState(sm->GetPipelineObject().Get());
-			commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
-
-			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-			commandList->IASetVertexBuffers(0, 1, m_planeMesh->GetVertexBufferView());
-			commandList->IASetIndexBuffer(m_planeMesh->GetIndexBufferView());
-
-			for (const auto& light : m_lights)
+			// Direction light
 			{
-				LightData lightData{
-					// shut up!
-					light->GetIntensity(),
-					light->GetRadius(),
-					light->GetHeight(),
-					light->GetAngle(),
-					light->GetTransform()->GetModelMatrix(),
-					proj * view
-				};
+				auto sm = JoyContext::DummyMaterials->GetDirectionLightProcessingSharedMaterial();
 
-				ID3D12DescriptorHeap* heaps1[1] = {m_positionAttachment->GetAttachmentView()->GetHeap()};
+				commandList->SetPipelineState(sm->GetPipelineObject().Get());
+				commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+				commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+				ID3D12DescriptorHeap* descriptorHeap[1] = { m_normalAttachment->GetAttachmentView()->GetHeap() };
 				commandList->SetDescriptorHeaps(
 					1,
-					heaps1);
-				commandList->SetGraphicsRootDescriptorTable(1, m_positionAttachment->GetAttachmentView()->GetGPUHandle());
+					descriptorHeap);
+				commandList->SetGraphicsRootDescriptorTable(1, m_normalAttachment->GetAttachmentView()->GetGPUHandle());
 
-				ID3D12DescriptorHeap* heaps2[1] = {m_normalAttachment->GetAttachmentView()->GetHeap()};
-				commandList->SetDescriptorHeaps(
+				//commandList->SetGraphicsRoot32BitConstants(0, sizeof(LightData) / 4, &lightData, 0);
+				commandList->DrawInstanced(
+					3,
 					1,
-					heaps2);
-				commandList->SetGraphicsRootDescriptorTable(2, m_normalAttachment->GetAttachmentView()->GetGPUHandle());
+					0, 0);
+			}
 
-				commandList->SetGraphicsRoot32BitConstants(0, sizeof(LightData) / 4, &lightData, 0);
-				commandList->DrawIndexedInstanced(
-					m_planeMesh->GetIndexSize(),
-					1,
-					0, 0, 0);
+			// Other lights
+			{
+				auto sm = JoyContext::DummyMaterials->GetLightProcessingSharedMaterial();
+
+				commandList->SetPipelineState(sm->GetPipelineObject().Get());
+				commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+
+				commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+				commandList->IASetVertexBuffers(0, 1, m_planeMesh->GetVertexBufferView());
+				commandList->IASetIndexBuffer(m_planeMesh->GetIndexBufferView());
+
+				for (const auto& light : m_lights)
+				{
+					LightData lightData{
+						// shut up!
+						light->GetIntensity(),
+						light->GetRadius(),
+						light->GetHeight(),
+						light->GetAngle(),
+						light->GetTransform()->GetModelMatrix(),
+						proj * view
+					};
+
+					ID3D12DescriptorHeap* heaps1[1] = {m_positionAttachment->GetAttachmentView()->GetHeap()};
+					commandList->SetDescriptorHeaps(
+						1,
+						heaps1);
+					commandList->SetGraphicsRootDescriptorTable(1, m_positionAttachment->GetAttachmentView()->GetGPUHandle());
+
+					ID3D12DescriptorHeap* heaps2[1] = {m_normalAttachment->GetAttachmentView()->GetHeap()};
+					commandList->SetDescriptorHeaps(
+						1,
+						heaps2);
+					commandList->SetGraphicsRootDescriptorTable(2, m_normalAttachment->GetAttachmentView()->GetGPUHandle());
+
+					commandList->SetGraphicsRoot32BitConstants(0, sizeof(LightData) / 4, &lightData, 0);
+					commandList->DrawIndexedInstanced(
+						m_planeMesh->GetIndexSize(),
+						1,
+						0, 0, 0);
+				}
 			}
 		}
 
@@ -322,7 +345,6 @@ namespace JoyEngine
 				D3D12_RESOURCE_STATE_RENDER_TARGET,
 				D3D12_RESOURCE_STATE_GENERIC_READ);
 			commandList->ResourceBarrier(1, &lightToReadBarrier);
-
 		}
 
 		//Drawing main color

@@ -17,6 +17,7 @@ namespace JoyEngine
 		[[nodiscard]] GUID GetMaterialGuid() const noexcept { return m_materialHandle->GetGuid(); }
 		[[nodiscard]] SharedMaterial* GetGBufferSharedMaterial() const noexcept { return m_gbufferWriteSharedMaterial; }
 		[[nodiscard]] SharedMaterial* GetLightProcessingSharedMaterial() const noexcept { return m_lightProcessingSharedMaterial; }
+		[[nodiscard]] SharedMaterial* GetDirectionLightProcessingSharedMaterial() const noexcept { return m_directionLightProcessingSharedMaterial; }
 	private:
 		ResourceHandle<SharedMaterial> m_gbufferWriteSharedMaterial;
 		ResourceHandle<Shader> m_gbufferWriteShader;

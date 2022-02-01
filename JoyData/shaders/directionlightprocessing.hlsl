@@ -10,8 +10,7 @@ struct DirectionLightData
 };
 
 ConstantBuffer<DirectionLightData> lightData : register(b0);
-Texture2D normalTexture : register(t1);
-Texture2D colorTexture : register(t2);
+Texture2D normalTexture : register(t0);
 
 
 float4 VSMain(uint id : SV_VertexID) : SV_POSITION
@@ -20,14 +19,17 @@ float4 VSMain(uint id : SV_VertexID) : SV_POSITION
 	return float4(uv * float2(2, -2) + float2(-1, 1), 0, 1);
 }
 
-PSOutput PSMain(float4 position) // : SV_TARGET
+PSOutput PSMain(float4 position : SV_POSITION) // : SV_TARGET
 {
 	PSOutput output;
 
 	const float3 worldNormal = normalTexture.Load(float3(position.xy, 0));
-	const float3 color = colorTexture.Load(float3(position.xy, 0));
 
-	output.Color = float4(worldNormal, 1);
+	const float3 toLightDir = float3(0, 1, 0);
+
+	const float diff = max(dot(worldNormal, toLightDir), 0.0);
+
+	output.Color = float4(1, 1, 1, 1) *diff;
 
 	return output;
 }

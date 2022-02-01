@@ -28,9 +28,14 @@
         {
             "guid": "48ffacc9-5c00-4058-b359-cf72189896ac",
             "path": "shaders/gbufferwrite.hlsl"
-        },        {
+        },        
+		{
             "guid": "f9da7adf-4ebb-4601-8437-a19c07e8471a",
             "path": "shaders/lightprocessing.hlsl"
+        },        
+		{
+            "guid": "1c6cb88f-f3ef-4797-9d65-44682ca7baba",
+            "path": "shaders/directionlightprocessing.hlsl"
         },
         {
             "guid": "11dcfeba-c2b6-4c2e-a3c7-51054ff06f1d",

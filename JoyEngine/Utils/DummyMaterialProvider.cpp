@@ -35,12 +35,43 @@ namespace JoyEngine
 					true,
 					D3D12_CULL_MODE_BACK,
 					D3D12_COMPARISON_FUNC_LESS_EQUAL,
+					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 					rootParameters,
 					{
 						DXGI_FORMAT_R16G16B16A16_FLOAT,
 						DXGI_FORMAT_R16G16B16A16_FLOAT
 					}
 				});
+		}
+
+		// Direction light processing
+		{
+			const GUID directionLightProcessingShaderGuid = GUID::StringToGuid("1c6cb88f-f3ef-4797-9d65-44682ca7baba"); //shaders/directionlightprocessing.hlsl
+			const GUID directionLightProcessingSharedMaterialGuid = GUID::Random();
+
+			//CD3DX12_DESCRIPTOR_RANGE1 ranges[2];
+			//ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
+			//ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
+
+			//std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters(3);
+			//rootParameters[0].InitAsConstants(sizeof(LightData) / 4, 0, 0, D3D12_SHADER_VISIBILITY_ALL);
+			//rootParameters[1].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
+			//rootParameters[2].InitAsDescriptorTable(1, &ranges[1], D3D12_SHADER_VISIBILITY_PIXEL);
+
+			//m_lightProcessingSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
+			//	directionLightProcessingSharedMaterialGuid,
+			//	{
+			//		directionLightProcessingShaderGuid,
+			//		true,
+			//		true,
+			//		false,
+			//		D3D12_CULL_MODE_FRONT,
+			//		D3D12_COMPARISON_FUNC_GREATER_EQUAL,
+			//		rootParameters,
+			//		{
+			//			DXGI_FORMAT_R8G8B8A8_UNORM
+			//		}
+			//	});
 		}
 
 		// Light processing
@@ -57,6 +88,20 @@ namespace JoyEngine
 			rootParameters[1].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
 			rootParameters[2].InitAsDescriptorTable(1, &ranges[1], D3D12_SHADER_VISIBILITY_PIXEL);
 
+			CD3DX12_BLEND_DESC blendDesc = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+			const D3D12_RENDER_TARGET_BLEND_DESC defaultRenderTargetBlendDesc =
+			{
+				TRUE,FALSE,
+				D3D12_BLEND_SRC_COLOR, D3D12_BLEND_DEST_COLOR, D3D12_BLEND_OP_ADD,
+				D3D12_BLEND_ONE, D3D12_BLEND_ZERO, D3D12_BLEND_OP_ADD,
+				D3D12_LOGIC_OP_NOOP,
+				D3D12_COLOR_WRITE_ENABLE_ALL,
+			};
+			for (UINT i = 0; i < D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT; ++i)
+			{
+				blendDesc.RenderTarget[i] = defaultRenderTargetBlendDesc;
+			}
+
 			m_lightProcessingSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
 				lightProcessingSharedMaterialGuid,
 				{
@@ -66,6 +111,7 @@ namespace JoyEngine
 					false,
 					D3D12_CULL_MODE_FRONT,
 					D3D12_COMPARISON_FUNC_GREATER_EQUAL,
+					blendDesc,
 					rootParameters,
 					{
 						DXGI_FORMAT_R8G8B8A8_UNORM
@@ -104,6 +150,7 @@ namespace JoyEngine
 					false,
 					D3D12_CULL_MODE_BACK,
 					D3D12_COMPARISON_FUNC_LESS_EQUAL,
+					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 					rootParameters,
 					{
 						DXGI_FORMAT_R8G8B8A8_UNORM

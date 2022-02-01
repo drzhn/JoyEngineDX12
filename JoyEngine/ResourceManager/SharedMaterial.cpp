@@ -19,6 +19,25 @@ using Microsoft::WRL::ComPtr;
 
 namespace JoyEngine
 {
+	std::vector<D3D12_INPUT_ELEMENT_DESC> SharedMaterial::m_inputLayout = {
+		{
+			"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT,
+			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
+		},
+		{
+			"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT,
+			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
+		},
+		{
+			"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT,
+			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
+		},
+		{
+			"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT,
+			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
+		},
+	};
+
 	SharedMaterial::SharedMaterial(GUID guid) :
 		Resource(guid) // UNUSED
 	{
@@ -36,17 +55,17 @@ namespace JoyEngine
 		//JoyContext::Render->RegisterSharedMaterial(this);
 	}
 
-	SharedMaterial::SharedMaterial(GUID guid, SharedMaterialArgs args) :
+	SharedMaterial::SharedMaterial(const GUID guid, const SharedMaterialArgs args) :
 		Resource(guid),
 		m_shader(args.shader),
 		m_hasVertexInput(args.hasVertexInput),
 		m_depthTest(args.depthTest),
 		m_depthWrite(args.depthWrite),
-		m_cullMode(args.cullMode),
-		m_depthComparisonFunc(args.depthComparisonFunc)
+		m_depthComparisonFunc(args.depthComparisonFunc),
+		m_cullMode(args.cullMode)
 	{
 		CreateRootSignature(args.rootParams);
-		CreateGraphicsPipeline(args.renderTargetsFormats);
+		CreateGraphicsPipeline(args.renderTargetsFormats, args.blendDesc);
 		JoyContext::Render->RegisterSharedMaterial(this);
 	}
 
@@ -84,27 +103,11 @@ namespace JoyEngine
 			IID_PPV_ARGS(&m_rootSignature)));
 	}
 
-	void SharedMaterial::CreateGraphicsPipeline(const std::vector<DXGI_FORMAT>& renderTargetsFormats)
+	void SharedMaterial::CreateGraphicsPipeline(
+		const std::vector<DXGI_FORMAT>& renderTargetsFormats,
+		CD3DX12_BLEND_DESC blendDesc)
 	{
 		// Create the vertex input layout
-		D3D12_INPUT_ELEMENT_DESC inputLayout[] = {
-			{
-				"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT,
-				D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
-			},
-			{
-				"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT,
-				D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
-			},
-			{
-				"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT,
-				D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
-			},
-			{
-				"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT,
-				D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
-			},
-		};
 
 		CD3DX12_RASTERIZER_DESC rasterizerDesc = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 		rasterizerDesc.CullMode = m_cullMode;
@@ -117,7 +120,7 @@ namespace JoyEngine
 			{},
 			{},
 			{},
-			CD3DX12_BLEND_DESC(D3D12_DEFAULT),
+			blendDesc,
 			UINT_MAX,
 			rasterizerDesc,
 			{
@@ -130,7 +133,10 @@ namespace JoyEngine
 				D3D12_DEPTH_STENCILOP_DESC({}),
 				D3D12_DEPTH_STENCILOP_DESC({})
 			},
-			{inputLayout, _countof(inputLayout)},
+			{
+				m_hasVertexInput ? m_inputLayout.data() : nullptr,
+				m_hasVertexInput ? static_cast<uint32_t>(m_inputLayout.size()) : 0
+			},
 			{},
 			D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 			// i'm sorry

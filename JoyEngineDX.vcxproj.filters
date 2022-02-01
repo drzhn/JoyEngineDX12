@@ -247,5 +247,6 @@
     <None Include="JoyData\shaders\gbufferwrite.hlsl" />
     <None Include="JoyData\shaders\vikingShader.hlsl" />
     <None Include="JoyData\shaders\lightprocessing.hlsl" />
+    <None Include="JoyData\shaders\directionlightprocessing.hlsl" />
   </ItemGroup>
 </Project>

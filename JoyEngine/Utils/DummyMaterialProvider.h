@@ -21,6 +21,9 @@ namespace JoyEngine
 		ResourceHandle<SharedMaterial> m_gbufferWriteSharedMaterial;
 		ResourceHandle<Shader> m_gbufferWriteShader;
 
+		ResourceHandle<SharedMaterial> m_directionLightProcessingSharedMaterial;
+		ResourceHandle<Shader> m_directionLightProcessingShader;
+
 		ResourceHandle<SharedMaterial> m_lightProcessingSharedMaterial;
 		ResourceHandle<Shader> m_lightProcessingShader;
 

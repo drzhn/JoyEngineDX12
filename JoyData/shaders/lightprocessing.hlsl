@@ -139,7 +139,7 @@ PSOutput PSMain(PSInput input) // : SV_TARGET
 	const float3 toLightDir = normalize(lightPos - worldPos);
 	const float diff = max(dot(worldNormal, toLightDir), 0.0);
 
-	output.Color = diff * attenuation;
+	output.Color = float4(1, 1, 1, 1) * diff * attenuation;
 
 	return output;
 }

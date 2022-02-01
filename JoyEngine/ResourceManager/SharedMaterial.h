@@ -19,6 +19,7 @@ namespace JoyEngine
 		bool depthWrite;
 		D3D12_CULL_MODE cullMode;
 		D3D12_COMPARISON_FUNC depthComparisonFunc;
+		CD3DX12_BLEND_DESC blendDesc;
 		std::vector<CD3DX12_ROOT_PARAMETER1> rootParams;
 		std::vector<DXGI_FORMAT> renderTargetsFormats;
 	};
@@ -60,7 +61,9 @@ namespace JoyEngine
 
 	private:
 		void CreateRootSignature(const std::vector<CD3DX12_ROOT_PARAMETER1>& rootParams);
-		void CreateGraphicsPipeline(const std::vector<DXGI_FORMAT>& renderTargetsFormats);
+		void CreateGraphicsPipeline(const std::vector<DXGI_FORMAT>& renderTargetsFormats, CD3DX12_BLEND_DESC blendDesc);
+
+		static std::vector<D3D12_INPUT_ELEMENT_DESC> m_inputLayout;
 	};
 }
 

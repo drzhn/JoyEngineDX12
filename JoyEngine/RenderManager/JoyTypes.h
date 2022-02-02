@@ -10,7 +10,8 @@ namespace JoyEngine
 	{
 		Point = 0,
 		Spot = 1,
-		Capsule = 2
+		Capsule = 2,
+		Direction = 3
 	};
 
 	struct Vertex
@@ -28,8 +29,13 @@ namespace JoyEngine
 		glm::mat4 proj;
 	};
 
+	struct DirectionLightData
+	{
+		glm::vec3 direction;
+		float intensity;
+		float ambient;
+	};
 
-#pragma pack(push,16)
 	struct LightData
 	{
 		float intensity;
@@ -39,15 +45,14 @@ namespace JoyEngine
 		glm::mat4 model;
 		glm::mat4 viewProj;
 	};
-#pragma pack(pop)
 
-	struct JoyData
-	{
-		glm::vec3 cameraWorldPos;
-		glm::mat4 cameraProjMatrix;
-		float time;
-		float deltaTime;
-	};
+	//struct JoyData
+	//{
+	//	glm::vec3 cameraWorldPos;
+	//	glm::mat4 cameraProjMatrix;
+	//	float time;
+	//	float deltaTime;
+	//};
 }
 
 #endif //JOY_TYPES_H

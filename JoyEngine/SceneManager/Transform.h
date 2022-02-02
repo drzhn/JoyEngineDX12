@@ -16,19 +16,17 @@ namespace JoyEngine
 		Transform(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale);
 
 		void SetPosition(glm::vec3 pos) noexcept;
-
-		[[nodiscard]] glm::vec3 GetPosition() const noexcept;
-
 		void SetRotation(glm::vec3 rot) noexcept;
 		void SetRotation(glm::quat rot) noexcept;
-
-		[[nodiscard]] glm::quat GetRotation() const noexcept;
-
 		void SetScale(glm::vec3 scale) noexcept;
 
+		[[nodiscard]] glm::vec3 GetPosition() const noexcept;
+		[[nodiscard]] glm::quat GetRotation() const noexcept;
 		[[nodiscard]] glm::vec3 GetScale() const noexcept;
-
 		[[nodiscard]] glm::mat4 GetModelMatrix() const;
+		[[nodiscard]] glm::vec3 GetForward() const noexcept;
+		[[nodiscard]] glm::vec3 GetUp() const noexcept;
+		[[nodiscard]] glm::vec3 GetRight() const noexcept;
 
 	private:
 		void UpdateModelMatrix();

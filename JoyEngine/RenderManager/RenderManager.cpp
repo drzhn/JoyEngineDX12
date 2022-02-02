@@ -136,6 +136,7 @@ namespace JoyEngine
 
 	void RenderManager::RegisterLight(Light* light)
 	{
+		ASSERT(light->GetLightType() != Direction);
 		m_lights.insert(light);
 	}
 
@@ -146,6 +147,18 @@ namespace JoyEngine
 			ASSERT(false);
 		}
 		m_lights.erase(light);
+	}
+
+	void RenderManager::RegisterDirectionLight(Light* light)
+	{
+		ASSERT(light->GetLightType() == Direction);
+		m_directionLight = light;
+	}
+
+	void RenderManager::UnregisterDirectionLight(Light* light)
+	{
+		ASSERT(m_directionLight == light);
+		m_directionLight = nullptr;
 	}
 
 	void RenderManager::RegisterCamera(Camera* camera)
@@ -274,6 +287,7 @@ namespace JoyEngine
 			commandList->ClearRenderTargetView(lightHandle, clearColor, 0, nullptr);
 
 			// Direction light
+			if (m_directionLight != nullptr)
 			{
 				auto sm = JoyContext::DummyMaterials->GetDirectionLightProcessingSharedMaterial();
 
@@ -281,13 +295,19 @@ namespace JoyEngine
 				commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
 				commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-				ID3D12DescriptorHeap* descriptorHeap[1] = { m_normalAttachment->GetAttachmentView()->GetHeap() };
+				ID3D12DescriptorHeap* descriptorHeap[1] = {m_normalAttachment->GetAttachmentView()->GetHeap()};
 				commandList->SetDescriptorHeaps(
 					1,
 					descriptorHeap);
 				commandList->SetGraphicsRootDescriptorTable(1, m_normalAttachment->GetAttachmentView()->GetGPUHandle());
 
-				//commandList->SetGraphicsRoot32BitConstants(0, sizeof(LightData) / 4, &lightData, 0);
+				DirectionLightData lightData = {
+					m_directionLight->GetTransform()->GetForward(),
+					m_directionLight->GetIntensity(),
+					m_directionLight->GetAmbient()
+				};
+
+				commandList->SetGraphicsRoot32BitConstants(0, sizeof(DirectionLightData) / 4, &lightData, 0);
 				commandList->DrawInstanced(
 					3,
 					1,

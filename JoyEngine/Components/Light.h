@@ -16,7 +16,8 @@ namespace JoyEngine
 		      float intensity,
 		      float radius,
 		      float height,
-		      float angle
+		      float angle,
+		      float ambient
 		);
 
 		void Enable() override;
@@ -31,6 +32,7 @@ namespace JoyEngine
 		[[nodiscard]] float GetRadius() const noexcept { return m_radius; }
 		[[nodiscard]] float GetHeight() const noexcept { return m_height; }
 		[[nodiscard]] float GetAngle() const noexcept { return m_angle; }
+		[[nodiscard]] float GetAmbient() const noexcept { return m_ambient; }
 
 	private:
 		LightType m_lightType;
@@ -38,6 +40,7 @@ namespace JoyEngine
 		float m_radius = 0;
 		float m_height = 0;
 		float m_angle = 0;
+		float m_ambient = 0;
 	};
 }
 

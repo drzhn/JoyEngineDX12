@@ -61,4 +61,19 @@ namespace JoyEngine
 	{
 		return m_modelMatrix;
 	}
+
+	glm::vec3 Transform::GetForward() const noexcept
+	{
+		return m_modelMatrix * glm::vec4(0, 0, 1, 0);
+	}
+
+	glm::vec3 Transform::GetUp() const noexcept
+	{
+		return m_modelMatrix * glm::vec4(0, 1, 0, 0);
+	}
+
+	glm::vec3 Transform::GetRight() const noexcept
+	{
+		return m_modelMatrix * glm::vec4(1, 0, 0, 0);
+	}
 }

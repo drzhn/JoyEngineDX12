@@ -61,6 +61,22 @@
             ]
         },
         {
+            "name": "direction_light",
+            "transform": {
+                "localPosition": [ 1.0, 0.0, 2.0 ],
+                "localRotation": [ 45.0, 0.0, 0.0 ],
+                "localScale": [ 1.0, 1.0, 1.0 ]
+            },
+            "components": [
+                {
+                    "type": "light",
+                    "lightType": "direction",
+                    "intensity": 0.3,
+                    "ambient":  0.05
+                }
+            ]
+        },        
+        {
             "name": "capsule_light",
             "transform": {
                 "localPosition": [ 1.0, 0.0, 2.0 ],

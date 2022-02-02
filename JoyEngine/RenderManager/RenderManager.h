@@ -58,6 +58,10 @@ namespace JoyEngine
 
 		void UnregisterLight(Light*);
 
+		void RegisterDirectionLight(Light*);
+
+		void UnregisterDirectionLight(Light*);
+
 		void RegisterCamera(Camera* camera);
 
 		void UnregisterCamera(Camera* camera);
@@ -85,6 +89,7 @@ namespace JoyEngine
 
 		std::set<SharedMaterial*> m_sharedMaterials;
 		std::set<Light*> m_lights;
+		Light* m_directionLight;
 		Camera* m_currentCamera;
 
 		std::unique_ptr<CommandQueue> m_queue;

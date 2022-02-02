@@ -67,7 +67,7 @@ namespace JoyEngine
 						float intensity = component["intensity"].GetFloat();
 						float radius = component["radius"].GetFloat();
 
-						light = std::make_unique<Light>(LightType::Point, intensity, radius, 0, 0);
+						light = std::make_unique<Light>(LightType::Point, intensity, radius, 0.0f, 0.0f, 0.0f);
 					}
 					else if (lightTypeStr == "capsule")
 					{
@@ -75,7 +75,7 @@ namespace JoyEngine
 						float radius = component["radius"].GetFloat();
 						float height = component["height"].GetFloat();
 
-						light = std::make_unique<Light>(LightType::Capsule, intensity, radius, height, 0);
+						light = std::make_unique<Light>(LightType::Capsule, intensity, radius, height, 0.0f, 0.0f);
 					}
 					else if (lightTypeStr == "spot")
 					{
@@ -83,7 +83,14 @@ namespace JoyEngine
 						float angle = component["angle"].GetFloat();
 						float height = component["height"].GetFloat();
 
-						light = std::make_unique<Light>(LightType::Capsule, intensity, 0, height, angle);
+						light = std::make_unique<Light>(LightType::Spot, intensity, 0.0f, height, angle, 0.0f);
+					}
+					else if (lightTypeStr == "direction")
+					{
+						float intensity = component["intensity"].GetFloat();
+						float ambient = component["ambient"].GetFloat();
+
+						light = std::make_unique<Light>(LightType::Direction, intensity, 0.0f, 0.0f, 0.0f, ambient);
 					}
 					else
 					{

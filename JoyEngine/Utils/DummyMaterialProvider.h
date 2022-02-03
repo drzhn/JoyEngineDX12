@@ -13,6 +13,7 @@ namespace JoyEngine
 		DummyMaterialProvider() = default;
 		~DummyMaterialProvider() = default;
 		void Init();
+		void CreateSampleMaterial(const std::string& materialName, GUID textureGuid);
 
 		[[nodiscard]] GUID GetMaterialGuid(const std::string& materialName) const noexcept
 		{
@@ -38,7 +39,6 @@ namespace JoyEngine
 
 		struct MaterialData
 		{
-			GUID textureGuid;
 			ResourceHandle<Texture> textureHandle;
 			ResourceHandle<Material> materialHandle;
 		};

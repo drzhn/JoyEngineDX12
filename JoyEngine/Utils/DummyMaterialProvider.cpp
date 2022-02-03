@@ -125,7 +125,6 @@ namespace JoyEngine
 		{
 			const GUID shaderGuid = GUID::StringToGuid("183d6cfe-ca85-4e0b-ab36-7b1ca0f99d34");
 			const GUID sharedMaterialGuid = GUID::Random();
-			const GUID materialGuid = GUID::Random();
 
 
 			CD3DX12_DESCRIPTOR_RANGE1 ranges[3];
@@ -157,41 +156,32 @@ namespace JoyEngine
 					}
 				});
 
-			GUID texture1Guid = GUID::StringToGuid("1d451f58-3f84-4b2b-8c6f-fe8e2821d7f0");
-			ResourceHandle<Texture> texture1 = ResourceHandle(JoyContext::Resource->LoadResource<Texture>(texture1Guid));
-
-			const std::map<uint32_t, ID3D12DescriptorHeap*> material1RootParams = {
-				{0, texture1->GetResourceView()->GetHeap()},
-				{1, texture1->GetSampleView()->GetHeap()}
-			};
-			ResourceHandle<Material> material1 = ResourceHandle(JoyContext::Resource->LoadResource<Material, MaterialArgs>(
-				materialGuid,
-				{
-					sharedMaterialGuid,
-					material1RootParams,
-				}));
-			m_sampleMaterials.insert({
-				"material_1",
-				{
-					texture1Guid,
-					texture1,
-					material1
-				}
-			});
-
-			//m_textureHandle = JoyContext::Resource->LoadResource<Texture>(texture1Guid);
-
-			//const std::map<uint32_t, ID3D12DescriptorHeap*> material1RootParams = {
-			//	{0, m_textureHandle->GetResourceView()->GetHeap()},
-			//	{1, m_textureHandle->GetSampleView()->GetHeap()}
-			//};
-
-			//m_materialHandle = JoyContext::Resource->LoadResource<Material, MaterialData>(
-			//	materialGuid,
-			//	{
-			//		sharedMaterialGuid,
-			//		material1RootParams,
-			//	});
+			CreateSampleMaterial("material_1", GUID::StringToGuid("1d451f58-3f84-4b2b-8c6f-fe8e2821d7f0")); // viking_room.png
+			CreateSampleMaterial("material_2", GUID::StringToGuid("e8448435-7baf-4e40-ac72-b99e49284929")); // textures/wood.png
 		}
+	}
+
+	void DummyMaterialProvider::CreateSampleMaterial(const std::string& materialName, const GUID textureGuid)
+	{
+		const GUID materialGuid = GUID::Random();
+		ResourceHandle<Texture> texture = ResourceHandle(JoyContext::Resource->LoadResource<Texture>(textureGuid));
+
+		const std::map<uint32_t, ID3D12DescriptorHeap*> materialRootParams = {
+			{0, texture->GetResourceView()->GetHeap()},
+			{1, texture->GetSampleView()->GetHeap()}
+		};
+		ResourceHandle<Material> material = ResourceHandle(JoyContext::Resource->LoadResource<Material, MaterialArgs>(
+			materialGuid,
+			{
+				m_sharedMaterialHandle->GetGuid(),
+				materialRootParams,
+			}));
+		m_sampleMaterials.insert({
+			materialName,
+			{
+				texture,
+				material
+			}
+		});
 	}
 }

@@ -16,6 +16,21 @@
                     "material": "material_1"
                 }
             ]
+        },        
+        {
+            "name": "floor",
+            "transform": {
+                "localPosition": [ 0.0, -3.0, 0.0 ],
+                "localRotation": [ 0.0, 0.0, 0.0 ],
+                "localScale": [ 50.0, 50.0, 50.0 ]
+            },
+            "components": [
+                {
+                    "type": "renderer",
+                    "model": "7489a35d-1173-48cd-9ad0-606f13c33319",
+                    "material": "material_2"
+                }
+            ]
         },
         {
             "name": "head",

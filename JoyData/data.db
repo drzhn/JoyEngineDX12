@@ -22,6 +22,10 @@
         {
             "guid": "7e50aa82-5696-428c-a088-538fb78c0ee6",
             "path": "textures/Chopping-Board.jpg"
+        },        
+		{
+            "guid": "e8448435-7baf-4e40-ac72-b99e49284929",
+            "path": "textures/wood.png"
         },      
 		
 		

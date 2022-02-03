@@ -39,7 +39,7 @@ namespace JoyEngine
 				{
 					std::unique_ptr<MeshRenderer> mr = std::make_unique<MeshRenderer>();
 					mr->SetMesh(GUID::StringToGuid(component["model"].GetString()));
-					mr->SetMaterial(GUID::StringToGuid(component["material"].GetString()));
+					mr->SetMaterial(component["material"].GetString());
 					go->AddComponent(std::move(mr));
 				}
 				else if (type == "component")

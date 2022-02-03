@@ -14,8 +14,19 @@ namespace JoyEngine
 	{
 	public:
 		ResourceHandle() = default;
-		ResourceHandle(ResourceHandle&& other) = delete;
-		ResourceHandle(const ResourceHandle& other) = delete;
+
+		ResourceHandle(ResourceHandle&& other) noexcept
+		{
+			m_guid = other.m_guid;
+			m_ptr = JoyContext::Resource->LoadResource<T>(m_guid);
+		}
+
+		ResourceHandle(const ResourceHandle& other)
+		{
+			m_guid = other.m_guid;
+			m_ptr = JoyContext::Resource->LoadResource<T>(m_guid);
+		}
+
 		ResourceHandle<T>& operator=(const ResourceHandle<T>& other) = delete;
 		ResourceHandle<T>& operator=(const ResourceHandle<T>&& other) = delete;
 

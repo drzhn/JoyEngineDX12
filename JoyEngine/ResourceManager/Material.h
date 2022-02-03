@@ -14,7 +14,7 @@
 
 namespace JoyEngine
 {
-	struct MaterialData
+	struct MaterialArgs
 	{
 		GUID sharedMaterial;
 		std::map<uint32_t, ID3D12DescriptorHeap*> rootParams;
@@ -26,7 +26,7 @@ namespace JoyEngine
 		Material() = delete;
 
 		explicit Material(GUID);
-		explicit Material(GUID, MaterialData);
+		explicit Material(GUID, MaterialArgs);
 
 		~Material() final;
 

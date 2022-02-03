@@ -13,21 +13,33 @@ namespace JoyEngine
 {
 	Texture::Texture(GUID guid) :
 		Resource(guid),
-		m_format(DXGI_FORMAT_R8G8B8A8_UNORM),
 		m_usageFlags(D3D12_RESOURCE_STATE_COPY_DEST),
 		m_memoryPropertiesFlags(D3D12_HEAP_TYPE_DEFAULT)
 	{
 		auto textureStream = JoyContext::Data->GetFileStream(guid, true);
 		uint32_t width, height;
+		TextureType type;
 
 		textureStream.seekg(0);
 		textureStream.read(reinterpret_cast<char*>(&width), sizeof(uint32_t));
 		textureStream.read(reinterpret_cast<char*>(&height), sizeof(uint32_t));
+		textureStream.read(reinterpret_cast<char*>(&type), sizeof(uint32_t));
 
 		m_width = width;
 		m_height = height;
+		switch (type)
+		{
+		case RGBA_UNORM:
+			m_format = DXGI_FORMAT_R8G8B8A8_UNORM;
+			break;
+		case RGB_FLOAT:
+			m_format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+			break;
+		default:
+			ASSERT(false);
+		}
 
-		CreateImage();
+		CreateImage(false);
 		CreateImageView();
 		CreateImageSampler();
 		JoyContext::Memory->LoadDataToImage(
@@ -43,14 +55,15 @@ namespace JoyEngine
 		uint32_t height,
 		DXGI_FORMAT format,
 		D3D12_RESOURCE_STATES usage,
-		D3D12_HEAP_TYPE properties):
+		D3D12_HEAP_TYPE properties,
+		bool allowRenderTarget):
 		m_width(width),
 		m_height(height),
 		m_format(format),
 		m_usageFlags(usage),
 		m_memoryPropertiesFlags(properties)
 	{
-		CreateImage();
+		CreateImage(allowRenderTarget);
 		CreateImageView();
 		CreateImageSampler();
 	}
@@ -73,18 +86,31 @@ namespace JoyEngine
 		CreateImageSampler();
 	}
 
-	void Texture::CreateImage()
+	void Texture::CreateImage(bool allowRenderTarget)
 	{
 		D3D12_CLEAR_VALUE optimizedClearValue = {};
 		optimizedClearValue.Format = DXGI_FORMAT_D32_FLOAT;
 		optimizedClearValue.DepthStencil = {1.0f, 0};
+
+		D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE;
+		if (m_format == DXGI_FORMAT_D32_FLOAT)
+		{
+			flags |= D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+		}
+		else
+		{
+			if (allowRenderTarget)
+			{
+				flags |= D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+			}
+		}
 
 		D3D12_RESOURCE_DESC textureDesc = {};
 		textureDesc.MipLevels = 1;
 		textureDesc.Format = m_format;
 		textureDesc.Width = m_width;
 		textureDesc.Height = m_height;
-		textureDesc.Flags = m_format == DXGI_FORMAT_D32_FLOAT ? D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL : D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+		textureDesc.Flags = flags;
 		textureDesc.DepthOrArraySize = 1;
 		textureDesc.SampleDesc.Count = 1;
 		textureDesc.SampleDesc.Quality = 0;
@@ -131,7 +157,8 @@ namespace JoyEngine
 		        height,
 		        format,
 		        usage,
-		        properties)
+		        properties,
+		        true)
 	{
 		m_inputAttachmentView = std::make_unique<HeapHandle>(
 			D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,

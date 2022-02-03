@@ -31,7 +31,7 @@ namespace JoyEngine
 
 		void SetMesh(GUID meshGuid);
 
-		void SetMaterial(GUID materialGuid);
+		void SetMaterial(const std::string& materialName);
 
 
 		[[nodiscard]] Mesh* GetMesh() const noexcept;

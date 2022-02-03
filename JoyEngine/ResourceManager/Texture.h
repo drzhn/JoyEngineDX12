@@ -15,6 +15,12 @@ using Microsoft::WRL::ComPtr;
 
 namespace JoyEngine
 {
+	enum TextureType
+	{
+		RGBA_UNORM = 0,
+		RGB_FLOAT = 1
+	};
+
 	class Texture : public Resource
 	{
 	public:
@@ -27,7 +33,8 @@ namespace JoyEngine
 			uint32_t height,
 			DXGI_FORMAT format,
 			D3D12_RESOURCE_STATES usage,
-			D3D12_HEAP_TYPE properties
+			D3D12_HEAP_TYPE properties,
+			bool allowRenderTarget=false
 		);
 
 		explicit Texture(
@@ -52,7 +59,7 @@ namespace JoyEngine
 		[[nodiscard]] bool IsLoaded() const noexcept override { return true; }
 
 	private:
-		void CreateImage();
+		void CreateImage(bool allowRenderTarget);
 		void CreateImageView();
 		void CreateImageSampler();
 

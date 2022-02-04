@@ -16,7 +16,7 @@
                     "material": "material_1"
                 }
             ]
-        },        
+        },
         {
             "name": "floor",
             "transform": {
@@ -33,7 +33,66 @@
             ]
         },
         {
-            "name": "head",
+            "name": "wall",
+            "transform": {
+                "localPosition": [ 8.0, 0.0, 0.0 ],
+                "localRotation": [ 0.0, 0.0, 0.0 ],
+                "localScale": [ 1.0, 5.0, 5.0 ]
+            },
+            "components": [
+                {
+                    "type": "renderer",
+                    "model": "c1496bff-f383-4f46-97cc-bc9955f7f4cf",
+                    "material": "material_3"
+                }
+            ]
+        },
+        {
+            "name": "head1",
+            "transform": {
+                "localPosition": [ 6.0, 0.0, 0.0 ],
+                "localRotation": [ 0.0, 0.0, 0.0 ],
+                "localScale": [ 0.05, 0.05, 0.05 ]
+            },
+            "components": [
+                {
+                    "type": "renderer",
+                    "model": "13dc6d97-5ced-4b99-b296-bb9e6df2242a",
+                    "material": "material_1"
+                },
+                {
+                    "type": "component",
+                    "component": "RoomBehaviour",
+                    "fields": {
+                        "m_speed": 4,
+                        "m_color": [ 0.4, 0.5, 0.8, 1.0 ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "spot_ligh1",
+            "transform": {
+                "localPosition": [ 2.0, 0.0, 0.0 ],
+                "localRotation": [ 0.0, 90.0, 0.0 ],
+                "localScale": [ 1.0, 1.0, 1.0 ]
+            },
+            "components": [
+                {
+                    "type": "light",
+                    "lightType": "spot",
+                    "intensity": 1,
+                    "height": 10,
+                    "angle": 45
+                }
+            ]
+        },
+
+
+
+
+        {
+            "name": "head2",
             "transform": {
                 "localPosition": [ 0.0, 0.0, 3.0 ],
                 "localRotation": [ 0.0, 0.0, 0.0 ],
@@ -86,15 +145,15 @@
                 {
                     "type": "light",
                     "lightType": "direction",
-                    "intensity": 0.3,
-                    "ambient":  0.05
+                    "intensity": 0.4,
+                    "ambient": 0.1
                 }
             ]
-        },        
+        },
         {
             "name": "capsule_light",
             "transform": {
-                "localPosition": [ 1.0, 0.0, 2.0 ],
+                "localPosition": [ 0.0, 0.0, 2.0 ],
                 "localRotation": [ 0.0, 0.0, 0.0 ],
                 "localScale": [ 1.0, 1.0, 1.0 ]
             },
@@ -104,7 +163,7 @@
                     "lightType": "capsule",
                     "intensity": 1.0,
                     "radius": 2,
-                    "height": 8,
+                    "height": 6,
                     "angle": 60
                 },
                 {

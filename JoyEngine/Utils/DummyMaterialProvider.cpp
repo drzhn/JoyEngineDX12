@@ -158,6 +158,7 @@ namespace JoyEngine
 
 			CreateSampleMaterial("material_1", GUID::StringToGuid("1d451f58-3f84-4b2b-8c6f-fe8e2821d7f0")); // viking_room.png
 			CreateSampleMaterial("material_2", GUID::StringToGuid("e8448435-7baf-4e40-ac72-b99e49284929")); // textures/wood.png
+			CreateSampleMaterial("material_3", GUID::StringToGuid("7e50aa82-5696-428c-a088-538fb78c0ee6")); // textures/Chopping-Board.jpg
 		}
 	}
 

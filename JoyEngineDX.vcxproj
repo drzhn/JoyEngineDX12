@@ -148,6 +148,7 @@
     <ClCompile Include="JoyEngine\Components\Camera.cpp" />
     <ClCompile Include="JoyEngine\Components\Component.cpp" />
     <ClCompile Include="JoyEngine\Components\Light.cpp" />
+    <ClCompile Include="JoyEngine\Components\ShadowCaster.cpp" />
     <ClCompile Include="JoyEngine\Components\MeshRenderer.cpp" />
     <ClCompile Include="JoyEngine\GameplayComponents\CameraBehaviour.cpp" />
     <ClCompile Include="JoyEngine\GameplayComponents\RoomBehaviour.cpp" />
@@ -183,6 +184,7 @@
     <ClInclude Include="JoyEngine\Components\Camera.h" />
     <ClInclude Include="JoyEngine\Components\Component.h" />
     <ClInclude Include="JoyEngine\Components\Light.h" />
+    <ClInclude Include="JoyEngine\Components\ShadowCaster.h" />
     <ClInclude Include="JoyEngine\Components\MeshRenderer.h" />
     <ClInclude Include="JoyEngine\d3dx12.h" />
     <ClInclude Include="JoyEngine\GameplayComponents\CameraBehaviour.h" />

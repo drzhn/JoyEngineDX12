@@ -12,6 +12,10 @@
         {
             "guid": "13dc6d97-5ced-4b99-b296-bb9e6df2242a",
             "path": "models/male_head.obj"
+        },        
+		{
+            "guid": "c1496bff-f383-4f46-97cc-bc9955f7f4cf",
+            "path": "models/Cube.obj"
         },
 		
 		

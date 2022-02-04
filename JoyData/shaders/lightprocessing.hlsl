@@ -68,19 +68,24 @@ float3 ProcessSpot(float2 uv, float angle, float height)
 	);
 }
 
-float CalcAttenuationByDistance(float distance)
+float CalcAttenuationByDistance(float distance, float maxDistance)
 {
+	if (distance > maxDistance) return 0;
 	return 1 / (1 + 0.09f * distance + 0.032f * distance * distance);
 }
 
-float3 CalcAttenuationForSpot(float3 lightPosition, float3 fragPosition, float3 lightDir, float angle, float height)
+float3 CalcAttenuationForSpot(float3 lightPosition, float3 fragPosition, float3 lightDir, float halfAngleRad, float height)
 {
 	const float distToLight = length(fragPosition - lightPosition);
 	const float3 fragDir = normalize(fragPosition - lightPosition);
-	const float cosAng = dot(lightDir, fragDir);
-	const float conAtt = saturate((cosAng - cos(angle * ToRad)) / cos(angle * ToRad * 0.8));
+	const float cosAng = dot(lightDir, fragDir); // theta
+	const float epsilon = cos(halfAngleRad * 0.7) - cos(halfAngleRad);
+	if (distToLight > height || cosAng < cos(halfAngleRad)) return 0;
+
+
+	const float conAtt = saturate((cos(halfAngleRad * 0.7) - cosAng) / epsilon);
 	const float distToLightNorm = 1.0 - saturate(distToLight / height);
-	return distToLightNorm * conAtt;
+	return (1 - conAtt); // *distToLightNorm;
 }
 
 PSInput VSMain(float3 position : POSITION, float3 color : COLOR, float3 normal : NORMAL, float2 uv : TEXCOORD)
@@ -115,7 +120,7 @@ PSOutput PSMain(PSInput input) // : SV_TARGET
 	{
 		lightPos = mul(lightData.model, float4(0, 0, 0, 1));
 		const float dist = length(lightPos - worldPos);
-		attenuation = CalcAttenuationByDistance(dist);
+		attenuation = CalcAttenuationByDistance(dist, lightData.radius);
 	}
 	else if (lightData.angle > 0 && lightData.height > 0)
 	{
@@ -125,7 +130,8 @@ PSOutput PSMain(PSInput input) // : SV_TARGET
 			lightPos,
 			worldPos,
 			lightDir,
-			lightData.angle, lightData.height);
+			lightData.angle / 2 * ToRad,
+			lightData.height);
 	}
 	else if (lightData.radius > 0 && lightData.height > 0)
 	{
@@ -133,13 +139,13 @@ PSOutput PSMain(PSInput input) // : SV_TARGET
 		const float3 b = mul(lightData.model, float4(+lightData.height / 2, 0, 0, 1));
 		lightPos = ClosestPointToSegment(worldPos, a, b);
 		const float dist = length(lightPos - worldPos);
-		attenuation = CalcAttenuationByDistance(dist);
+		attenuation = CalcAttenuationByDistance(dist, lightData.radius);
 	}
 
 	const float3 toLightDir = normalize(lightPos - worldPos);
 	const float diff = max(dot(worldNormal, toLightDir), 0.0);
 
-	output.Color = float4(1, 1, 1, 1) * diff * attenuation;
+	output.Color = float4(1, 1, 1, 1) * diff * attenuation * lightData.intensity;
 
 	return output;
 }

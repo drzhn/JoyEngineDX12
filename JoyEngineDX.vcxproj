@@ -145,10 +145,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="JoyEngine\Common\CameraUnit.cpp" />
     <ClCompile Include="JoyEngine\Components\Camera.cpp" />
     <ClCompile Include="JoyEngine\Components\Component.cpp" />
     <ClCompile Include="JoyEngine\Components\Light.cpp" />
-    <ClCompile Include="JoyEngine\Components\ShadowCaster.cpp" />
     <ClCompile Include="JoyEngine\Components\MeshRenderer.cpp" />
     <ClCompile Include="JoyEngine\GameplayComponents\CameraBehaviour.cpp" />
     <ClCompile Include="JoyEngine\GameplayComponents\RoomBehaviour.cpp" />
@@ -181,10 +181,10 @@
     <ClCompile Include="WindowHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="JoyEngine\Common\CameraUnit.h" />
     <ClInclude Include="JoyEngine\Components\Camera.h" />
     <ClInclude Include="JoyEngine\Components\Component.h" />
     <ClInclude Include="JoyEngine\Components\Light.h" />
-    <ClInclude Include="JoyEngine\Components\ShadowCaster.h" />
     <ClInclude Include="JoyEngine\Components\MeshRenderer.h" />
     <ClInclude Include="JoyEngine\d3dx12.h" />
     <ClInclude Include="JoyEngine\GameplayComponents\CameraBehaviour.h" />
@@ -240,6 +240,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="JoyData\shaders\directionlightprocessing.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="JoyData\shaders\shadowprocessing.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

@@ -4,15 +4,15 @@
 #include <optional>
 
 #include "Component.h"
-#include "ResourceManager/Material.h"
+#include "ResourceManager/ResourceHandle.h"
 #include "Utils/GUID.h"
 #include "Utils/Assert.h"
-#include "ResourceManager/Mesh.h"
 //#include "ResourceManager/Material.h"
 
 namespace JoyEngine
 {
-	//class Material;
+	class Material;
+	class Mesh;
 
 	class MeshRenderer : public Component
 	{

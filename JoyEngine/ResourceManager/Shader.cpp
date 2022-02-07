@@ -20,7 +20,7 @@ namespace JoyEngine
 
 #if defined(_DEBUG)
 		// Enable better shader debugging with the graphics debugging tools.
-		UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+		constexpr UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 #else
 		UINT compileFlags = 0;
 #endif
@@ -35,7 +35,7 @@ namespace JoyEngine
 
 		if (FAILED(hr) && errorMessages)
 		{
-			const char* errorMsg = (const char*)errorMessages->GetBufferPointer();
+			const char* errorMsg = static_cast<const char*>(errorMessages->GetBufferPointer());
 			OutputDebugStringA(errorMsg);
 		}
 
@@ -52,7 +52,7 @@ namespace JoyEngine
 
 		if (FAILED(hr) && errorMessages)
 		{
-			const char* errorMsg = (const char*)errorMessages->GetBufferPointer();
+			const char* errorMsg = static_cast<const char*>(errorMessages->GetBufferPointer());
 			OutputDebugStringA(errorMsg);
 		}
 

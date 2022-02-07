@@ -89,13 +89,14 @@ namespace JoyEngine
 	void Texture::CreateImage(bool allowRenderTarget)
 	{
 		D3D12_CLEAR_VALUE optimizedClearValue = {};
-		optimizedClearValue.Format = DXGI_FORMAT_D32_FLOAT;
-		optimizedClearValue.DepthStencil = {1.0f, 0};
-
 		D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE;
-		if (m_format == DXGI_FORMAT_D32_FLOAT)
+		bool isDepth = false;
+		if (m_format == DXGI_FORMAT_D32_FLOAT || m_format == DXGI_FORMAT_R32_TYPELESS)
 		{
+			isDepth = true;
 			flags |= D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+			optimizedClearValue.Format = m_format;
+			optimizedClearValue.DepthStencil = {1.0f, 0};
 		}
 		else
 		{
@@ -121,7 +122,7 @@ namespace JoyEngine
 				D3D12_HEAP_FLAG_NONE,
 				&textureDesc,
 				m_usageFlags,
-				m_format == DXGI_FORMAT_D32_FLOAT ? &optimizedClearValue : nullptr,
+				isDepth ? &optimizedClearValue : nullptr,
 				IID_PPV_ARGS(&m_texture))
 		);
 	}

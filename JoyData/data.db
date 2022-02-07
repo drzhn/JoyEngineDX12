@@ -48,6 +48,10 @@
 		{
             "guid": "1c6cb88f-f3ef-4797-9d65-44682ca7baba",
             "path": "shaders/directionlightprocessing.hlsl"
+        },		
+		{
+            "guid": "9ee0a40a-c055-4b2c-93db-bc19def8e8cc",
+            "path": "shaders/shadowprocessing.hlsl"
         },
 		
 		

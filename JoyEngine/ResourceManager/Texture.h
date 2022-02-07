@@ -34,7 +34,7 @@ namespace JoyEngine
 			DXGI_FORMAT format,
 			D3D12_RESOURCE_STATES usage,
 			D3D12_HEAP_TYPE properties,
-			bool allowRenderTarget=false
+			bool allowRenderTarget = false
 		);
 
 		explicit Texture(
@@ -49,6 +49,10 @@ namespace JoyEngine
 		~Texture() override = default;
 
 		[[nodiscard]] ComPtr<ID3D12Resource> GetImage() const noexcept { return m_texture; }
+
+		[[nodiscard]] uint32_t GetWidth() const noexcept { return m_width; }
+
+		[[nodiscard]] uint32_t GetHeight() const noexcept { return m_height; }
 
 		[[nodiscard]] DXGI_FORMAT GetFormat() const noexcept { return m_format; }
 
@@ -76,7 +80,7 @@ namespace JoyEngine
 		std::unique_ptr<HeapHandle> m_samplerView;
 	};
 
-	class RenderTexture final: public Texture
+	class RenderTexture final : public Texture
 	{
 	public:
 		explicit RenderTexture(

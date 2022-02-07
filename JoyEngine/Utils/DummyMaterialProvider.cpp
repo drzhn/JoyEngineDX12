@@ -42,7 +42,33 @@ namespace JoyEngine
 					{
 						DXGI_FORMAT_R16G16B16A16_FLOAT,
 						DXGI_FORMAT_R16G16B16A16_FLOAT
-					}
+					},
+					DXGI_FORMAT_D32_FLOAT
+				});
+		}
+
+
+		// Shadow map creation 
+		{
+			const GUID shadowProcessingShaderGuid = GUID::StringToGuid("9ee0a40a-c055-4b2c-93db-bc19def8e8cc"); //shaders/shadowprocessing.hlsl
+			const GUID shadowProcessingSharedMaterialGuid = GUID::Random();
+
+			std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters(1);
+			rootParameters[0].InitAsConstants(sizeof(MVP) / 4, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+
+			m_shadowProcessingSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
+				shadowProcessingSharedMaterialGuid,
+				{
+					shadowProcessingShaderGuid,
+					true,
+					true,
+					true,
+					D3D12_CULL_MODE_BACK,
+					D3D12_COMPARISON_FUNC_LESS_EQUAL,
+					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
+					rootParameters,
+					{}, // no rtv, only depth
+					DXGI_FORMAT_D32_FLOAT
 				});
 		}
 
@@ -71,7 +97,8 @@ namespace JoyEngine
 					rootParameters,
 					{
 						DXGI_FORMAT_R8G8B8A8_UNORM
-					}
+					},
+					DXGI_FORMAT_D32_FLOAT
 				});
 		}
 
@@ -116,7 +143,8 @@ namespace JoyEngine
 					rootParameters,
 					{
 						DXGI_FORMAT_R8G8B8A8_UNORM
-					}
+					},
+					DXGI_FORMAT_D32_FLOAT
 				});
 		}
 
@@ -153,7 +181,8 @@ namespace JoyEngine
 					rootParameters,
 					{
 						DXGI_FORMAT_R8G8B8A8_UNORM
-					}
+					},
+					DXGI_FORMAT_D32_FLOAT
 				});
 
 			CreateSampleMaterial("material_1", GUID::StringToGuid("1d451f58-3f84-4b2b-8c6f-fe8e2821d7f0")); // viking_room.png

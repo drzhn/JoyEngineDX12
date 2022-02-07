@@ -8,6 +8,10 @@
 //#include "MemoryManager/MemoryManager.h"
 //#include "ResourceManager/ResourceManager.h"
 #include "JoyTypes.h"
+#include "Components/Camera.h"
+#include "Components/Camera.h"
+#include "Components/Camera.h"
+#include "Components/Camera.h"
 #include "Components/MeshRenderer.h"
 #include "DescriptorManager/DescriptorManager.h"
 #include "GraphicsManager/GraphicsManager.h"
@@ -213,8 +217,8 @@ namespace JoyEngine
 		commandList->ResourceBarrier(1, &barrier1);
 
 		ASSERT(m_currentCamera != nullptr);
-		const glm::mat4 view = m_currentCamera->GetViewMatrix();
-		const glm::mat4 proj = m_currentCamera->GetProjMatrix();
+		const glm::mat4 mainCameraViewMatrix = m_currentCamera->GetViewMatrix();
+		const glm::mat4 mainCameraProjMatrix = m_currentCamera->GetProjMatrix();
 
 		// Drawing GBUFFER textures
 		{
@@ -231,30 +235,10 @@ namespace JoyEngine
 			commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 			auto sm = JoyContext::DummyMaterials->GetGBufferSharedMaterial();
+			commandList->SetPipelineState(sm->GetPipelineObject().Get());
+			commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
 
-			for (auto const& s : m_sharedMaterials)
-			{
-				commandList->SetPipelineState(sm->GetPipelineObject().Get());
-				commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
-				for (const auto& mr : s->GetMeshRenderers())
-				{
-					commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-					commandList->IASetVertexBuffers(0, 1, mr->GetMesh()->GetVertexBufferView());
-					commandList->IASetIndexBuffer(mr->GetMesh()->GetIndexBufferView());
-
-					MVP mvp{
-						(mr->GetTransform()->GetModelMatrix()),
-						(view),
-						(proj)
-					};
-					uint32_t var = 5;
-					commandList->SetGraphicsRoot32BitConstants(0, sizeof(MVP) / 4, &mvp, 0);
-					commandList->DrawIndexedInstanced(
-						mr->GetMesh()->GetIndexSize(),
-						1,
-						0, 0, 0);
-				}
-			}
+			RenderEntireScene(commandList, mainCameraViewMatrix, mainCameraProjMatrix);
 		}
 
 		// Transition normal and position texture to generic read state
@@ -277,6 +261,49 @@ namespace JoyEngine
 
 		//Light processing
 		{
+			// shadow maps generation
+
+			auto sm = JoyContext::DummyMaterials->GetShadowProcessingSharedMaterial();
+
+			commandList->SetPipelineState(sm->GetPipelineObject().Get());
+			commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			for (const auto& light : m_lights)
+			{
+				if (light->GetShadowmap() == nullptr) continue;
+
+				auto shadowmapHandle = light->GetShadowmap()->GetResourceView()->GetHandle();
+				D3D12_VIEWPORT shadowmapViewport = {
+					0.0f,
+					0.0f,
+					static_cast<float>(light->GetShadowmap()->GetWidth()),
+					static_cast<float>(light->GetShadowmap()->GetHeight()),
+					D3D12_MIN_DEPTH,
+					D3D12_MAX_DEPTH
+				};
+				D3D12_RECT shadowmapScissorRect = {
+					0,
+					0,
+					static_cast<LONG>(light->GetShadowmap()->GetWidth()),
+					static_cast<LONG>(light->GetShadowmap()->GetHeight())
+				};
+				commandList->RSSetViewports(1, &shadowmapViewport);
+				commandList->RSSetScissorRects(1, &shadowmapScissorRect);
+
+				commandList->OMSetRenderTargets(
+					0,
+					nullptr,
+					FALSE,
+					&shadowmapHandle);
+
+				commandList->ClearDepthStencilView(shadowmapHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+
+				RenderEntireScene(commandList, light->GetViewMatrix(), light->GetProjMatrix());
+			}
+
+			commandList->RSSetViewports(1, &m_viewport);
+			commandList->RSSetScissorRects(1, &m_scissorRect);
+
 			commandList->OMSetRenderTargets(
 				1,
 				&lightHandle,
@@ -334,7 +361,7 @@ namespace JoyEngine
 						light->GetHeight(),
 						light->GetAngle(),
 						light->GetTransform()->GetModelMatrix(),
-						proj * view
+						mainCameraProjMatrix * mainCameraViewMatrix
 					};
 
 					ID3D12DescriptorHeap* heaps1[1] = {m_positionAttachment->GetAttachmentView()->GetHeap()};
@@ -391,8 +418,8 @@ namespace JoyEngine
 
 					MVP mvp{
 						mr->GetTransform()->GetModelMatrix(),
-						view,
-						proj
+						mainCameraViewMatrix,
+						mainCameraProjMatrix
 					};
 					for (auto param : mr->GetMaterial()->GetRootParams())
 					{
@@ -459,6 +486,34 @@ namespace JoyEngine
 		m_currentFrameIndex = m_swapChain->GetCurrentBackBufferIndex();
 
 		m_queue->WaitForFence(m_currentFrameIndex);
+	}
+
+	void RenderManager::RenderEntireScene(
+		ID3D12GraphicsCommandList* commandList,
+		glm::mat4 view,
+		glm::mat4 proj) const
+	{
+		for (auto const& s : m_sharedMaterials)
+		{
+			for (const auto& mr : s->GetMeshRenderers())
+			{
+				commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+				commandList->IASetVertexBuffers(0, 1, mr->GetMesh()->GetVertexBufferView());
+				commandList->IASetIndexBuffer(mr->GetMesh()->GetIndexBufferView());
+
+				MVP mvp{
+					mr->GetTransform()->GetModelMatrix(),
+					view,
+					proj
+				};
+				uint32_t var = 5;
+				commandList->SetGraphicsRoot32BitConstants(0, sizeof(MVP) / 4, &mvp, 0);
+				commandList->DrawIndexedInstanced(
+					mr->GetMesh()->GetIndexSize(),
+					1,
+					0, 0, 0);
+			}
+		}
 	}
 
 

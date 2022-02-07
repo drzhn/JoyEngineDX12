@@ -4,23 +4,21 @@
 #include "Component.h"
 #include <glm/glm.hpp>
 
-namespace JoyEngine {
-    class Camera : public Component {
-    public:
-        void Enable() override;
-        void Disable() override;
-        void Update() override;
-        glm::mat4x4 GetProjMatrix() const;
-        glm::mat4x4 GetViewMatrix() const;
+#include "Common/CameraUnit.h"
 
-    private:
-        float m_aspect;
-        float m_width;
-        float m_height;
-        float m_fov;
-        float m_near;
-        float m_far;
-    };
+namespace JoyEngine
+{
+	class Camera : public Component
+	{
+	public:
+		void Enable() override;
+		void Disable() override;
+		void Update() override;
+		[[nodiscard]] glm::mat4x4 GetViewMatrix() const;
+		[[nodiscard]] glm::mat4x4 GetProjMatrix() const;
+	private:
+		CameraUnit m_cameraUnit;
+	};
 }
 
 #endif //CAMERA_H

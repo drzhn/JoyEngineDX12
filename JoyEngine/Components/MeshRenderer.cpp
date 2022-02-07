@@ -2,6 +2,9 @@
 
 #include "JoyContext.h"
 
+#include "ResourceManager/Material.h"
+#include "ResourceManager/Mesh.h"
+
 #include "ResourceManager/ResourceManager.h"
 #include "Common/Resource.h"
 #include "Utils/DummyMaterialProvider.h"

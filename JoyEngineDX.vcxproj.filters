@@ -114,7 +114,7 @@
     <ClCompile Include="JoyEngine\ResourceManager\HeapHandle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JoyEngine\Components\ShadowCaster.cpp">
+    <ClCompile Include="JoyEngine\Common\CameraUnit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -245,7 +245,7 @@
     <ClInclude Include="JoyEngine\ResourceManager\HeapHandle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JoyEngine\Components\ShadowCaster.h">
+    <ClInclude Include="JoyEngine\Common\CameraUnit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -254,5 +254,6 @@
     <None Include="JoyData\shaders\vikingShader.hlsl" />
     <None Include="JoyData\shaders\lightprocessing.hlsl" />
     <None Include="JoyData\shaders\directionlightprocessing.hlsl" />
+    <None Include="JoyData\shaders\shadowprocessing.hlsl" />
   </ItemGroup>
 </Project>

@@ -65,7 +65,7 @@ namespace JoyEngine
 		m_cullMode(args.cullMode)
 	{
 		CreateRootSignature(args.rootParams);
-		CreateGraphicsPipeline(args.renderTargetsFormats, args.blendDesc);
+		CreateGraphicsPipeline(args.renderTargetsFormats, args.blendDesc, args.depthFormat);
 		JoyContext::Render->RegisterSharedMaterial(this);
 	}
 
@@ -105,7 +105,8 @@ namespace JoyEngine
 
 	void SharedMaterial::CreateGraphicsPipeline(
 		const std::vector<DXGI_FORMAT>& renderTargetsFormats,
-		CD3DX12_BLEND_DESC blendDesc)
+		CD3DX12_BLEND_DESC blendDesc,
+		DXGI_FORMAT depthFormat)
 	{
 		// Create the vertex input layout
 
@@ -151,7 +152,7 @@ namespace JoyEngine
 				renderTargetsFormats.size() > 6 ? renderTargetsFormats[6] : DXGI_FORMAT_UNKNOWN,
 				renderTargetsFormats.size() > 7 ? renderTargetsFormats[7] : DXGI_FORMAT_UNKNOWN
 			},
-			DXGI_FORMAT_D32_FLOAT,
+			depthFormat,
 			{1, 0},
 			0,
 			{},

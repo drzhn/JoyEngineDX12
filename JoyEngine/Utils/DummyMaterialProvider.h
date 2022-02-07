@@ -24,11 +24,15 @@ namespace JoyEngine
 		[[nodiscard]] SharedMaterial* GetGBufferSharedMaterial() const noexcept { return m_gbufferWriteSharedMaterial; }
 		[[nodiscard]] SharedMaterial* GetLightProcessingSharedMaterial() const noexcept { return m_lightProcessingSharedMaterial; }
 		[[nodiscard]] SharedMaterial* GetDirectionLightProcessingSharedMaterial() const noexcept { return m_directionLightProcessingSharedMaterial; }
+		[[nodiscard]] SharedMaterial* GetShadowProcessingSharedMaterial() const noexcept { return m_shadowProcessingSharedMaterial; }
 	private:
 		ResourceHandle<Texture> m_skyboxTextureHandle;
 
 		ResourceHandle<SharedMaterial> m_gbufferWriteSharedMaterial;
 		ResourceHandle<Shader> m_gbufferWriteShader;
+
+		ResourceHandle<SharedMaterial> m_shadowProcessingSharedMaterial;
+		ResourceHandle<Shader> m_shadowProcessingShader;
 
 		ResourceHandle<SharedMaterial> m_directionLightProcessingSharedMaterial;
 		ResourceHandle<Shader> m_directionLightProcessingShader;

@@ -22,6 +22,7 @@ namespace JoyEngine
 		CD3DX12_BLEND_DESC blendDesc;
 		std::vector<CD3DX12_ROOT_PARAMETER1> rootParams;
 		std::vector<DXGI_FORMAT> renderTargetsFormats;
+		DXGI_FORMAT depthFormat;
 	};
 
 	class SharedMaterial final : public Resource
@@ -61,7 +62,7 @@ namespace JoyEngine
 
 	private:
 		void CreateRootSignature(const std::vector<CD3DX12_ROOT_PARAMETER1>& rootParams);
-		void CreateGraphicsPipeline(const std::vector<DXGI_FORMAT>& renderTargetsFormats, CD3DX12_BLEND_DESC blendDesc);
+		void CreateGraphicsPipeline(const std::vector<DXGI_FORMAT>& renderTargetsFormats, CD3DX12_BLEND_DESC blendDesc, DXGI_FORMAT depthFormat);
 
 		static std::vector<D3D12_INPUT_ELEMENT_DESC> m_inputLayout;
 	};

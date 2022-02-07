@@ -22,11 +22,13 @@ struct LightData
 	float4x4 viewProj;
 };
 
-//Texture2D g_texture : register(t0);
-//SamplerState g_sampler : register(s0);
 ConstantBuffer<LightData> lightData : register(b0);
 Texture2D positionTexture : register(t0);
 Texture2D normalTexture : register(t1);
+
+Texture2D shadowMapTexture : register(t2);
+SamplerComparisonState PCFSampler : register(s0);
+
 
 //inline float4 ComputeNonStereoScreenPos(float4 pos) {
 //	float4 o = pos * 0.5f;

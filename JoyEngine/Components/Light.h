@@ -1,14 +1,15 @@
 ﻿#ifndef LIGHT_H
 #define LIGHT_H
 
-#include <glm/glm.hpp>
-
 #include "Component.h"
+#include "Common/CameraUnit.h"
 #include "RenderManager/JoyTypes.h"
 #include "Common/Color.h"
 
 namespace JoyEngine
 {
+	class Texture;
+
 	class Light : public Component
 	{
 	public:
@@ -33,7 +34,10 @@ namespace JoyEngine
 		[[nodiscard]] float GetHeight() const noexcept { return m_height; }
 		[[nodiscard]] float GetAngle() const noexcept { return m_angle; }
 		[[nodiscard]] float GetAmbient() const noexcept { return m_ambient; }
+		[[nodiscard]] Texture* GetShadowmap() const noexcept { return m_shadowmap.get(); }
 
+		[[nodiscard]] glm::mat4x4 GetViewMatrix() const;
+		[[nodiscard]] glm::mat4x4 GetProjMatrix() const;
 	private:
 		LightType m_lightType;
 		float m_intensity = 0;
@@ -41,6 +45,9 @@ namespace JoyEngine
 		float m_height = 0;
 		float m_angle = 0;
 		float m_ambient = 0;
+
+		std::unique_ptr<Texture> m_shadowmap;
+		CameraUnit m_cameraUnit;
 	};
 }
 

@@ -49,6 +49,10 @@ namespace JoyEngine
 		void Stop();
 
 		void Update();
+		void RenderEntireScene(
+			::ID3D12GraphicsCommandList* commandList,
+			glm::mat4 view,
+			glm::mat4 proj) const;
 
 		void RegisterSharedMaterial(SharedMaterial*);
 

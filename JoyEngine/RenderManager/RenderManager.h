@@ -49,10 +49,13 @@ namespace JoyEngine
 		void Stop();
 
 		void Update();
+
 		void RenderEntireScene(
-			::ID3D12GraphicsCommandList* commandList,
+			ID3D12GraphicsCommandList* commandList,
 			glm::mat4 view,
 			glm::mat4 proj) const;
+
+		void SetViewportAndScissor(ID3D12GraphicsCommandList* commandList, uint32_t width, uint32_t height) const;
 
 		void RegisterSharedMaterial(SharedMaterial*);
 
@@ -77,8 +80,6 @@ namespace JoyEngine
 	private:
 		static const UINT FrameCount = 3;
 
-		D3D12_VIEWPORT m_viewport;
-		D3D12_RECT m_scissorRect;
 		ComPtr<IDXGISwapChain3> m_swapChain;
 
 		std::array<std::unique_ptr<Texture>, FrameCount> m_renderTargets;

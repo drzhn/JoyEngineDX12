@@ -33,22 +33,6 @@ namespace JoyEngine
 
 		ASSERT(m_width != 0 && m_height != 0);
 
-		m_viewport = {
-			0.0f,
-			0.0f,
-			static_cast<float>(m_width),
-			static_cast<float>(m_height),
-			D3D12_MIN_DEPTH,
-			D3D12_MAX_DEPTH
-		};
-
-		m_scissorRect = {
-			0,
-			0,
-			static_cast<LONG>(m_width),
-			static_cast<LONG>(m_height)
-		};
-
 		m_queue = std::make_unique<CommandQueue>(D3D12_COMMAND_LIST_TYPE_DIRECT, JoyContext::Graphics->GetDevice(),
 		                                         FrameCount);
 
@@ -206,8 +190,7 @@ namespace JoyEngine
 		auto lightHandle = m_lightingAttachment->GetResourceView()->GetHandle();
 
 		// Set necessary state.
-		commandList->RSSetViewports(1, &m_viewport);
-		commandList->RSSetScissorRects(1, &m_scissorRect);
+		SetViewportAndScissor(commandList, m_width, m_height);
 
 		// Indicate that the back buffer will be used as a render target.
 		D3D12_RESOURCE_BARRIER barrier1 = Transition(
@@ -273,22 +256,8 @@ namespace JoyEngine
 				if (light->GetShadowmap() == nullptr) continue;
 
 				auto shadowmapHandle = light->GetShadowmap()->GetResourceView()->GetHandle();
-				D3D12_VIEWPORT shadowmapViewport = {
-					0.0f,
-					0.0f,
-					static_cast<float>(light->GetShadowmap()->GetWidth()),
-					static_cast<float>(light->GetShadowmap()->GetHeight()),
-					D3D12_MIN_DEPTH,
-					D3D12_MAX_DEPTH
-				};
-				D3D12_RECT shadowmapScissorRect = {
-					0,
-					0,
-					static_cast<LONG>(light->GetShadowmap()->GetWidth()),
-					static_cast<LONG>(light->GetShadowmap()->GetHeight())
-				};
-				commandList->RSSetViewports(1, &shadowmapViewport);
-				commandList->RSSetScissorRects(1, &shadowmapScissorRect);
+
+				SetViewportAndScissor(commandList, light->GetShadowmap()->GetWidth(), light->GetShadowmap()->GetHeight());
 
 				commandList->OMSetRenderTargets(
 					0,
@@ -301,8 +270,7 @@ namespace JoyEngine
 				RenderEntireScene(commandList, light->GetViewMatrix(), light->GetProjMatrix());
 			}
 
-			commandList->RSSetViewports(1, &m_viewport);
-			commandList->RSSetScissorRects(1, &m_scissorRect);
+			SetViewportAndScissor(commandList, m_width, m_height);
 
 			commandList->OMSetRenderTargets(
 				1,
@@ -514,6 +482,30 @@ namespace JoyEngine
 					0, 0, 0);
 			}
 		}
+	}
+
+	void RenderManager::SetViewportAndScissor(
+		ID3D12GraphicsCommandList* commandList,
+		uint32_t width,
+		uint32_t height
+	) const 
+	{
+		const D3D12_VIEWPORT viewport = {
+			0.0f,
+			0.0f,
+			static_cast<float>(width),
+			static_cast<float>(height),
+			D3D12_MIN_DEPTH,
+			D3D12_MAX_DEPTH
+		};
+		const D3D12_RECT scissorRect = {
+			0,
+			0,
+			static_cast<LONG>(width),
+			static_cast<LONG>(height)
+		};
+		commandList->RSSetViewports(1, &viewport);
+		commandList->RSSetScissorRects(1, &scissorRect);
 	}
 
 

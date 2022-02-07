@@ -13,8 +13,10 @@ namespace JoyEngine
 		switch (type)
 		{
 		case D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV:
-		case D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER:
 			flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+			break;
+		case D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER:
+			ASSERT(false);
 			break;
 		case D3D12_DESCRIPTOR_HEAP_TYPE_RTV:
 		case D3D12_DESCRIPTOR_HEAP_TYPE_DSV:
@@ -55,19 +57,20 @@ namespace JoyEngine
 			}
 		case D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER:
 			{
-				D3D12_SAMPLER_DESC samplerDesc = {};
-				samplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
-				samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-				samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-				samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-				samplerDesc.MinLOD = 0;
-				samplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
-				samplerDesc.MipLODBias = 0.0f;
-				samplerDesc.MaxAnisotropy = 1;
-				samplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
-				JoyContext::Graphics->GetDevice()->CreateSampler(
-					&samplerDesc,
-					m_handle);
+				//D3D12_SAMPLER_DESC samplerDesc = {};
+				//samplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+				//samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+				//samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+				//samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+				//samplerDesc.MinLOD = 0;
+				//samplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
+				//samplerDesc.MipLODBias = 0.0f;
+				//samplerDesc.MaxAnisotropy = 1;
+				//samplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+				//JoyContext::Graphics->GetDevice()->CreateSampler(
+				//	&samplerDesc,
+				//	m_handle);
+				ASSERT(false);
 				break;
 			}
 		case D3D12_DESCRIPTOR_HEAP_TYPE_RTV:
@@ -94,5 +97,25 @@ namespace JoyEngine
 		case D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES:
 			ASSERT(false);
 		}
+	}
+
+	HeapHandle::HeapHandle(D3D12_SAMPLER_DESC desc):
+		m_type(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER)
+	{
+		const D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {
+			m_type,
+			1,
+			D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
+			0
+		};
+		ASSERT_SUCC(JoyContext::Graphics->GetDevice()->CreateDescriptorHeap(
+			&heapDesc,
+			IID_PPV_ARGS(&m_descriptorHeap)));
+
+		m_handle = m_descriptorHeap->GetCPUDescriptorHandleForHeapStart();
+
+		JoyContext::Graphics->GetDevice()->CreateSampler(
+			&desc,
+			m_handle);
 	}
 }

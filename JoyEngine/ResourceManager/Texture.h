@@ -24,6 +24,13 @@ namespace JoyEngine
 	class Texture : public Resource
 	{
 	public:
+		static void InitSamplers();
+		static HeapHandle* GetTextureSampler();
+		static HeapHandle* GetDepthPCFSampler();
+	private:
+		static std::unique_ptr<HeapHandle> m_textureSampler;
+		static std::unique_ptr<HeapHandle> m_depthPCFSampler;
+	public:
 		explicit Texture() = default;
 
 		explicit Texture(GUID);
@@ -58,14 +65,11 @@ namespace JoyEngine
 
 		[[nodiscard]] HeapHandle* GetResourceView() const noexcept { return m_resourceView.get(); }
 
-		[[nodiscard]] HeapHandle* GetSampleView() const noexcept { return m_samplerView.get(); }
-
 		[[nodiscard]] bool IsLoaded() const noexcept override { return true; }
 
 	private:
 		void CreateImage(bool allowRenderTarget);
 		void CreateImageView();
-		void CreateImageSampler();
 
 	private:
 		uint32_t m_width = 0;
@@ -75,9 +79,7 @@ namespace JoyEngine
 		CD3DX12_HEAP_PROPERTIES m_memoryPropertiesFlags;
 
 		ComPtr<ID3D12Resource> m_texture;
-
 		std::unique_ptr<HeapHandle> m_resourceView;
-		std::unique_ptr<HeapHandle> m_samplerView;
 	};
 
 	class RenderTexture final : public Texture

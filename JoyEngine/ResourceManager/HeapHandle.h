@@ -15,7 +15,8 @@ namespace JoyEngine
 	{
 	public:
 		HeapHandle() = default;
-		HeapHandle(D3D12_DESCRIPTOR_HEAP_TYPE type, ID3D12Resource* resource, DXGI_FORMAT format);
+		explicit HeapHandle(D3D12_DESCRIPTOR_HEAP_TYPE type, ID3D12Resource* resource, DXGI_FORMAT format);
+		explicit HeapHandle(D3D12_SAMPLER_DESC);
 
 		[[nodiscard]] D3D12_DESCRIPTOR_HEAP_TYPE GetType() const noexcept { return m_type; }
 		[[nodiscard]] ID3D12DescriptorHeap* GetHeap() const noexcept { return m_descriptorHeap.Get(); }

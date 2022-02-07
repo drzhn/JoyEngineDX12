@@ -11,6 +11,52 @@
 
 namespace JoyEngine
 {
+	std::unique_ptr<HeapHandle> Texture::m_textureSampler = nullptr;
+	std::unique_ptr<HeapHandle> Texture::m_depthPCFSampler = nullptr;
+
+	void Texture::InitSamplers()
+	{
+		D3D12_SAMPLER_DESC textureSamplerDesc = {};
+		textureSamplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+		textureSamplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+		textureSamplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+		textureSamplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+		textureSamplerDesc.MinLOD = 0;
+		textureSamplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
+		textureSamplerDesc.MipLODBias = 0.0f;
+		textureSamplerDesc.MaxAnisotropy = 1;
+		textureSamplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+		m_textureSampler =  std::make_unique<HeapHandle>(textureSamplerDesc);
+
+		D3D12_SAMPLER_DESC depthPCFSamplerDesc = {};
+		depthPCFSamplerDesc.Filter = D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
+		depthPCFSamplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+		depthPCFSamplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+		depthPCFSamplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+		depthPCFSamplerDesc.BorderColor[0] = 1.0f;
+		depthPCFSamplerDesc.BorderColor[1] = 1.0f;
+		depthPCFSamplerDesc.BorderColor[2] = 1.0f;
+		depthPCFSamplerDesc.BorderColor[3] = 1.0f;
+		depthPCFSamplerDesc.MinLOD = 0;
+		depthPCFSamplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
+		depthPCFSamplerDesc.MipLODBias = 0.0f;
+		depthPCFSamplerDesc.MaxAnisotropy = 1;
+		depthPCFSamplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_LESS;
+		m_depthPCFSampler = std::make_unique<HeapHandle>(depthPCFSamplerDesc);
+	}
+
+	HeapHandle* Texture::GetTextureSampler()
+	{
+		ASSERT(m_textureSampler != nullptr);
+		return m_textureSampler.get();
+	}
+
+	HeapHandle* Texture::GetDepthPCFSampler()
+	{
+		ASSERT(m_depthPCFSampler != nullptr);
+		return m_depthPCFSampler.get();
+	}
+
 	Texture::Texture(GUID guid) :
 		Resource(guid),
 		m_usageFlags(D3D12_RESOURCE_STATE_COPY_DEST),
@@ -41,7 +87,6 @@ namespace JoyEngine
 
 		CreateImage(false);
 		CreateImageView();
-		CreateImageSampler();
 		JoyContext::Memory->LoadDataToImage(
 			textureStream,
 			sizeof(uint32_t) + sizeof(uint32_t),
@@ -65,7 +110,6 @@ namespace JoyEngine
 	{
 		CreateImage(allowRenderTarget);
 		CreateImageView();
-		CreateImageSampler();
 	}
 
 	Texture::Texture(
@@ -83,7 +127,6 @@ namespace JoyEngine
 		m_texture(std::move(externalResource))
 	{
 		CreateImageView();
-		CreateImageSampler();
 	}
 
 	void Texture::CreateImage(bool allowRenderTarget)
@@ -143,10 +186,6 @@ namespace JoyEngine
 		}
 	}
 
-	void Texture::CreateImageSampler()
-	{
-		m_samplerView = std::make_unique<HeapHandle>(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, m_texture.Get(), m_format);
-	}
 
 	RenderTexture::RenderTexture(
 		uint32_t width,

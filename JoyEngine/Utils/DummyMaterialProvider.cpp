@@ -18,6 +18,8 @@ namespace JoyEngine
 {
 	void DummyMaterialProvider::Init()
 	{
+		Texture::InitSamplers();
+
 		//GUID skyboxTextureGuid = GUID::StringToGuid("ab9f4108-d126-4390-8233-75ee3fed4584");
 		//m_skyboxTextureHandle = JoyContext::Resource->LoadResource<Texture>(skyboxTextureGuid);
 		// GBuffer write shader
@@ -107,14 +109,20 @@ namespace JoyEngine
 			const GUID lightProcessingShaderGuid = GUID::StringToGuid("f9da7adf-4ebb-4601-8437-a19c07e8471a"); //shaders/lightprocessing.hlsl
 			const GUID lightProcessingSharedMaterialGuid = GUID::Random();
 
-			CD3DX12_DESCRIPTOR_RANGE1 ranges[2];
+			CD3DX12_DESCRIPTOR_RANGE1 ranges[4];
 			ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
 			ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
 
-			std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters(3);
+			ranges[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2, 0, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
+			ranges[3].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 0);
+
+			std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters(5);
 			rootParameters[0].InitAsConstants(sizeof(LightData) / 4, 0, 0, D3D12_SHADER_VISIBILITY_ALL);
 			rootParameters[1].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
 			rootParameters[2].InitAsDescriptorTable(1, &ranges[1], D3D12_SHADER_VISIBILITY_PIXEL);
+			rootParameters[3].InitAsDescriptorTable(1, &ranges[2], D3D12_SHADER_VISIBILITY_PIXEL);
+			rootParameters[4].InitAsDescriptorTable(1, &ranges[3], D3D12_SHADER_VISIBILITY_PIXEL);
+
 
 			CD3DX12_BLEND_DESC blendDesc = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 			const D3D12_RENDER_TARGET_BLEND_DESC defaultRenderTargetBlendDesc =
@@ -198,7 +206,7 @@ namespace JoyEngine
 
 		const std::map<uint32_t, ID3D12DescriptorHeap*> materialRootParams = {
 			{0, texture->GetResourceView()->GetHeap()},
-			{1, texture->GetSampleView()->GetHeap()}
+			{1, Texture::GetTextureSampler()->GetHeap()}
 		};
 		ResourceHandle<Material> material = ResourceHandle(JoyContext::Resource->LoadResource<Material, MaterialArgs>(
 			materialGuid,

@@ -36,6 +36,7 @@ namespace JoyEngine
 		~Buffer() override = default;
 
 		[[nodiscard]] std::unique_ptr<BufferMappedPtr> GetMappedPtr(uint64_t offset, uint64_t size) const;
+		[[nodiscard]] std::unique_ptr<BufferMappedPtr> GetMappedPtr() const; // whole buffer
 
 		[[nodiscard]] ComPtr<ID3D12Resource> GetBuffer() const noexcept;
 		void LoadData(std::ifstream& stream, uint32_t offset);

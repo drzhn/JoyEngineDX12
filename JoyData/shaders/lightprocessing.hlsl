@@ -25,12 +25,12 @@ struct LightData
 	float height;
 	float angle;
 
-	float4x4 model;
-	float4x4 viewProj;
+	float4x4 view;
+	float4x4 projection;
 };
 
-//ConstantBuffer<MVP> mvp : register(b0);
-ConstantBuffer<LightData> lightData : register(b0);
+ConstantBuffer<MVP> mvp : register(b0);
+ConstantBuffer<LightData> lightData : register(b1);
 
 Texture2D positionTexture : register(t0);
 Texture2D normalTexture : register(t1);
@@ -39,7 +39,8 @@ Texture2D shadowMapTexture : register(t2);
 SamplerComparisonState PCFSampler : register(s0);
 
 
-inline float4 ComputeNonStereoScreenPos(float4 pos) {
+inline float4 ComputeNonStereoScreenPos(float4 pos)
+{
 	float4 o = pos * 0.5f;
 	o.xy = float2(o.x, o.y * -1) + o.w;
 	o.zw = pos.zw;
@@ -102,7 +103,7 @@ float3 CalcAttenuationForSpot(float3 lightPosition, float3 fragPosition, float3 
 PSInput VSMain(float3 position : POSITION, float3 color : COLOR, float3 normal : NORMAL, float2 uv : TEXCOORD)
 {
 	PSInput result;
-	const float4x4 resMatrix = mul(lightData.viewProj, lightData.model);
+	const float4x4 resMatrix = mul(mvp.projection, mul(mvp.view, mvp.model));
 
 	if (lightData.angle > 0 && lightData.height > 0)
 	{
@@ -129,14 +130,14 @@ PSOutput PSMain(PSInput input) // : SV_TARGET
 
 	if (lightData.radius > 0 && lightData.height == 0)
 	{
-		lightPos = mul(lightData.model, float4(0, 0, 0, 1));
+		lightPos = mul(mvp.model, float4(0, 0, 0, 1));
 		const float dist = length(lightPos - worldPos);
 		attenuation = CalcAttenuationByDistance(dist, lightData.radius);
 	}
 	else if (lightData.angle > 0 && lightData.height > 0)
 	{
-		lightPos = mul(lightData.model, float4(0, 0, 0, 1));
-		const float3 lightDir = mul(lightData.model, float4(0, 0, 1, 0));
+		lightPos = mul(mvp.model, float4(0, 0, 0, 1));
+		const float3 lightDir = mul(mvp.model, float4(0, 0, 1, 0));
 		attenuation = CalcAttenuationForSpot(
 			lightPos,
 			worldPos,
@@ -145,20 +146,23 @@ PSOutput PSMain(PSInput input) // : SV_TARGET
 			lightData.height);
 
 		// Transform the world position to shadow projected space
-		float4 posShadowMap = mul(lightData.viewProj, float4(worldPos, 1.0));
+		const float4x4 resMatrix = mul(lightData.projection, lightData.view);
+		float4 posShadowMap = mul(resMatrix, float4(worldPos, 1.0));
 		//posShadowMap = ComputeNonStereoScreenPos(posShadowMap);
 		// Transform the position to shadow clip space
 		float3 UVD = posShadowMap.xyz / posShadowMap.w;
 		// Convert to shadow map UV values
 		UVD.xy = 0.5 * UVD.xy + 0.5;
 		UVD.y = 1.0 - UVD.y;
+		float bias = 0.005;
+		UVD.z -= bias;
 		// Compute the hardware PCF value
 		attenuation *= shadowMapTexture.SampleCmpLevelZero(PCFSampler, UVD.xy, UVD.z);
 	}
 	else if (lightData.radius > 0 && lightData.height > 0)
 	{
-		const float3 a = mul(lightData.model, float4(-lightData.height / 2, 0, 0, 1));
-		const float3 b = mul(lightData.model, float4(+lightData.height / 2, 0, 0, 1));
+		const float3 a = mul(mvp.model, float4(-lightData.height / 2, 0, 0, 1));
+		const float3 b = mul(mvp.model, float4(+lightData.height / 2, 0, 0, 1));
 		lightPos = ClosestPointToSegment(worldPos, a, b);
 		const float dist = length(lightPos - worldPos);
 		attenuation = CalcAttenuationByDistance(dist, lightData.radius);

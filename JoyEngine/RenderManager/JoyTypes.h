@@ -42,8 +42,9 @@ namespace JoyEngine
 		float radius;
 		float height;
 		float angle;
-		glm::mat4 model;
-		glm::mat4 viewProj;
+
+		glm::mat4 view;
+		glm::mat4 proj;
 	};
 
 	//struct JoyData

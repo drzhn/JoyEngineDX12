@@ -27,9 +27,7 @@ namespace JoyEngine
 		void Enable() override;
 		void Disable() override;
 
-		void Update() override
-		{
-		}
+		void Update() override;
 
 		[[nodiscard]] LightType GetLightType() const noexcept { return m_lightType; }
 		[[nodiscard]] float GetIntensity() const noexcept { return m_intensity; }
@@ -41,6 +39,8 @@ namespace JoyEngine
 
 		[[nodiscard]] glm::mat4x4 GetViewMatrix() const;
 		[[nodiscard]] glm::mat4x4 GetProjMatrix() const;
+
+		[[nodiscard]] HeapHandle* GetLightDataBufferView() const noexcept { return m_lightDataBufferView.get(); }
 	private:
 		LightType m_lightType;
 		float m_intensity = 0;

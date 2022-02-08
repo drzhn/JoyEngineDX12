@@ -32,15 +32,17 @@ namespace JoyEngine
 				0.1f,
 				1000
 			);
-			uint32_t bufferSize = ((sizeof(LightData) - 1) / 256 + 1) * 256; // Device requirement. TODO check this 
-			m_lightDataBuffer = std::make_unique<Buffer>(bufferSize, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD);
-			m_lightDataBufferView = std::make_unique<HeapHandle>(
-				D3D12_CONSTANT_BUFFER_VIEW_DESC{
-					m_lightDataBuffer->GetBuffer()->GetGPUVirtualAddress(),
-					bufferSize
-				}
-			);
 		}
+
+
+		uint32_t bufferSize = ((sizeof(LightData) - 1) / 256 + 1) * 256; // Device requirement. TODO check this 
+		m_lightDataBuffer = std::make_unique<Buffer>(bufferSize, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD);
+		m_lightDataBufferView = std::make_unique<HeapHandle>(
+			D3D12_CONSTANT_BUFFER_VIEW_DESC{
+				m_lightDataBuffer->GetBuffer()->GetGPUVirtualAddress(),
+				bufferSize
+			}
+		);
 	}
 
 	void Light::Enable()
@@ -67,6 +69,24 @@ namespace JoyEngine
 		}
 	}
 
+	void Light::Update()
+	{
+		const auto ptr = m_lightDataBuffer->GetMappedPtr();
+		const auto data = static_cast<LightData*>(ptr->GetMappedPtr());
+
+		// shut up :)
+		data->intensity = m_intensity;
+		data->radius = m_radius;
+		data->height = m_height;
+		data->angle = m_angle;
+
+		if (m_lightType == Spot)
+		{
+			data->view = GetViewMatrix();
+			data->proj = GetProjMatrix();
+		}
+	}
+
 	glm::mat4 Light::GetViewMatrix() const
 	{
 		return m_cameraUnit.GetViewMatrix(m_transform->GetPosition(), m_transform->GetRotation());
@@ -75,21 +95,5 @@ namespace JoyEngine
 	glm::mat4x4 Light::GetProjMatrix() const
 	{
 		return m_cameraUnit.GetProjMatrix();
-
-		//float s = glm::cos(glm::radians(m_angle )) / glm::sin(glm::radians(m_angle ));
-		//float znear = 0.01f;
-		//float zfar = m_height;
-		//float q = zfar / (zfar - znear);
-
-		//float projArr[16] = {
-		//	s, 0, 0, 0,
-		//	0, s, 0, 0,
-		//	0, 0, q, 1,
-		//	0, 0, -q * znear, 0
-		//};
-		//glm::mat4 proj;
-
-		//memcpy(glm::value_ptr(proj), projArr, sizeof(projArr));
-		//return proj;
 	}
 }

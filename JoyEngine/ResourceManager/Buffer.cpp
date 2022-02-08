@@ -55,6 +55,11 @@ namespace JoyEngine
 		return std::move(ptr);
 	}
 
+	std::unique_ptr<BufferMappedPtr> Buffer::GetMappedPtr() const
+	{
+		return GetMappedPtr(0, m_size);
+	}
+
 	ComPtr<ID3D12Resource> Buffer::GetBuffer() const noexcept
 	{
 		return m_buffer;

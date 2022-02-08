@@ -333,14 +333,10 @@ namespace JoyEngine
 
 				for (const auto& light : m_lights)
 				{
-					LightData lightData{
-						// shut up!
-						light->GetIntensity(),
-						light->GetRadius(),
-						light->GetHeight(),
-						light->GetAngle(),
+					MVP mvp{
 						light->GetTransform()->GetModelMatrix(),
-						mainCameraProjMatrix * mainCameraViewMatrix
+						mainCameraViewMatrix,
+						mainCameraProjMatrix,
 					};
 
 					AttachView(commandList, 1, m_positionAttachment->GetAttachmentView());
@@ -352,7 +348,9 @@ namespace JoyEngine
 						AttachView(commandList, 4, Texture::GetDepthPCFSampler());
 					}
 
-					commandList->SetGraphicsRoot32BitConstants(0, sizeof(LightData) / 4, &lightData, 0);
+					AttachView(commandList, 5, light->GetLightDataBufferView());
+
+					commandList->SetGraphicsRoot32BitConstants(0, sizeof(MVP) / 4, &mvp, 0);
 					commandList->DrawIndexedInstanced(
 						m_planeMesh->GetIndexSize(),
 						1,

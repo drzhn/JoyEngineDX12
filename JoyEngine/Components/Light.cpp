@@ -4,6 +4,7 @@
 #include "RenderManager/RenderManager.h"
 #include "glm/gtc/type_ptr.hpp"
 
+
 namespace JoyEngine
 {
 	Light::Light(LightType lightType, float intensity, float radius, float height, float angle, float ambient):
@@ -16,12 +17,13 @@ namespace JoyEngine
 	{
 		if (lightType == Spot)
 		{
-			m_shadowmap = std::make_unique<Texture>(
+			m_shadowmap = std::make_unique<DepthTexture>(
 				512,
 				512,
-				DXGI_FORMAT_D32_FLOAT,
-				D3D12_RESOURCE_STATE_DEPTH_WRITE,
+				DXGI_FORMAT_R32_TYPELESS,
+				D3D12_RESOURCE_STATE_GENERIC_READ,
 				D3D12_HEAP_TYPE_DEFAULT);
+
 			m_cameraUnit = CameraUnit(
 				1,
 				512,
@@ -29,6 +31,14 @@ namespace JoyEngine
 				m_angle,
 				0.1f,
 				1000
+			);
+			uint32_t bufferSize = ((sizeof(LightData) - 1) / 256 + 1) * 256; // Device requirement. TODO check this 
+			m_lightDataBuffer = std::make_unique<Buffer>(bufferSize, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD);
+			m_lightDataBufferView = std::make_unique<HeapHandle>(
+				D3D12_CONSTANT_BUFFER_VIEW_DESC{
+					m_lightDataBuffer->GetBuffer()->GetGPUVirtualAddress(),
+					bufferSize
+				}
 			);
 		}
 	}

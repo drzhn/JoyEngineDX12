@@ -5,10 +5,13 @@
 #include "Common/CameraUnit.h"
 #include "RenderManager/JoyTypes.h"
 #include "Common/Color.h"
+#include "ResourceManager/Buffer.h"
+#include "ResourceManager/HeapHandle.h"
 
 namespace JoyEngine
 {
 	class Texture;
+	class DepthTexture;
 
 	class Light : public Component
 	{
@@ -34,7 +37,7 @@ namespace JoyEngine
 		[[nodiscard]] float GetHeight() const noexcept { return m_height; }
 		[[nodiscard]] float GetAngle() const noexcept { return m_angle; }
 		[[nodiscard]] float GetAmbient() const noexcept { return m_ambient; }
-		[[nodiscard]] Texture* GetShadowmap() const noexcept { return m_shadowmap.get(); }
+		[[nodiscard]] DepthTexture* GetShadowmap() const noexcept { return m_shadowmap.get(); }
 
 		[[nodiscard]] glm::mat4x4 GetViewMatrix() const;
 		[[nodiscard]] glm::mat4x4 GetProjMatrix() const;
@@ -46,8 +49,11 @@ namespace JoyEngine
 		float m_angle = 0;
 		float m_ambient = 0;
 
-		std::unique_ptr<Texture> m_shadowmap;
 		CameraUnit m_cameraUnit;
+		std::unique_ptr<DepthTexture> m_shadowmap;
+
+		std::unique_ptr<Buffer> m_lightDataBuffer;
+		std::unique_ptr<HeapHandle> m_lightDataBufferView;
 	};
 }
 

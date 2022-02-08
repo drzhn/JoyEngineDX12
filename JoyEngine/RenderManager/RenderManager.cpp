@@ -76,7 +76,9 @@ namespace JoyEngine
 			m_width, m_height,
 			DXGI_FORMAT_D32_FLOAT,
 			D3D12_RESOURCE_STATE_DEPTH_WRITE,
-			D3D12_HEAP_TYPE_DEFAULT);
+			D3D12_HEAP_TYPE_DEFAULT,
+			false,
+			true);
 
 		m_positionAttachment = std::make_unique<RenderTexture>(
 			m_width, m_height,
@@ -252,6 +254,12 @@ namespace JoyEngine
 			{
 				if (light->GetShadowmap() == nullptr) continue;
 
+				D3D12_RESOURCE_BARRIER depthToDSVBarrier = Transition(
+					light->GetShadowmap()->GetImage().Get(),
+					D3D12_RESOURCE_STATE_GENERIC_READ,
+					D3D12_RESOURCE_STATE_DEPTH_WRITE);
+				commandList->ResourceBarrier(1, &depthToDSVBarrier);
+
 				auto shadowmapHandle = light->GetShadowmap()->GetResourceView()->GetHandle();
 
 				SetViewportAndScissor(commandList, light->GetShadowmap()->GetWidth(), light->GetShadowmap()->GetHeight());
@@ -265,6 +273,12 @@ namespace JoyEngine
 				commandList->ClearDepthStencilView(shadowmapHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 				RenderEntireScene(commandList, light->GetViewMatrix(), light->GetProjMatrix());
+
+				D3D12_RESOURCE_BARRIER depthToSrvBarrier = Transition(
+					light->GetShadowmap()->GetImage().Get(),
+					D3D12_RESOURCE_STATE_DEPTH_WRITE,
+					D3D12_RESOURCE_STATE_GENERIC_READ);
+				commandList->ResourceBarrier(1, &depthToSrvBarrier);
 			}
 
 			SetViewportAndScissor(commandList, m_width, m_height);
@@ -329,17 +343,14 @@ namespace JoyEngine
 						mainCameraProjMatrix * mainCameraViewMatrix
 					};
 
-					ID3D12DescriptorHeap* heaps1[1] = {m_positionAttachment->GetAttachmentView()->GetHeap()};
-					commandList->SetDescriptorHeaps(
-						1,
-						heaps1);
-					commandList->SetGraphicsRootDescriptorTable(1, m_positionAttachment->GetAttachmentView()->GetGPUHandle());
+					AttachView(commandList, 1, m_positionAttachment->GetAttachmentView());
+					AttachView(commandList, 2, m_normalAttachment->GetAttachmentView());
 
-					ID3D12DescriptorHeap* heaps2[1] = {m_normalAttachment->GetAttachmentView()->GetHeap()};
-					commandList->SetDescriptorHeaps(
-						1,
-						heaps2);
-					commandList->SetGraphicsRootDescriptorTable(2, m_normalAttachment->GetAttachmentView()->GetGPUHandle());
+					if (light->GetShadowmap() != nullptr)
+					{
+						AttachView(commandList, 3, light->GetShadowmap()->GetAttachmentView());
+						AttachView(commandList, 4, Texture::GetDepthPCFSampler());
+					}
 
 					commandList->SetGraphicsRoot32BitConstants(0, sizeof(LightData) / 4, &lightData, 0);
 					commandList->DrawIndexedInstanced(
@@ -484,8 +495,7 @@ namespace JoyEngine
 	void RenderManager::SetViewportAndScissor(
 		ID3D12GraphicsCommandList* commandList,
 		uint32_t width,
-		uint32_t height
-	) const 
+		uint32_t height) const
 	{
 		const D3D12_VIEWPORT viewport = {
 			0.0f,
@@ -503,6 +513,22 @@ namespace JoyEngine
 		};
 		commandList->RSSetViewports(1, &viewport);
 		commandList->RSSetScissorRects(1, &scissorRect);
+	}
+
+
+	void RenderManager::AttachView(
+		ID3D12GraphicsCommandList* commandList,
+		uint32_t rootParameterIndex,
+		const HeapHandle* view
+	) const
+	{
+		ID3D12DescriptorHeap* heaps1[1] = {view->GetHeap()};
+		commandList->SetDescriptorHeaps(
+			1,
+			heaps1);
+		D3D12_GPU_DESCRIPTOR_HANDLE null = {0};
+		commandList->SetGraphicsRootDescriptorTable(
+			rootParameterIndex, view->GetGPUHandle());
 	}
 
 

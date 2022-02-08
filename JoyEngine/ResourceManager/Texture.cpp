@@ -26,7 +26,7 @@ namespace JoyEngine
 		textureSamplerDesc.MipLODBias = 0.0f;
 		textureSamplerDesc.MaxAnisotropy = 1;
 		textureSamplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
-		m_textureSampler =  std::make_unique<HeapHandle>(textureSamplerDesc);
+		m_textureSampler = std::make_unique<HeapHandle>(textureSamplerDesc);
 
 		D3D12_SAMPLER_DESC depthPCFSamplerDesc = {};
 		depthPCFSamplerDesc.Filter = D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
@@ -85,8 +85,8 @@ namespace JoyEngine
 			ASSERT(false);
 		}
 
-		CreateImage(false);
-		CreateImageView();
+		CreateImage(false, false);
+		CreateImageView(false, false);
 		JoyContext::Memory->LoadDataToImage(
 			textureStream,
 			sizeof(uint32_t) + sizeof(uint32_t),
@@ -101,15 +101,16 @@ namespace JoyEngine
 		DXGI_FORMAT format,
 		D3D12_RESOURCE_STATES usage,
 		D3D12_HEAP_TYPE properties,
-		bool allowRenderTarget):
+		bool allowRenderTarget,
+		bool isDepthTarget):
 		m_width(width),
 		m_height(height),
 		m_format(format),
 		m_usageFlags(usage),
 		m_memoryPropertiesFlags(properties)
 	{
-		CreateImage(allowRenderTarget);
-		CreateImageView();
+		CreateImage(allowRenderTarget, isDepthTarget);
+		CreateImageView(allowRenderTarget, isDepthTarget);
 	}
 
 	Texture::Texture(
@@ -126,19 +127,19 @@ namespace JoyEngine
 		m_memoryPropertiesFlags(properties),
 		m_texture(std::move(externalResource))
 	{
-		CreateImageView();
+		CreateImageView(true, false); // I use this only for creating texture from system back buffer
 	}
 
-	void Texture::CreateImage(bool allowRenderTarget)
+	void Texture::CreateImage(bool allowRenderTarget, bool isDepthTarget)
 	{
 		D3D12_CLEAR_VALUE optimizedClearValue = {};
 		D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE;
-		bool isDepth = false;
-		if (m_format == DXGI_FORMAT_D32_FLOAT || m_format == DXGI_FORMAT_R32_TYPELESS)
+		ASSERT(!(allowRenderTarget && isDepthTarget));
+
+		if (isDepthTarget)
 		{
-			isDepth = true;
 			flags |= D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
-			optimizedClearValue.Format = m_format;
+			optimizedClearValue.Format = DXGI_FORMAT_D32_FLOAT;
 			optimizedClearValue.DepthStencil = {1.0f, 0};
 		}
 		else
@@ -165,18 +166,19 @@ namespace JoyEngine
 				D3D12_HEAP_FLAG_NONE,
 				&textureDesc,
 				m_usageFlags,
-				isDepth ? &optimizedClearValue : nullptr,
+				isDepthTarget ? &optimizedClearValue : nullptr,
 				IID_PPV_ARGS(&m_texture))
 		);
 	}
 
-	void Texture::CreateImageView()
+	void Texture::CreateImageView(bool allowRenderTarget, bool isDepthTarget)
 	{
-		if ((m_usageFlags & D3D12_RESOURCE_STATE_RENDER_TARGET) != 0)
+		ASSERT(!(allowRenderTarget && isDepthTarget));
+		if (allowRenderTarget)
 		{
 			m_resourceView = std::make_unique<HeapHandle>(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, m_texture.Get(), m_format);
 		}
-		else if ((m_usageFlags & D3D12_RESOURCE_STATE_DEPTH_WRITE) != 0)
+		else if (isDepthTarget)
 		{
 			m_resourceView = std::make_unique<HeapHandle>(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, m_texture.Get(), m_format);
 		}
@@ -204,5 +206,25 @@ namespace JoyEngine
 			D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
 			this->GetImage().Get(),
 			this->GetFormat());
+	}
+
+	DepthTexture::DepthTexture(
+		uint32_t width,
+		uint32_t height,
+		DXGI_FORMAT format,
+		D3D12_RESOURCE_STATES usage,
+		D3D12_HEAP_TYPE properties) :
+		Texture(width,
+		        height,
+		        format,
+		        usage,
+		        properties,
+		        false,
+		        true)
+	{
+		m_inputAttachmentView = std::make_unique<HeapHandle>(
+			D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+			this->GetImage().Get(),
+			DXGI_FORMAT_R32_FLOAT);
 	}
 }

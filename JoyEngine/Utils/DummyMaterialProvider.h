@@ -14,6 +14,12 @@ namespace JoyEngine
 		~DummyMaterialProvider() = default;
 		void Init();
 		void CreateSampleMaterial(const std::string& materialName, GUID textureGuid);
+		CD3DX12_ROOT_PARAMETER1 CreateDescriptorTable(
+			CD3DX12_ROOT_PARAMETER1& param,
+			D3D12_DESCRIPTOR_RANGE_TYPE type,
+			uint32_t shaderRegister,
+			D3D12_SHADER_VISIBILITY = D3D12_SHADER_VISIBILITY_ALL, D3D12_DESCRIPTOR_RANGE_FLAGS = D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
+		CD3DX12_ROOT_PARAMETER1 CreateConstants(CD3DX12_ROOT_PARAMETER1& param, uint32_t number, uint32_t shaderRegister, D3D12_SHADER_VISIBILITY visibility);
 
 		[[nodiscard]] GUID GetMaterialGuid(const std::string& materialName) const noexcept
 		{

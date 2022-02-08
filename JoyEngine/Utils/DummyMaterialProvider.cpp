@@ -16,12 +16,17 @@ using Microsoft::WRL::ComPtr;
 
 namespace JoyEngine
 {
+
+	struct RootParam
+	{
+		CD3DX12_DESCRIPTOR_RANGE1 range;
+		CD3DX12_ROOT_PARAMETER1 param;
+	};
+
 	void DummyMaterialProvider::Init()
 	{
 		Texture::InitSamplers();
 
-		//GUID skyboxTextureGuid = GUID::StringToGuid("ab9f4108-d126-4390-8233-75ee3fed4584");
-		//m_skyboxTextureHandle = JoyContext::Resource->LoadResource<Texture>(skyboxTextureGuid);
 		// GBuffer write shader
 		{
 			const GUID gbufferWriteShaderGuid = GUID::StringToGuid("48ffacc9-5c00-4058-b359-cf72189896ac"); //shaders/gbufferwrite.hlsl
@@ -114,7 +119,7 @@ namespace JoyEngine
 			ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
 
 			ranges[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2, 0, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
-			ranges[3].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 0);
+			ranges[3].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
 
 			std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters(5);
 			rootParameters[0].InitAsConstants(sizeof(LightData) / 4, 0, 0, D3D12_SHADER_VISIBILITY_ALL);
@@ -161,7 +166,6 @@ namespace JoyEngine
 		{
 			const GUID shaderGuid = GUID::StringToGuid("183d6cfe-ca85-4e0b-ab36-7b1ca0f99d34");
 			const GUID sharedMaterialGuid = GUID::Random();
-
 
 			CD3DX12_DESCRIPTOR_RANGE1 ranges[3];
 			ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
@@ -221,5 +225,28 @@ namespace JoyEngine
 				material
 			}
 		});
+	}
+
+	CD3DX12_ROOT_PARAMETER1 DummyMaterialProvider::CreateDescriptorTable(
+		CD3DX12_ROOT_PARAMETER1& param,
+		D3D12_DESCRIPTOR_RANGE_TYPE type,
+		uint32_t shaderRegister,
+		D3D12_SHADER_VISIBILITY visibility,
+		D3D12_DESCRIPTOR_RANGE_FLAGS flags)
+	{
+		CD3DX12_DESCRIPTOR_RANGE1 range;
+		range.Init(type, 1, shaderRegister, 0, flags);
+		param.InitAsDescriptorTable(1, &range, visibility);
+		return param;
+	}
+
+	CD3DX12_ROOT_PARAMETER1 DummyMaterialProvider::CreateConstants(
+		CD3DX12_ROOT_PARAMETER1& param,
+		uint32_t number,
+		uint32_t shaderRegister,
+		D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL)
+	{
+		param.InitAsConstants(number, shaderRegister, 0, visibility);
+		return param;
 	}
 }

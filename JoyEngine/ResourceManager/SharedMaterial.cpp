@@ -87,7 +87,7 @@ namespace JoyEngine
 
 		CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
 		rootSignatureDesc.Init_1_1(
-			rootParams.size(),
+			static_cast<uint32_t>(rootParams.size()),
 			rootParams.empty() ? nullptr : rootParams.data(),
 			0,
 			nullptr,
@@ -95,7 +95,13 @@ namespace JoyEngine
 
 		ComPtr<ID3DBlob> signature;
 		ComPtr<ID3DBlob> error;
-		ASSERT_SUCC(D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, featureData.HighestVersion, &signature, &error));
+		HRESULT result = D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, featureData.HighestVersion, &signature, &error);
+		if (FAILED(result) && error != nullptr)
+		{
+			const char* errorMsg = static_cast<const char*>(error->GetBufferPointer());
+			OutputDebugStringA(errorMsg);
+			ASSERT(false);
+		}
 		ASSERT_SUCC(JoyContext::Graphics->GetDevice()->CreateRootSignature(
 			0,
 			signature->GetBufferPointer(),

@@ -6,7 +6,7 @@
 
 namespace JoyEngine
 {
-	HeapHandle::HeapHandle(D3D12_DESCRIPTOR_HEAP_TYPE type, ID3D12Resource* resource, DXGI_FORMAT format):
+	HeapHandle::HeapHandle(D3D12_DESCRIPTOR_HEAP_TYPE type, ID3D12Resource* resource, DXGI_FORMAT format, D3D12_SRV_DIMENSION dimension):
 		m_type(type)
 	{
 		auto flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
@@ -43,33 +43,27 @@ namespace JoyEngine
 		{
 		case D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV:
 			{
-				// Describe and create a SRV for the texture.
-				D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-				srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-				srvDesc.Format = format;
-				srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-				srvDesc.Texture2D.MipLevels = 1;
-				JoyContext::Graphics->GetDevice()->CreateShaderResourceView(
-					resource,
-					&srvDesc,
-					m_handle);
+				if (dimension == D3D12_SRV_DIMENSION_BUFFER)
+				{
+					ASSERT(false);
+				}
+				else
+				{
+					// Describe and create a SRV for the texture.
+					D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+					srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+					srvDesc.Format = format;
+					srvDesc.ViewDimension = dimension;
+					srvDesc.Texture2D.MipLevels = 1;
+					JoyContext::Graphics->GetDevice()->CreateShaderResourceView(
+						resource,
+						&srvDesc,
+						m_handle);
+				}
 				break;
 			}
 		case D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER:
 			{
-				//D3D12_SAMPLER_DESC samplerDesc = {};
-				//samplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
-				//samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-				//samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-				//samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-				//samplerDesc.MinLOD = 0;
-				//samplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
-				//samplerDesc.MipLODBias = 0.0f;
-				//samplerDesc.MaxAnisotropy = 1;
-				//samplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
-				//JoyContext::Graphics->GetDevice()->CreateSampler(
-				//	&samplerDesc,
-				//	m_handle);
 				ASSERT(false);
 				break;
 			}
@@ -115,6 +109,26 @@ namespace JoyEngine
 		m_handle = m_descriptorHeap->GetCPUDescriptorHandleForHeapStart();
 
 		JoyContext::Graphics->GetDevice()->CreateSampler(
+			&desc,
+			m_handle);
+	}
+
+	HeapHandle::HeapHandle(D3D12_CONSTANT_BUFFER_VIEW_DESC desc):
+		m_type(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
+	{
+		const D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {
+			m_type,
+			1,
+			D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
+			0
+		};
+		ASSERT_SUCC(JoyContext::Graphics->GetDevice()->CreateDescriptorHeap(
+			&heapDesc,
+			IID_PPV_ARGS(&m_descriptorHeap)));
+
+		m_handle = m_descriptorHeap->GetCPUDescriptorHandleForHeapStart();
+
+		JoyContext::Graphics->GetDevice()->CreateConstantBufferView(
 			&desc,
 			m_handle);
 	}

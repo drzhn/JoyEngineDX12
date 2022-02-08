@@ -11,6 +11,13 @@ struct PSOutput
 	float4 Color: SV_Target;
 };
 
+struct MVP
+{
+	float4x4 model;
+	float4x4 view;
+	float4x4 projection;
+};
+
 struct LightData
 {
 	float intensity;
@@ -22,7 +29,9 @@ struct LightData
 	float4x4 viewProj;
 };
 
+//ConstantBuffer<MVP> mvp : register(b0);
 ConstantBuffer<LightData> lightData : register(b0);
+
 Texture2D positionTexture : register(t0);
 Texture2D normalTexture : register(t1);
 
@@ -30,12 +39,12 @@ Texture2D shadowMapTexture : register(t2);
 SamplerComparisonState PCFSampler : register(s0);
 
 
-//inline float4 ComputeNonStereoScreenPos(float4 pos) {
-//	float4 o = pos * 0.5f;
-//	o.xy = float2(o.x, o.y * -1) + o.w;
-//	o.zw = pos.zw;
-//	return o;
-//}
+inline float4 ComputeNonStereoScreenPos(float4 pos) {
+	float4 o = pos * 0.5f;
+	o.xy = float2(o.x, o.y * -1) + o.w;
+	o.zw = pos.zw;
+	return o;
+}
 
 static const float PI = 3.14159265f;
 static const float ToRad = PI / 180;
@@ -134,6 +143,17 @@ PSOutput PSMain(PSInput input) // : SV_TARGET
 			lightDir,
 			lightData.angle / 2 * ToRad,
 			lightData.height);
+
+		// Transform the world position to shadow projected space
+		float4 posShadowMap = mul(lightData.viewProj, float4(worldPos, 1.0));
+		//posShadowMap = ComputeNonStereoScreenPos(posShadowMap);
+		// Transform the position to shadow clip space
+		float3 UVD = posShadowMap.xyz / posShadowMap.w;
+		// Convert to shadow map UV values
+		UVD.xy = 0.5 * UVD.xy + 0.5;
+		UVD.y = 1.0 - UVD.y;
+		// Compute the hardware PCF value
+		attenuation *= shadowMapTexture.SampleCmpLevelZero(PCFSampler, UVD.xy, UVD.z);
 	}
 	else if (lightData.radius > 0 && lightData.height > 0)
 	{

@@ -41,7 +41,8 @@ namespace JoyEngine
 			DXGI_FORMAT format,
 			D3D12_RESOURCE_STATES usage,
 			D3D12_HEAP_TYPE properties,
-			bool allowRenderTarget = false
+			bool allowRenderTarget = false,
+			bool isDepthTarget = false
 		);
 
 		explicit Texture(
@@ -68,8 +69,8 @@ namespace JoyEngine
 		[[nodiscard]] bool IsLoaded() const noexcept override { return true; }
 
 	private:
-		void CreateImage(bool allowRenderTarget);
-		void CreateImageView();
+		void CreateImage(bool allowRenderTarget, bool isDepthTarget);
+		void CreateImageView(bool allowRenderTarget, bool isDepthTarget);
 
 	private:
 		uint32_t m_width = 0;
@@ -86,6 +87,23 @@ namespace JoyEngine
 	{
 	public:
 		explicit RenderTexture(
+			uint32_t width,
+			uint32_t height,
+			DXGI_FORMAT format,
+			D3D12_RESOURCE_STATES usage,
+			D3D12_HEAP_TYPE properties
+		);
+
+		[[nodiscard]] HeapHandle* GetAttachmentView() const noexcept { return m_inputAttachmentView.get(); }
+
+	private:
+		std::unique_ptr<HeapHandle> m_inputAttachmentView; // additional view for using this texture as input attachment
+	};
+
+	class DepthTexture final : public Texture
+	{
+	public:
+		explicit DepthTexture(
 			uint32_t width,
 			uint32_t height,
 			DXGI_FORMAT format,

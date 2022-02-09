@@ -11,8 +11,8 @@
 
 namespace JoyEngine
 {
-	std::unique_ptr<HeapHandle> Texture::m_textureSampler = nullptr;
-	std::unique_ptr<HeapHandle> Texture::m_depthPCFSampler = nullptr;
+	std::unique_ptr<ResourceView> Texture::m_textureSampler = nullptr;
+	std::unique_ptr<ResourceView> Texture::m_depthPCFSampler = nullptr;
 
 	void Texture::InitSamplers()
 	{
@@ -26,7 +26,7 @@ namespace JoyEngine
 		textureSamplerDesc.MipLODBias = 0.0f;
 		textureSamplerDesc.MaxAnisotropy = 1;
 		textureSamplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
-		m_textureSampler = std::make_unique<HeapHandle>(textureSamplerDesc);
+		m_textureSampler = std::make_unique<ResourceView>(textureSamplerDesc);
 
 		D3D12_SAMPLER_DESC depthPCFSamplerDesc = {};
 		depthPCFSamplerDesc.Filter = D3D12_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
@@ -42,16 +42,16 @@ namespace JoyEngine
 		depthPCFSamplerDesc.MipLODBias = 0.0f;
 		depthPCFSamplerDesc.MaxAnisotropy = 1;
 		depthPCFSamplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_LESS;
-		m_depthPCFSampler = std::make_unique<HeapHandle>(depthPCFSamplerDesc);
+		m_depthPCFSampler = std::make_unique<ResourceView>(depthPCFSamplerDesc);
 	}
 
-	HeapHandle* Texture::GetTextureSampler()
+	ResourceView* Texture::GetTextureSampler()
 	{
 		ASSERT(m_textureSampler != nullptr);
 		return m_textureSampler.get();
 	}
 
-	HeapHandle* Texture::GetDepthPCFSampler()
+	ResourceView* Texture::GetDepthPCFSampler()
 	{
 		ASSERT(m_depthPCFSampler != nullptr);
 		return m_depthPCFSampler.get();
@@ -178,7 +178,7 @@ namespace JoyEngine
 		if (allowRenderTarget)
 		{
 			ASSERT(arraySize == 1);
-			m_resourceView = std::make_unique<HeapHandle>(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, m_texture.Get(), m_format);
+			m_resourceView = std::make_unique<ResourceView>(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, m_texture.Get(), m_format);
 		}
 		else if (isDepthTarget)
 		{
@@ -197,13 +197,13 @@ namespace JoyEngine
 			}
 			depthStencilViewDesc.Flags = D3D12_DSV_FLAG_NONE;
 
-			m_resourceView = std::make_unique<HeapHandle>(depthStencilViewDesc, m_texture.Get());
+			m_resourceView = std::make_unique<ResourceView>(depthStencilViewDesc, m_texture.Get());
 		}
 		else
 		{
 			ASSERT(arraySize >= 1);
 
-			m_resourceView = std::make_unique<HeapHandle>(
+			m_resourceView = std::make_unique<ResourceView>(
 				D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
 				m_texture.Get(),
 				m_format,
@@ -225,7 +225,7 @@ namespace JoyEngine
 		        properties,
 		        true)
 	{
-		m_inputAttachmentView = std::make_unique<HeapHandle>(
+		m_inputAttachmentView = std::make_unique<ResourceView>(
 			D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
 			this->GetImage().Get(),
 			this->GetFormat());
@@ -248,7 +248,7 @@ namespace JoyEngine
 		        true,
 		        arraySize)
 	{
-		m_inputAttachmentView = std::make_unique<HeapHandle>(
+		m_inputAttachmentView = std::make_unique<ResourceView>(
 			D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
 			this->GetImage().Get(),
 			DXGI_FORMAT_R32_FLOAT);

@@ -1,4 +1,4 @@
-﻿#include "HeapHandle.h"
+﻿#include "ResourceView.h"
 
 #include "JoyContext.h"
 #include "GraphicsManager/GraphicsManager.h"
@@ -6,7 +6,7 @@
 
 namespace JoyEngine
 {
-	HeapHandle::HeapHandle(D3D12_DESCRIPTOR_HEAP_TYPE type, ID3D12Resource* resource, DXGI_FORMAT format, D3D12_SRV_DIMENSION dimension):
+	ResourceView::ResourceView(D3D12_DESCRIPTOR_HEAP_TYPE type, ID3D12Resource* resource, DXGI_FORMAT format, D3D12_SRV_DIMENSION dimension):
 		m_type(type)
 	{
 		auto flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
@@ -77,15 +77,6 @@ namespace JoyEngine
 			}
 		case D3D12_DESCRIPTOR_HEAP_TYPE_DSV:
 			{
-				//D3D12_DEPTH_STENCIL_VIEW_DESC dsv = {};
-				//dsv.Format = DXGI_FORMAT_D32_FLOAT;
-				//dsv.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
-				//dsv.Texture2D.MipSlice = 0;
-				//dsv.Flags = D3D12_DSV_FLAG_NONE;
-				//JoyContext::Graphics->GetDevice()->CreateDepthStencilView(
-				//	resource,
-				//	&dsv,
-				//	m_handle);
 				ASSERT(false);
 				break;
 			}
@@ -94,7 +85,7 @@ namespace JoyEngine
 		}
 	}
 
-	HeapHandle::HeapHandle(D3D12_DEPTH_STENCIL_VIEW_DESC desc, ID3D12Resource* resource) :
+	ResourceView::ResourceView(D3D12_DEPTH_STENCIL_VIEW_DESC desc, ID3D12Resource* resource) :
 		m_type(D3D12_DESCRIPTOR_HEAP_TYPE_DSV)
 	{
 		const D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {
@@ -115,7 +106,7 @@ namespace JoyEngine
 			m_handle);
 	}
 
-	HeapHandle::HeapHandle(D3D12_SAMPLER_DESC desc):
+	ResourceView::ResourceView(D3D12_SAMPLER_DESC desc):
 		m_type(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER)
 	{
 		const D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {
@@ -135,7 +126,7 @@ namespace JoyEngine
 			m_handle);
 	}
 
-	HeapHandle::HeapHandle(D3D12_CONSTANT_BUFFER_VIEW_DESC desc):
+	ResourceView::ResourceView(D3D12_CONSTANT_BUFFER_VIEW_DESC desc):
 		m_type(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
 	{
 		const D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {

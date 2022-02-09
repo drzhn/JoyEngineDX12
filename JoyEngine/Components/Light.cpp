@@ -57,7 +57,7 @@ namespace JoyEngine
 
 		uint32_t bufferSize = ((sizeof(LightData) - 1) / 256 + 1) * 256; // Device requirement. TODO check this 
 		m_lightDataBuffer = std::make_unique<Buffer>(bufferSize, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD);
-		m_lightDataBufferView = std::make_unique<HeapHandle>(
+		m_lightDataBufferView = std::make_unique<ResourceView>(
 			D3D12_CONSTANT_BUFFER_VIEW_DESC{
 				m_lightDataBuffer->GetBuffer()->GetGPUVirtualAddress(),
 				bufferSize

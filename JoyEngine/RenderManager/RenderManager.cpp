@@ -517,7 +517,7 @@ namespace JoyEngine
 	void RenderManager::AttachView(
 		ID3D12GraphicsCommandList* commandList,
 		uint32_t rootParameterIndex,
-		const HeapHandle* view
+		const ResourceView* view
 	) const
 	{
 		ID3D12DescriptorHeap* heaps1[1] = {view->GetHeap()};

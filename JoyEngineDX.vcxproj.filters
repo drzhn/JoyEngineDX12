@@ -111,7 +111,7 @@
     <ClCompile Include="JoyEngine\ResourceManager\Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JoyEngine\ResourceManager\HeapHandle.cpp">
+    <ClCompile Include="JoyEngine\ResourceManager\ResourceView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="JoyEngine\Common\CameraUnit.cpp">
@@ -242,7 +242,7 @@
     <ClInclude Include="JoyEngine\ResourceManager\Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JoyEngine\ResourceManager\HeapHandle.h">
+    <ClInclude Include="JoyEngine\ResourceManager\ResourceView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JoyEngine\Common\CameraUnit.h">

@@ -6,7 +6,7 @@
 #include "RenderManager/JoyTypes.h"
 #include "Common/Color.h"
 #include "ResourceManager/Buffer.h"
-#include "ResourceManager/HeapHandle.h"
+#include "ResourceManager/ResourceView.h"
 
 namespace JoyEngine
 {
@@ -40,7 +40,7 @@ namespace JoyEngine
 		[[nodiscard]] glm::mat4x4 GetViewMatrix() const;
 		[[nodiscard]] glm::mat4x4 GetProjMatrix() const;
 
-		[[nodiscard]] HeapHandle* GetLightDataBufferView() const noexcept { return m_lightDataBufferView.get(); }
+		[[nodiscard]] ResourceView* GetLightDataBufferView() const noexcept { return m_lightDataBufferView.get(); }
 	private:
 		LightType m_lightType;
 		float m_intensity = 0;
@@ -53,7 +53,7 @@ namespace JoyEngine
 		std::unique_ptr<DepthTexture> m_shadowmap;
 
 		std::unique_ptr<Buffer> m_lightDataBuffer;
-		std::unique_ptr<HeapHandle> m_lightDataBufferView;
+		std::unique_ptr<ResourceView> m_lightDataBufferView;
 	};
 }
 

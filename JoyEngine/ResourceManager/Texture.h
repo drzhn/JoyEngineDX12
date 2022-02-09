@@ -10,7 +10,7 @@
 using Microsoft::WRL::ComPtr;
 
 #include "Common/Resource.h"
-#include "ResourceManager/HeapHandle.h"
+#include "ResourceManager/ResourceView.h"
 
 
 namespace JoyEngine
@@ -25,11 +25,11 @@ namespace JoyEngine
 	{
 	public:
 		static void InitSamplers();
-		static HeapHandle* GetTextureSampler();
-		static HeapHandle* GetDepthPCFSampler();
+		static ResourceView* GetTextureSampler();
+		static ResourceView* GetDepthPCFSampler();
 	private:
-		static std::unique_ptr<HeapHandle> m_textureSampler;
-		static std::unique_ptr<HeapHandle> m_depthPCFSampler;
+		static std::unique_ptr<ResourceView> m_textureSampler;
+		static std::unique_ptr<ResourceView> m_depthPCFSampler;
 	public:
 		explicit Texture() = default;
 
@@ -65,7 +65,7 @@ namespace JoyEngine
 
 		[[nodiscard]] DXGI_FORMAT GetFormat() const noexcept { return m_format; }
 
-		[[nodiscard]] HeapHandle* GetResourceView() const noexcept { return m_resourceView.get(); }
+		[[nodiscard]] ResourceView* GetResourceView() const noexcept { return m_resourceView.get(); }
 
 		[[nodiscard]] bool IsLoaded() const noexcept override { return true; }
 
@@ -81,7 +81,7 @@ namespace JoyEngine
 		CD3DX12_HEAP_PROPERTIES m_memoryPropertiesFlags;
 
 		ComPtr<ID3D12Resource> m_texture;
-		std::unique_ptr<HeapHandle> m_resourceView;
+		std::unique_ptr<ResourceView> m_resourceView;
 	};
 
 	class RenderTexture final : public Texture
@@ -95,10 +95,10 @@ namespace JoyEngine
 			D3D12_HEAP_TYPE properties
 		);
 
-		[[nodiscard]] HeapHandle* GetAttachmentView() const noexcept { return m_inputAttachmentView.get(); }
+		[[nodiscard]] ResourceView* GetAttachmentView() const noexcept { return m_inputAttachmentView.get(); }
 
 	private:
-		std::unique_ptr<HeapHandle> m_inputAttachmentView; // additional view for using this texture as input attachment
+		std::unique_ptr<ResourceView> m_inputAttachmentView; // additional view for using this texture as input attachment
 	};
 
 	class DepthTexture final : public Texture
@@ -113,10 +113,10 @@ namespace JoyEngine
 			uint32_t arraySize = 1
 		);
 
-		[[nodiscard]] HeapHandle* GetAttachmentView() const noexcept { return m_inputAttachmentView.get(); }
+		[[nodiscard]] ResourceView* GetAttachmentView() const noexcept { return m_inputAttachmentView.get(); }
 
 	private:
-		std::unique_ptr<HeapHandle> m_inputAttachmentView; // additional view for using this texture as input attachment
+		std::unique_ptr<ResourceView> m_inputAttachmentView; // additional view for using this texture as input attachment
 	};
 }
 

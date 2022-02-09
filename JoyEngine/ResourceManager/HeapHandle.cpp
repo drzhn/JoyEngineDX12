@@ -77,20 +77,42 @@ namespace JoyEngine
 			}
 		case D3D12_DESCRIPTOR_HEAP_TYPE_DSV:
 			{
-				D3D12_DEPTH_STENCIL_VIEW_DESC dsv = {};
-				dsv.Format = DXGI_FORMAT_D32_FLOAT;
-				dsv.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
-				dsv.Texture2D.MipSlice = 0;
-				dsv.Flags = D3D12_DSV_FLAG_NONE;
-				JoyContext::Graphics->GetDevice()->CreateDepthStencilView(
-					resource,
-					&dsv,
-					m_handle);
+				//D3D12_DEPTH_STENCIL_VIEW_DESC dsv = {};
+				//dsv.Format = DXGI_FORMAT_D32_FLOAT;
+				//dsv.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+				//dsv.Texture2D.MipSlice = 0;
+				//dsv.Flags = D3D12_DSV_FLAG_NONE;
+				//JoyContext::Graphics->GetDevice()->CreateDepthStencilView(
+				//	resource,
+				//	&dsv,
+				//	m_handle);
+				ASSERT(false);
 				break;
 			}
 		case D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES:
 			ASSERT(false);
 		}
+	}
+
+	HeapHandle::HeapHandle(D3D12_DEPTH_STENCIL_VIEW_DESC desc, ID3D12Resource* resource) :
+		m_type(D3D12_DESCRIPTOR_HEAP_TYPE_DSV)
+	{
+		const D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {
+			m_type,
+			1,
+			D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
+			0
+		};
+		ASSERT_SUCC(JoyContext::Graphics->GetDevice()->CreateDescriptorHeap(
+			&heapDesc,
+			IID_PPV_ARGS(&m_descriptorHeap)));
+
+		m_handle = m_descriptorHeap->GetCPUDescriptorHandleForHeapStart();
+
+		JoyContext::Graphics->GetDevice()->CreateDepthStencilView(
+			resource,
+			&desc,
+			m_handle);
 	}
 
 	HeapHandle::HeapHandle(D3D12_SAMPLER_DESC desc):

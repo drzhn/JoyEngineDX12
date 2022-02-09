@@ -34,6 +34,26 @@ namespace JoyEngine
 			);
 		}
 
+		if (lightType == Point)
+		{
+			m_shadowmap = std::make_unique<DepthTexture>(
+				512,
+				512,
+				DXGI_FORMAT_R32_TYPELESS,
+				D3D12_RESOURCE_STATE_GENERIC_READ,
+				D3D12_HEAP_TYPE_DEFAULT,
+				6);
+
+			m_cameraUnit = CameraUnit(
+				1,
+				512,
+				512,
+				90,
+				0.1f,
+				1000
+			);
+		}
+
 
 		uint32_t bufferSize = ((sizeof(LightData) - 1) / 256 + 1) * 256; // Device requirement. TODO check this 
 		m_lightDataBuffer = std::make_unique<Buffer>(bufferSize, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD);

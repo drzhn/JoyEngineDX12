@@ -42,7 +42,8 @@ namespace JoyEngine
 			D3D12_RESOURCE_STATES usage,
 			D3D12_HEAP_TYPE properties,
 			bool allowRenderTarget = false,
-			bool isDepthTarget = false
+			bool isDepthTarget = false,
+			uint32_t arraySize = 1
 		);
 
 		explicit Texture(
@@ -69,8 +70,8 @@ namespace JoyEngine
 		[[nodiscard]] bool IsLoaded() const noexcept override { return true; }
 
 	private:
-		void CreateImage(bool allowRenderTarget, bool isDepthTarget);
-		void CreateImageView(bool allowRenderTarget, bool isDepthTarget);
+		void CreateImage(bool allowRenderTarget, bool isDepthTarget, uint32_t arraySize);
+		void CreateImageView(bool allowRenderTarget, bool isDepthTarget, uint32_t arraySize);
 
 	private:
 		uint32_t m_width = 0;
@@ -108,7 +109,8 @@ namespace JoyEngine
 			uint32_t height,
 			DXGI_FORMAT format,
 			D3D12_RESOURCE_STATES usage,
-			D3D12_HEAP_TYPE properties
+			D3D12_HEAP_TYPE properties,
+			uint32_t arraySize = 1
 		);
 
 		[[nodiscard]] HeapHandle* GetAttachmentView() const noexcept { return m_inputAttachmentView.get(); }

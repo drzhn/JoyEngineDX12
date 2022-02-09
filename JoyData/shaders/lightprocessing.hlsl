@@ -148,7 +148,6 @@ PSOutput PSMain(PSInput input) // : SV_TARGET
 		// Transform the world position to shadow projected space
 		const float4x4 resMatrix = mul(lightData.projection, lightData.view);
 		float4 posShadowMap = mul(resMatrix, float4(worldPos, 1.0));
-		//posShadowMap = ComputeNonStereoScreenPos(posShadowMap);
 		// Transform the position to shadow clip space
 		float3 UVD = posShadowMap.xyz / posShadowMap.w;
 		// Convert to shadow map UV values

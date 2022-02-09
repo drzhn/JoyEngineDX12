@@ -29,7 +29,7 @@ namespace JoyEngine
 		m_textureSampler = std::make_unique<HeapHandle>(textureSamplerDesc);
 
 		D3D12_SAMPLER_DESC depthPCFSamplerDesc = {};
-		depthPCFSamplerDesc.Filter = D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
+		depthPCFSamplerDesc.Filter = D3D12_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
 		depthPCFSamplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
 		depthPCFSamplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
 		depthPCFSamplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
@@ -85,8 +85,8 @@ namespace JoyEngine
 			ASSERT(false);
 		}
 
-		CreateImage(false, false);
-		CreateImageView(false, false);
+		CreateImage(false, false, 1);
+		CreateImageView(false, false, 1);
 		JoyContext::Memory->LoadDataToImage(
 			textureStream,
 			sizeof(uint32_t) + sizeof(uint32_t),
@@ -102,15 +102,16 @@ namespace JoyEngine
 		D3D12_RESOURCE_STATES usage,
 		D3D12_HEAP_TYPE properties,
 		bool allowRenderTarget,
-		bool isDepthTarget):
+		bool isDepthTarget,
+		uint32_t arraySize):
 		m_width(width),
 		m_height(height),
 		m_format(format),
 		m_usageFlags(usage),
 		m_memoryPropertiesFlags(properties)
 	{
-		CreateImage(allowRenderTarget, isDepthTarget);
-		CreateImageView(allowRenderTarget, isDepthTarget);
+		CreateImage(allowRenderTarget, isDepthTarget, arraySize);
+		CreateImageView(allowRenderTarget, isDepthTarget, arraySize);
 	}
 
 	Texture::Texture(
@@ -127,10 +128,10 @@ namespace JoyEngine
 		m_memoryPropertiesFlags(properties),
 		m_texture(std::move(externalResource))
 	{
-		CreateImageView(true, false); // I use this only for creating texture from system back buffer
+		CreateImageView(true, false, 1); // I use this only for creating texture from system back buffer
 	}
 
-	void Texture::CreateImage(bool allowRenderTarget, bool isDepthTarget)
+	void Texture::CreateImage(bool allowRenderTarget, bool isDepthTarget, uint32_t arraySize)
 	{
 		D3D12_CLEAR_VALUE optimizedClearValue = {};
 		D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE;
@@ -156,7 +157,7 @@ namespace JoyEngine
 		textureDesc.Width = m_width;
 		textureDesc.Height = m_height;
 		textureDesc.Flags = flags;
-		textureDesc.DepthOrArraySize = 1;
+		textureDesc.DepthOrArraySize = arraySize;
 		textureDesc.SampleDesc.Count = 1;
 		textureDesc.SampleDesc.Quality = 0;
 		textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
@@ -171,20 +172,42 @@ namespace JoyEngine
 		);
 	}
 
-	void Texture::CreateImageView(bool allowRenderTarget, bool isDepthTarget)
+	void Texture::CreateImageView(bool allowRenderTarget, bool isDepthTarget, uint32_t arraySize)
 	{
 		ASSERT(!(allowRenderTarget && isDepthTarget));
 		if (allowRenderTarget)
 		{
+			ASSERT(arraySize == 1);
 			m_resourceView = std::make_unique<HeapHandle>(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, m_texture.Get(), m_format);
 		}
 		else if (isDepthTarget)
 		{
-			m_resourceView = std::make_unique<HeapHandle>(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, m_texture.Get(), m_format);
+			ASSERT(arraySize >= 1);
+
+			D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
+			depthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
+			depthStencilViewDesc.ViewDimension = arraySize == 1 ? D3D12_DSV_DIMENSION_TEXTURE2D : D3D12_DSV_DIMENSION_TEXTURE2DARRAY;
+			if (arraySize == 1)
+			{
+				depthStencilViewDesc.Texture2D.MipSlice = 0;
+			}
+			else
+			{
+				depthStencilViewDesc.Texture2DArray.ArraySize = arraySize;
+			}
+			depthStencilViewDesc.Flags = D3D12_DSV_FLAG_NONE;
+
+			m_resourceView = std::make_unique<HeapHandle>(depthStencilViewDesc, m_texture.Get());
 		}
 		else
 		{
-			m_resourceView = std::make_unique<HeapHandle>(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, m_texture.Get(), m_format);
+			ASSERT(arraySize >= 1);
+
+			m_resourceView = std::make_unique<HeapHandle>(
+				D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+				m_texture.Get(),
+				m_format,
+				arraySize == 1 ? D3D12_SRV_DIMENSION_TEXTURE2D : D3D12_SRV_DIMENSION_TEXTURECUBE); // TODO cube or 2dArray?
 		}
 	}
 
@@ -208,19 +231,22 @@ namespace JoyEngine
 			this->GetFormat());
 	}
 
+
 	DepthTexture::DepthTexture(
 		uint32_t width,
 		uint32_t height,
 		DXGI_FORMAT format,
 		D3D12_RESOURCE_STATES usage,
-		D3D12_HEAP_TYPE properties) :
+		D3D12_HEAP_TYPE properties,
+		uint32_t arraySize) :
 		Texture(width,
 		        height,
 		        format,
 		        usage,
 		        properties,
 		        false,
-		        true)
+		        true,
+		        arraySize)
 	{
 		m_inputAttachmentView = std::make_unique<HeapHandle>(
 			D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,

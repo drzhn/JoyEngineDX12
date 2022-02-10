@@ -43,7 +43,7 @@ namespace JoyEngine
 		float height;
 		float angle;
 
-		glm::mat4 view;
+		glm::mat4 view[6];
 		glm::mat4 proj;
 	};
 

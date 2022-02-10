@@ -25,7 +25,7 @@ struct LightData
 	float height;
 	float angle;
 
-	float4x4 view;
+	float4x4 view[6];
 	float4x4 projection;
 };
 
@@ -35,7 +35,9 @@ ConstantBuffer<LightData> lightData : register(b1);
 Texture2D positionTexture : register(t0);
 Texture2D normalTexture : register(t1);
 
-Texture2D shadowMapTexture : register(t2);
+Texture2D shadowMapSpotTexture : register(t2);
+TextureCube shadowMapPointTexture : register(t3);
+
 SamplerComparisonState PCFSampler : register(s0);
 
 
@@ -133,6 +135,14 @@ PSOutput PSMain(PSInput input) // : SV_TARGET
 		lightPos = mul(mvp.model, float4(0, 0, 0, 1));
 		const float dist = length(lightPos - worldPos);
 		attenuation = CalcAttenuationByDistance(dist, lightData.radius);
+		float3 ToPixel = worldPos - lightPos;
+		float3 ToPixelAbs = abs(ToPixel);
+		float Z = max(ToPixelAbs.x, max(ToPixelAbs.y, ToPixelAbs.z));
+		float2 LightPerspectiveValues = float2(lightData.projection[2][2], lightData.projection[2][3]);
+		float bias = 0.001;
+
+		float Depth = (LightPerspectiveValues.x * Z + LightPerspectiveValues.y) / Z;
+		attenuation *= shadowMapPointTexture.SampleCmpLevelZero(PCFSampler, ToPixel, Depth - bias);
 	}
 	else if (lightData.angle > 0 && lightData.height > 0)
 	{
@@ -146,17 +156,17 @@ PSOutput PSMain(PSInput input) // : SV_TARGET
 			lightData.height);
 
 		// Transform the world position to shadow projected space
-		const float4x4 resMatrix = mul(lightData.projection, lightData.view);
+		const float4x4 resMatrix = mul(lightData.projection, lightData.view[0]);
 		float4 posShadowMap = mul(resMatrix, float4(worldPos, 1.0));
 		// Transform the position to shadow clip space
 		float3 UVD = posShadowMap.xyz / posShadowMap.w;
 		// Convert to shadow map UV values
 		UVD.xy = 0.5 * UVD.xy + 0.5;
 		UVD.y = 1.0 - UVD.y;
-		float bias = 0.005;
+		float bias = 0.001;
 		UVD.z -= bias;
 		// Compute the hardware PCF value
-		attenuation *= shadowMapTexture.SampleCmpLevelZero(PCFSampler, UVD.xy, UVD.z);
+		attenuation *= shadowMapSpotTexture.SampleCmpLevelZero(PCFSampler, UVD.xy, UVD.z);
 	}
 	else if (lightData.radius > 0 && lightData.height > 0)
 	{

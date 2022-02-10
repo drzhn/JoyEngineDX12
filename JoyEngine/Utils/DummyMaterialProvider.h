@@ -27,10 +27,13 @@ namespace JoyEngine
 
 			return m_sampleMaterials.find(materialName)->second.materialHandle->GetGuid();
 		}
+
 		[[nodiscard]] SharedMaterial* GetGBufferSharedMaterial() const noexcept { return m_gbufferWriteSharedMaterial; }
 		[[nodiscard]] SharedMaterial* GetLightProcessingSharedMaterial() const noexcept { return m_lightProcessingSharedMaterial; }
 		[[nodiscard]] SharedMaterial* GetDirectionLightProcessingSharedMaterial() const noexcept { return m_directionLightProcessingSharedMaterial; }
 		[[nodiscard]] SharedMaterial* GetShadowProcessingSharedMaterial() const noexcept { return m_shadowProcessingSharedMaterial; }
+		[[nodiscard]] SharedMaterial* GetShadowPointProcessingSharedMaterial() const noexcept { return m_shadowPointProcessingSharedMaterial; }
+
 	private:
 		ResourceHandle<Texture> m_skyboxTextureHandle;
 
@@ -39,6 +42,9 @@ namespace JoyEngine
 
 		ResourceHandle<SharedMaterial> m_shadowProcessingSharedMaterial;
 		ResourceHandle<Shader> m_shadowProcessingShader;
+
+		ResourceHandle<SharedMaterial> m_shadowPointProcessingSharedMaterial;
+		ResourceHandle<Shader> m_shadowSpotProcessingShader;
 
 		ResourceHandle<SharedMaterial> m_directionLightProcessingSharedMaterial;
 		ResourceHandle<Shader> m_directionLightProcessingShader;

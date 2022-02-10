@@ -14,9 +14,19 @@ namespace JoyEngine
 {
 	Shader::Shader(GUID guid) : Resource(guid)
 	{
-		const std::wstring shaderPath = JoyContext::Data->GetAbsolutePath(guid).wstring();
+		InitShader();
+	}
 
-		const std::vector<char> shaderData = JoyContext::Data->GetData(guid);
+	Shader::Shader(GUID guid, ShaderTypeFlags shaderType) : Resource(guid), m_shaderType(shaderType)
+	{
+		InitShader();
+	}
+
+	void Shader::InitShader()
+	{
+		const std::wstring shaderPath = JoyContext::Data->GetAbsolutePath(m_guid).wstring();
+
+		const std::vector<char> shaderData = JoyContext::Data->GetData(m_guid);
 
 #if defined(_DEBUG)
 		// Enable better shader debugging with the graphics debugging tools.
@@ -25,40 +35,62 @@ namespace JoyEngine
 		UINT compileFlags = 0;
 #endif
 		ID3DBlob* errorMessages = nullptr;
+		HRESULT hr;
 
-		HRESULT hr = (D3DCompile(
-			shaderData.data(), 
-			shaderData.size(), 
-			"shader", nullptr, 
-			nullptr, 
-			"VSMain", "vs_5_1", compileFlags, 0, &m_vertexModule, &errorMessages));
-
-		if (FAILED(hr) && errorMessages)
+		if (m_shaderType & JoyShaderTypeVertex)
 		{
-			const char* errorMsg = static_cast<const char*>(errorMessages->GetBufferPointer());
-			OutputDebugStringA(errorMsg);
+			hr = (D3DCompile(
+				shaderData.data(),
+				shaderData.size(),
+				"shader", nullptr,
+				nullptr,
+				"VSMain", "vs_5_1", compileFlags, 0, &m_vertexModule, &errorMessages));
+
+			if (FAILED(hr) && errorMessages)
+			{
+				const char* errorMsg = static_cast<const char*>(errorMessages->GetBufferPointer());
+				OutputDebugStringA(errorMsg);
+			}
+
+			errorMessages = nullptr;
 		}
 
-		errorMessages = nullptr;
-
-		hr = (D3DCompile(
-			shaderData.data(), 
-			shaderData.size(), 
-			"shader", 
-			nullptr, 
-			nullptr, 
-			"PSMain", 
-			"ps_5_1", compileFlags, 0, &m_fragmentModule, &errorMessages));
-
-		if (FAILED(hr) && errorMessages)
+		if (m_shaderType & JoyShaderTypeGeometry)
 		{
-			const char* errorMsg = static_cast<const char*>(errorMessages->GetBufferPointer());
-			OutputDebugStringA(errorMsg);
+			hr = (D3DCompile(
+				shaderData.data(),
+				shaderData.size(),
+				"shader",
+				nullptr,
+				nullptr,
+				"GSMain",
+				"gs_5_1", compileFlags, 0, &m_geometryModule, &errorMessages));
+
+			if (FAILED(hr) && errorMessages)
+			{
+				const char* errorMsg = static_cast<const char*>(errorMessages->GetBufferPointer());
+				OutputDebugStringA(errorMsg);
+			}
+
+			errorMessages = nullptr;
 		}
 
-	}
+		if (m_shaderType & JoyShaderTypePixel)
+		{
+			hr = (D3DCompile(
+				shaderData.data(),
+				shaderData.size(),
+				"shader",
+				nullptr,
+				nullptr,
+				"PSMain",
+				"ps_5_1", compileFlags, 0, &m_fragmentModule, &errorMessages));
 
-	Shader::~Shader()
-	{
+			if (FAILED(hr) && errorMessages)
+			{
+				const char* errorMsg = static_cast<const char*>(errorMessages->GetBufferPointer());
+				OutputDebugStringA(errorMsg);
+			}
+		}
 	}
 }

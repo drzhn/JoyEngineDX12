@@ -16,7 +16,6 @@ using Microsoft::WRL::ComPtr;
 
 namespace JoyEngine
 {
-
 	struct RootParam
 	{
 		CD3DX12_DESCRIPTOR_RANGE1 range;
@@ -39,6 +38,7 @@ namespace JoyEngine
 				gbufferWriteSharedMaterialGuid,
 				{
 					gbufferWriteShaderGuid,
+					JoyShaderTypeVertex | JoyShaderTypePixel,
 					true,
 					true,
 					true,
@@ -55,7 +55,7 @@ namespace JoyEngine
 		}
 
 
-		// Shadow map creation 
+		// Shadow map for spot light creation 
 		{
 			const GUID shadowProcessingShaderGuid = GUID::StringToGuid("9ee0a40a-c055-4b2c-93db-bc19def8e8cc"); //shaders/shadowprocessing.hlsl
 			const GUID shadowProcessingSharedMaterialGuid = GUID::Random();
@@ -67,6 +67,36 @@ namespace JoyEngine
 				shadowProcessingSharedMaterialGuid,
 				{
 					shadowProcessingShaderGuid,
+					JoyShaderTypeVertex | JoyShaderTypePixel,
+					true,
+					true,
+					true,
+					D3D12_CULL_MODE_NONE,
+					D3D12_COMPARISON_FUNC_LESS_EQUAL,
+					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
+					rootParameters,
+					{}, // no rtv, only depth
+					DXGI_FORMAT_D32_FLOAT
+				});
+		}
+
+		// Shadow map for point map creation 
+		{
+			const GUID shadowPointProcessingShaderGuid = GUID::StringToGuid("9d678808-8c11-4ff3-9ee1-dd1b7fc5f691"); //shaders/shadowpointprocessing.hlsl
+			const GUID shadowPointProcessingSharedMaterialGuid = GUID::Random();
+
+			CD3DX12_DESCRIPTOR_RANGE1 ranges[1];
+			ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
+
+			std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters(2);
+			rootParameters[0].InitAsConstants(sizeof(MVP) / 4, 0, 0, D3D12_SHADER_VISIBILITY_ALL);
+			rootParameters[1].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_ALL);
+
+			m_shadowPointProcessingSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
+				shadowPointProcessingSharedMaterialGuid,
+				{
+					shadowPointProcessingShaderGuid,
+					JoyShaderTypeVertex | JoyShaderTypePixel | JoyShaderTypeGeometry,
 					true,
 					true,
 					true,
@@ -88,13 +118,14 @@ namespace JoyEngine
 			ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
 
 			std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters(2);
-			rootParameters[0].InitAsConstants(sizeof(LightData) / 4, 0, 0, D3D12_SHADER_VISIBILITY_ALL);
+			rootParameters[0].InitAsConstants(sizeof(DirectionLightData) / 4, 0, 0, D3D12_SHADER_VISIBILITY_ALL);
 			rootParameters[1].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
 
 			m_directionLightProcessingSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
 				directionLightProcessingSharedMaterialGuid,
 				{
 					directionLightProcessingShaderGuid,
+					JoyShaderTypeVertex | JoyShaderTypePixel,
 					false,
 					false,
 					false,
@@ -114,21 +145,22 @@ namespace JoyEngine
 			const GUID lightProcessingShaderGuid = GUID::StringToGuid("f9da7adf-4ebb-4601-8437-a19c07e8471a"); //shaders/lightprocessing.hlsl
 			const GUID lightProcessingSharedMaterialGuid = GUID::Random();
 
-			CD3DX12_DESCRIPTOR_RANGE1 ranges[5];
+			CD3DX12_DESCRIPTOR_RANGE1 ranges[6];
 			ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
 			ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
-
 			ranges[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2, 0, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
 			ranges[3].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
 			ranges[4].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
+			ranges[5].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 3, 0, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
 
-			std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters(6);
+			std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters(7);
 			rootParameters[0].InitAsConstants(sizeof(MVP) / 4, 0, 0, D3D12_SHADER_VISIBILITY_ALL);
 			rootParameters[1].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
 			rootParameters[2].InitAsDescriptorTable(1, &ranges[1], D3D12_SHADER_VISIBILITY_PIXEL);
 			rootParameters[3].InitAsDescriptorTable(1, &ranges[2], D3D12_SHADER_VISIBILITY_PIXEL);
 			rootParameters[4].InitAsDescriptorTable(1, &ranges[3], D3D12_SHADER_VISIBILITY_PIXEL);
 			rootParameters[5].InitAsDescriptorTable(1, &ranges[4], D3D12_SHADER_VISIBILITY_ALL);
+			rootParameters[6].InitAsDescriptorTable(1, &ranges[5], D3D12_SHADER_VISIBILITY_PIXEL);
 
 
 			CD3DX12_BLEND_DESC blendDesc = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
@@ -149,6 +181,7 @@ namespace JoyEngine
 				lightProcessingSharedMaterialGuid,
 				{
 					lightProcessingShaderGuid,
+					JoyShaderTypeVertex | JoyShaderTypePixel,
 					true,
 					true,
 					false,
@@ -186,6 +219,7 @@ namespace JoyEngine
 				sharedMaterialGuid,
 				{
 					shaderGuid,
+					JoyShaderTypeVertex | JoyShaderTypePixel,
 					true,
 					true,
 					false,

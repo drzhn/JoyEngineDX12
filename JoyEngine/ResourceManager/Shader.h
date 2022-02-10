@@ -9,24 +9,47 @@ using Microsoft::WRL::ComPtr;
 
 #include "Common/Resource.h"
 
-namespace JoyEngine {
-    class Shader final: public Resource {
-    public :
+namespace JoyEngine
+{
+	typedef
+	enum ShaderType
+	{
+		JoyShaderTypeVertex = 1 << 0,
+		JoyShaderTypeHull = 1 << 1,
+		JoyShaderTypeDomain = 1 << 2,
+		JoyShaderTypeGeometry = 1 << 3,
+		JoyShaderTypePixel = 1 << 4,
+		JoyShaderTypeAmplification = 1 << 5,
+		JoyShaderTypeMesh = 1 << 6
+	} ShaderType;
 
-        Shader() = delete;
+	typedef uint32_t ShaderTypeFlags;
 
-        explicit Shader(GUID);
+	class Shader final : public Resource
+	{
+	public :
+		Shader() = delete;
 
-        ~Shader() final;
+		explicit Shader(GUID);
+		explicit Shader(GUID, ShaderTypeFlags shaderType);
+		void InitShader();
 
-        [[nodiscard]] ComPtr<ID3DBlob> GetVertexShadeModule() noexcept { return m_vertexModule; }
-        [[nodiscard]] ComPtr<ID3DBlob> GetFragmentShadeModule() noexcept { return m_fragmentModule; }
-        [[nodiscard]] bool IsLoaded() const noexcept override { return true; }
+		~Shader() final = default;
 
-    private :
-        ComPtr<ID3DBlob> m_vertexModule;
-        ComPtr<ID3DBlob> m_fragmentModule;
-    };
+		[[nodiscard]] ShaderTypeFlags GetShaderType() const noexcept { return m_shaderType; }
+		[[nodiscard]] ComPtr<ID3DBlob> GetVertexShadeModule() const noexcept { return m_vertexModule; }
+		[[nodiscard]] ComPtr<ID3DBlob> GetFragmentShadeModule() const noexcept { return m_fragmentModule; }
+		[[nodiscard]] ComPtr<ID3DBlob> GetGeometryShadeModule() const noexcept { return m_geometryModule; }
+		// TODO other types
+		[[nodiscard]] bool IsLoaded() const noexcept override { return true; }
+
+	private :
+		ShaderTypeFlags m_shaderType = JoyShaderTypeVertex | JoyShaderTypePixel;
+
+		ComPtr<ID3DBlob> m_vertexModule;
+		ComPtr<ID3DBlob> m_fragmentModule;
+		ComPtr<ID3DBlob> m_geometryModule;
+	};
 }
 
 #endif //SHADER_H

@@ -245,14 +245,11 @@ namespace JoyEngine
 		{
 			// shadow maps generation
 
-			auto sm = JoyContext::DummyMaterials->GetShadowProcessingSharedMaterial();
-
-			commandList->SetPipelineState(sm->GetPipelineObject().Get());
-			commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
-			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			for (const auto& light : m_lights)
 			{
 				if (light->GetShadowmap() == nullptr) continue;
+
+				SetViewportAndScissor(commandList, light->GetShadowmap()->GetWidth(), light->GetShadowmap()->GetHeight());
 
 				D3D12_RESOURCE_BARRIER depthToDSVBarrier = Transition(
 					light->GetShadowmap()->GetImage().Get(),
@@ -261,19 +258,43 @@ namespace JoyEngine
 				commandList->ResourceBarrier(1, &depthToDSVBarrier);
 
 				auto shadowmapHandle = light->GetShadowmap()->GetResourceView()->GetHandle();
+				if (light->GetLightType() == Spot)
+				{
+					auto sm = JoyContext::DummyMaterials->GetShadowProcessingSharedMaterial();
 
-				SetViewportAndScissor(commandList, light->GetShadowmap()->GetWidth(), light->GetShadowmap()->GetHeight());
+					commandList->SetPipelineState(sm->GetPipelineObject().Get());
+					commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+					commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+					commandList->OMSetRenderTargets(
+						0,
+						nullptr,
+						FALSE,
+						&shadowmapHandle);
 
-				commandList->OMSetRenderTargets(
-					0,
-					nullptr,
-					FALSE,
-					&shadowmapHandle);
+					commandList->ClearDepthStencilView(shadowmapHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
-				commandList->ClearDepthStencilView(shadowmapHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+					RenderEntireScene(commandList, light->GetViewMatrix(), light->GetProjMatrix());
+				}
 
-				RenderEntireScene(commandList, light->GetViewMatrix(), light->GetProjMatrix());
+				if (light->GetLightType() == Point)
+				{
+					auto sm = JoyContext::DummyMaterials->GetShadowPointProcessingSharedMaterial();
 
+					commandList->SetPipelineState(sm->GetPipelineObject().Get());
+					commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+					commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+					commandList->OMSetRenderTargets(
+						0,
+						nullptr,
+						FALSE,
+						&shadowmapHandle);
+
+					commandList->ClearDepthStencilView(shadowmapHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+
+					AttachView(commandList, 1, light->GetLightDataBufferView());
+
+					RenderEntireScene(commandList, light->GetViewMatrix(), light->GetProjMatrix());
+				}
 				D3D12_RESOURCE_BARRIER depthToSrvBarrier = Transition(
 					light->GetShadowmap()->GetImage().Get(),
 					D3D12_RESOURCE_STATE_DEPTH_WRITE,
@@ -344,7 +365,14 @@ namespace JoyEngine
 
 					if (light->GetShadowmap() != nullptr)
 					{
-						AttachView(commandList, 3, light->GetShadowmap()->GetAttachmentView());
+						if (light->GetLightType() == Spot)
+						{
+							AttachView(commandList, 3, light->GetShadowmap()->GetAttachmentView());
+						}
+						if (light->GetLightType() == Point)
+						{
+							AttachView(commandList, 6, light->GetShadowmap()->GetAttachmentView());
+						}
 						AttachView(commandList, 4, Texture::GetDepthPCFSampler());
 					}
 

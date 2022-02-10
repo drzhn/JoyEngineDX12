@@ -7,6 +7,26 @@
 
 namespace JoyEngine
 {
+	glm::vec3 shadowTransformsForward[6]
+	{
+		glm::vec3(1.0, 0.0, 0.0),
+		glm::vec3(-1.0, 0.0, 0.0),
+		glm::vec3(0.0, 1.0, 0.0),
+		glm::vec3(0.0, -1.0, 0.0),
+		glm::vec3(0.0, 0.0, 1.0),
+		glm::vec3(0.0, 0.0, -1.0)
+	};
+
+	glm::vec3 shadowTransformsUp[6]
+	{
+		glm::vec3(0.0,1.0, 0.0),
+		glm::vec3(0.0, 1.0, 0.0),
+		glm::vec3(0.0, 0.0, 1.0),
+		glm::vec3(0.0, 0.0, 1.0),
+		glm::vec3(0.0, 1.0, 0.0),
+		glm::vec3(0.0, 1.0, 0.0)
+	};
+
 	Light::Light(LightType lightType, float intensity, float radius, float height, float angle, float ambient):
 		m_lightType(lightType),
 		m_intensity(intensity),
@@ -102,7 +122,18 @@ namespace JoyEngine
 
 		if (m_lightType == Spot)
 		{
-			data->view = GetViewMatrix();
+			data->view[0] = GetViewMatrix();
+			data->proj = GetProjMatrix();
+		}
+
+		if (m_lightType == Point)
+		{
+			data->view[0] = GetCubeViewMatrix(0);
+			data->view[1] = GetCubeViewMatrix(1);
+			data->view[2] = GetCubeViewMatrix(2);
+			data->view[3] = GetCubeViewMatrix(3);
+			data->view[4] = GetCubeViewMatrix(4);
+			data->view[5] = GetCubeViewMatrix(5);
 			data->proj = GetProjMatrix();
 		}
 	}
@@ -110,6 +141,12 @@ namespace JoyEngine
 	glm::mat4 Light::GetViewMatrix() const
 	{
 		return m_cameraUnit.GetViewMatrix(m_transform->GetPosition(), m_transform->GetRotation());
+	}
+
+	glm::mat4 Light::GetCubeViewMatrix(uint32_t index) const
+	{
+		const glm::vec3 eye = m_transform->GetPosition();
+		return glm::lookAtLH(eye, eye + shadowTransformsForward[index], shadowTransformsUp[index]);
 	}
 
 	glm::mat4x4 Light::GetProjMatrix() const

@@ -57,14 +57,16 @@ namespace JoyEngine
 
 	SharedMaterial::SharedMaterial(const GUID guid, const SharedMaterialArgs args) :
 		Resource(guid),
-		m_shader(args.shader),
 		m_hasVertexInput(args.hasVertexInput),
 		m_depthTest(args.depthTest),
 		m_depthWrite(args.depthWrite),
 		m_depthComparisonFunc(args.depthComparisonFunc),
 		m_cullMode(args.cullMode)
 	{
-		CreateRootSignature(args.rootParams);
+		Shader* shaderPtr = JoyContext::Resource->LoadResource<Shader>(args.shader, args.shaderTypes);
+		m_shader = shaderPtr,
+
+			CreateRootSignature(args.rootParams);
 		CreateGraphicsPipeline(args.renderTargetsFormats, args.blendDesc, args.depthFormat);
 		JoyContext::Render->RegisterSharedMaterial(this);
 	}
@@ -119,13 +121,15 @@ namespace JoyEngine
 		CD3DX12_RASTERIZER_DESC rasterizerDesc = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 		rasterizerDesc.CullMode = m_cullMode;
 
+		constexpr CD3DX12_SHADER_BYTECODE emptyBytecode = {};
+
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc = {
 			m_rootSignature.Get(),
-			CD3DX12_SHADER_BYTECODE(m_shader->GetVertexShadeModule().Get()),
-			CD3DX12_SHADER_BYTECODE(m_shader->GetFragmentShadeModule().Get()),
+			m_shader->GetShaderType() & JoyShaderTypeVertex ? CD3DX12_SHADER_BYTECODE(m_shader->GetVertexShadeModule().Get()) : emptyBytecode,
+			m_shader->GetShaderType() & JoyShaderTypeVertex ? CD3DX12_SHADER_BYTECODE(m_shader->GetFragmentShadeModule().Get()) : emptyBytecode,
 			{},
 			{},
-			{},
+			m_shader->GetShaderType() & JoyShaderTypeGeometry ? CD3DX12_SHADER_BYTECODE(m_shader->GetGeometryShadeModule().Get()) : emptyBytecode,
 			{},
 			blendDesc,
 			UINT_MAX,

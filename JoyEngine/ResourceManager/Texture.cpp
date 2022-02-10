@@ -29,7 +29,7 @@ namespace JoyEngine
 		m_textureSampler = std::make_unique<ResourceView>(textureSamplerDesc);
 
 		D3D12_SAMPLER_DESC depthPCFSamplerDesc = {};
-		depthPCFSamplerDesc.Filter = D3D12_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
+		depthPCFSamplerDesc.Filter = D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
 		depthPCFSamplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
 		depthPCFSamplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
 		depthPCFSamplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
@@ -251,6 +251,7 @@ namespace JoyEngine
 		m_inputAttachmentView = std::make_unique<ResourceView>(
 			D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
 			this->GetImage().Get(),
-			DXGI_FORMAT_R32_FLOAT);
+			DXGI_FORMAT_R32_FLOAT,
+			arraySize == 1 ? D3D12_SRV_DIMENSION_TEXTURE2D : D3D12_SRV_DIMENSION_TEXTURECUBE);
 	}
 }

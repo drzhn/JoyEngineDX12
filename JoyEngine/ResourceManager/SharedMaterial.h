@@ -14,6 +14,7 @@ namespace JoyEngine
 	struct SharedMaterialArgs
 	{
 		GUID shader;
+		ShaderTypeFlags shaderTypes;
 		bool hasVertexInput;
 		bool depthTest;
 		bool depthWrite;

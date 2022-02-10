@@ -3,17 +3,38 @@
     "name": "roomScene",
     "objects": [
         {
-            "name": "room",
+            "name": "camera",
             "transform": {
-                "localPosition": [ 0.0, -3.0, 3.0 ],
-                "localRotation": [ -90.0, 0.0, 0.0 ],
-                "localScale": [ 5.0, 5.0, 5.0 ]
+                "localPosition": [ 0.0, 5.0, -5.0 ],
+                "localRotation": [ 405.0, 0.0, 0.0 ],
+                "localScale": [ 1.0, 1.0, 1.0 ]
             },
             "components": [
                 {
-                    "type": "renderer",
-                    "model": "fc972e06-70d9-4271-8615-825003b43f74",
-                    "material": "material_1"
+                    "type": "camera"
+                },
+                {
+                    "type": "component",
+                    "component": "CameraBehaviour",
+                    "fields": {
+                        "m_speed": 2.0
+                    }
+                }
+            ]
+        },
+        {
+            "name": "direction_light",
+            "transform": {
+                "localPosition": [ 1.0, 0.0, 2.0 ],
+                "localRotation": [ 45.0, 0.0, 0.0 ],
+                "localScale": [ 1.0, 1.0, 1.0 ]
+            },
+            "components": [
+                {
+                    "type": "light",
+                    "lightType": "direction",
+                    "intensity": 0.4,
+                    "ambient": 0.1
                 }
             ]
         },
@@ -32,6 +53,166 @@
                 }
             ]
         },
+
+        {
+            "name": "viking_room",
+            "transform": {
+                "localPosition": [ 0.0, -3.0, 3.0 ],
+                "localRotation": [ -90.0, 0.0, 0.0 ],
+                "localScale": [ 5.0, 5.0, 5.0 ]
+            },
+            "components": [
+                {
+                    "type": "renderer",
+                    "model": "fc972e06-70d9-4271-8615-825003b43f74",
+                    "material": "material_1"
+                }
+            ]
+        },
+        {
+            "name": "head2",
+            "transform": {
+                "localPosition": [ 0.0, 0.0, 3.0 ],
+                "localRotation": [ 0.0, 0.0, 0.0 ],
+                "localScale": [ 0.05, 0.05, 0.05 ]
+            },
+            "components": [
+                {
+                    "type": "renderer",
+                    "model": "13dc6d97-5ced-4b99-b296-bb9e6df2242a",
+                    "material": "material_1"
+                },
+                {
+                    "type": "component",
+                    "component": "RoomBehaviour",
+                    "fields": {
+                        "m_speed": 4,
+                        "m_color": [ 0.4, 0.5, 0.8, 1.0 ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "capsule_light",
+            "transform": {
+                "localPosition": [ 2.0, -1.5, 3.0 ],
+                "localRotation": [ 0.0, 0.0, 0.0 ],
+                "localScale": [ 1.0, 1.0, 1.0 ]
+            },
+            "components": [
+                {
+                    "type": "light",
+                    "lightType": "capsule",
+                    "intensity": 1.0,
+                    "radius": 2,
+                    "height": 4,
+                    "angle": 60
+                },
+                {
+                    "type": "component",
+                    "component": "RoomBehaviour",
+                    "fields": {
+                        "m_speed": 2,
+                        "m_color": [ 0.4, 0.5, 0.8, 1.0 ]
+                    }
+                }
+            ]
+        },
+
+        {
+            "name": "wallPointLightTest1",
+            "transform": {
+                "localPosition": [ 8.0, -1.0, 6.0 ],
+                "localRotation": [ 0.0, 0.0, 0.0 ],
+                "localScale": [ 1.0, 5.0, 5.0 ]
+            },
+            "components": [
+                {
+                    "type": "renderer",
+                    "model": "c1496bff-f383-4f46-97cc-bc9955f7f4cf",
+                    "material": "material_3"
+                }
+            ]
+        },
+        {
+            "name": "wallPointLightTest2",
+            "transform": {
+                "localPosition": [ 5.0, -1.0, 11.0 ],
+                "localRotation": [ 0.0, 90.0, 0.0 ],
+                "localScale": [ 1.0, 5.0, 5.0 ]
+            },
+            "components": [
+                {
+                    "type": "renderer",
+                    "model": "c1496bff-f383-4f46-97cc-bc9955f7f4cf",
+                    "material": "material_3"
+                }
+            ]
+        },
+        {
+            "name": "CubePointLightTest",
+            "transform": {
+                "localPosition": [ 6.0, 0.0, 6.0 ],
+                "localRotation": [ 0.0, 0.0, 0.0 ],
+                "localScale": [ 1.0, 1.0, 1.0 ]
+            },
+            "components": [
+                {
+                    "type": "renderer",
+                    "model": "c1496bff-f383-4f46-97cc-bc9955f7f4cf",
+                    "material": "material_1"
+                },
+                {
+                    "type": "component",
+                    "component": "RoomBehaviour",
+                    "fields": {
+                        "m_speed": 4,
+                        "m_color": [ 0.4, 0.5, 0.8, 1.0 ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "headPointLightTest",
+            "transform": {
+                "localPosition": [ 4.0, 0.0, 9.0 ],
+                "localRotation": [ 0.0, 0.0, 0.0 ],
+                "localScale": [ 0.03, 0.03, 0.03 ]
+            },
+            "components": [
+                {
+                    "type": "renderer",
+                    "model": "13dc6d97-5ced-4b99-b296-bb9e6df2242a",
+                    "material": "material_1"
+                },
+                {
+                    "type": "component",
+                    "component": "RoomBehaviour",
+                    "fields": {
+                        "m_speed": 4,
+                        "m_color": [ 0.4, 0.5, 0.8, 1.0 ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "point_light1",
+            "transform": {
+                "localPosition": [ 4.0, 0.0, 7.0 ],
+                "localRotation": [ 0.0, 0.0, 0.0 ],
+                "localScale": [ 1.0, 1.0, 1.0 ]
+            },
+            "components": [
+                {
+                    "type": "light",
+                    "lightType": "point",
+                    "intensity": 1.0,
+                    "radius": 6
+                }
+            ]
+        },
+
+
         {
             "name": "wall",
             "transform": {
@@ -84,127 +265,6 @@
                     "intensity": 1,
                     "height": 10,
                     "angle": 60
-                }
-            ]
-        },
-
-
-
-
-        {
-            "name": "head2",
-            "transform": {
-                "localPosition": [ 0.0, 0.0, 3.0 ],
-                "localRotation": [ 0.0, 0.0, 0.0 ],
-                "localScale": [ 0.05, 0.05, 0.05 ]
-            },
-            "components": [
-                {
-                    "type": "renderer",
-                    "model": "13dc6d97-5ced-4b99-b296-bb9e6df2242a",
-                    "material": "material_1"
-                },
-                {
-                    "type": "component",
-                    "component": "RoomBehaviour",
-                    "fields": {
-                        "m_speed": 4,
-                        "m_color": [ 0.4, 0.5, 0.8, 1.0 ]
-                    }
-                }
-            ]
-        },
-        {
-            "name": "camera",
-            "transform": {
-                "localPosition": [ 0.0, 5.0, -5.0 ],
-                "localRotation": [ 405.0, 0.0, 0.0 ],
-                "localScale": [ 1.0, 1.0, 1.0 ]
-            },
-            "components": [
-                {
-                    "type": "camera"
-                },
-                {
-                    "type": "component",
-                    "component": "CameraBehaviour",
-                    "fields": {
-                        "m_speed": 2.0
-                    }
-                }
-            ]
-        },
-        {
-            "name": "direction_light",
-            "transform": {
-                "localPosition": [ 1.0, 0.0, 2.0 ],
-                "localRotation": [ 45.0, 0.0, 0.0 ],
-                "localScale": [ 1.0, 1.0, 1.0 ]
-            },
-            "components": [
-                {
-                    "type": "light",
-                    "lightType": "direction",
-                    "intensity": 0.4,
-                    "ambient": 0.1
-                }
-            ]
-        },
-        {
-            "name": "capsule_light",
-            "transform": {
-                "localPosition": [ 0.0, 0.0, 2.0 ],
-                "localRotation": [ 0.0, 0.0, 0.0 ],
-                "localScale": [ 1.0, 1.0, 1.0 ]
-            },
-            "components": [
-                {
-                    "type": "light",
-                    "lightType": "capsule",
-                    "intensity": 1.0,
-                    "radius": 2,
-                    "height": 6,
-                    "angle": 60
-                },
-                {
-                    "type": "component",
-                    "component": "RoomBehaviour",
-                    "fields": {
-                        "m_speed": 2,
-                        "m_color": [ 0.4, 0.5, 0.8, 1.0 ]
-                    }
-                }
-            ]
-        },
-        {
-            "name": "point_light1",
-            "transform": {
-                "localPosition": [ 0.0, -1.0, 4.0 ],
-                "localRotation": [ 0.0, 0.0, 0.0 ],
-                "localScale": [ 1.0, 1.0, 1.0 ]
-            },
-            "components": [
-                {
-                    "type": "light",
-                    "lightType": "point",
-                    "intensity": 1.0,
-                    "radius": 3
-                }
-            ]
-        },
-        {
-            "name": "point_light2",
-            "transform": {
-                "localPosition": [ 2.0, -1.0, 4.0 ],
-                "localRotation": [ 0.0, 0.0, 0.0 ],
-                "localScale": [ 1.0, 1.0, 1.0 ]
-            },
-            "components": [
-                {
-                    "type": "light",
-                    "lightType": "point",
-                    "intensity": 1.0,
-                    "radius": 3
                 }
             ]
         }

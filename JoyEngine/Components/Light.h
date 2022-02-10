@@ -38,6 +38,7 @@ namespace JoyEngine
 		[[nodiscard]] DepthTexture* GetShadowmap() const noexcept { return m_shadowmap.get(); }
 
 		[[nodiscard]] glm::mat4x4 GetViewMatrix() const;
+		[[nodiscard]] glm::mat4 GetCubeViewMatrix(uint32_t index) const;
 		[[nodiscard]] glm::mat4x4 GetProjMatrix() const;
 
 		[[nodiscard]] ResourceView* GetLightDataBufferView() const noexcept { return m_lightDataBufferView.get(); }

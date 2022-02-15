@@ -6,85 +6,6 @@
 
 namespace JoyEngine
 {
-	ResourceView::ResourceView(D3D12_DESCRIPTOR_HEAP_TYPE type, ID3D12Resource* resource, DXGI_FORMAT format, D3D12_SRV_DIMENSION dimension):
-		m_type(type)
-	{
-		auto flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-		switch (type)
-		{
-		case D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV:
-			flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-			break;
-		case D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER:
-			ASSERT(false);
-			break;
-		case D3D12_DESCRIPTOR_HEAP_TYPE_RTV:
-		case D3D12_DESCRIPTOR_HEAP_TYPE_DSV:
-			flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-			break;
-		case D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES:
-			ASSERT(false);
-		}
-
-		// create descriptor heap for shader resource view
-		D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {
-			type,
-			1,
-			flags,
-			0
-		};
-		ASSERT_SUCC(JoyContext::Graphics->GetDevice()->CreateDescriptorHeap(
-			&heapDesc,
-			IID_PPV_ARGS(&m_descriptorHeap)));
-
-		m_handle = m_descriptorHeap->GetCPUDescriptorHandleForHeapStart();
-
-		switch (type)
-		{
-		case D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV:
-			{
-				if (dimension == D3D12_SRV_DIMENSION_BUFFER)
-				{
-					ASSERT(false);
-				}
-				else
-				{
-					// Describe and create a SRV for the texture.
-					D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-					srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-					srvDesc.Format = format;
-					srvDesc.ViewDimension = dimension;
-					srvDesc.Texture2D.MipLevels = 1;
-					JoyContext::Graphics->GetDevice()->CreateShaderResourceView(
-						resource,
-						&srvDesc,
-						m_handle);
-				}
-				break;
-			}
-		case D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER:
-			{
-				ASSERT(false);
-				break;
-			}
-		case D3D12_DESCRIPTOR_HEAP_TYPE_RTV:
-			{
-				JoyContext::Graphics->GetDevice()->CreateRenderTargetView(
-					resource,
-					nullptr,
-					m_handle);
-				break;
-			}
-		case D3D12_DESCRIPTOR_HEAP_TYPE_DSV:
-			{
-				ASSERT(false);
-				break;
-			}
-		case D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES:
-			ASSERT(false);
-		}
-	}
-
 	ResourceView::ResourceView(D3D12_DEPTH_STENCIL_VIEW_DESC desc, ID3D12Resource* resource) :
 		m_type(D3D12_DESCRIPTOR_HEAP_TYPE_DSV)
 	{
@@ -145,4 +66,69 @@ namespace JoyEngine
 			&desc,
 			m_handle);
 	}
+
+	ResourceView::ResourceView(D3D12_UNORDERED_ACCESS_VIEW_DESC desc, ID3D12Resource* resource):
+		m_type(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
+	{
+		const D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {
+			m_type,
+			1,
+			D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
+			0
+		};
+		ASSERT_SUCC(JoyContext::Graphics->GetDevice()->CreateDescriptorHeap(
+			&heapDesc,
+			IID_PPV_ARGS(&m_descriptorHeap)));
+
+		m_handle = m_descriptorHeap->GetCPUDescriptorHandleForHeapStart();
+
+		JoyContext::Graphics->GetDevice()->CreateUnorderedAccessView(
+			resource,
+			nullptr,
+			&desc,
+			m_handle);
+	}
+
+	ResourceView::ResourceView(D3D12_RENDER_TARGET_VIEW_DESC desc, ID3D12Resource* resource) :
+		m_type(D3D12_DESCRIPTOR_HEAP_TYPE_RTV)
+	{
+		const D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {
+			m_type,
+			1,
+			D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
+			0
+		};
+		ASSERT_SUCC(JoyContext::Graphics->GetDevice()->CreateDescriptorHeap(
+			&heapDesc,
+			IID_PPV_ARGS(&m_descriptorHeap)));
+
+		m_handle = m_descriptorHeap->GetCPUDescriptorHandleForHeapStart();
+
+		JoyContext::Graphics->GetDevice()->CreateRenderTargetView(
+			resource,
+			&desc,
+			m_handle);
+	}
+
+	ResourceView::ResourceView(D3D12_SHADER_RESOURCE_VIEW_DESC desc, ID3D12Resource* resource) :
+		m_type(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
+	{
+		const D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {
+			m_type,
+			1,
+			D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
+			0
+		};
+		ASSERT_SUCC(JoyContext::Graphics->GetDevice()->CreateDescriptorHeap(
+			&heapDesc,
+			IID_PPV_ARGS(&m_descriptorHeap)));
+
+		m_handle = m_descriptorHeap->GetCPUDescriptorHandleForHeapStart();
+
+		JoyContext::Graphics->GetDevice()->CreateShaderResourceView(
+			resource,
+			&desc,
+			m_handle);
+	}
+
 }

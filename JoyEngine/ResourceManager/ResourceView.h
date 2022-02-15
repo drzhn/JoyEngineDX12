@@ -15,12 +15,13 @@ namespace JoyEngine
 	{
 	public:
 		ResourceView() = default;
-		explicit ResourceView(
-			D3D12_DESCRIPTOR_HEAP_TYPE type, ID3D12Resource* resource,
-			DXGI_FORMAT format, D3D12_SRV_DIMENSION dimension = D3D12_SRV_DIMENSION_TEXTURE2D);
+
 		explicit ResourceView(D3D12_DEPTH_STENCIL_VIEW_DESC desc, ID3D12Resource* resource);
 		explicit ResourceView(D3D12_SAMPLER_DESC);
 		explicit ResourceView(D3D12_CONSTANT_BUFFER_VIEW_DESC desc);
+		explicit ResourceView(D3D12_UNORDERED_ACCESS_VIEW_DESC desc, ID3D12Resource* resource);
+		explicit ResourceView(D3D12_RENDER_TARGET_VIEW_DESC desc, ID3D12Resource* resource);
+		explicit ResourceView(D3D12_SHADER_RESOURCE_VIEW_DESC desc, ID3D12Resource* resource);
 
 		[[nodiscard]] D3D12_DESCRIPTOR_HEAP_TYPE GetType() const noexcept { return m_type; }
 		[[nodiscard]] ID3D12DescriptorHeap* GetHeap() const noexcept { return m_descriptorHeap.Get(); }

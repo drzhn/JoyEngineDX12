@@ -178,7 +178,12 @@ namespace JoyEngine
 		if (allowRenderTarget)
 		{
 			ASSERT(arraySize == 1);
-			m_resourceView = std::make_unique<ResourceView>(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, m_texture.Get(), m_format);
+			D3D12_RENDER_TARGET_VIEW_DESC desc;
+			desc.Format = m_format;
+			desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+			desc.Texture2D.MipSlice = 0;
+			desc.Texture2D.PlaneSlice = 0;
+			m_resourceView = std::make_unique<ResourceView>(desc, m_texture.Get());
 		}
 		else if (isDepthTarget)
 		{
@@ -202,12 +207,17 @@ namespace JoyEngine
 		else
 		{
 			ASSERT(arraySize >= 1);
-
-			m_resourceView = std::make_unique<ResourceView>(
-				D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-				m_texture.Get(),
-				m_format,
-				arraySize == 1 ? D3D12_SRV_DIMENSION_TEXTURE2D : D3D12_SRV_DIMENSION_TEXTURECUBE); // TODO cube or 2dArray?
+			D3D12_SHADER_RESOURCE_VIEW_DESC desc;
+			desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+			desc.Format = m_format;
+			desc.ViewDimension = arraySize == 1 ? D3D12_SRV_DIMENSION_TEXTURE2D : D3D12_SRV_DIMENSION_TEXTURECUBE;
+			desc.Texture2D = {
+			0,
+			1,
+			0,
+			0
+			};
+			m_resourceView = std::make_unique<ResourceView>(desc, m_texture.Get()); // TODO cube or 2dArray?
 		}
 	}
 
@@ -225,10 +235,20 @@ namespace JoyEngine
 		        properties,
 		        true)
 	{
+		D3D12_SHADER_RESOURCE_VIEW_DESC desc;
+		desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		desc.Format = this->GetFormat();
+		desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D; // arraySize == 1 ? D3D12_SRV_DIMENSION_TEXTURE2D : D3D12_SRV_DIMENSION_TEXTURECUBE;
+		desc.Texture2D = {
+			0,
+			1,
+			0,
+			0
+		};
 		m_inputAttachmentView = std::make_unique<ResourceView>(
-			D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-			this->GetImage().Get(),
-			this->GetFormat());
+			desc,
+			this->GetImage().Get()
+		);
 	}
 
 
@@ -248,10 +268,18 @@ namespace JoyEngine
 		        true,
 		        arraySize)
 	{
+		D3D12_SHADER_RESOURCE_VIEW_DESC desc;
+		desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		desc.Format = DXGI_FORMAT_R32_FLOAT;
+		desc.ViewDimension = arraySize == 1 ? D3D12_SRV_DIMENSION_TEXTURE2D : D3D12_SRV_DIMENSION_TEXTURECUBE;
+		desc.Texture2D = {
+		0,
+		1,
+		0,
+		0
+		};
 		m_inputAttachmentView = std::make_unique<ResourceView>(
-			D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-			this->GetImage().Get(),
-			DXGI_FORMAT_R32_FLOAT,
-			arraySize == 1 ? D3D12_SRV_DIMENSION_TEXTURE2D : D3D12_SRV_DIMENSION_TEXTURECUBE);
+			desc,
+			this->GetImage().Get());
 	}
 }

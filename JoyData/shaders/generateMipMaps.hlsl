@@ -5,12 +5,13 @@ RWTexture2D<float4> OutMip4 : register(u3);
 Texture2D<float4> SrcMip : register(t0);
 SamplerState BilinearClamp : register(s0);
 
-cbuffer CB0 : register(b0)
+cbuffer CSData : register(b0)
 {
-    uint SrcMipLevel;	// Texture level of source mip
-    uint NumMipLevels;	// Number of OutMips to write: [1, 4]
-    float2 TexelSize;	// 1.0 / OutMip1.Dimensions
-}
+    uint2 TexelSize;
+    //uint SrcMipLevel;	// Texture level of source mip
+    //uint NumMipLevels;	// Number of OutMips to write: [1, 4]
+    //float2 TexelSize;	// 1.0 / OutMip1.Dimensions
+} 
 
 // The reason for separating channels is to reduce bank conflicts in the
 // local data memory controller.  A large stride will cause more threads
@@ -54,15 +55,16 @@ float4 PackColor(float4 Linear)
 [numthreads( 8, 8, 1 )]
 void CSMain( uint GI : SV_GroupIndex, uint3 DTid : SV_DispatchThreadID )
 {
-    float2 UV = TexelSize * (DTid.xy + 0.5);
-    float4 Src1 = SrcMip.SampleLevel(BilinearClamp, UV, SrcMipLevel);
+    float2 invTexelSize = float2(1.0f / TexelSize.x, 1.0f / TexelSize.y);
+    float2 UV = invTexelSize * (DTid.xy + 0.5);
+    float4 Src1 = SrcMip.SampleLevel(BilinearClamp, UV, 0);
 
 
     OutMip1[DTid.xy] = PackColor(Src1);
 
     // A scalar (constant) branch can exit all threads coherently.
-    if (NumMipLevels == 1)
-        return;
+    //if (NumMipLevels == 1)
+    //    return;
 
     // Without lane swizzle operations, the only way to share data with other
     // threads is through LDS.
@@ -86,8 +88,8 @@ void CSMain( uint GI : SV_GroupIndex, uint3 DTid : SV_DispatchThreadID )
         StoreColor(GI, Src1);
     }
 
-    if (NumMipLevels == 2)
-        return;
+    //if (NumMipLevels == 2)
+    //    return;
 
     GroupMemoryBarrierWithGroupSync();
 
@@ -103,8 +105,8 @@ void CSMain( uint GI : SV_GroupIndex, uint3 DTid : SV_DispatchThreadID )
         StoreColor(GI, Src1);
     }
 
-    if (NumMipLevels == 3)
-        return;
+    //if (NumMipLevels == 3)
+    //    return;
 
     GroupMemoryBarrierWithGroupSync();
 

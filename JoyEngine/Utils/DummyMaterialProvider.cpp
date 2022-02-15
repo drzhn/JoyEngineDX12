@@ -60,6 +60,7 @@ namespace JoyEngine
 			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 3);
 			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0);
 			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 0);
+			rp.CreateConstants(sizeof(glm::vec2), 0);
 			m_generateMipsComputePipeline = JoyContext::Resource->LoadResource<ComputePipeline, ComputePipelineArgs>(
 				mipMapGenerationPipelineGuid,
 				{

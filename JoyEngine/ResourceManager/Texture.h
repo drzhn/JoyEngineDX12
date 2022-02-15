@@ -27,9 +27,11 @@ namespace JoyEngine
 		static void InitSamplers();
 		static ResourceView* GetTextureSampler();
 		static ResourceView* GetDepthPCFSampler();
+		static ResourceView* GetPointSampler();
 	private:
 		static std::unique_ptr<ResourceView> m_textureSampler;
 		static std::unique_ptr<ResourceView> m_depthPCFSampler;
+		static std::unique_ptr<ResourceView> m_pointSampler;
 	public:
 		explicit Texture() = default;
 
@@ -70,7 +72,7 @@ namespace JoyEngine
 		[[nodiscard]] bool IsLoaded() const noexcept override { return true; }
 
 	private:
-		void CreateImage(bool allowRenderTarget, bool isDepthTarget, uint32_t arraySize, uint32_t mipLevels = 1);
+		void CreateImage(bool allowRenderTarget, bool isDepthTarget, bool allowUnorderedAccess, uint32_t arraySize, uint32_t mipLevels = 1);
 		void CreateImageView(bool allowRenderTarget, bool isDepthTarget, uint32_t arraySize);
 
 	private:

@@ -13,6 +13,7 @@ namespace JoyEngine
 {
 	std::unique_ptr<ResourceView> Texture::m_textureSampler = nullptr;
 	std::unique_ptr<ResourceView> Texture::m_depthPCFSampler = nullptr;
+	std::unique_ptr<ResourceView> Texture::m_pointSampler = nullptr;
 
 	void Texture::InitSamplers()
 	{
@@ -43,6 +44,22 @@ namespace JoyEngine
 		depthPCFSamplerDesc.MaxAnisotropy = 1;
 		depthPCFSamplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_LESS;
 		m_depthPCFSampler = std::make_unique<ResourceView>(depthPCFSamplerDesc);
+
+		D3D12_SAMPLER_DESC pointSamplerDesc = {};
+		pointSamplerDesc.Filter = D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT;
+		pointSamplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+		pointSamplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+		pointSamplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+		pointSamplerDesc.BorderColor[0] = 1.0f;
+		pointSamplerDesc.BorderColor[1] = 1.0f;
+		pointSamplerDesc.BorderColor[2] = 1.0f;
+		pointSamplerDesc.BorderColor[3] = 1.0f;
+		pointSamplerDesc.MinLOD = 0;
+		pointSamplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
+		pointSamplerDesc.MipLODBias = 0.0f;
+		pointSamplerDesc.MaxAnisotropy = 1;
+		pointSamplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
+		m_pointSampler = std::make_unique<ResourceView>(pointSamplerDesc);
 	}
 
 	ResourceView* Texture::GetTextureSampler()
@@ -55,6 +72,12 @@ namespace JoyEngine
 	{
 		ASSERT(m_depthPCFSampler != nullptr);
 		return m_depthPCFSampler.get();
+	}
+
+	ResourceView* Texture::GetPointSampler()
+	{
+		ASSERT(m_pointSampler != nullptr);
+		return m_pointSampler.get();
 	}
 
 	Texture::Texture(GUID guid) :
@@ -85,14 +108,14 @@ namespace JoyEngine
 			ASSERT(false);
 		}
 
-		CreateImage(false, false, 1, 4);
+		CreateImage(false, false, true, 1, 5);
 		CreateImageView(false, false, 1);
 		JoyContext::Memory->LoadDataToImage(
 			textureStream,
 			sizeof(uint32_t) + sizeof(uint32_t),
 			m_width,
 			m_height,
-			m_texture);
+			this);
 	}
 
 	Texture::Texture(
@@ -110,7 +133,7 @@ namespace JoyEngine
 		m_usageFlags(usage),
 		m_memoryPropertiesFlags(properties)
 	{
-		CreateImage(allowRenderTarget, isDepthTarget, arraySize);
+		CreateImage(allowRenderTarget, isDepthTarget, false, arraySize);
 		CreateImageView(allowRenderTarget, isDepthTarget, arraySize);
 	}
 
@@ -131,11 +154,16 @@ namespace JoyEngine
 		CreateImageView(true, false, 1); // I use this only for creating texture from system back buffer
 	}
 
-	void Texture::CreateImage(bool allowRenderTarget, bool isDepthTarget, uint32_t arraySize, uint32_t mipLevels)
+	void Texture::CreateImage(bool allowRenderTarget, bool isDepthTarget, bool allowUnorderedAccess, uint32_t arraySize, uint32_t mipLevels)
 	{
 		D3D12_CLEAR_VALUE optimizedClearValue = {};
 		D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE;
 		ASSERT(!(allowRenderTarget && isDepthTarget));
+
+		if (allowUnorderedAccess)
+		{
+			flags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+		}
 
 		if (isDepthTarget)
 		{

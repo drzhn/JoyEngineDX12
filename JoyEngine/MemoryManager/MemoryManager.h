@@ -5,6 +5,7 @@
 
 #include "Common/CommandQueue.h"
 #include "ResourceManager/Buffer.h"
+#include "ResourceManager/Texture.h"
 
 namespace JoyEngine
 {
@@ -21,18 +22,18 @@ namespace JoyEngine
 
 		void LoadDataToBuffer(std::ifstream& stream, uint64_t offset, uint64_t bufferSize, Buffer* gpuBuffer);
 
-		void LoadDataToImage(
-			const unsigned char* data,
-			uint32_t width,
-			uint32_t height,
-			ComPtr<ID3D12Resource> gpuImage);
+		//void LoadDataToImage(
+		//	const unsigned char* data,
+		//	uint32_t width,
+		//	uint32_t height,
+		//	ComPtr<ID3D12Resource> gpuImage);
 
 		void LoadDataToImage(
 			std::ifstream& stream,
 			uint64_t offset,
 			uint32_t width,
 			uint32_t height,
-			ComPtr<ID3D12Resource> gpuImage) const;
+			Texture* gpuImage) const;
 
 	private:
 		//void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);

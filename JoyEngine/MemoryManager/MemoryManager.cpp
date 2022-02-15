@@ -12,9 +12,14 @@
 //#include "ResourceManager/Buffer.h"
 //#include "GPUMemoryManager.h"
 //#include "Common/Resource.h"
+#include <glm/vec2.hpp>
+
 #include "d3dx12.h"
 #include "ResourceManager/Buffer.h"
+#include "ResourceManager/ResourceView.h"
+#include "ResourceManager/Texture.h"
 #include "Utils/Assert.h"
+#include "Utils/DummyMaterialProvider.h"
 //#include "Utils/FileUtils.h"
 
 namespace JoyEngine
@@ -36,6 +41,21 @@ namespace JoyEngine
 		return barrier;
 	}
 
+	void AttachView(
+		ID3D12GraphicsCommandList* commandList,
+		uint32_t rootParameterIndex,
+		const ResourceView* view
+	)
+	{
+		ID3D12DescriptorHeap* heaps1[1] = {view->GetHeap()};
+		commandList->SetDescriptorHeaps(
+			1,
+			heaps1);
+		D3D12_GPU_DESCRIPTOR_HANDLE null = {0};
+		commandList->SetComputeRootDescriptorTable(
+			rootParameterIndex, view->GetGPUHandle());
+	}
+
 	void MemoryManager::Init()
 	{
 		m_queue = std::make_unique<CommandQueue>(D3D12_COMMAND_LIST_TYPE_DIRECT, JoyContext::Graphics->GetDevice());
@@ -46,9 +66,9 @@ namespace JoyEngine
 		uint64_t offset,
 		uint32_t width,
 		uint32_t height,
-		ComPtr<ID3D12Resource> gpuImage) const
+		Texture* gpuImage) const
 	{
-		const uint64_t imageSize = GetRequiredIntermediateSize(gpuImage.Get(), 0, 1);
+		const uint64_t imageSize = GetRequiredIntermediateSize(gpuImage->GetImage().Get(), 0, 1);
 
 		Buffer stagingBuffer = Buffer(imageSize, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD);
 
@@ -64,20 +84,48 @@ namespace JoyEngine
 		m_queue->ResetForFrame();
 
 		const auto commandList = m_queue->GetCommandList();
+
 		UpdateSubresources(
-			commandList, 
-			gpuImage.Get(), 
+			commandList,
+			gpuImage->GetImage().Get(),
 			stagingBuffer.GetBuffer().Get(),
-			0, 
-			0, 
-			1, 
+			0,
+			0,
+			1,
 			&textureData);
+
 		CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-			gpuImage.Get(),
+			gpuImage->GetImage().Get(),
 			D3D12_RESOURCE_STATE_COPY_DEST,
 			D3D12_RESOURCE_STATE_GENERIC_READ
 		);
 		commandList->ResourceBarrier(1, &barrier);
+
+		commandList->SetComputeRootSignature(JoyContext::DummyMaterials->GetMipsGenerationComputePipeline()->GetRootSignature().Get());
+		commandList->SetPipelineState(JoyContext::DummyMaterials->GetMipsGenerationComputePipeline()->GetPipelineObject().Get());
+
+		std::vector<ResourceView> mipViews;
+		for (uint32_t i = 0; i < 4; i++)
+		{
+			D3D12_UNORDERED_ACCESS_VIEW_DESC desc;
+			desc.Format = gpuImage->GetFormat();
+			desc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
+			desc.Texture2D = {
+				i + 1,
+				0
+			};
+			mipViews.emplace_back(desc, gpuImage->GetImage().Get());
+
+			AttachView(commandList, i, &mipViews[i]);
+		}
+
+		AttachView(commandList, 4, gpuImage->GetResourceView());
+		AttachView(commandList, 5, Texture::GetPointSampler());
+
+
+		commandList->SetComputeRoot32BitConstant(6, width >> 1, 0);
+		commandList->SetComputeRoot32BitConstant(6, height >> 1, 1);
+		commandList->Dispatch((width >> 1) / 8, (height >> 1) / 8, 1);
 
 		ASSERT_SUCC(commandList->Close());
 
@@ -144,7 +192,7 @@ namespace JoyEngine
 			D3D12_RESOURCE_STATE_COPY_DEST);
 
 		commandList->ResourceBarrier(1, &barrierBefore);
-		
+
 		UpdateSubresources(
 			commandList,
 			gpuBuffer->GetBuffer().Get(),

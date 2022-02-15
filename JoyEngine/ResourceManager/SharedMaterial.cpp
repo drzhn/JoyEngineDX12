@@ -84,13 +84,14 @@ namespace JoyEngine
 		Shader* shaderPtr = JoyContext::Resource->LoadResource<Shader>(args.computeShaderGuid, JoyShaderTypeCompute);
 		m_shader = shaderPtr;
 		CreateRootSignature(args.rootParams);
+		CreateComputePipeline();
 	}
 
 	void ComputePipeline::CreateComputePipeline()
 	{
 		const D3D12_COMPUTE_PIPELINE_STATE_DESC computePipelineStateDesc = {
 			m_rootSignature.Get(),
-			CD3DX12_SHADER_BYTECODE(m_shader->GetVertexShadeModule().Get()),
+			CD3DX12_SHADER_BYTECODE(m_shader->GetComputeShadeModule().Get()),
 			0,
 			{},
 			D3D12_PIPELINE_STATE_FLAG_NONE

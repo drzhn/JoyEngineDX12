@@ -16,10 +16,32 @@ using Microsoft::WRL::ComPtr;
 
 namespace JoyEngine
 {
-	struct RootParam
+	struct RootParams
 	{
-		CD3DX12_DESCRIPTOR_RANGE1 range;
-		CD3DX12_ROOT_PARAMETER1 param;
+		// I'm not sorry
+		std::list<CD3DX12_DESCRIPTOR_RANGE1> ranges;
+		std::vector<CD3DX12_ROOT_PARAMETER1> params;
+
+		void CreateDescriptorTable(
+			D3D12_DESCRIPTOR_RANGE_TYPE type,
+			uint32_t shaderRegister,
+			D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL,
+			D3D12_DESCRIPTOR_RANGE_FLAGS flags = D3D12_DESCRIPTOR_RANGE_FLAG_NONE)
+		{
+			ranges.emplace_back();
+			ranges.back().Init(type, 1, shaderRegister, 0, flags);
+			params.emplace_back();
+			params[params.size() - 1].InitAsDescriptorTable(1, &ranges.back(), visibility);
+		}
+
+		void CreateConstants(
+			uint32_t number,
+			uint32_t shaderRegister,
+			D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL)
+		{
+			params.emplace_back();
+			params[params.size() - 1].InitAsConstants(number, shaderRegister, 0, visibility);
+		}
 	};
 
 	void DummyMaterialProvider::Init()
@@ -31,8 +53,8 @@ namespace JoyEngine
 			const GUID gbufferWriteShaderGuid = GUID::StringToGuid("48ffacc9-5c00-4058-b359-cf72189896ac"); //shaders/gbufferwrite.hlsl
 			const GUID gbufferWriteSharedMaterialGuid = GUID::Random();
 
-			std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters(1);
-			rootParameters[0].InitAsConstants(sizeof(MVP) / 4, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+			RootParams rp;
+			rp.CreateConstants(sizeof(MVP) / 4, 0, D3D12_SHADER_VISIBILITY_VERTEX);
 
 			m_gbufferWriteSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
 				gbufferWriteSharedMaterialGuid,
@@ -45,7 +67,7 @@ namespace JoyEngine
 					D3D12_CULL_MODE_BACK,
 					D3D12_COMPARISON_FUNC_LESS_EQUAL,
 					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
-					rootParameters,
+					rp.params,
 					{
 						DXGI_FORMAT_R16G16B16A16_FLOAT,
 						DXGI_FORMAT_R16G16B16A16_FLOAT
@@ -60,8 +82,8 @@ namespace JoyEngine
 			const GUID shadowProcessingShaderGuid = GUID::StringToGuid("9ee0a40a-c055-4b2c-93db-bc19def8e8cc"); //shaders/shadowprocessing.hlsl
 			const GUID shadowProcessingSharedMaterialGuid = GUID::Random();
 
-			std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters(1);
-			rootParameters[0].InitAsConstants(sizeof(MVP) / 4, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+			RootParams rp;
+			rp.CreateConstants(sizeof(MVP) / 4, 0, D3D12_SHADER_VISIBILITY_VERTEX);
 
 			m_shadowProcessingSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
 				shadowProcessingSharedMaterialGuid,
@@ -74,7 +96,7 @@ namespace JoyEngine
 					D3D12_CULL_MODE_NONE,
 					D3D12_COMPARISON_FUNC_LESS_EQUAL,
 					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
-					rootParameters,
+					rp.params,
 					{}, // no rtv, only depth
 					DXGI_FORMAT_D32_FLOAT
 				});
@@ -85,12 +107,9 @@ namespace JoyEngine
 			const GUID shadowPointProcessingShaderGuid = GUID::StringToGuid("9d678808-8c11-4ff3-9ee1-dd1b7fc5f691"); //shaders/shadowpointprocessing.hlsl
 			const GUID shadowPointProcessingSharedMaterialGuid = GUID::Random();
 
-			CD3DX12_DESCRIPTOR_RANGE1 ranges[1];
-			ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
-
-			std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters(2);
-			rootParameters[0].InitAsConstants(sizeof(MVP) / 4, 0, 0, D3D12_SHADER_VISIBILITY_ALL);
-			rootParameters[1].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_ALL);
+			RootParams rp;
+			rp.CreateConstants(sizeof(MVP) / 4, 0, D3D12_SHADER_VISIBILITY_ALL);
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, D3D12_SHADER_VISIBILITY_ALL);
 
 			m_shadowPointProcessingSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
 				shadowPointProcessingSharedMaterialGuid,
@@ -103,7 +122,7 @@ namespace JoyEngine
 					D3D12_CULL_MODE_NONE,
 					D3D12_COMPARISON_FUNC_LESS_EQUAL,
 					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
-					rootParameters,
+					rp.params,
 					{}, // no rtv, only depth
 					DXGI_FORMAT_D32_FLOAT
 				});
@@ -114,12 +133,9 @@ namespace JoyEngine
 			const GUID directionLightProcessingShaderGuid = GUID::StringToGuid("1c6cb88f-f3ef-4797-9d65-44682ca7baba"); //shaders/directionlightprocessing.hlsl
 			const GUID directionLightProcessingSharedMaterialGuid = GUID::Random();
 
-			CD3DX12_DESCRIPTOR_RANGE1 ranges[1];
-			ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
-
-			std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters(2);
-			rootParameters[0].InitAsConstants(sizeof(DirectionLightData) / 4, 0, 0, D3D12_SHADER_VISIBILITY_ALL);
-			rootParameters[1].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
+			RootParams rp;
+			rp.CreateConstants(sizeof(DirectionLightData) / 4, 0, D3D12_SHADER_VISIBILITY_ALL);
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, D3D12_SHADER_VISIBILITY_PIXEL);
 
 			m_directionLightProcessingSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
 				directionLightProcessingSharedMaterialGuid,
@@ -132,7 +148,7 @@ namespace JoyEngine
 					D3D12_CULL_MODE_NONE,
 					D3D12_COMPARISON_FUNC_GREATER_EQUAL,
 					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
-					rootParameters,
+					rp.params,
 					{
 						DXGI_FORMAT_R8G8B8A8_UNORM
 					},
@@ -144,24 +160,15 @@ namespace JoyEngine
 		{
 			const GUID lightProcessingShaderGuid = GUID::StringToGuid("f9da7adf-4ebb-4601-8437-a19c07e8471a"); //shaders/lightprocessing.hlsl
 			const GUID lightProcessingSharedMaterialGuid = GUID::Random();
-
-			CD3DX12_DESCRIPTOR_RANGE1 ranges[6];
-			ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
-			ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
-			ranges[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2, 0, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
-			ranges[3].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
-			ranges[4].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
-			ranges[5].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 3, 0, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
-
-			std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters(7);
-			rootParameters[0].InitAsConstants(sizeof(MVP) / 4, 0, 0, D3D12_SHADER_VISIBILITY_ALL);
-			rootParameters[1].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
-			rootParameters[2].InitAsDescriptorTable(1, &ranges[1], D3D12_SHADER_VISIBILITY_PIXEL);
-			rootParameters[3].InitAsDescriptorTable(1, &ranges[2], D3D12_SHADER_VISIBILITY_PIXEL);
-			rootParameters[4].InitAsDescriptorTable(1, &ranges[3], D3D12_SHADER_VISIBILITY_PIXEL);
-			rootParameters[5].InitAsDescriptorTable(1, &ranges[4], D3D12_SHADER_VISIBILITY_ALL);
-			rootParameters[6].InitAsDescriptorTable(1, &ranges[5], D3D12_SHADER_VISIBILITY_PIXEL);
-
+			
+			RootParams rp;
+			rp.CreateConstants(sizeof(MVP) / 4, 0, D3D12_SHADER_VISIBILITY_ALL);
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, D3D12_SHADER_VISIBILITY_PIXEL);
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 2, D3D12_SHADER_VISIBILITY_PIXEL);
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, D3D12_SHADER_VISIBILITY_ALL);
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, D3D12_SHADER_VISIBILITY_PIXEL);
 
 			CD3DX12_BLEND_DESC blendDesc = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 			const D3D12_RENDER_TARGET_BLEND_DESC defaultRenderTargetBlendDesc =
@@ -188,7 +195,7 @@ namespace JoyEngine
 					D3D12_CULL_MODE_FRONT,
 					D3D12_COMPARISON_FUNC_GREATER_EQUAL,
 					blendDesc,
-					rootParameters,
+					rp.params,
 					{
 						DXGI_FORMAT_R8G8B8A8_UNORM
 					},
@@ -202,18 +209,11 @@ namespace JoyEngine
 			const GUID shaderGuid = GUID::StringToGuid("183d6cfe-ca85-4e0b-ab36-7b1ca0f99d34");
 			const GUID sharedMaterialGuid = GUID::Random();
 
-			CD3DX12_DESCRIPTOR_RANGE1 ranges[3];
-			ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
-			ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 0);
-			ranges[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
-
-
-			std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters(4);
-			rootParameters[0].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
-			rootParameters[1].InitAsDescriptorTable(1, &ranges[1], D3D12_SHADER_VISIBILITY_PIXEL);
-			rootParameters[2].InitAsConstants(sizeof(MVP) / 4, 0, 0, D3D12_SHADER_VISIBILITY_ALL);
-			rootParameters[3].InitAsDescriptorTable(1, &ranges[2], D3D12_SHADER_VISIBILITY_PIXEL);
-
+			RootParams rp;
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+			rp.CreateConstants(sizeof(MVP) / 4, 0);
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, D3D12_SHADER_VISIBILITY_PIXEL);
 
 			m_sharedMaterialHandle = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
 				sharedMaterialGuid,
@@ -226,7 +226,7 @@ namespace JoyEngine
 					D3D12_CULL_MODE_BACK,
 					D3D12_COMPARISON_FUNC_LESS_EQUAL,
 					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
-					rootParameters,
+					rp.params,
 					{
 						DXGI_FORMAT_R8G8B8A8_UNORM
 					},
@@ -261,28 +261,5 @@ namespace JoyEngine
 				material
 			}
 		});
-	}
-
-	CD3DX12_ROOT_PARAMETER1 DummyMaterialProvider::CreateDescriptorTable(
-		CD3DX12_ROOT_PARAMETER1& param,
-		D3D12_DESCRIPTOR_RANGE_TYPE type,
-		uint32_t shaderRegister,
-		D3D12_SHADER_VISIBILITY visibility,
-		D3D12_DESCRIPTOR_RANGE_FLAGS flags)
-	{
-		CD3DX12_DESCRIPTOR_RANGE1 range;
-		range.Init(type, 1, shaderRegister, 0, flags);
-		param.InitAsDescriptorTable(1, &range, visibility);
-		return param;
-	}
-
-	CD3DX12_ROOT_PARAMETER1 DummyMaterialProvider::CreateConstants(
-		CD3DX12_ROOT_PARAMETER1& param,
-		uint32_t number,
-		uint32_t shaderRegister,
-		D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL)
-	{
-		param.InitAsConstants(number, shaderRegister, 0, visibility);
-		return param;
 	}
 }

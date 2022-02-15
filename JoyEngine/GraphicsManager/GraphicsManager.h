@@ -36,6 +36,7 @@ namespace JoyEngine
 		ComPtr<ID3D12Device2> m_logicalDevice = nullptr;
 #if defined(_DEBUG)
 		ComPtr<ID3D12Debug> debugController;
+		uint32_t m_m4xMsaaQuality;
 #endif
 	};
 }

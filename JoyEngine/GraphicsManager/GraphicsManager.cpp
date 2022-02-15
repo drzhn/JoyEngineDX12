@@ -87,5 +87,18 @@ namespace JoyEngine
 
 
 #endif
+
+		//D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS msQualityLevels;
+		//msQualityLevels.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		//msQualityLevels.SampleCount = 4;
+		//msQualityLevels.Flags =
+		//	D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE;
+		//msQualityLevels.NumQualityLevels = 0;
+		//ASSERT_SUCC(m_logicalDevice->CheckFeatureSupport(
+		//	D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS,
+		//	&msQualityLevels,
+		//	sizeof(msQualityLevels)));
+		//m_m4xMsaaQuality = msQualityLevels.NumQualityLevels;
+		//ASSERT(m_m4xMsaaQuality > 0);
 	}
 }

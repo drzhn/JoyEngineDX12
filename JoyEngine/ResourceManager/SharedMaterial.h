@@ -26,7 +26,37 @@ namespace JoyEngine
 		DXGI_FORMAT depthFormat;
 	};
 
-	class SharedMaterial final : public Resource
+	struct ComputePipelineArgs
+	{
+		GUID computeShaderGuid;
+		std::vector<CD3DX12_ROOT_PARAMETER1> rootParams;
+	};
+
+	class AbstractPipelineObject
+	{
+	public:
+		[[nodiscard]] ComPtr<ID3D12RootSignature> GetRootSignature() const noexcept { return m_rootSignature; }
+		[[nodiscard]] ComPtr<ID3D12PipelineState> GetPipelineObject() const noexcept { return m_pipelineState; };
+
+	protected:
+		ComPtr<ID3D12RootSignature> m_rootSignature;
+		ComPtr<ID3D12PipelineState> m_pipelineState;
+		ResourceHandle<Shader> m_shader;
+
+		void CreateRootSignature(const std::vector<CD3DX12_ROOT_PARAMETER1>& rootParams);
+	};
+
+	class ComputePipeline final : public Resource, public AbstractPipelineObject
+	{
+	public:
+		ComputePipeline() = delete;
+		explicit ComputePipeline(GUID, ComputePipelineArgs);
+		[[nodiscard]] bool IsLoaded() const noexcept override { return true; }
+	private:
+		void CreateComputePipeline();
+	};
+
+	class SharedMaterial final : public Resource, public AbstractPipelineObject
 	{
 	public :
 		SharedMaterial() = delete;
@@ -35,10 +65,6 @@ namespace JoyEngine
 		explicit SharedMaterial(GUID, SharedMaterialArgs);
 
 		~SharedMaterial() final;
-
-		[[nodiscard]] ComPtr<ID3D12RootSignature> GetRootSignature() const noexcept { return m_rootSignature; };
-
-		[[nodiscard]] ComPtr<ID3D12PipelineState> GetPipelineObject() const noexcept { return m_pipelineState; };
 
 		[[nodiscard]] bool IsLoaded() const noexcept override;
 
@@ -50,21 +76,16 @@ namespace JoyEngine
 
 	private :
 		std::set<MeshRenderer*> m_meshRenderers;
-		ResourceHandle<Shader> m_shader;
 
 		bool m_hasVertexInput = false;
 		bool m_depthTest = false;
 		bool m_depthWrite = false;
 		D3D12_COMPARISON_FUNC m_depthComparisonFunc;
 
-		ComPtr<ID3D12RootSignature> m_rootSignature;
-		ComPtr<ID3D12PipelineState> m_pipelineState;
 		D3D12_CULL_MODE m_cullMode;
 
 	private:
-		void CreateRootSignature(const std::vector<CD3DX12_ROOT_PARAMETER1>& rootParams);
 		void CreateGraphicsPipeline(const std::vector<DXGI_FORMAT>& renderTargetsFormats, CD3DX12_BLEND_DESC blendDesc, DXGI_FORMAT depthFormat);
-
 		static std::vector<D3D12_INPUT_ELEMENT_DESC> m_inputLayout;
 	};
 }

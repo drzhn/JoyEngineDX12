@@ -256,5 +256,7 @@
     <None Include="JoyData\shaders\directionlightprocessing.hlsl" />
     <None Include="JoyData\shaders\shadowprocessing.hlsl" />
     <None Include="JoyData\shaders\shadowpointprocessing.hlsl" />
+    <None Include="JoyData\shaders\annaShader.hlsl" />
+    <None Include="JoyData\shaders\generateMipMaps.hlsl" />
   </ItemGroup>
 </Project>

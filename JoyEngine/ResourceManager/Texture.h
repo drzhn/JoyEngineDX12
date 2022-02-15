@@ -70,7 +70,7 @@ namespace JoyEngine
 		[[nodiscard]] bool IsLoaded() const noexcept override { return true; }
 
 	private:
-		void CreateImage(bool allowRenderTarget, bool isDepthTarget, uint32_t arraySize);
+		void CreateImage(bool allowRenderTarget, bool isDepthTarget, uint32_t arraySize, uint32_t mipLevels = 1);
 		void CreateImageView(bool allowRenderTarget, bool isDepthTarget, uint32_t arraySize);
 
 	private:

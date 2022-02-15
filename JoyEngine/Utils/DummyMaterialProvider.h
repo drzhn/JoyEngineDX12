@@ -22,6 +22,7 @@ namespace JoyEngine
 			return m_sampleMaterials.find(materialName)->second.materialHandle->GetGuid();
 		}
 
+		[[nodiscard]] ComputePipeline* GetMipsGenerationComputePipeline() const noexcept { return m_generateMipsComputePipeline; }
 		[[nodiscard]] SharedMaterial* GetGBufferSharedMaterial() const noexcept { return m_gbufferWriteSharedMaterial; }
 		[[nodiscard]] SharedMaterial* GetLightProcessingSharedMaterial() const noexcept { return m_lightProcessingSharedMaterial; }
 		[[nodiscard]] SharedMaterial* GetDirectionLightProcessingSharedMaterial() const noexcept { return m_directionLightProcessingSharedMaterial; }
@@ -29,7 +30,10 @@ namespace JoyEngine
 		[[nodiscard]] SharedMaterial* GetShadowPointProcessingSharedMaterial() const noexcept { return m_shadowPointProcessingSharedMaterial; }
 
 	private:
-		ResourceHandle<Texture> m_skyboxTextureHandle;
+		//ResourceHandle<Texture> m_skyboxTextureHandle;
+
+		ResourceHandle<ComputePipeline> m_generateMipsComputePipeline;
+
 
 		ResourceHandle<SharedMaterial> m_gbufferWriteSharedMaterial;
 		ResourceHandle<Shader> m_gbufferWriteShader;

@@ -85,7 +85,7 @@ namespace JoyEngine
 			ASSERT(false);
 		}
 
-		CreateImage(false, false, 1);
+		CreateImage(false, false, 1, 4);
 		CreateImageView(false, false, 1);
 		JoyContext::Memory->LoadDataToImage(
 			textureStream,
@@ -131,7 +131,7 @@ namespace JoyEngine
 		CreateImageView(true, false, 1); // I use this only for creating texture from system back buffer
 	}
 
-	void Texture::CreateImage(bool allowRenderTarget, bool isDepthTarget, uint32_t arraySize)
+	void Texture::CreateImage(bool allowRenderTarget, bool isDepthTarget, uint32_t arraySize, uint32_t mipLevels)
 	{
 		D3D12_CLEAR_VALUE optimizedClearValue = {};
 		D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE;
@@ -152,7 +152,7 @@ namespace JoyEngine
 		}
 
 		D3D12_RESOURCE_DESC textureDesc = {};
-		textureDesc.MipLevels = 1;
+		textureDesc.MipLevels = mipLevels;
 		textureDesc.Format = m_format;
 		textureDesc.Width = m_width;
 		textureDesc.Height = m_height;

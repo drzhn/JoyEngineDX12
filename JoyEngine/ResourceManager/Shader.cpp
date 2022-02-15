@@ -37,6 +37,24 @@ namespace JoyEngine
 		ID3DBlob* errorMessages = nullptr;
 		HRESULT hr;
 
+		if (m_shaderType & JoyShaderTypeCompute)
+		{
+			hr = (D3DCompile(
+				shaderData.data(),
+				shaderData.size(),
+				"shader", nullptr,
+				nullptr,
+				"CSMain", "cs_5_1", compileFlags, 0, &m_computeModule, &errorMessages));
+
+			if (FAILED(hr) && errorMessages)
+			{
+				const char* errorMsg = static_cast<const char*>(errorMessages->GetBufferPointer());
+				OutputDebugStringA(errorMsg);
+			}
+
+			errorMessages = nullptr;
+		}
+
 		if (m_shaderType & JoyShaderTypeVertex)
 		{
 			hr = (D3DCompile(

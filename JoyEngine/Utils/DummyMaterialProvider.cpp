@@ -48,6 +48,26 @@ namespace JoyEngine
 	{
 		Texture::InitSamplers();
 
+		// Mip map generation
+		{
+			const GUID mipMapGenerationShaderGuid = GUID::StringToGuid("3fb4d89b-ceab-46c3-b34f-d41a49e072cf"); //shaders/generateMipMaps.hlsl
+			const GUID mipMapGenerationPipelineGuid = GUID::Random();
+
+			RootParams rp;
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 0);
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1);
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 2);
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 3);
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0);
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 0);
+			m_generateMipsComputePipeline = JoyContext::Resource->LoadResource<ComputePipeline, ComputePipelineArgs>(
+				mipMapGenerationPipelineGuid,
+				{
+					mipMapGenerationShaderGuid,
+					rp.params
+				});
+		}
+
 		// GBuffer write shader
 		{
 			const GUID gbufferWriteShaderGuid = GUID::StringToGuid("48ffacc9-5c00-4058-b359-cf72189896ac"); //shaders/gbufferwrite.hlsl
@@ -160,7 +180,7 @@ namespace JoyEngine
 		{
 			const GUID lightProcessingShaderGuid = GUID::StringToGuid("f9da7adf-4ebb-4601-8437-a19c07e8471a"); //shaders/lightprocessing.hlsl
 			const GUID lightProcessingSharedMaterialGuid = GUID::Random();
-			
+
 			RootParams rp;
 			rp.CreateConstants(sizeof(MVP) / 4, 0, D3D12_SHADER_VISIBILITY_ALL);
 			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, D3D12_SHADER_VISIBILITY_PIXEL);

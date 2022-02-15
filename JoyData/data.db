@@ -56,6 +56,10 @@
         {
             "guid": "9d678808-8c11-4ff3-9ee1-dd1b7fc5f691",
             "path": "shaders/shadowpointprocessing.hlsl"
+        },        
+		{
+            "guid": "3fb4d89b-ceab-46c3-b34f-d41a49e072cf",
+            "path": "shaders/generateMipMaps.hlsl"
         },
 		
 		

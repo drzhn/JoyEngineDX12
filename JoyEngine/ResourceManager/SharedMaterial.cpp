@@ -38,40 +38,7 @@ namespace JoyEngine
 		},
 	};
 
-	SharedMaterial::SharedMaterial(GUID guid) :
-		Resource(guid) // UNUSED
-	{
-		ASSERT(false);
-		//rapidjson::Document json = JoyContext::Data->GetSerializedData(m_guid, sharedMaterial);
-
-		//m_shader = GUID::StringToGuid(json["shader"].GetString());
-
-		//m_hasVertexInput = json["hasVertexInput"].GetBool();
-		//m_hasMVP = json["hasMVP"].GetBool();
-		//m_depthTest = json["depthTest"].GetBool();
-		//m_depthWrite = json["depthWrite"].GetBool();
-
-		//CreateGraphicsPipeline();
-		//JoyContext::Render->RegisterSharedMaterial(this);
-	}
-
-	SharedMaterial::SharedMaterial(const GUID guid, const SharedMaterialArgs args) :
-		Resource(guid),
-		m_hasVertexInput(args.hasVertexInput),
-		m_depthTest(args.depthTest),
-		m_depthWrite(args.depthWrite),
-		m_depthComparisonFunc(args.depthComparisonFunc),
-		m_cullMode(args.cullMode)
-	{
-		Shader* shaderPtr = JoyContext::Resource->LoadResource<Shader>(args.shader, args.shaderTypes);
-		m_shader = shaderPtr,
-
-			CreateRootSignature(args.rootParams);
-		CreateGraphicsPipeline(args.renderTargetsFormats, args.blendDesc, args.depthFormat);
-		JoyContext::Render->RegisterSharedMaterial(this);
-	}
-
-	void SharedMaterial::CreateRootSignature(const std::vector<CD3DX12_ROOT_PARAMETER1>& rootParams)
+	void AbstractPipelineObject::CreateRootSignature(const std::vector<CD3DX12_ROOT_PARAMETER1>& rootParams)
 	{
 		D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = {};
 
@@ -81,7 +48,7 @@ namespace JoyEngine
 		if (FAILED(JoyContext::Graphics->GetDevice()->CheckFeatureSupport(
 			D3D12_FEATURE_ROOT_SIGNATURE,
 			&featureData,
-			sizeof( featureData))))
+			sizeof(featureData))))
 		{
 			featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
 		}
@@ -109,6 +76,59 @@ namespace JoyEngine
 			signature->GetBufferPointer(),
 			signature->GetBufferSize(),
 			IID_PPV_ARGS(&m_rootSignature)));
+	}
+
+	ComputePipeline::ComputePipeline(GUID guid, ComputePipelineArgs args) :
+		Resource(guid)
+	{
+		Shader* shaderPtr = JoyContext::Resource->LoadResource<Shader>(args.computeShaderGuid, JoyShaderTypeCompute);
+		m_shader = shaderPtr;
+		CreateRootSignature(args.rootParams);
+	}
+
+	void ComputePipeline::CreateComputePipeline()
+	{
+		const D3D12_COMPUTE_PIPELINE_STATE_DESC computePipelineStateDesc = {
+			m_rootSignature.Get(),
+			CD3DX12_SHADER_BYTECODE(m_shader->GetVertexShadeModule().Get()),
+			0,
+			{},
+			D3D12_PIPELINE_STATE_FLAG_NONE
+		};
+		ASSERT_SUCC(JoyContext::Graphics->GetDevice()->CreateComputePipelineState(&computePipelineStateDesc, IID_PPV_ARGS(&m_pipelineState)));
+	}
+
+	SharedMaterial::SharedMaterial(GUID guid) :
+		Resource(guid) // UNUSED
+	{
+		ASSERT(false);
+		//rapidjson::Document json = JoyContext::Data->GetSerializedData(m_guid, sharedMaterial);
+
+		//m_shader = GUID::StringToGuid(json["shader"].GetString());
+
+		//m_hasVertexInput = json["hasVertexInput"].GetBool();
+		//m_hasMVP = json["hasMVP"].GetBool();
+		//m_depthTest = json["depthTest"].GetBool();
+		//m_depthWrite = json["depthWrite"].GetBool();
+
+		//CreateGraphicsPipeline();
+		//JoyContext::Render->RegisterSharedMaterial(this);
+	}
+
+	SharedMaterial::SharedMaterial(const GUID guid, const SharedMaterialArgs args) :
+		Resource(guid),
+		m_hasVertexInput(args.hasVertexInput),
+		m_depthTest(args.depthTest),
+		m_depthWrite(args.depthWrite),
+		m_depthComparisonFunc(args.depthComparisonFunc),
+		m_cullMode(args.cullMode)
+	{
+		Shader* shaderPtr = JoyContext::Resource->LoadResource<Shader>(args.shader, args.shaderTypes);
+		m_shader = shaderPtr;
+
+		CreateRootSignature(args.rootParams);
+		CreateGraphicsPipeline(args.renderTargetsFormats, args.blendDesc, args.depthFormat);
+		JoyContext::Render->RegisterSharedMaterial(this);
 	}
 
 	void SharedMaterial::CreateGraphicsPipeline(

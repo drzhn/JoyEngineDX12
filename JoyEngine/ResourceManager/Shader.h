@@ -20,7 +20,8 @@ namespace JoyEngine
 		JoyShaderTypeGeometry = 1 << 3,
 		JoyShaderTypePixel = 1 << 4,
 		JoyShaderTypeAmplification = 1 << 5,
-		JoyShaderTypeMesh = 1 << 6
+		JoyShaderTypeMesh = 1 << 6,
+		JoyShaderTypeCompute = 1 << 7
 	} ShaderType;
 
 	typedef uint32_t ShaderTypeFlags;
@@ -40,6 +41,7 @@ namespace JoyEngine
 		[[nodiscard]] ComPtr<ID3DBlob> GetVertexShadeModule() const noexcept { return m_vertexModule; }
 		[[nodiscard]] ComPtr<ID3DBlob> GetFragmentShadeModule() const noexcept { return m_fragmentModule; }
 		[[nodiscard]] ComPtr<ID3DBlob> GetGeometryShadeModule() const noexcept { return m_geometryModule; }
+		[[nodiscard]] ComPtr<ID3DBlob> GetComputeShadeModule() const noexcept { return m_computeModule; }
 		// TODO other types
 		[[nodiscard]] bool IsLoaded() const noexcept override { return true; }
 
@@ -49,6 +51,7 @@ namespace JoyEngine
 		ComPtr<ID3DBlob> m_vertexModule;
 		ComPtr<ID3DBlob> m_fragmentModule;
 		ComPtr<ID3DBlob> m_geometryModule;
+		ComPtr<ID3DBlob> m_computeModule;
 	};
 }
 

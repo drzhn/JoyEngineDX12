@@ -9,6 +9,7 @@
 #include "Components/MeshRenderer.h"
 #include "Components/Camera.h"
 #include "Components/Light.h"
+#include "Components/ParticleSystem.h"
 #include "DataManager/DataManager.h"
 
 namespace JoyEngine
@@ -97,6 +98,11 @@ namespace JoyEngine
 						ASSERT(false);
 					}
 					go->AddComponent(std::move(light));
+				}
+				else if (type == "particle_system")
+				{
+					auto ps = std::make_unique<ParticleSystem>();
+					go->AddComponent(std::move(ps));
 				}
 			}
 			m_objects.push_back(std::move(go));

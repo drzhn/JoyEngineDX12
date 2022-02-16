@@ -5,10 +5,13 @@
 #include "JoyContext.h"
 #include "Utils/Assert.h"
 
-//#include "MemoryManager/MemoryManager.h"
-//#include "ResourceManager/ResourceManager.h"
-#include "JoyTypes.h"
+#include "ResourceManager/ResourceManager.h"
+#include "Common/CommandQueue.h"
+#include "Components/Light.h"
+#include "ResourceManager/Mesh.h"
 #include "Components/Camera.h"
+#include "ResourceManager/SharedMaterial.h"
+#include "JoyTypes.h"
 #include "Components/MeshRenderer.h"
 #include "DescriptorManager/DescriptorManager.h"
 #include "GraphicsManager/GraphicsManager.h"
@@ -159,6 +162,20 @@ namespace JoyEngine
 	{
 		ASSERT(m_currentCamera == camera);
 		m_currentCamera = nullptr;
+	}
+
+	void RenderManager::RegisterParticleSystem(ParticleSystem* ps)
+	{
+		m_particleSystems.insert(ps);
+	}
+
+	void RenderManager::UnregisterParticleSystem(ParticleSystem* ps)
+	{
+		if (m_particleSystems.find(ps) == m_particleSystems.end())
+		{
+			ASSERT(false);
+		}
+		m_particleSystems.erase(ps);
 	}
 
 	inline D3D12_RESOURCE_BARRIER Transition(

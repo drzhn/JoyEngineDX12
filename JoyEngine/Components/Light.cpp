@@ -1,6 +1,7 @@
 ﻿#include "Light.h"
 
 #include "JoyContext.h"
+#include "ResourceManager/Texture.h"
 #include "RenderManager/RenderManager.h"
 #include "glm/gtc/type_ptr.hpp"
 

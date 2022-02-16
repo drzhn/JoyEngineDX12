@@ -3,35 +3,30 @@
 
 #include "windows.h"
 
-#include <vector>
 #include <array>
 #include <set>
 #include <chrono>
-#include <map>
 #include <memory>
 
-//#include "ResourceManager/Texture.h"
+#include "ResourceManager/ResourceHandle.h"
 
-//#include "Components/MeshRenderer.h"
-//#include "Components/Camera.h"
-
-#include "Common/CommandQueue.h"
-
+#include <glm/glm.hpp>
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <wrl.h>
-
-#include "Components/Light.h"
-#include "ResourceManager/Mesh.h"
 using Microsoft::WRL::ComPtr;
-
-
-#include "Components/Camera.h"
-#include "ResourceManager/SharedMaterial.h"
 
 namespace JoyEngine
 {
-	class RenderObject;
+	class ParticleSystem;
+	class CommandQueue;
+	class Light;
+	class Mesh;
+	class Camera;
+	class SharedMaterial;
+	class Texture;
+	class RenderTexture;
+	class ResourceView;
 
 	class RenderManager
 	{
@@ -50,13 +45,6 @@ namespace JoyEngine
 
 		void Update();
 
-		void RenderEntireScene(
-			ID3D12GraphicsCommandList* commandList,
-			glm::mat4 view,
-			glm::mat4 proj) const;
-
-		void SetViewportAndScissor(ID3D12GraphicsCommandList* commandList, uint32_t width, uint32_t height) const;
-		void AttachView(ID3D12GraphicsCommandList* commandList, uint32_t rootParameterIndex, const ResourceView* view) const;
 
 		void RegisterSharedMaterial(SharedMaterial*);
 
@@ -74,9 +62,22 @@ namespace JoyEngine
 
 		void UnregisterCamera(Camera* camera);
 
+		void RegisterParticleSystem(ParticleSystem* ps);
+
+		void UnregisterParticleSystem(ParticleSystem* ps);
+
 		[[nodiscard]] float GetAspect() const noexcept;
 		[[nodiscard]] float GetWidth() const noexcept;
 		[[nodiscard]] float GetHeight() const noexcept;
+
+	private:
+		void RenderEntireScene(
+			ID3D12GraphicsCommandList* commandList,
+			glm::mat4 view,
+			glm::mat4 proj) const;
+
+		void SetViewportAndScissor(ID3D12GraphicsCommandList* commandList, uint32_t width, uint32_t height) const;
+		void AttachView(ID3D12GraphicsCommandList* commandList, uint32_t rootParameterIndex, const ResourceView* view) const;
 
 	private:
 		static const UINT FrameCount = 3;
@@ -93,6 +94,7 @@ namespace JoyEngine
 
 		ResourceHandle<Mesh> m_planeMesh;
 
+		std::set<ParticleSystem*> m_particleSystems;
 		std::set<SharedMaterial*> m_sharedMaterials;
 		std::set<Light*> m_lights;
 		Light* m_directionLight;

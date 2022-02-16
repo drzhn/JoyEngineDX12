@@ -56,7 +56,9 @@ namespace JoyEngine
 		void CreateComputePipeline();
 	};
 
-	class SharedMaterial final : public Resource, public AbstractPipelineObject
+
+	// TODO: make AbstractPipelineObject -> GraphicsPipeline -> SharedMaterial
+	class SharedMaterial final : public Resource, public AbstractPipelineObject 
 	{
 	public :
 		SharedMaterial() = delete;

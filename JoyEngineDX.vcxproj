@@ -150,6 +150,7 @@
     <ClCompile Include="JoyEngine\Components\Component.cpp" />
     <ClCompile Include="JoyEngine\Components\Light.cpp" />
     <ClCompile Include="JoyEngine\Components\MeshRenderer.cpp" />
+    <ClCompile Include="JoyEngine\Components\ParticleSystem.cpp" />
     <ClCompile Include="JoyEngine\GameplayComponents\CameraBehaviour.cpp" />
     <ClCompile Include="JoyEngine\GameplayComponents\RoomBehaviour.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\Buffer.cpp" />
@@ -186,6 +187,7 @@
     <ClInclude Include="JoyEngine\Components\Component.h" />
     <ClInclude Include="JoyEngine\Components\Light.h" />
     <ClInclude Include="JoyEngine\Components\MeshRenderer.h" />
+    <ClInclude Include="JoyEngine\Components\ParticleSystem.h" />
     <ClInclude Include="JoyEngine\d3dx12.h" />
     <ClInclude Include="JoyEngine\GameplayComponents\CameraBehaviour.h" />
     <ClInclude Include="JoyEngine\GameplayComponents\RoomBehaviour.h" />
@@ -260,6 +262,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="JoyData\shaders\generateMipMaps.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="JoyData\shaders\particles.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

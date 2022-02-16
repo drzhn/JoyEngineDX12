@@ -267,6 +267,20 @@
                     "angle": 60
                 }
             ]
+        },
+
+        {
+            "name": "particle_system_test",
+            "transform": {
+                "localPosition": [ 0.0, 0.0, 0.0 ],
+                "localRotation": [ 0.0, 0.0, 0.0 ],
+                "localScale": [ 1, 1, 1 ]
+            },
+            "components": [
+                {
+                    "type": "particle_system"
+                }
+            ]
         }
     ]
 }

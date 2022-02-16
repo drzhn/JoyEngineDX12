@@ -18,7 +18,7 @@ struct MVP
 ConstantBuffer<MVP> mvp : register(b0);
 RWStructuredBuffer<float3> particles: register(u0);
 
-PSInput VSMain(uint VertexID : SV_VertexID)// float3 color : COLOR, float3 normal : NORMAL, float2 uv : TEXCOORD)
+PSInput VSMain(uint VertexID : SV_VertexID)
 {
 	PSInput result;
 	float4x4 resMatrix = mul(mvp.projection, mul(mvp.view, mvp.model));

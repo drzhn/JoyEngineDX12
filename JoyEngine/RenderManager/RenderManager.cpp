@@ -12,6 +12,7 @@
 #include "Components/Camera.h"
 #include "ResourceManager/SharedMaterial.h"
 #include "JoyTypes.h"
+#include "Common/Time.h"
 #include "Components/MeshRenderer.h"
 #include "Components/ParticleSystem.h"
 #include "DescriptorManager/DescriptorManager.h"
@@ -481,6 +482,12 @@ namespace JoyEngine
 				commandList->SetPipelineState(ps->GetComputePipeline()->GetPipelineObject().Get());
 
 				AttachViewToCompute(commandList, 0, ps->GetResourceView());
+
+				uint32_t x = 0;
+				float y = Time::GetTime();
+				memcpy(&x, &y, sizeof(float)); // i don't like it too
+
+				commandList->SetComputeRoot32BitConstant(1, x, 0);
 				uint32_t size = ps->GetSize();
 				commandList->Dispatch(size / 8, size / 8, size / 8);
 

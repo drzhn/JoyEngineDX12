@@ -16,33 +16,19 @@ using Microsoft::WRL::ComPtr;
 
 namespace JoyEngine
 {
-	struct RootParams
+	void RootParams::CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE type, uint32_t shaderRegister, D3D12_SHADER_VISIBILITY visibility, D3D12_DESCRIPTOR_RANGE_FLAGS flags)
 	{
-		// I'm not sorry
-		std::list<CD3DX12_DESCRIPTOR_RANGE1> ranges;
-		std::vector<CD3DX12_ROOT_PARAMETER1> params;
+		ranges.emplace_back();
+		ranges.back().Init(type, 1, shaderRegister, 0, flags);
+		params.emplace_back();
+		params[params.size() - 1].InitAsDescriptorTable(1, &ranges.back(), visibility);
+	}
 
-		void CreateDescriptorTable(
-			D3D12_DESCRIPTOR_RANGE_TYPE type,
-			uint32_t shaderRegister,
-			D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL,
-			D3D12_DESCRIPTOR_RANGE_FLAGS flags = D3D12_DESCRIPTOR_RANGE_FLAG_NONE)
-		{
-			ranges.emplace_back();
-			ranges.back().Init(type, 1, shaderRegister, 0, flags);
-			params.emplace_back();
-			params[params.size() - 1].InitAsDescriptorTable(1, &ranges.back(), visibility);
-		}
-
-		void CreateConstants(
-			uint32_t number,
-			uint32_t shaderRegister,
-			D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL)
-		{
-			params.emplace_back();
-			params[params.size() - 1].InitAsConstants(number, shaderRegister, 0, visibility);
-		}
-	};
+	void RootParams::CreateConstants(uint32_t number, uint32_t shaderRegister, D3D12_SHADER_VISIBILITY visibility)
+	{
+		params.emplace_back();
+		params[params.size() - 1].InitAsConstants(number, shaderRegister, 0, visibility);
+	}
 
 	void DummyMaterialProvider::Init()
 	{

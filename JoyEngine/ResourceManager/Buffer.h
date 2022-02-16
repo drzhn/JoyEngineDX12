@@ -30,7 +30,8 @@ namespace JoyEngine
 		explicit Buffer(
 			uint64_t size,
 			D3D12_RESOURCE_STATES usage,
-			D3D12_HEAP_TYPE properties
+			D3D12_HEAP_TYPE properties, 
+			D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE
 		);
 
 		~Buffer() override = default;

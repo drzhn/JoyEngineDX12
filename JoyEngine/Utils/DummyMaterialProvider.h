@@ -7,6 +7,24 @@
 
 namespace JoyEngine
 {
+	struct RootParams
+	{
+		// I'm not sorry
+		std::list<CD3DX12_DESCRIPTOR_RANGE1> ranges;
+		std::vector<CD3DX12_ROOT_PARAMETER1> params;
+
+		void CreateDescriptorTable(
+			D3D12_DESCRIPTOR_RANGE_TYPE type,
+			uint32_t shaderRegister,
+			D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL,
+			D3D12_DESCRIPTOR_RANGE_FLAGS flags = D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
+
+		void CreateConstants(
+			uint32_t number,
+			uint32_t shaderRegister,
+			D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL);
+	};
+
 	class DummyMaterialProvider
 	{
 	public:

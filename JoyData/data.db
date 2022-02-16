@@ -64,6 +64,10 @@
 		{
             "guid": "a36fff56-b183-418a-9bd1-31cffd247e37",
             "path": "shaders/particles.hlsl"
+        },		
+		{
+            "guid": "38d4f011-405a-4602-8f8e-79b4888d26b6",
+            "path": "shaders/particlesbuffergeneration.hlsl"
         },
 		
 		

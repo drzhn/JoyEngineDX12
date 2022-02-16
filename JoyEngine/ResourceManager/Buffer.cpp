@@ -28,12 +28,12 @@ namespace JoyEngine
 
 	// Buffer
 
-	Buffer::Buffer(uint64_t size, D3D12_RESOURCE_STATES usage, D3D12_HEAP_TYPE properties):
+	Buffer::Buffer(uint64_t size, D3D12_RESOURCE_STATES usage, D3D12_HEAP_TYPE properties, D3D12_RESOURCE_FLAGS flags):
 		m_size(size),
 		m_currentResourceState(usage),
 		m_properties(properties)
 	{
-		const CD3DX12_RESOURCE_DESC bufferResourceDesc = CD3DX12_RESOURCE_DESC::Buffer(m_size);
+		const CD3DX12_RESOURCE_DESC bufferResourceDesc = CD3DX12_RESOURCE_DESC::Buffer(m_size, flags);
 
 		ASSERT_SUCC(JoyContext::Graphics->GetDevice()->CreateCommittedResource(
 			&m_properties,

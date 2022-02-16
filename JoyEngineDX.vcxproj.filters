@@ -265,5 +265,6 @@
     <None Include="JoyData\shaders\annaShader.hlsl" />
     <None Include="JoyData\shaders\generateMipMaps.hlsl" />
     <None Include="JoyData\shaders\particles.hlsl" />
+    <None Include="JoyData\shaders\particlesbuffergeneration.hlsl" />
   </ItemGroup>
 </Project>

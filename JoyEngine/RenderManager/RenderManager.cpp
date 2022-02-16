@@ -13,6 +13,7 @@
 #include "ResourceManager/SharedMaterial.h"
 #include "JoyTypes.h"
 #include "Components/MeshRenderer.h"
+#include "Components/ParticleSystem.h"
 #include "DescriptorManager/DescriptorManager.h"
 #include "GraphicsManager/GraphicsManager.h"
 #include "Utils/DummyMaterialProvider.h"
@@ -309,7 +310,7 @@ namespace JoyEngine
 
 					commandList->ClearDepthStencilView(shadowmapHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
-					AttachView(commandList, 1, light->GetLightDataBufferView());
+					AttachViewToGraphics(commandList, 1, light->GetLightDataBufferView());
 
 					RenderEntireScene(commandList, light->GetViewMatrix(), light->GetProjMatrix());
 				}
@@ -378,23 +379,23 @@ namespace JoyEngine
 						mainCameraProjMatrix,
 					};
 
-					AttachView(commandList, 1, m_positionAttachment->GetAttachmentView());
-					AttachView(commandList, 2, m_normalAttachment->GetAttachmentView());
+					AttachViewToGraphics(commandList, 1, m_positionAttachment->GetAttachmentView());
+					AttachViewToGraphics(commandList, 2, m_normalAttachment->GetAttachmentView());
 
 					if (light->GetShadowmap() != nullptr)
 					{
 						if (light->GetLightType() == Spot)
 						{
-							AttachView(commandList, 3, light->GetShadowmap()->GetAttachmentView());
+							AttachViewToGraphics(commandList, 3, light->GetShadowmap()->GetAttachmentView());
 						}
 						if (light->GetLightType() == Point)
 						{
-							AttachView(commandList, 6, light->GetShadowmap()->GetAttachmentView());
+							AttachViewToGraphics(commandList, 6, light->GetShadowmap()->GetAttachmentView());
 						}
-						AttachView(commandList, 4, Texture::GetDepthPCFSampler());
+						AttachViewToGraphics(commandList, 4, Texture::GetDepthPCFSampler());
 					}
 
-					AttachView(commandList, 5, light->GetLightDataBufferView());
+					AttachViewToGraphics(commandList, 5, light->GetLightDataBufferView());
 
 					commandList->SetGraphicsRoot32BitConstants(0, sizeof(MVP) / 4, &mvp, 0);
 					commandList->DrawIndexedInstanced(
@@ -462,6 +463,47 @@ namespace JoyEngine
 						1,
 						0, 0, 0);
 				}
+			}
+		}
+
+		// Drawing particles 
+		{
+			for (const auto& ps : m_particleSystems)
+			{
+				CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+					ps->GetBuffer()->GetBuffer().Get(),
+					D3D12_RESOURCE_STATE_GENERIC_READ,
+					D3D12_RESOURCE_STATE_UNORDERED_ACCESS
+				);
+				commandList->ResourceBarrier(1, &barrier);
+
+				commandList->SetComputeRootSignature(ps->GetComputePipeline()->GetRootSignature().Get());
+				commandList->SetPipelineState(ps->GetComputePipeline()->GetPipelineObject().Get());
+
+				AttachViewToCompute(commandList, 0, ps->GetResourceView());
+				uint32_t size = ps->GetSize();
+				commandList->Dispatch(size / 8, size / 8, size / 8);
+
+				barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+					ps->GetBuffer()->GetBuffer().Get(),
+					D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+					D3D12_RESOURCE_STATE_GENERIC_READ
+				);
+				commandList->ResourceBarrier(1, &barrier);
+
+				commandList->SetPipelineState(ps->GetSharedMaterial()->GetPipelineObject().Get());
+				commandList->SetGraphicsRootSignature(ps->GetSharedMaterial()->GetRootSignature().Get());
+
+				MVP mvp{
+					ps->GetTransform()->GetModelMatrix(),
+					mainCameraViewMatrix,
+					mainCameraProjMatrix
+				};
+
+				commandList->SetGraphicsRoot32BitConstants(0, sizeof(MVP) / 4, &mvp, 0);
+				AttachViewToGraphics(commandList, 1, ps->GetResourceView());
+				commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
+				commandList->DrawInstanced(size * size * size, 1, 0, 0);
 			}
 		}
 
@@ -560,11 +602,11 @@ namespace JoyEngine
 	}
 
 
-	void RenderManager::AttachView(
+	void RenderManager::AttachViewToGraphics(
 		ID3D12GraphicsCommandList* commandList,
 		uint32_t rootParameterIndex,
 		const ResourceView* view
-	) const
+	)
 	{
 		ID3D12DescriptorHeap* heaps1[1] = {view->GetHeap()};
 		commandList->SetDescriptorHeaps(
@@ -572,6 +614,21 @@ namespace JoyEngine
 			heaps1);
 		D3D12_GPU_DESCRIPTOR_HANDLE null = {0};
 		commandList->SetGraphicsRootDescriptorTable(
+			rootParameterIndex, view->GetGPUHandle());
+	}
+
+	void RenderManager::AttachViewToCompute(
+		ID3D12GraphicsCommandList* commandList,
+		uint32_t rootParameterIndex,
+		const ResourceView* view
+	)
+	{
+		ID3D12DescriptorHeap* heaps1[1] = {view->GetHeap()};
+		commandList->SetDescriptorHeaps(
+			1,
+			heaps1);
+		D3D12_GPU_DESCRIPTOR_HANDLE null = {0};
+		commandList->SetComputeRootDescriptorTable(
 			rootParameterIndex, view->GetGPUHandle());
 	}
 

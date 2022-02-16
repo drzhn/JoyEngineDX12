@@ -77,7 +77,8 @@ namespace JoyEngine
 			glm::mat4 proj) const;
 
 		void SetViewportAndScissor(ID3D12GraphicsCommandList* commandList, uint32_t width, uint32_t height) const;
-		void AttachView(ID3D12GraphicsCommandList* commandList, uint32_t rootParameterIndex, const ResourceView* view) const;
+		static void AttachViewToGraphics(ID3D12GraphicsCommandList* commandList, uint32_t rootParameterIndex, const ResourceView* view);
+		static void AttachViewToCompute(ID3D12GraphicsCommandList* commandList, uint32_t rootParameterIndex, const ResourceView* view);
 
 	private:
 		static const UINT FrameCount = 3;

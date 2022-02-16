@@ -93,7 +93,8 @@ namespace JoyEngine
 						DXGI_FORMAT_R16G16B16A16_FLOAT,
 						DXGI_FORMAT_R16G16B16A16_FLOAT
 					},
-					DXGI_FORMAT_D32_FLOAT
+					DXGI_FORMAT_D32_FLOAT,
+					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE
 				});
 		}
 
@@ -119,7 +120,8 @@ namespace JoyEngine
 					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 					rp.params,
 					{}, // no rtv, only depth
-					DXGI_FORMAT_D32_FLOAT
+					DXGI_FORMAT_D32_FLOAT,
+					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE
 				});
 		}
 
@@ -145,7 +147,8 @@ namespace JoyEngine
 					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 					rp.params,
 					{}, // no rtv, only depth
-					DXGI_FORMAT_D32_FLOAT
+					DXGI_FORMAT_D32_FLOAT,
+					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE
 				});
 		}
 
@@ -173,7 +176,8 @@ namespace JoyEngine
 					{
 						DXGI_FORMAT_R8G8B8A8_UNORM
 					},
-					DXGI_FORMAT_D32_FLOAT
+					DXGI_FORMAT_D32_FLOAT,
+					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE
 				});
 		}
 
@@ -220,7 +224,8 @@ namespace JoyEngine
 					{
 						DXGI_FORMAT_R8G8B8A8_UNORM
 					},
-					DXGI_FORMAT_D32_FLOAT
+					DXGI_FORMAT_D32_FLOAT,
+					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE
 				});
 		}
 
@@ -251,7 +256,8 @@ namespace JoyEngine
 					{
 						DXGI_FORMAT_R8G8B8A8_UNORM
 					},
-					DXGI_FORMAT_D32_FLOAT
+					DXGI_FORMAT_D32_FLOAT,
+					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE
 				});
 
 			CreateSampleMaterial("material_1", GUID::StringToGuid("1d451f58-3f84-4b2b-8c6f-fe8e2821d7f0")); // viking_room.png

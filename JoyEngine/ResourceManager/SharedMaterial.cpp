@@ -128,14 +128,15 @@ namespace JoyEngine
 		m_shader = shaderPtr;
 
 		CreateRootSignature(args.rootParams);
-		CreateGraphicsPipeline(args.renderTargetsFormats, args.blendDesc, args.depthFormat);
+		CreateGraphicsPipeline(args.renderTargetsFormats, args.blendDesc, args.depthFormat, args.topology);
 		JoyContext::Render->RegisterSharedMaterial(this);
 	}
 
 	void SharedMaterial::CreateGraphicsPipeline(
 		const std::vector<DXGI_FORMAT>& renderTargetsFormats,
 		CD3DX12_BLEND_DESC blendDesc,
-		DXGI_FORMAT depthFormat)
+		DXGI_FORMAT depthFormat,
+		D3D12_PRIMITIVE_TOPOLOGY_TYPE topology)
 	{
 		// Create the vertex input layout
 
@@ -170,7 +171,7 @@ namespace JoyEngine
 				m_hasVertexInput ? static_cast<uint32_t>(m_inputLayout.size()) : 0
 			},
 			{},
-			D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
+			topology,
 			// i'm sorry
 			static_cast<uint32_t>(renderTargetsFormats.size()),
 			{

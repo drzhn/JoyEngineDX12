@@ -24,6 +24,7 @@ namespace JoyEngine
 		std::vector<CD3DX12_ROOT_PARAMETER1> rootParams;
 		std::vector<DXGI_FORMAT> renderTargetsFormats;
 		DXGI_FORMAT depthFormat;
+		D3D12_PRIMITIVE_TOPOLOGY_TYPE topology;
 	};
 
 	struct ComputePipelineArgs
@@ -87,7 +88,7 @@ namespace JoyEngine
 		D3D12_CULL_MODE m_cullMode;
 
 	private:
-		void CreateGraphicsPipeline(const std::vector<DXGI_FORMAT>& renderTargetsFormats, CD3DX12_BLEND_DESC blendDesc, DXGI_FORMAT depthFormat);
+		void CreateGraphicsPipeline(const std::vector<DXGI_FORMAT>& renderTargetsFormats, CD3DX12_BLEND_DESC blendDesc, DXGI_FORMAT depthFormat, D3D12_PRIMITIVE_TOPOLOGY_TYPE topology);
 		static std::vector<D3D12_INPUT_ELEMENT_DESC> m_inputLayout;
 	};
 }

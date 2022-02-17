@@ -14,6 +14,9 @@
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <wrl.h>
+
+#include "JoyTypes.h"
+#include "ResourceManager/SharedMaterial.h"
 using Microsoft::WRL::ComPtr;
 
 namespace JoyEngine
@@ -44,6 +47,7 @@ namespace JoyEngine
 		void Stop();
 
 		void Update();
+		void ProcessEngineBindings(ID3D12GraphicsCommandList* commandList, const std::map<uint32_t, EngineBindingType>& bindings, MVP mvp) const;
 
 
 		void RegisterSharedMaterial(SharedMaterial*);
@@ -76,7 +80,7 @@ namespace JoyEngine
 			glm::mat4 view,
 			glm::mat4 proj) const;
 
-		void SetViewportAndScissor(ID3D12GraphicsCommandList* commandList, uint32_t width, uint32_t height) const;
+		static void SetViewportAndScissor(ID3D12GraphicsCommandList* commandList, uint32_t width, uint32_t height);
 		static void AttachViewToGraphics(ID3D12GraphicsCommandList* commandList, uint32_t rootParameterIndex, const ResourceView* view);
 		static void AttachViewToCompute(ID3D12GraphicsCommandList* commandList, uint32_t rootParameterIndex, const ResourceView* view);
 

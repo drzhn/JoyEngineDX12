@@ -19,8 +19,6 @@ namespace JoyEngine
 		void Disable() override;
 		void Update() override;
 
-		[[nodiscard]] ComputePipeline* GetComputePipeline() const noexcept { return m_computePipeline; }
-		[[nodiscard]] SharedMaterial* GetSharedMaterial() const noexcept { return m_sharedMaterial; }
 		[[nodiscard]] Buffer* GetBuffer() const noexcept { return m_buffer.get(); }
 		[[nodiscard]] ResourceView* GetResourceView() const noexcept { return m_bufferView.get(); }
 		[[nodiscard]] uint32_t GetSize() const noexcept { return m_size; }
@@ -28,8 +26,7 @@ namespace JoyEngine
 	private:
 		const uint32_t m_size = 128;
 
-		ResourceHandle<ComputePipeline> m_computePipeline;
-		ResourceHandle<SharedMaterial> m_sharedMaterial;
+
 		std::unique_ptr<Buffer> m_buffer;
 		std::unique_ptr<ResourceView> m_bufferView;
 	};

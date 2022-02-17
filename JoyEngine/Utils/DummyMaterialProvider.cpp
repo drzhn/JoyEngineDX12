@@ -80,7 +80,8 @@ namespace JoyEngine
 						DXGI_FORMAT_R16G16B16A16_FLOAT
 					},
 					DXGI_FORMAT_D32_FLOAT,
-					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE
+					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
+					{}
 				});
 		}
 
@@ -107,7 +108,8 @@ namespace JoyEngine
 					rp.params,
 					{}, // no rtv, only depth
 					DXGI_FORMAT_D32_FLOAT,
-					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE
+					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
+					{}
 				});
 		}
 
@@ -134,7 +136,8 @@ namespace JoyEngine
 					rp.params,
 					{}, // no rtv, only depth
 					DXGI_FORMAT_D32_FLOAT,
-					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE
+					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
+					{}
 				});
 		}
 
@@ -163,7 +166,8 @@ namespace JoyEngine
 						DXGI_FORMAT_R8G8B8A8_UNORM
 					},
 					DXGI_FORMAT_D32_FLOAT,
-					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE
+					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
+					{}
 				});
 		}
 
@@ -211,7 +215,8 @@ namespace JoyEngine
 						DXGI_FORMAT_R8G8B8A8_UNORM
 					},
 					DXGI_FORMAT_D32_FLOAT,
-					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE
+					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
+					{}
 				});
 		}
 
@@ -243,12 +248,63 @@ namespace JoyEngine
 						DXGI_FORMAT_R8G8B8A8_UNORM
 					},
 					DXGI_FORMAT_D32_FLOAT,
-					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE
+					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
+					{
+						{2, ModelViewProjection},
+						{3, LightAttachment}
+					}
 				});
 
 			CreateSampleMaterial("material_1", GUID::StringToGuid("1d451f58-3f84-4b2b-8c6f-fe8e2821d7f0")); // viking_room.png
 			CreateSampleMaterial("material_2", GUID::StringToGuid("e8448435-7baf-4e40-ac72-b99e49284929")); // textures/wood.png
 			CreateSampleMaterial("material_3", GUID::StringToGuid("7e50aa82-5696-428c-a088-538fb78c0ee6")); // textures/Chopping-Board.jpg
+		}
+
+		// Particle system drawing
+		{
+			const GUID shaderGuid = GUID::StringToGuid("a36fff56-b183-418a-9bd1-31cffd247e37"); // shaders/particles.hlsl
+			const GUID sharedMaterialGuid = GUID::Random();
+
+			RootParams rp;
+			rp.CreateConstants(sizeof(MVP) / 4, 0);
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 0);
+
+			m_particleSystemSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
+				sharedMaterialGuid,
+				{
+					shaderGuid,
+					JoyShaderTypeVertex | JoyShaderTypePixel | JoyShaderTypeGeometry,
+					false,
+					true,
+					true,
+					D3D12_CULL_MODE_BACK,
+					D3D12_COMPARISON_FUNC_LESS_EQUAL,
+					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
+					rp.params,
+					{
+						DXGI_FORMAT_R8G8B8A8_UNORM
+					},
+					DXGI_FORMAT_D32_FLOAT,
+					D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT,
+					{}
+				});
+		}
+
+		// Particle system buffer generation
+		{
+			const GUID bufferGenerationShaderGuid = GUID::StringToGuid("38d4f011-405a-4602-8f8e-79b4888d26b6"); //shaders/particlesbuffergeneration.hlsl
+			const GUID bufferGenerationPipelineGuid = GUID::Random();
+
+			RootParams rp;
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 0);
+			rp.CreateConstants(sizeof(float), 0);
+
+			m_particleBufferGenerationComputePipeline = JoyContext::Resource->LoadResource<ComputePipeline, ComputePipelineArgs>(
+				bufferGenerationPipelineGuid,
+				{
+					bufferGenerationShaderGuid,
+					rp.params
+				});
 		}
 	}
 

@@ -99,6 +99,8 @@ namespace JoyEngine
 		ASSERT_SUCC(JoyContext::Graphics->GetDevice()->CreateComputePipelineState(&computePipelineStateDesc, IID_PPV_ARGS(&m_pipelineState)));
 	}
 
+	// =============================== SHARED MATERIAL =================================
+
 	SharedMaterial::SharedMaterial(GUID guid) :
 		Resource(guid) // UNUSED
 	{
@@ -122,7 +124,8 @@ namespace JoyEngine
 		m_depthTest(args.depthTest),
 		m_depthWrite(args.depthWrite),
 		m_depthComparisonFunc(args.depthComparisonFunc),
-		m_cullMode(args.cullMode)
+		m_cullMode(args.cullMode),
+		m_engineBindings(args.engineBindings)
 	{
 		Shader* shaderPtr = JoyContext::Resource->LoadResource<Shader>(args.shader, args.shaderTypes);
 		m_shader = shaderPtr;
@@ -223,5 +226,10 @@ namespace JoyEngine
 	std::set<MeshRenderer*>& SharedMaterial::GetMeshRenderers()
 	{
 		return m_meshRenderers;
+	}
+
+	std::map<uint32_t, EngineBindingType>& SharedMaterial::GetEngineBindings()
+	{
+		return m_engineBindings;
 	}
 }

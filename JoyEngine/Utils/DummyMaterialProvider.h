@@ -46,28 +46,26 @@ namespace JoyEngine
 		[[nodiscard]] SharedMaterial* GetDirectionLightProcessingSharedMaterial() const noexcept { return m_directionLightProcessingSharedMaterial; }
 		[[nodiscard]] SharedMaterial* GetShadowProcessingSharedMaterial() const noexcept { return m_shadowProcessingSharedMaterial; }
 		[[nodiscard]] SharedMaterial* GetShadowPointProcessingSharedMaterial() const noexcept { return m_shadowPointProcessingSharedMaterial; }
-
+		[[nodiscard]] ComputePipeline* GetParticleBufferGenerationComputePipeline() const noexcept { return m_particleBufferGenerationComputePipeline; }
+		[[nodiscard]] SharedMaterial* GetParticleSystemSharedMaterial() const noexcept { return m_particleSystemSharedMaterial; }
 	private:
 		//ResourceHandle<Texture> m_skyboxTextureHandle;
 
 		ResourceHandle<ComputePipeline> m_generateMipsComputePipeline;
 
-
 		ResourceHandle<SharedMaterial> m_gbufferWriteSharedMaterial;
-		ResourceHandle<Shader> m_gbufferWriteShader;
 
 		ResourceHandle<SharedMaterial> m_shadowProcessingSharedMaterial;
-		ResourceHandle<Shader> m_shadowProcessingShader;
 
 		ResourceHandle<SharedMaterial> m_shadowPointProcessingSharedMaterial;
-		ResourceHandle<Shader> m_shadowSpotProcessingShader;
 
 		ResourceHandle<SharedMaterial> m_directionLightProcessingSharedMaterial;
-		ResourceHandle<Shader> m_directionLightProcessingShader;
 
 		ResourceHandle<SharedMaterial> m_lightProcessingSharedMaterial;
-		ResourceHandle<Shader> m_lightProcessingShader;
 
+		ResourceHandle<ComputePipeline> m_particleBufferGenerationComputePipeline;
+
+		ResourceHandle<SharedMaterial> m_particleSystemSharedMaterial;
 
 		struct MaterialData
 		{

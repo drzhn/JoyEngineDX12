@@ -11,6 +11,19 @@ namespace JoyEngine
 {
 	class MeshRenderer;
 
+	enum EngineBindingType
+	{
+		ModelViewProjection,
+		LightAttachment,
+		EnvironmentCubemap
+	};
+
+	//struct EngineBindingDesc
+	//{
+	//	uint32_t rootParameterIndex;
+	//	EngineBindingType type;
+	//};
+
 	struct SharedMaterialArgs
 	{
 		GUID shader;
@@ -25,6 +38,7 @@ namespace JoyEngine
 		std::vector<DXGI_FORMAT> renderTargetsFormats;
 		DXGI_FORMAT depthFormat;
 		D3D12_PRIMITIVE_TOPOLOGY_TYPE topology;
+		std::map<uint32_t, EngineBindingType> engineBindings; // we ask render manager to bind some internal data
 	};
 
 	struct ComputePipelineArgs
@@ -72,6 +86,7 @@ namespace JoyEngine
 		[[nodiscard]] bool IsLoaded() const noexcept override;
 
 		[[nodiscard]] std::set<MeshRenderer*>& GetMeshRenderers();
+		[[nodiscard]] std::map<uint32_t, EngineBindingType>& GetEngineBindings();
 
 		void RegisterMeshRenderer(MeshRenderer* meshRenderer);
 
@@ -84,8 +99,9 @@ namespace JoyEngine
 		bool m_depthTest = false;
 		bool m_depthWrite = false;
 		D3D12_COMPARISON_FUNC m_depthComparisonFunc;
-
 		D3D12_CULL_MODE m_cullMode;
+
+		std::map<uint32_t, EngineBindingType> m_engineBindings;
 
 	private:
 		void CreateGraphicsPipeline(const std::vector<DXGI_FORMAT>& renderTargetsFormats, CD3DX12_BLEND_DESC blendDesc, DXGI_FORMAT depthFormat, D3D12_PRIMITIVE_TOPOLOGY_TYPE topology);

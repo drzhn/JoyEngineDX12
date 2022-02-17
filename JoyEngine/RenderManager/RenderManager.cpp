@@ -432,6 +432,7 @@ namespace JoyEngine
 			{
 				commandList->SetPipelineState(sm->GetPipelineObject().Get());
 				commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+
 				for (const auto& mr : sm->GetMeshRenderers())
 				{
 					commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -451,14 +452,8 @@ namespace JoyEngine
 						commandList->SetDescriptorHeaps(1, heaps);
 						commandList->SetGraphicsRootDescriptorTable(index, gpuHandle);
 					}
+					ProcessEngineBindings(commandList, sm->GetEngineBindings(), mvp);
 
-					ID3D12DescriptorHeap* heaps1[1] = {m_lightingAttachment->GetAttachmentView()->GetHeap()};
-					commandList->SetDescriptorHeaps(
-						1,
-						heaps1);
-					commandList->SetGraphicsRootDescriptorTable(3, m_lightingAttachment->GetAttachmentView()->GetGPUHandle());
-
-					commandList->SetGraphicsRoot32BitConstants(2, sizeof(MVP) / 4, &mvp, 0);
 					commandList->DrawIndexedInstanced(
 						mr->GetMesh()->GetIndexSize(),
 						1,
@@ -478,8 +473,8 @@ namespace JoyEngine
 				);
 				commandList->ResourceBarrier(1, &barrier);
 
-				commandList->SetComputeRootSignature(ps->GetComputePipeline()->GetRootSignature().Get());
-				commandList->SetPipelineState(ps->GetComputePipeline()->GetPipelineObject().Get());
+				commandList->SetComputeRootSignature(JoyContext::DummyMaterials->GetParticleBufferGenerationComputePipeline()->GetRootSignature().Get());
+				commandList->SetPipelineState(JoyContext::DummyMaterials->GetParticleBufferGenerationComputePipeline()->GetPipelineObject().Get());
 
 				AttachViewToCompute(commandList, 0, ps->GetResourceView());
 
@@ -498,8 +493,8 @@ namespace JoyEngine
 				);
 				commandList->ResourceBarrier(1, &barrier);
 
-				commandList->SetPipelineState(ps->GetSharedMaterial()->GetPipelineObject().Get());
-				commandList->SetGraphicsRootSignature(ps->GetSharedMaterial()->GetRootSignature().Get());
+				commandList->SetPipelineState(JoyContext::DummyMaterials->GetParticleSystemSharedMaterial()->GetPipelineObject().Get());
+				commandList->SetGraphicsRootSignature(JoyContext::DummyMaterials->GetParticleSystemSharedMaterial()->GetRootSignature().Get());
 
 				MVP mvp{
 					ps->GetTransform()->GetModelMatrix(),
@@ -557,6 +552,38 @@ namespace JoyEngine
 		m_queue->WaitForFence(m_currentFrameIndex);
 	}
 
+	void RenderManager::ProcessEngineBindings(
+		ID3D12GraphicsCommandList* commandList,
+		const std::map<uint32_t, EngineBindingType>& bindings,
+		MVP mvp) const
+	{
+		for (const auto& pair : bindings)
+		{
+			const auto type = pair.second;
+			const auto rootIndex = pair.first;
+
+			switch (type)
+			{
+			case ModelViewProjection:
+				{
+					commandList->SetGraphicsRoot32BitConstants(rootIndex, sizeof(MVP) / 4, &mvp, 0);
+					break;
+				}
+			case LightAttachment:
+				{
+					AttachViewToGraphics(commandList, rootIndex, m_lightingAttachment->GetAttachmentView());
+					break;
+				}
+			case EnvironmentCubemap:
+				{
+					break;
+				}
+			default:
+				ASSERT(false);
+			}
+		}
+	}
+
 	void RenderManager::RenderEntireScene(
 		ID3D12GraphicsCommandList* commandList,
 		glm::mat4 view,
@@ -588,7 +615,7 @@ namespace JoyEngine
 	void RenderManager::SetViewportAndScissor(
 		ID3D12GraphicsCommandList* commandList,
 		uint32_t width,
-		uint32_t height) const
+		uint32_t height)
 	{
 		const D3D12_VIEWPORT viewport = {
 			0.0f,

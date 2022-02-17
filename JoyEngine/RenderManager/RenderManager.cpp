@@ -266,6 +266,7 @@ namespace JoyEngine
 			const float clearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
 			commandList->ClearRenderTargetView(positionHandle, clearColor, 0, nullptr);
 			commandList->ClearRenderTargetView(normalHandle, clearColor, 0, nullptr);
+			commandList->ClearRenderTargetView(lightHandle, clearColor, 0, nullptr);
 			commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 			auto sm = JoyContext::DummyMaterials->GetGBufferSharedMaterial();
@@ -292,6 +293,46 @@ namespace JoyEngine
 			commandList->ResourceBarrier(1, &normalToReadBarrier);
 		}
 
+		//Drawing cubemap
+		if (m_cubemap != nullptr)
+		{
+			SetViewportAndScissor(commandList, m_cubemap->GetTextureSize(), m_cubemap->GetTextureSize());
+
+			auto cubemapDSV = m_cubemap->GetDepthTexture()->GetResourceView()->GetHandle();
+
+			D3D12_RESOURCE_BARRIER barrier = Transition(
+				m_cubemap->GetCubemapTexture()->GetImage().Get(),
+				D3D12_RESOURCE_STATE_GENERIC_READ,
+				D3D12_RESOURCE_STATE_RENDER_TARGET);
+			commandList->ResourceBarrier(1, &barrier);
+
+			for (uint32_t i = 0; i < 6; i++)
+			{
+				auto cubemapRTV = m_cubemap->GetCubemapTexture()->GetResourceViewArray()[i]->GetHandle();
+				commandList->OMSetRenderTargets(
+					1,
+					&cubemapRTV,
+					FALSE, &cubemapDSV);
+
+				const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
+				commandList->ClearRenderTargetView(cubemapRTV, clearColor, 0, nullptr);
+				commandList->ClearDepthStencilView(cubemapDSV, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+
+				RenderEntireSceneWithMaterials(
+					commandList,
+					m_cubemap->GetCubeViewMatrix(i),
+					m_cubemap->GetProjMatrix(),
+					false
+				);
+			}
+
+			barrier = Transition(
+				m_cubemap->GetCubemapTexture()->GetImage().Get(),
+				D3D12_RESOURCE_STATE_RENDER_TARGET,
+				D3D12_RESOURCE_STATE_GENERIC_READ
+			);
+			commandList->ResourceBarrier(1, &barrier);
+		}
 
 		//Light processing
 		{
@@ -448,46 +489,7 @@ namespace JoyEngine
 			commandList->ResourceBarrier(1, &lightToReadBarrier);
 		}
 
-		//Drawing cubemap
-		if (m_cubemap != nullptr)
-		{
-			SetViewportAndScissor(commandList, m_cubemap->GetTextureSize(), m_cubemap->GetTextureSize());
 
-			auto cubemapDSV = m_cubemap->GetDepthTexture()->GetResourceView()->GetHandle();
-
-			D3D12_RESOURCE_BARRIER barrier = Transition(
-				m_cubemap->GetCubemapTexture()->GetImage().Get(),
-				D3D12_RESOURCE_STATE_GENERIC_READ,
-				D3D12_RESOURCE_STATE_RENDER_TARGET);
-			commandList->ResourceBarrier(1, &barrier);
-
-			for (uint32_t i = 0; i < 6; i++)
-			{
-				auto cubemapRTV = m_cubemap->GetCubemapTexture()->GetResourceViewArray()[i]->GetHandle();
-				commandList->OMSetRenderTargets(
-					1,
-					&cubemapRTV,
-					FALSE, &cubemapDSV);
-
-				const float clearColor[] = {0.0f, 0.2f, 0.4f, 1.0f};
-				commandList->ClearRenderTargetView(cubemapRTV, clearColor, 0, nullptr);
-				commandList->ClearDepthStencilView(cubemapDSV, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
-
-				RenderEntireSceneWithMaterials(
-					commandList,
-					m_cubemap->GetCubeViewMatrix(i),
-					m_cubemap->GetProjMatrix(),
-					false
-				);
-			}
-
-			barrier = Transition(
-				m_cubemap->GetCubemapTexture()->GetImage().Get(),
-				D3D12_RESOURCE_STATE_RENDER_TARGET,
-				D3D12_RESOURCE_STATE_GENERIC_READ
-			);
-			commandList->ResourceBarrier(1, &barrier);
-		}
 
 		//Drawing main color
 		{
@@ -616,7 +618,10 @@ namespace JoyEngine
 				}
 			case LightAttachment:
 				{
-					AttachViewToGraphics(commandList, rootIndex, m_lightingAttachment->GetAttachmentView());
+					if (isDrawingMainColor)
+					{
+						AttachViewToGraphics(commandList, rootIndex, m_lightingAttachment->GetAttachmentView());
+					}
 					break;
 				}
 			case EnvironmentCubemap:

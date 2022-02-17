@@ -16,6 +16,10 @@
 		{
             "guid": "c1496bff-f383-4f46-97cc-bc9955f7f4cf",
             "path": "models/Cube.obj"
+        },		
+		{
+            "guid": "47000776-d056-43a2-bacb-c3e54701294a",
+            "path": "models/Sphere.obj"
         },
 		
 		

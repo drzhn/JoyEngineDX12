@@ -36,7 +36,7 @@ PSInput VSMain(float3 position : POSITION, float3 color : COLOR, float3 normal: 
 	PSInput result;
 	float4x4 resMatrix = mul(mvp.projection, mul(mvp.view, mvp.model));
 	result.position = mul(resMatrix, float4(position, 1));
-	result.worldNormal = mul(mvp.model, float4(normal, 0));
+	result.worldNormal = mul(mvp.model, float4(normal, 0)); // TODO get from gbuffer
 	result.worldPosition = mul(mvp.model, float4(position, 1));
 	result.uv = uv;
 

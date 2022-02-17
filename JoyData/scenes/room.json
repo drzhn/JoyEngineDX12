@@ -34,7 +34,7 @@
                     "type": "light",
                     "lightType": "direction",
                     "intensity": 0.4,
-                    "ambient": 0.1
+                    "ambient": 0.0
                 }
             ]
         },
@@ -80,7 +80,7 @@
                 {
                     "type": "renderer",
                     "model": "13dc6d97-5ced-4b99-b296-bb9e6df2242a",
-                    "material": "material_1"
+                    "material": "material_3"
                 },
                 {
                     "type": "component",
@@ -286,14 +286,14 @@
         {
             "name": "cube_dynamic_reflections_test",
             "transform": {
-                "localPosition": [ 1.0, 0.0, 0.0 ],
+                "localPosition": [ 2.0, 0.0, 2.5 ],
                 "localRotation": [ 0.0, 0.0, 0.0 ],
                 "localScale": [ 1.0, 1.0, 1.0 ]
             },
             "components": [
                 {
                     "type": "renderer",
-                    "model": "c1496bff-f383-4f46-97cc-bc9955f7f4cf",
+                    "model": "47000776-d056-43a2-bacb-c3e54701294a",
                     "material": "dynamic_reflections"
                 },
                 {

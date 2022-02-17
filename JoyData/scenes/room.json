@@ -294,7 +294,10 @@
                 {
                     "type": "renderer",
                     "model": "c1496bff-f383-4f46-97cc-bc9955f7f4cf",
-                    "material": "material_3"
+                    "material": "dynamic_reflections"
+                },
+                {
+                    "type": "cubemap_renderer"
                 }
             ]
         }

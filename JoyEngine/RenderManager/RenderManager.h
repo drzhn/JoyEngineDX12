@@ -21,6 +21,8 @@ using Microsoft::WRL::ComPtr;
 
 namespace JoyEngine
 {
+	class Buffer;
+	class CubemapRenderer;
 	class ParticleSystem;
 	class CommandQueue;
 	class Light;
@@ -47,7 +49,7 @@ namespace JoyEngine
 		void Stop();
 
 		void Update();
-		void ProcessEngineBindings(ID3D12GraphicsCommandList* commandList, const std::map<uint32_t, EngineBindingType>& bindings, MVP mvp) const;
+		void ProcessEngineBindings(ID3D12GraphicsCommandList* commandList, const std::map<uint32_t, EngineBindingType>& bindings, MVP mvp, bool isDrawingMainColor) const;
 
 
 		void RegisterSharedMaterial(SharedMaterial*);
@@ -70,6 +72,10 @@ namespace JoyEngine
 
 		void UnregisterParticleSystem(ParticleSystem* ps);
 
+		void RegisterCubemapRenderer(CubemapRenderer* cr);
+
+		void UnregisterCubemapRenderer(CubemapRenderer* cr);
+
 		[[nodiscard]] float GetAspect() const noexcept;
 		[[nodiscard]] float GetWidth() const noexcept;
 		[[nodiscard]] float GetHeight() const noexcept;
@@ -79,6 +85,12 @@ namespace JoyEngine
 			ID3D12GraphicsCommandList* commandList,
 			glm::mat4 view,
 			glm::mat4 proj) const;
+
+		void RenderEntireSceneWithMaterials(
+			::ID3D12GraphicsCommandList* commandList,
+			glm::mat4 view,
+			glm::mat4 proj, bool isDrawingMainColor
+		) const;
 
 		static void SetViewportAndScissor(ID3D12GraphicsCommandList* commandList, uint32_t width, uint32_t height);
 		static void AttachViewToGraphics(ID3D12GraphicsCommandList* commandList, uint32_t rootParameterIndex, const ResourceView* view);
@@ -99,10 +111,14 @@ namespace JoyEngine
 
 		ResourceHandle<Mesh> m_planeMesh;
 
+		std::unique_ptr<Buffer> m_engineDataBuffer;
+		std::unique_ptr<ResourceView> m_engineDataBufferView;
+
 		std::set<ParticleSystem*> m_particleSystems;
 		std::set<SharedMaterial*> m_sharedMaterials;
 		std::set<Light*> m_lights;
 		Light* m_directionLight;
+		CubemapRenderer* m_cubemap; // TODO add collection of cubemaps
 		Camera* m_currentCamera;
 
 		std::unique_ptr<CommandQueue> m_queue;

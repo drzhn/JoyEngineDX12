@@ -15,7 +15,8 @@ namespace JoyEngine
 	{
 		ModelViewProjection,
 		LightAttachment,
-		EnvironmentCubemap
+		EnvironmentCubemap,
+		EngineData
 	};
 
 	//struct EngineBindingDesc

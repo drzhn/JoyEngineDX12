@@ -13,6 +13,11 @@
 #include "ResourceManager/SharedMaterial.h"
 #include "JoyTypes.h"
 #include "Common/Time.h"
+#include "Components/Camera.h"
+#include "Components/Camera.h"
+#include "Components/Camera.h"
+#include "Components/Camera.h"
+#include "Components/CubemapRenderer.h"
 #include "Components/MeshRenderer.h"
 #include "Components/ParticleSystem.h"
 #include "DescriptorManager/DescriptorManager.h"
@@ -105,6 +110,16 @@ namespace JoyEngine
 			D3D12_HEAP_TYPE_DEFAULT);
 
 		m_planeMesh = GUID::StringToGuid("7489a35d-1173-48cd-9ad0-606f13c33319");
+
+
+		uint32_t bufferSize = ((sizeof(JoyData) - 1) / 256 + 1) * 256; // Device requirement. TODO check this 
+		m_engineDataBuffer = std::make_unique<Buffer>(bufferSize, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD);
+		m_engineDataBufferView = std::make_unique<ResourceView>(
+			D3D12_CONSTANT_BUFFER_VIEW_DESC{
+				m_engineDataBuffer->GetBuffer()->GetGPUVirtualAddress(),
+				bufferSize
+			}
+		);
 	}
 
 
@@ -180,6 +195,18 @@ namespace JoyEngine
 		m_particleSystems.erase(ps);
 	}
 
+	void RenderManager::RegisterCubemapRenderer(CubemapRenderer* cr)
+	{
+		ASSERT(m_cubemap == nullptr);
+		m_cubemap = cr;
+	}
+
+	void RenderManager::UnregisterCubemapRenderer(CubemapRenderer* cr)
+	{
+		ASSERT(m_cubemap == cr);
+		m_cubemap = nullptr;
+	}
+
 	inline D3D12_RESOURCE_BARRIER Transition(
 		_In_ ID3D12Resource* pResource,
 		D3D12_RESOURCE_STATES stateBefore,
@@ -199,6 +226,11 @@ namespace JoyEngine
 
 	void RenderManager::Update()
 	{
+		const auto ptr = m_engineDataBuffer->GetMappedPtr();
+		const auto data = static_cast<JoyData*>(ptr->GetMappedPtr());
+		data->cameraWorldPos = m_currentCamera->GetTransform()->GetPosition();
+		data->time = Time::GetTime();
+
 		m_queue->ResetForFrame(m_currentFrameIndex);
 
 		const auto commandList = m_queue->GetCommandList();
@@ -416,8 +448,51 @@ namespace JoyEngine
 			commandList->ResourceBarrier(1, &lightToReadBarrier);
 		}
 
+		//Drawing cubemap
+		if (m_cubemap != nullptr)
+		{
+			SetViewportAndScissor(commandList, m_cubemap->GetTextureSize(), m_cubemap->GetTextureSize());
+
+			auto cubemapDSV = m_cubemap->GetDepthTexture()->GetResourceView()->GetHandle();
+
+			D3D12_RESOURCE_BARRIER barrier = Transition(
+				m_cubemap->GetCubemapTexture()->GetImage().Get(),
+				D3D12_RESOURCE_STATE_GENERIC_READ,
+				D3D12_RESOURCE_STATE_RENDER_TARGET);
+			commandList->ResourceBarrier(1, &barrier);
+
+			for (uint32_t i = 0; i < 6; i++)
+			{
+				auto cubemapRTV = m_cubemap->GetCubemapTexture()->GetResourceViewArray()[i]->GetHandle();
+				commandList->OMSetRenderTargets(
+					1,
+					&cubemapRTV,
+					FALSE, &cubemapDSV);
+
+				const float clearColor[] = {0.0f, 0.2f, 0.4f, 1.0f};
+				commandList->ClearRenderTargetView(cubemapRTV, clearColor, 0, nullptr);
+				commandList->ClearDepthStencilView(cubemapDSV, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+
+				RenderEntireSceneWithMaterials(
+					commandList,
+					m_cubemap->GetCubeViewMatrix(i),
+					m_cubemap->GetProjMatrix(),
+					false
+				);
+			}
+
+			barrier = Transition(
+				m_cubemap->GetCubemapTexture()->GetImage().Get(),
+				D3D12_RESOURCE_STATE_RENDER_TARGET,
+				D3D12_RESOURCE_STATE_GENERIC_READ
+			);
+			commandList->ResourceBarrier(1, &barrier);
+		}
+
 		//Drawing main color
 		{
+			SetViewportAndScissor(commandList, m_width, m_height);
+
 			commandList->OMSetRenderTargets(
 				1,
 				&rtvHandle,
@@ -425,41 +500,9 @@ namespace JoyEngine
 
 			const float clearColor[] = {0.0f, 0.2f, 0.4f, 1.0f};
 			commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
-			// we've written depth in g-buffer generation step
-			//commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+			commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
-			for (auto const& sm : m_sharedMaterials)
-			{
-				commandList->SetPipelineState(sm->GetPipelineObject().Get());
-				commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
-
-				for (const auto& mr : sm->GetMeshRenderers())
-				{
-					commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-					commandList->IASetVertexBuffers(0, 1, mr->GetMesh()->GetVertexBufferView());
-					commandList->IASetIndexBuffer(mr->GetMesh()->GetIndexBufferView());
-
-					MVP mvp{
-						mr->GetTransform()->GetModelMatrix(),
-						mainCameraViewMatrix,
-						mainCameraProjMatrix
-					};
-					for (auto param : mr->GetMaterial()->GetRootParams())
-					{
-						uint32_t index = param.first;
-						D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = param.second->GetGPUDescriptorHandleForHeapStart();
-						ID3D12DescriptorHeap* heaps[1] = {param.second};
-						commandList->SetDescriptorHeaps(1, heaps);
-						commandList->SetGraphicsRootDescriptorTable(index, gpuHandle);
-					}
-					ProcessEngineBindings(commandList, sm->GetEngineBindings(), mvp);
-
-					commandList->DrawIndexedInstanced(
-						mr->GetMesh()->GetIndexSize(),
-						1,
-						0, 0, 0);
-				}
-			}
+			RenderEntireSceneWithMaterials(commandList, mainCameraViewMatrix, mainCameraProjMatrix, true);
 		}
 
 		// Drawing particles 
@@ -555,7 +598,9 @@ namespace JoyEngine
 	void RenderManager::ProcessEngineBindings(
 		ID3D12GraphicsCommandList* commandList,
 		const std::map<uint32_t, EngineBindingType>& bindings,
-		MVP mvp) const
+		MVP mvp,
+		bool isDrawingMainColor
+	) const
 	{
 		for (const auto& pair : bindings)
 		{
@@ -576,6 +621,15 @@ namespace JoyEngine
 				}
 			case EnvironmentCubemap:
 				{
+					if (isDrawingMainColor)
+					{
+						AttachViewToGraphics(commandList, rootIndex, m_cubemap->GetCubemapTexture()->GetAttachmentView());
+					}
+					break;
+				}
+			case EngineData:
+				{
+					AttachViewToGraphics(commandList, rootIndex, m_engineDataBufferView.get());
 					break;
 				}
 			default:
@@ -587,7 +641,8 @@ namespace JoyEngine
 	void RenderManager::RenderEntireScene(
 		ID3D12GraphicsCommandList* commandList,
 		glm::mat4 view,
-		glm::mat4 proj) const
+		glm::mat4 proj
+	) const
 	{
 		for (auto const& s : m_sharedMaterials)
 		{
@@ -604,6 +659,51 @@ namespace JoyEngine
 				};
 				uint32_t var = 5;
 				commandList->SetGraphicsRoot32BitConstants(0, sizeof(MVP) / 4, &mvp, 0);
+				commandList->DrawIndexedInstanced(
+					mr->GetMesh()->GetIndexSize(),
+					1,
+					0, 0, 0);
+			}
+		}
+	}
+
+	void RenderManager::RenderEntireSceneWithMaterials(
+		ID3D12GraphicsCommandList* commandList,
+		glm::mat4 view,
+		glm::mat4 proj,
+		bool isDrawingMainColor
+	) const
+	{
+		for (auto const& sm : m_sharedMaterials)
+		{
+			commandList->SetPipelineState(sm->GetPipelineObject().Get());
+			commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+
+			for (const auto& mr : sm->GetMeshRenderers())
+			{
+				commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+				commandList->IASetVertexBuffers(0, 1, mr->GetMesh()->GetVertexBufferView());
+				commandList->IASetIndexBuffer(mr->GetMesh()->GetIndexBufferView());
+
+				MVP mvp{
+					mr->GetTransform()->GetModelMatrix(),
+					view,
+					proj
+				};
+				for (auto param : mr->GetMaterial()->GetRootParams())
+				{
+					uint32_t index = param.first;
+					D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = param.second->GetGPUDescriptorHandleForHeapStart();
+					ID3D12DescriptorHeap* heaps[1] = {param.second};
+					commandList->SetDescriptorHeaps(1, heaps);
+					commandList->SetGraphicsRootDescriptorTable(index, gpuHandle);
+
+					// TODO: 
+					//AttachViewToGraphics(commandList, index, param.second);
+				}
+
+				ProcessEngineBindings(commandList, sm->GetEngineBindings(), mvp, isDrawingMainColor);
+
 				commandList->DrawIndexedInstanced(
 					mr->GetMesh()->GetIndexSize(),
 					1,

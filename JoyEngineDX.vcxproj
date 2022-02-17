@@ -146,6 +146,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="JoyEngine\Common\CameraUnit.cpp" />
+    <ClCompile Include="JoyEngine\Components\CubemapRenderer.cpp" />
     <ClCompile Include="JoyEngine\Components\Camera.cpp" />
     <ClCompile Include="JoyEngine\Components\Component.cpp" />
     <ClCompile Include="JoyEngine\Components\Light.cpp" />
@@ -183,6 +184,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="JoyEngine\Common\CameraUnit.h" />
+    <ClInclude Include="JoyEngine\Components\CubemapRenderer.h" />
     <ClInclude Include="JoyEngine\Components\Camera.h" />
     <ClInclude Include="JoyEngine\Components\Component.h" />
     <ClInclude Include="JoyEngine\Components\Light.h" />
@@ -272,6 +274,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="JoyData\shaders\particlesbuffergeneration.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="JoyData\shaders\dynamiccubemapreflections.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

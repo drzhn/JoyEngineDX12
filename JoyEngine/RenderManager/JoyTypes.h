@@ -6,6 +6,26 @@
 
 namespace JoyEngine
 {
+	inline glm::vec3 shadowTransformsForward[6]
+	{
+		glm::vec3(1.0, 0.0, 0.0),
+		glm::vec3(-1.0, 0.0, 0.0),
+		glm::vec3(0.0, 1.0, 0.0),
+		glm::vec3(0.0, -1.0, 0.0),
+		glm::vec3(0.0, 0.0, 1.0),
+		glm::vec3(0.0, 0.0, -1.0)
+	};
+
+	inline glm::vec3 shadowTransformsUp[6]
+	{
+		glm::vec3(0.0, 1.0, 0.0),
+		glm::vec3(0.0, 1.0, 0.0),
+		glm::vec3(0.0, 0.0, 1.0),
+		glm::vec3(0.0, 0.0, 1.0),
+		glm::vec3(0.0, 1.0, 0.0),
+		glm::vec3(0.0, 1.0, 0.0)
+	};
+
 	enum LightType
 	{
 		Point = 0,
@@ -47,13 +67,11 @@ namespace JoyEngine
 		glm::mat4 proj;
 	};
 
-	//struct JoyData
-	//{
-	//	glm::vec3 cameraWorldPos;
-	//	glm::mat4 cameraProjMatrix;
-	//	float time;
-	//	float deltaTime;
-	//};
+	struct JoyData
+	{
+		glm::vec3 cameraWorldPos;
+		float time;
+	};
 }
 
 #endif //JOY_TYPES_H

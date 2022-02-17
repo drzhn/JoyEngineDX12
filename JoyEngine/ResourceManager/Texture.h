@@ -1,6 +1,7 @@
 ﻿#ifndef TEXTURE_H
 #define TEXTURE_H
 
+#include <array>
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <fstream>
@@ -68,6 +69,10 @@ namespace JoyEngine
 		[[nodiscard]] DXGI_FORMAT GetFormat() const noexcept { return m_format; }
 
 		[[nodiscard]] ResourceView* GetResourceView() const noexcept { return m_resourceView.get(); }
+		[[nodiscard]] std::array<std::unique_ptr<ResourceView>, 6>& GetResourceViewArray()
+		{
+			return m_resourceViewArray;
+		}
 
 		[[nodiscard]] bool IsLoaded() const noexcept override { return true; }
 
@@ -83,7 +88,9 @@ namespace JoyEngine
 		CD3DX12_HEAP_PROPERTIES m_memoryPropertiesFlags;
 
 		ComPtr<ID3D12Resource> m_texture;
-		std::unique_ptr<ResourceView> m_resourceView;
+		// TODO make 2 separate classes: texture and texture+view class
+		std::unique_ptr<ResourceView> m_resourceView; // for single textures
+		std::array<std::unique_ptr<ResourceView>, 6> m_resourceViewArray; // for cubemap rtvs
 	};
 
 	class RenderTexture final : public Texture
@@ -94,7 +101,8 @@ namespace JoyEngine
 			uint32_t height,
 			DXGI_FORMAT format,
 			D3D12_RESOURCE_STATES usage,
-			D3D12_HEAP_TYPE properties
+			D3D12_HEAP_TYPE properties,
+			uint32_t arraySize = 1
 		);
 
 		[[nodiscard]] ResourceView* GetAttachmentView() const noexcept { return m_inputAttachmentView.get(); }

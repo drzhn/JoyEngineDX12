@@ -8,26 +8,6 @@
 
 namespace JoyEngine
 {
-	glm::vec3 shadowTransformsForward[6]
-	{
-		glm::vec3(1.0, 0.0, 0.0),
-		glm::vec3(-1.0, 0.0, 0.0),
-		glm::vec3(0.0, 1.0, 0.0),
-		glm::vec3(0.0, -1.0, 0.0),
-		glm::vec3(0.0, 0.0, 1.0),
-		glm::vec3(0.0, 0.0, -1.0)
-	};
-
-	glm::vec3 shadowTransformsUp[6]
-	{
-		glm::vec3(0.0,1.0, 0.0),
-		glm::vec3(0.0, 1.0, 0.0),
-		glm::vec3(0.0, 0.0, 1.0),
-		glm::vec3(0.0, 0.0, 1.0),
-		glm::vec3(0.0, 1.0, 0.0),
-		glm::vec3(0.0, 1.0, 0.0)
-	};
-
 	Light::Light(LightType lightType, float intensity, float radius, float height, float angle, float ambient):
 		m_lightType(lightType),
 		m_intensity(intensity),

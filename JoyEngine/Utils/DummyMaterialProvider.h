@@ -31,7 +31,7 @@ namespace JoyEngine
 		DummyMaterialProvider() = default;
 		~DummyMaterialProvider() = default;
 		void Init();
-		void CreateSampleMaterial(const std::string& materialName, GUID textureGuid);
+		void CreateSampleMaterial(const std::string& materialName, const GUID textureGuid, const GUID sharedMaterialGuid);
 
 		[[nodiscard]] GUID GetMaterialGuid(const std::string& materialName) const noexcept
 		{
@@ -73,8 +73,8 @@ namespace JoyEngine
 			ResourceHandle<Material> materialHandle;
 		};
 
-		ResourceHandle<SharedMaterial> m_sharedMaterialHandle;
-		ResourceHandle<Shader> m_shaderHandle;
+		ResourceHandle<SharedMaterial> m_sampleSharedMaterialHandle;
+		ResourceHandle<SharedMaterial> m_dynamicCubemapReflectionsSharedMaterialHandle;
 		std::map<std::string, MaterialData> m_sampleMaterials;
 	};
 }

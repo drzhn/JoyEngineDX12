@@ -36,6 +36,10 @@
         {
             "guid": "183d6cfe-ca85-4e0b-ab36-7b1ca0f99d34",
             "path": "shaders/vikingShader.hlsl"
+        },        
+		{
+            "guid": "4a8ea369-904f-4d9a-9061-b4eedacc3918",
+            "path": "shaders/dynamiccubemapreflections.hlsl"
         },
         {
             "guid": "48ffacc9-5c00-4058-b359-cf72189896ac",

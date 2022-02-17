@@ -203,20 +203,38 @@ namespace JoyEngine
 	void Texture::CreateImageView(bool allowRenderTarget, bool isDepthTarget, uint32_t arraySize)
 	{
 		ASSERT(!(allowRenderTarget && isDepthTarget));
+		ASSERT(arraySize >= 1);
+
 		if (allowRenderTarget)
 		{
-			ASSERT(arraySize == 1);
 			D3D12_RENDER_TARGET_VIEW_DESC desc;
 			desc.Format = m_format;
-			desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
-			desc.Texture2D.MipSlice = 0;
-			desc.Texture2D.PlaneSlice = 0;
-			m_resourceView = std::make_unique<ResourceView>(desc, m_texture.Get());
+			if (arraySize == 1)
+			{
+				desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+				desc.Texture2D.MipSlice = 0;
+				desc.Texture2D.PlaneSlice = 0;
+				m_resourceView = std::make_unique<ResourceView>(desc, m_texture.Get());
+			}
+			else if (arraySize == 6)
+			{
+				desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2DARRAY;
+				for (uint32_t i = 0; i < 6; i++)
+				{
+					desc.Texture2DArray.ArraySize = 1; // view from single element
+					desc.Texture2DArray.FirstArraySlice = i;
+					desc.Texture2DArray.MipSlice = 0;
+					desc.Texture2DArray.PlaneSlice = 0;
+					m_resourceViewArray[i] = std::make_unique<ResourceView>(desc, m_texture.Get());
+				}
+			}
+			else
+			{
+				ASSERT(false); // can we have other rtv arrays?
+			}
 		}
 		else if (isDepthTarget)
 		{
-			ASSERT(arraySize >= 1);
-
 			D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
 			depthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
 			depthStencilViewDesc.ViewDimension = arraySize == 1 ? D3D12_DSV_DIMENSION_TEXTURE2D : D3D12_DSV_DIMENSION_TEXTURE2DARRAY;
@@ -234,16 +252,15 @@ namespace JoyEngine
 		}
 		else
 		{
-			ASSERT(arraySize >= 1);
 			D3D12_SHADER_RESOURCE_VIEW_DESC desc;
 			desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 			desc.Format = m_format;
 			desc.ViewDimension = arraySize == 1 ? D3D12_SRV_DIMENSION_TEXTURE2D : D3D12_SRV_DIMENSION_TEXTURECUBE;
 			desc.Texture2D = {
-			0,
-			1,
-			0,
-			0
+				0,
+				1,
+				0,
+				0
 			};
 			m_resourceView = std::make_unique<ResourceView>(desc, m_texture.Get()); // TODO cube or 2dArray?
 		}
@@ -255,24 +272,39 @@ namespace JoyEngine
 		uint32_t height,
 		DXGI_FORMAT format,
 		D3D12_RESOURCE_STATES usage,
-		D3D12_HEAP_TYPE properties):
+		D3D12_HEAP_TYPE properties,
+		uint32_t arraySize):
 		Texture(width,
 		        height,
 		        format,
 		        usage,
 		        properties,
-		        true)
+		        true,
+		        false,
+		        arraySize)
 	{
+		ASSERT(arraySize > 0);
+
 		D3D12_SHADER_RESOURCE_VIEW_DESC desc;
 		desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 		desc.Format = this->GetFormat();
-		desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D; // arraySize == 1 ? D3D12_SRV_DIMENSION_TEXTURE2D : D3D12_SRV_DIMENSION_TEXTURECUBE;
-		desc.Texture2D = {
-			0,
-			1,
-			0,
-			0
-		};
+		if (arraySize == 1)
+		{
+			desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+			desc.Texture2D = {
+				0,
+				1,
+				0,
+				0
+			};
+		}
+		else
+		{
+			desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
+			desc.TextureCube.MipLevels = 1;
+			desc.TextureCube.MostDetailedMip = 0;
+			desc.TextureCube.ResourceMinLODClamp = 0.0f;
+		}
 		m_inputAttachmentView = std::make_unique<ResourceView>(
 			desc,
 			this->GetImage().Get()
@@ -301,10 +333,10 @@ namespace JoyEngine
 		desc.Format = DXGI_FORMAT_R32_FLOAT;
 		desc.ViewDimension = arraySize == 1 ? D3D12_SRV_DIMENSION_TEXTURE2D : D3D12_SRV_DIMENSION_TEXTURECUBE;
 		desc.Texture2D = {
-		0,
-		1,
-		0,
-		0
+			0,
+			1,
+			0,
+			0
 		};
 		m_inputAttachmentView = std::make_unique<ResourceView>(
 			desc,

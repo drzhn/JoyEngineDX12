@@ -8,6 +8,7 @@
 #include "Components/Component.h"
 #include "Components/MeshRenderer.h"
 #include "Components/Camera.h"
+#include "Components/CubemapRenderer.h"
 #include "Components/Light.h"
 #include "Components/ParticleSystem.h"
 #include "DataManager/DataManager.h"
@@ -103,6 +104,11 @@ namespace JoyEngine
 				{
 					auto ps = std::make_unique<ParticleSystem>();
 					go->AddComponent(std::move(ps));
+				}
+				else if (type == "cubemap_renderer")
+				{
+					auto cr = std::make_unique<CubemapRenderer>();
+					go->AddComponent(std::move(cr));
 				}
 			}
 			m_objects.push_back(std::move(go));

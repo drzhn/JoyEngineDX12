@@ -221,6 +221,45 @@ namespace JoyEngine
 		}
 
 
+		// Dynamic cubemap reflections
+		{
+			const GUID dynamicCubemapShaderGUID = GUID::StringToGuid("4a8ea369-904f-4d9a-9061-b4eedacc3918"); // shaders/dynamiccubemapreflections.hlsl
+			const GUID sharedMaterialGuid = GUID::Random();
+
+			RootParams rp;
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+			rp.CreateConstants(sizeof(MVP) / 4, 0);
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, D3D12_SHADER_VISIBILITY_PIXEL);
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, D3D12_SHADER_VISIBILITY_ALL);
+
+			m_dynamicCubemapReflectionsSharedMaterialHandle = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
+				sharedMaterialGuid,
+				{
+					dynamicCubemapShaderGUID,
+					JoyShaderTypeVertex | JoyShaderTypePixel,
+					true,
+					true,
+					true,
+					D3D12_CULL_MODE_BACK,
+					D3D12_COMPARISON_FUNC_LESS_EQUAL,
+					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
+					rp.params,
+					{
+						DXGI_FORMAT_R8G8B8A8_UNORM
+					},
+					DXGI_FORMAT_D32_FLOAT,
+					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
+					{
+						{2, ModelViewProjection},
+						{3, EnvironmentCubemap},
+						{4, EngineData}
+					}
+				});
+
+			CreateSampleMaterial("dynamic_reflections", GUID::StringToGuid("7e50aa82-5696-428c-a088-538fb78c0ee6"), sharedMaterialGuid); // textures/Chopping-Board.jpg
+		}
+
 		// Sample material
 		{
 			const GUID shaderGuid = GUID::StringToGuid("183d6cfe-ca85-4e0b-ab36-7b1ca0f99d34");
@@ -232,14 +271,14 @@ namespace JoyEngine
 			rp.CreateConstants(sizeof(MVP) / 4, 0);
 			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, D3D12_SHADER_VISIBILITY_PIXEL);
 
-			m_sharedMaterialHandle = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
+			m_sampleSharedMaterialHandle = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
 				sharedMaterialGuid,
 				{
 					shaderGuid,
 					JoyShaderTypeVertex | JoyShaderTypePixel,
 					true,
 					true,
-					false,
+					true,
 					D3D12_CULL_MODE_BACK,
 					D3D12_COMPARISON_FUNC_LESS_EQUAL,
 					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
@@ -255,9 +294,9 @@ namespace JoyEngine
 					}
 				});
 
-			CreateSampleMaterial("material_1", GUID::StringToGuid("1d451f58-3f84-4b2b-8c6f-fe8e2821d7f0")); // viking_room.png
-			CreateSampleMaterial("material_2", GUID::StringToGuid("e8448435-7baf-4e40-ac72-b99e49284929")); // textures/wood.png
-			CreateSampleMaterial("material_3", GUID::StringToGuid("7e50aa82-5696-428c-a088-538fb78c0ee6")); // textures/Chopping-Board.jpg
+			CreateSampleMaterial("material_1", GUID::StringToGuid("1d451f58-3f84-4b2b-8c6f-fe8e2821d7f0"), sharedMaterialGuid); // viking_room.png
+			CreateSampleMaterial("material_2", GUID::StringToGuid("e8448435-7baf-4e40-ac72-b99e49284929"), sharedMaterialGuid); // textures/wood.png
+			CreateSampleMaterial("material_3", GUID::StringToGuid("7e50aa82-5696-428c-a088-538fb78c0ee6"), sharedMaterialGuid); // textures/Chopping-Board.jpg
 		}
 
 		// Particle system drawing
@@ -308,11 +347,12 @@ namespace JoyEngine
 		}
 	}
 
-	void DummyMaterialProvider::CreateSampleMaterial(const std::string& materialName, const GUID textureGuid)
+	void DummyMaterialProvider::CreateSampleMaterial(const std::string& materialName, const GUID textureGuid, const GUID sharedMaterialGuid)
 	{
 		const GUID materialGuid = GUID::Random();
 		ResourceHandle<Texture> texture = ResourceHandle(JoyContext::Resource->LoadResource<Texture>(textureGuid));
 
+		// TODO make const std::map<uint32_t, ResourceView*>
 		const std::map<uint32_t, ID3D12DescriptorHeap*> materialRootParams = {
 			{0, texture->GetResourceView()->GetHeap()},
 			{1, Texture::GetTextureSampler()->GetHeap()}
@@ -320,7 +360,7 @@ namespace JoyEngine
 		ResourceHandle<Material> material = ResourceHandle(JoyContext::Resource->LoadResource<Material, MaterialArgs>(
 			materialGuid,
 			{
-				m_sharedMaterialHandle->GetGuid(),
+				sharedMaterialGuid,
 				materialRootParams,
 			}));
 		m_sampleMaterials.insert({

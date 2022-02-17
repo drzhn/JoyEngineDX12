@@ -120,6 +120,9 @@
     <ClCompile Include="JoyEngine\Components\ParticleSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="JoyEngine\Components\CubemapRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="JoyEngine\JoyContext.h">
@@ -254,6 +257,9 @@
     <ClInclude Include="JoyEngine\Components\ParticleSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="JoyEngine\Components\CubemapRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="JoyData\shaders\gbufferwrite.hlsl" />
@@ -266,5 +272,6 @@
     <None Include="JoyData\shaders\generateMipMaps.hlsl" />
     <None Include="JoyData\shaders\particles.hlsl" />
     <None Include="JoyData\shaders\particlesbuffergeneration.hlsl" />
+    <None Include="JoyData\shaders\dynamiccubemapreflections.hlsl" />
   </ItemGroup>
 </Project>

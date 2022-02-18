@@ -17,7 +17,9 @@ namespace JoyEngine
 	class GraphicsManager
 	{
 	public:
-		GraphicsManager(HINSTANCE instance, HWND windowHandle);
+		GraphicsManager() = delete;
+
+		explicit GraphicsManager(HINSTANCE instance, HWND windowHandle, uint32_t width, uint32_t height);
 
 		~GraphicsManager() = default;
 
@@ -26,8 +28,12 @@ namespace JoyEngine
 		[[nodiscard]] IDXGIAdapter4* GetPhysicalDevice() const noexcept { return m_physicalDevice.Get(); }
 		[[nodiscard]] ID3D12Device2* GetDevice() const noexcept { return m_logicalDevice.Get(); }
 		[[nodiscard]] IDXGIFactory4* GetFactory() const noexcept { return m_dxgiFactory.Get(); }
-
+		[[nodiscard]] uint32_t GetWidth() const noexcept { return m_width; }
+		[[nodiscard]] uint32_t GetHeight() const noexcept { return m_height; }
 	private:
+		uint32_t m_width;
+		uint32_t m_height;
+
 		HINSTANCE m_windowInstance;
 		HWND m_windowHandle;
 

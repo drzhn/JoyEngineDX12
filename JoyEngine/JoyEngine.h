@@ -45,7 +45,7 @@ namespace JoyEngine
 	public:
 		JoyEngine() = delete;
 
-		JoyEngine(HINSTANCE instance, HWND windowHandle);
+		JoyEngine(HINSTANCE instance, HWND windowHandle, uint32_t width, uint32_t height);
 
 		void Init() const noexcept;
 

@@ -27,6 +27,9 @@
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
+	uint32_t windowWidth = 1280;
+	uint32_t windowHeight = 720;
+
 	// Register the window class.
 	const wchar_t CLASS_NAME[] = L"Sample Window Class";
 	WNDCLASS wc = {};
@@ -36,7 +39,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
 	RegisterClass(&wc);
 
-	RECT wr = {0, 0, 1280, 720};
+	RECT wr = {0, 0, windowWidth, windowHeight};
 	AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE);
 	HWND hwnd = CreateWindowEx(
 		0, // Optional window styles.
@@ -72,7 +75,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 		return 0;
 	}
 
-	JoyEngine::JoyEngine* graphicsContext = new JoyEngine::JoyEngine(hInstance, hwnd);
+	JoyEngine::JoyEngine* graphicsContext = new JoyEngine::JoyEngine(hInstance, hwnd, windowWidth, windowHeight);
 	WindowHandler::RegisterMessageHandler(graphicsContext, hwnd);
 
 	graphicsContext->Init();

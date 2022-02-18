@@ -1,8 +1,6 @@
 #ifndef RENDER_MANAGER_H
 #define RENDER_MANAGER_H
 
-#include "windows.h"
-
 #include <array>
 #include <set>
 #include <chrono>

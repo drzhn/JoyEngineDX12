@@ -20,10 +20,10 @@ namespace JoyEngine
 {
 	static auto startTime = std::chrono::high_resolution_clock::now();
 
-	JoyEngine::JoyEngine(HINSTANCE instance, HWND windowHandle) :
+	JoyEngine::JoyEngine(HINSTANCE instance, HWND windowHandle, uint32_t width, uint32_t height) :
 		m_windowHandle(windowHandle),
 		m_inputManager(new InputManager()),
-		m_graphicsContext(new GraphicsManager(instance, windowHandle)),
+		m_graphicsContext(new GraphicsManager(instance, windowHandle, width, height)),
 		m_memoryManager(new MemoryManager()),
 		m_dataManager(new DataManager()),
 		//m_descriptorSetManager(new DescriptorManager()),

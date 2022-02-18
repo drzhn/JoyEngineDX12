@@ -13,10 +13,6 @@
 #include "ResourceManager/SharedMaterial.h"
 #include "JoyTypes.h"
 #include "Common/Time.h"
-#include "Components/Camera.h"
-#include "Components/Camera.h"
-#include "Components/Camera.h"
-#include "Components/Camera.h"
 #include "Components/CubemapRenderer.h"
 #include "Components/MeshRenderer.h"
 #include "Components/ParticleSystem.h"
@@ -30,13 +26,8 @@ namespace JoyEngine
 {
 	void RenderManager::Init()
 	{
-		RECT rect;
-
-		if (GetWindowRect(JoyContext::Graphics->GetHWND(), &rect))
-		{
-			m_width = rect.right - rect.left;
-			m_height = rect.bottom - rect.top;
-		}
+		m_width = JoyContext::Graphics->GetWidth();
+		m_height = JoyContext::Graphics->GetHeight();
 
 		ASSERT(m_width != 0 && m_height != 0);
 
@@ -113,7 +104,7 @@ namespace JoyEngine
 
 		m_lightingAttachment = std::make_unique<RenderTexture>(
 			m_width, m_height,
-			DXGI_FORMAT_R8G8B8A8_UNORM,
+			DXGI_FORMAT_R16G16B16A16_FLOAT,
 			D3D12_RESOURCE_STATE_RENDER_TARGET,
 			D3D12_HEAP_TYPE_DEFAULT);
 

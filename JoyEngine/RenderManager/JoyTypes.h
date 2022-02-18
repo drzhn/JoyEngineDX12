@@ -69,6 +69,7 @@ namespace JoyEngine
 
 	struct JoyData
 	{
+		glm::vec4 perspectiveValues;
 		glm::vec3 cameraWorldPos;
 		float time;
 	};

@@ -76,6 +76,10 @@
 		{
             "guid": "38d4f011-405a-4602-8f8e-79b4888d26b6",
             "path": "shaders/particlesbuffergeneration.hlsl"
+        },		
+		{
+            "guid": "5e897d4b-2ed5-4176-890b-2f17e52cb836",
+            "path": "shaders/fogpostprocess.hlsl"
         },
 		
 		

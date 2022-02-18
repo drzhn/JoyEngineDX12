@@ -220,7 +220,6 @@ namespace JoyEngine
 				});
 		}
 
-
 		// Dynamic cubemap reflections
 		{
 			const GUID dynamicCubemapShaderGUID = GUID::StringToGuid("4a8ea369-904f-4d9a-9061-b4eedacc3918"); // shaders/dynamiccubemapreflections.hlsl
@@ -343,6 +342,37 @@ namespace JoyEngine
 				{
 					bufferGenerationShaderGuid,
 					rp.params
+				});
+		}
+
+		// Fog post-effect
+		{
+			const GUID fogPostEffectShaderGuid = GUID::StringToGuid("5e897d4b-2ed5-4176-890b-2f17e52cb836"); //shaders/fogpostprocess.hlsl
+			const GUID fogPostEffectSharedMaterialGuid = GUID::Random();
+
+			RootParams rp;
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, D3D12_SHADER_VISIBILITY_PIXEL);
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, D3D12_SHADER_VISIBILITY_ALL);
+
+			m_fogPostProcessSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
+				fogPostEffectSharedMaterialGuid,
+				{
+					fogPostEffectShaderGuid,
+					JoyShaderTypeVertex | JoyShaderTypePixel,
+					false,
+					false,
+					false,
+					D3D12_CULL_MODE_NONE,
+					D3D12_COMPARISON_FUNC_GREATER_EQUAL,
+					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
+					rp.params,
+					{
+						DXGI_FORMAT_R8G8B8A8_UNORM
+					},
+					DXGI_FORMAT_D32_FLOAT,
+					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
+					{}
 				});
 		}
 	}

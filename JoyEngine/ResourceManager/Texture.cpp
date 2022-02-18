@@ -126,6 +126,7 @@ namespace JoyEngine
 		D3D12_HEAP_TYPE properties,
 		bool allowRenderTarget,
 		bool isDepthTarget,
+		bool allowUnorderedAccess,
 		uint32_t arraySize):
 		m_width(width),
 		m_height(height),
@@ -133,7 +134,7 @@ namespace JoyEngine
 		m_usageFlags(usage),
 		m_memoryPropertiesFlags(properties)
 	{
-		CreateImage(allowRenderTarget, isDepthTarget, false, arraySize);
+		CreateImage(allowRenderTarget, isDepthTarget, allowUnorderedAccess, arraySize);
 		CreateImageView(allowRenderTarget, isDepthTarget, arraySize);
 	}
 
@@ -281,6 +282,7 @@ namespace JoyEngine
 		        properties,
 		        true,
 		        false,
+		        false,
 		        arraySize)
 	{
 		ASSERT(arraySize > 0);
@@ -326,6 +328,7 @@ namespace JoyEngine
 		        properties,
 		        false,
 		        true,
+		        false,
 		        arraySize)
 	{
 		D3D12_SHADER_RESOURCE_VIEW_DESC desc;

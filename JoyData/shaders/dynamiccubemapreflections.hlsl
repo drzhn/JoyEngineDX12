@@ -20,6 +20,7 @@ struct MVP
 
 struct EngineData
 {
+	float4 perspectiveValues;
 	float3 cameraWorldPos;
 	float time;
 };

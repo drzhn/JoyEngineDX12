@@ -24,7 +24,8 @@ namespace JoyEngine
 			D3D12_RESOURCE_STATE_DEPTH_WRITE,
 			D3D12_HEAP_TYPE_DEFAULT,
 			false,
-			true);
+			true,
+			false);
 
 		m_cameraUnit = CameraUnit(
 			1,

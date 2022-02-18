@@ -80,16 +80,24 @@ namespace JoyEngine
 				swapchainResource,
 				m_width,
 				m_height,
-				DXGI_FORMAT_R8G8B8A8_UNORM, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_HEAP_TYPE_DEFAULT);
+				DXGI_FORMAT_R8G8B8A8_UNORM,
+				D3D12_RESOURCE_STATE_RENDER_TARGET,
+				D3D12_HEAP_TYPE_DEFAULT);
 		}
 
-		m_depthAttachment = std::make_unique<Texture>(
-			m_width, m_height,
-			DXGI_FORMAT_D32_FLOAT,
+		m_renderTargetCopyAttachment = std::make_unique<Texture>(
+			m_width,
+			m_height,
+			DXGI_FORMAT_R8G8B8A8_UNORM,
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			D3D12_HEAP_TYPE_DEFAULT);
+
+		m_depthAttachment = std::make_unique<DepthTexture>(
+			m_width,
+			m_height,
+			DXGI_FORMAT_R32_TYPELESS,
 			D3D12_RESOURCE_STATE_DEPTH_WRITE,
-			D3D12_HEAP_TYPE_DEFAULT,
-			false,
-			true);
+			D3D12_HEAP_TYPE_DEFAULT);
 
 		m_positionAttachment = std::make_unique<RenderTexture>(
 			m_width, m_height,
@@ -226,11 +234,6 @@ namespace JoyEngine
 
 	void RenderManager::Update()
 	{
-		const auto ptr = m_engineDataBuffer->GetMappedPtr();
-		const auto data = static_cast<JoyData*>(ptr->GetMappedPtr());
-		data->cameraWorldPos = m_currentCamera->GetTransform()->GetPosition();
-		data->time = Time::GetTime();
-
 		m_queue->ResetForFrame(m_currentFrameIndex);
 
 		const auto commandList = m_queue->GetCommandList();
@@ -254,6 +257,16 @@ namespace JoyEngine
 		const glm::mat4 mainCameraViewMatrix = m_currentCamera->GetViewMatrix();
 		const glm::mat4 mainCameraProjMatrix = m_currentCamera->GetProjMatrix();
 
+		const auto ptr = m_engineDataBuffer->GetMappedPtr();
+		const auto data = static_cast<JoyData*>(ptr->GetMappedPtr());
+		data->cameraWorldPos = m_currentCamera->GetTransform()->GetPosition();
+		data->time = Time::GetTime();
+		data->perspectiveValues = glm::vec4(
+			1.0f / mainCameraProjMatrix[0][0],
+			1.0f / mainCameraProjMatrix[1][1],
+			mainCameraProjMatrix[3][2],
+			mainCameraProjMatrix[2][2]
+		);
 		// Drawing GBUFFER textures
 		{
 			D3D12_CPU_DESCRIPTOR_HANDLE gbufferHandles[] = {positionHandle, normalHandle};
@@ -314,7 +327,7 @@ namespace JoyEngine
 					&cubemapRTV,
 					FALSE, &cubemapDSV);
 
-				const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
+				const float clearColor[] = {0.0f, 0.2f, 0.4f, 1.0f};
 				commandList->ClearRenderTargetView(cubemapRTV, clearColor, 0, nullptr);
 				commandList->ClearDepthStencilView(cubemapDSV, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
@@ -490,7 +503,6 @@ namespace JoyEngine
 		}
 
 
-
 		//Drawing main color
 		{
 			SetViewportAndScissor(commandList, m_width, m_height);
@@ -552,6 +564,85 @@ namespace JoyEngine
 				commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
 				commandList->DrawInstanced(size * size * size, 1, 0, 0);
 			}
+		}
+
+		// Copying RTV to temporary Texture
+		{
+			D3D12_RESOURCE_BARRIER barriers[2];
+			barriers[0] = Transition(
+				m_renderTargets[m_currentFrameIndex]->GetImage().Get(),
+				D3D12_RESOURCE_STATE_RENDER_TARGET,
+				D3D12_RESOURCE_STATE_COPY_SOURCE);
+
+			barriers[1] = Transition(
+				m_renderTargetCopyAttachment->GetImage().Get(),
+				D3D12_RESOURCE_STATE_GENERIC_READ,
+				D3D12_RESOURCE_STATE_COPY_DEST);
+
+			commandList->ResourceBarrier(2, barriers);
+
+			commandList->CopyResource(
+				m_renderTargetCopyAttachment->GetImage().Get(),
+				m_renderTargets[m_currentFrameIndex]->GetImage().Get()
+			);
+
+			barriers[0] = Transition(
+				m_renderTargetCopyAttachment->GetImage().Get(),
+				D3D12_RESOURCE_STATE_COPY_DEST,
+				D3D12_RESOURCE_STATE_GENERIC_READ
+			);
+
+			barriers[1] = Transition(
+				m_renderTargets[m_currentFrameIndex]->GetImage().Get(),
+				D3D12_RESOURCE_STATE_COPY_SOURCE,
+				D3D12_RESOURCE_STATE_RENDER_TARGET);
+
+			commandList->ResourceBarrier(2, barriers);
+		}
+
+		// FOG post-process
+		{
+			D3D12_RESOURCE_BARRIER barrier;
+			barrier = Transition(
+				m_depthAttachment->GetImage().Get(),
+				D3D12_RESOURCE_STATE_DEPTH_WRITE,
+				D3D12_RESOURCE_STATE_GENERIC_READ);
+
+			commandList->ResourceBarrier(1, &barrier);
+
+			auto sm = JoyContext::DummyMaterials->GetFogPostProcessSharedMaterial();
+
+			commandList->SetPipelineState(sm->GetPipelineObject().Get());
+			commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+			//ID3D12DescriptorHeap* descriptorHeap[1] = { m_normalAttachment->GetAttachmentView()->GetHeap() };
+			//commandList->SetDescriptorHeaps(
+			//	1,
+			//	descriptorHeap);
+			//commandList->SetGraphicsRootDescriptorTable(1, m_normalAttachment->GetAttachmentView()->GetGPUHandle());
+
+			AttachViewToGraphics(commandList, 0, m_depthAttachment->GetAttachmentView());
+			AttachViewToGraphics(commandList, 1, m_renderTargetCopyAttachment->GetResourceView());
+			AttachViewToGraphics(commandList, 2, m_engineDataBufferView.get());
+			//DirectionLightData lightData = {
+			//	m_directionLight->GetTransform()->GetForward(),
+			//	m_directionLight->GetIntensity(),
+			//	m_directionLight->GetAmbient()
+			//};
+
+			//commandList->SetGraphicsRoot32BitConstants(0, sizeof(DirectionLightData) / 4, &lightData, 0);
+			commandList->DrawInstanced(
+				3,
+				1,
+				0, 0);
+
+			barrier = Transition(
+				m_depthAttachment->GetImage().Get(),
+				D3D12_RESOURCE_STATE_GENERIC_READ,
+				D3D12_RESOURCE_STATE_DEPTH_WRITE);
+
+			commandList->ResourceBarrier(1, &barrier);
 		}
 
 		// transition front buffer to present state

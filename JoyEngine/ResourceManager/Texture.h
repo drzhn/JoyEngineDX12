@@ -46,6 +46,7 @@ namespace JoyEngine
 			D3D12_HEAP_TYPE properties,
 			bool allowRenderTarget = false,
 			bool isDepthTarget = false,
+			bool allowUnorderedAccess = false,
 			uint32_t arraySize = 1
 		);
 

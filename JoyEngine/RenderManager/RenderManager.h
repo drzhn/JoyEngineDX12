@@ -103,7 +103,8 @@ namespace JoyEngine
 
 		std::array<std::unique_ptr<Texture>, FrameCount> m_renderTargets;
 
-		std::unique_ptr<Texture> m_depthAttachment;
+		std::unique_ptr<DepthTexture> m_depthAttachment;
+		std::unique_ptr<Texture> m_renderTargetCopyAttachment;
 
 		std::unique_ptr<RenderTexture> m_positionAttachment;
 		std::unique_ptr<RenderTexture> m_normalAttachment;

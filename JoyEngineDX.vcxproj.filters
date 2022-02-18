@@ -273,5 +273,6 @@
     <None Include="JoyData\shaders\particles.hlsl" />
     <None Include="JoyData\shaders\particlesbuffergeneration.hlsl" />
     <None Include="JoyData\shaders\dynamiccubemapreflections.hlsl" />
+    <None Include="JoyData\shaders\fogpostprocess.hlsl" />
   </ItemGroup>
 </Project>

@@ -42,11 +42,11 @@ namespace JoyEngine
 
 
 		glm::vec3 vec = glm::vec3(deltaX, deltaY, deltaZ);
-		
-		const glm::vec3 vecWorld = m_transform->GetRotation() * glm::vec4(deltaX,deltaY,deltaZ, 1);
+
+		const glm::vec3 vecWorld = m_transform->GetRotation() * glm::vec4(deltaX, deltaY, deltaZ, 1);
 
 		m_transform->SetPosition(
-			m_transform->GetPosition() + vecWorld
+			m_transform->GetPosition() + vecWorld * m_speed
 		);
 		m_transform->SetRotation(
 			glm::angleAxis(deltaAngle, glm::vec3(0, 1, 0)) *

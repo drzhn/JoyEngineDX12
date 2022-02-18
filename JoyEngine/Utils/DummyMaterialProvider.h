@@ -48,6 +48,7 @@ namespace JoyEngine
 		[[nodiscard]] SharedMaterial* GetShadowPointProcessingSharedMaterial() const noexcept { return m_shadowPointProcessingSharedMaterial; }
 		[[nodiscard]] ComputePipeline* GetParticleBufferGenerationComputePipeline() const noexcept { return m_particleBufferGenerationComputePipeline; }
 		[[nodiscard]] SharedMaterial* GetParticleSystemSharedMaterial() const noexcept { return m_particleSystemSharedMaterial; }
+		[[nodiscard]] SharedMaterial* GetFogPostProcessSharedMaterial() const noexcept { return m_fogPostProcessSharedMaterial; }
 	private:
 		//ResourceHandle<Texture> m_skyboxTextureHandle;
 
@@ -66,6 +67,8 @@ namespace JoyEngine
 		ResourceHandle<ComputePipeline> m_particleBufferGenerationComputePipeline;
 
 		ResourceHandle<SharedMaterial> m_particleSystemSharedMaterial;
+
+		ResourceHandle<SharedMaterial> m_fogPostProcessSharedMaterial;
 
 		struct MaterialData
 		{

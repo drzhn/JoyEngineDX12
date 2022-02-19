@@ -89,6 +89,10 @@
             "guid": "c3a1592f-f12d-4c25-bcbb-1e6ace76b0fb",
             "path": "shaders/hdrDownscaleSecondPass.hlsl"
         },
+		{
+            "guid": "aa366fc9-b8a7-4cca-b5d3-670216174566",
+            "path": "shaders/hdrToLdrTransition.hlsl"
+        },
 		
 		
         {

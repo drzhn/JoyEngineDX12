@@ -4,6 +4,7 @@
 
 #include "d3dx12.h"
 #include "RenderManager/JoyTypes.h"
+#include "RenderManager/RenderManager.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -33,6 +34,11 @@ namespace JoyEngine
 	void DummyMaterialProvider::Init()
 	{
 		Texture::InitSamplers();
+		DXGI_FORMAT mainRTVFormat = RenderManager::GetHdrRTVFormat();
+		DXGI_FORMAT swapchainLdrFormat = RenderManager::GetLdrRTVFormat();
+		DXGI_FORMAT mainGBufferFormat = RenderManager::GetGBufferFormat();
+		DXGI_FORMAT mainDSVFormat = RenderManager::GetDepthFormat();
+
 
 		// Mip map generation
 		{
@@ -76,10 +82,10 @@ namespace JoyEngine
 					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 					rp.params,
 					{
-						DXGI_FORMAT_R16G16B16A16_FLOAT,
-						DXGI_FORMAT_R16G16B16A16_FLOAT
+						mainGBufferFormat,
+						mainGBufferFormat
 					},
-					DXGI_FORMAT_D32_FLOAT,
+					mainDSVFormat,
 					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 					{}
 				});
@@ -107,7 +113,7 @@ namespace JoyEngine
 					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 					rp.params,
 					{}, // no rtv, only depth
-					DXGI_FORMAT_D32_FLOAT,
+					mainDSVFormat,
 					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 					{}
 				});
@@ -135,7 +141,7 @@ namespace JoyEngine
 					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 					rp.params,
 					{}, // no rtv, only depth
-					DXGI_FORMAT_D32_FLOAT,
+					mainDSVFormat,
 					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 					{}
 				});
@@ -163,9 +169,9 @@ namespace JoyEngine
 					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 					rp.params,
 					{
-						DXGI_FORMAT_R16G16B16A16_FLOAT
+						mainRTVFormat
 					},
-					DXGI_FORMAT_D32_FLOAT,
+					mainDSVFormat,
 					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 					{}
 				});
@@ -212,9 +218,9 @@ namespace JoyEngine
 					blendDesc,
 					rp.params,
 					{
-						DXGI_FORMAT_R16G16B16A16_FLOAT
+						mainRTVFormat
 					},
-					DXGI_FORMAT_D32_FLOAT,
+					mainDSVFormat,
 					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 					{}
 				});
@@ -245,9 +251,9 @@ namespace JoyEngine
 					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 					rp.params,
 					{
-						DXGI_FORMAT_R8G8B8A8_UNORM
+						mainRTVFormat
 					},
-					DXGI_FORMAT_D32_FLOAT,
+					mainDSVFormat,
 					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 					{
 						{2, ModelViewProjection},
@@ -283,9 +289,9 @@ namespace JoyEngine
 					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 					rp.params,
 					{
-						DXGI_FORMAT_R8G8B8A8_UNORM
+						mainRTVFormat
 					},
-					DXGI_FORMAT_D32_FLOAT,
+					mainDSVFormat,
 					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 					{
 						{2, ModelViewProjection},
@@ -320,9 +326,9 @@ namespace JoyEngine
 					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 					rp.params,
 					{
-						DXGI_FORMAT_R8G8B8A8_UNORM
+						mainRTVFormat
 					},
-					DXGI_FORMAT_D32_FLOAT,
+					mainDSVFormat,
 					D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT,
 					{}
 				});
@@ -368,9 +374,9 @@ namespace JoyEngine
 					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 					rp.params,
 					{
-						DXGI_FORMAT_R8G8B8A8_UNORM
+						mainRTVFormat
 					},
-					DXGI_FORMAT_D32_FLOAT,
+					mainDSVFormat,
 					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 					{}
 				});
@@ -410,6 +416,35 @@ namespace JoyEngine
 					{
 						hdrDownscaleFirstPassShaderGuid,
 						rp.params
+					});
+			}
+
+			// HDR -> LDR transition
+			{
+				const GUID hdrToLdrTransitionShaderGuid = GUID::StringToGuid("aa366fc9-b8a7-4cca-b5d3-670216174566"); //shaders/hdrToLdrTransition.hlsl
+				const GUID hdrToLdrTransitionSharedMaterialGuid = GUID::Random();
+
+				RootParams rp;
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+
+				m_hdrToLdrTransitionSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
+					hdrToLdrTransitionSharedMaterialGuid,
+					{
+						hdrToLdrTransitionShaderGuid,
+						JoyShaderTypeVertex | JoyShaderTypePixel,
+						false,
+						false,
+						false,
+						D3D12_CULL_MODE_NONE,
+						D3D12_COMPARISON_FUNC_GREATER_EQUAL,
+						CD3DX12_BLEND_DESC(D3D12_DEFAULT),
+						rp.params,
+						{
+							swapchainLdrFormat
+						},
+						mainDSVFormat,
+						D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
+						{}
 					});
 			}
 		}

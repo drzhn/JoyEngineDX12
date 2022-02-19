@@ -40,15 +40,9 @@ namespace JoyEngine
 
 		void Init();
 
-		void Start()
-		{
-		}
-
 		void Stop();
 
 		void Update();
-		void ProcessEngineBindings(ID3D12GraphicsCommandList* commandList, const std::map<uint32_t, EngineBindingType>& bindings, MVP mvp, bool isDrawingMainColor) const;
-
 
 		void RegisterSharedMaterial(SharedMaterial*);
 
@@ -77,17 +71,30 @@ namespace JoyEngine
 		[[nodiscard]] float GetAspect() const noexcept;
 		[[nodiscard]] float GetWidth() const noexcept;
 		[[nodiscard]] float GetHeight() const noexcept;
+		[[nodiscard]] static DXGI_FORMAT GetHdrRTVFormat() noexcept { return hdrRTVFormat; }
+		[[nodiscard]] static DXGI_FORMAT GetLdrRTVFormat() noexcept { return ldrRTVFormat; }
+		[[nodiscard]] static DXGI_FORMAT GetGBufferFormat() noexcept { return gBufferFormat; }
+		[[nodiscard]] static DXGI_FORMAT GetDepthFormat() noexcept { return depthFormat; }
 
 	private:
 		void RenderEntireScene(
 			ID3D12GraphicsCommandList* commandList,
 			glm::mat4 view,
-			glm::mat4 proj) const;
+			glm::mat4 proj
+		) const;
 
 		void RenderEntireSceneWithMaterials(
-			::ID3D12GraphicsCommandList* commandList,
+			ID3D12GraphicsCommandList* commandList,
 			glm::mat4 view,
-			glm::mat4 proj, bool isDrawingMainColor
+			glm::mat4 proj,
+			bool isDrawingMainColor
+		) const;
+
+		void ProcessEngineBindings(
+			ID3D12GraphicsCommandList* commandList,
+			const std::map<uint32_t, EngineBindingType>& bindings,
+			MVP mvp,
+			bool isDrawingMainColor
 		) const;
 
 		static void SetViewportAndScissor(ID3D12GraphicsCommandList* commandList, uint32_t width, uint32_t height);
@@ -95,13 +102,19 @@ namespace JoyEngine
 		static void AttachViewToCompute(ID3D12GraphicsCommandList* commandList, uint32_t rootParameterIndex, const ResourceView* view);
 
 	private:
-		static const UINT FrameCount = 3;
+		static constexpr DXGI_FORMAT hdrRTVFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
+		static constexpr DXGI_FORMAT ldrRTVFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+		static constexpr DXGI_FORMAT gBufferFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
+		static constexpr DXGI_FORMAT depthFormat = DXGI_FORMAT_D32_FLOAT;
+
+		static constexpr UINT FrameCount = 3;
 
 		ComPtr<IDXGISwapChain3> m_swapChain;
 
-		std::array<std::unique_ptr<Texture>, FrameCount> m_renderTargets;
+		std::array<std::unique_ptr<Texture>, FrameCount> m_swapchainRenderTargets;
 
 		std::unique_ptr<DepthTexture> m_depthAttachment;
+		std::unique_ptr<RenderTexture> m_hdrRenderTarget;
 		std::unique_ptr<Texture> m_renderTargetCopyAttachment;
 
 		std::unique_ptr<RenderTexture> m_positionAttachment;

@@ -12,7 +12,7 @@ namespace JoyEngine
 		m_cubemap = std::make_unique<RenderTexture>(
 			m_textureSize,
 			m_textureSize,
-			DXGI_FORMAT_R8G8B8A8_UNORM, // make, i don't know, getting that from graphics context manager
+			RenderManager::GetHdrRTVFormat(),
 			D3D12_RESOURCE_STATE_GENERIC_READ,
 			D3D12_HEAP_TYPE_DEFAULT,
 			6
@@ -20,7 +20,7 @@ namespace JoyEngine
 		m_depthTexture = std::make_unique<Texture>(
 			m_textureSize,
 			m_textureSize,
-			DXGI_FORMAT_D32_FLOAT,
+			RenderManager::GetDepthFormat(),
 			D3D12_RESOURCE_STATE_DEPTH_WRITE,
 			D3D12_HEAP_TYPE_DEFAULT,
 			false,

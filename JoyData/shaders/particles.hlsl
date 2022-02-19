@@ -38,7 +38,7 @@ void GSMain(point PSInput input[1], inout PointStream<PSInput> stream)
 PSOutput PSMain(PSInput input) // : SV_TARGET
 {
 	PSOutput output;
-	output.Color = float4(1, 1, 1, 1);
+	output.Color = float4(1, 1, 1, 1)*2;
 
 	return output;
 }

@@ -119,6 +119,26 @@ namespace JoyEngine
 			m_hdrLuminationBuffer->GetBuffer().Get()
 		);
 
+		m_hdrPrevLuminationBuffer = std::make_unique<Buffer>(
+			1 * sizeof(float),
+			D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+			D3D12_HEAP_TYPE_DEFAULT,
+			D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS
+		);
+		uavDesc.Format = DXGI_FORMAT_UNKNOWN;
+		uavDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
+		uavDesc.Buffer = {
+			0,
+			1,
+			sizeof(float),
+			0,
+			D3D12_BUFFER_UAV_FLAG_NONE
+		};
+		m_hdrPrevLuminationBufferUAVView = std::make_unique<ResourceView>(
+			uavDesc,
+			m_hdrPrevLuminationBuffer->GetBuffer().Get()
+		);
+
 
 		m_renderTargetCopyAttachment = std::make_unique<Texture>(
 			m_width,
@@ -689,7 +709,8 @@ namespace JoyEngine
 			HDRDownScaleConstants downScaleConstants = {
 				glm::uvec2(m_width / 4, m_height / 4),
 				m_width * m_height / 16,
-				groupSize
+				groupSize,
+				0.01f
 			};
 
 			D3D12_RESOURCE_BARRIER barrier;
@@ -718,6 +739,7 @@ namespace JoyEngine
 
 				commandList->SetComputeRoot32BitConstants(0, sizeof(HDRDownScaleConstants) / 4, &downScaleConstants, 0);
 				AttachViewToCompute(commandList, 1, m_hdrLuminationBufferUAVView.get());
+				AttachViewToCompute(commandList, 2, m_hdrPrevLuminationBufferUAVView.get());
 
 				commandList->Dispatch(groupSize, 1, 1);
 			}

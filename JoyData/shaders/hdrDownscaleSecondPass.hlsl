@@ -2,23 +2,25 @@
 
 cbuffer HDRDownScaleConstants : register(b0)
 {
-	// Resolution of the down scaled target: x - width, y - height
-	uint2 Res : packoffset(c0);
-	// Total pixel in the downscaled image
-	uint Domain : packoffset(c0.z);
-	// Number of groups dispached on the first pass
-	uint GroupSize : packoffset(c0.w);
+// Resolution of the down scaled target: x - width, y - height
+uint2 Res : packoffset(c0);
+// Total pixel in the downscaled image
+uint Domain : packoffset(c0.z);
+// Number of groups dispached on the first pass
+uint GroupSize : packoffset(c0.w);
+float Adaptation : packoffset(c1); // Adaptation factor
 }
 
 RWStructuredBuffer<float> AverageLum : register(u0);
+RWStructuredBuffer<float> PrevAverageLum : register(u1);
 
 // Group shared memory to store the intermediate results
 groupshared float SharedAvgFinal[MAX_GROUPS];
 
 [numthreads(MAX_GROUPS, 1, 1)]
 void CSMain(uint3 groupId : SV_GroupID, uint3
-                         groupThreadId : SV_GroupThreadID,
-                         uint3 dispatchThreadId : SV_DispatchThreadID)
+            groupThreadId : SV_GroupThreadID,
+            uint3 dispatchThreadId : SV_DispatchThreadID)
 {
 	// Fill the shared memory with the 1D values
 	float avgLum = 0.0;
@@ -63,6 +65,12 @@ void CSMain(uint3 groupId : SV_GroupID, uint3
 		fFinalLumValue += dispatchThreadId.x + 32 < GroupSize ? SharedAvgFinal[dispatchThreadId.x + 32] : avgLum;
 		fFinalLumValue += dispatchThreadId.x + 48 < GroupSize ? SharedAvgFinal[dispatchThreadId.x + 48] : avgLum;
 		fFinalLumValue /= 64.0;
-		AverageLum[0] = fFinalLumValue;
+
+
+		// Calculate the adaptive luminance
+		float fAdaptedAverageLum = lerp(PrevAverageLum[0], fFinalLumValue, Adaptation);
+		// Store the final value
+		AverageLum[0] = fAdaptedAverageLum;// max(fAdaptedAverageLum, 0.0001);
+		PrevAverageLum[0] = fAdaptedAverageLum;
 	}
 }

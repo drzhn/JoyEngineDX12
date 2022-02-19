@@ -82,6 +82,7 @@ namespace JoyEngine
 		uint32_t Domain;
 		// Number of groups dispached on the first pass
 		uint32_t GroupSize;
+		float Adaptation; // Adaptation factor
 	};
 
 }

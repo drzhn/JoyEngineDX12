@@ -120,6 +120,9 @@ namespace JoyEngine
 		std::unique_ptr<ResourceView> m_hdrLuminationBufferUAVView;
 		std::unique_ptr<ResourceView> m_hdrLuminationBufferSRVView;
 
+		std::unique_ptr<Buffer> m_hdrPrevLuminationBuffer;
+		std::unique_ptr<ResourceView> m_hdrPrevLuminationBufferUAVView;
+
 		std::unique_ptr<RenderTexture> m_positionAttachment;
 		std::unique_ptr<RenderTexture> m_normalAttachment;
 		std::unique_ptr<RenderTexture> m_lightingAttachment;

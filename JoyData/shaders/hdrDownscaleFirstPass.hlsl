@@ -6,6 +6,7 @@ uint2 Res : packoffset(c0);
 uint Domain : packoffset(c0.z);
 // Number of groups dispached on the first pass
 uint GroupSize : packoffset(c0.w);
+float Adaptation : packoffset(c1); // Adaptation factor
 }
 Texture2D<float4> HDRTex : register(t0);
 RWStructuredBuffer<float> AverageLum : register(u0);

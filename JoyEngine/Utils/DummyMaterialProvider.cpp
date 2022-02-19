@@ -375,6 +375,44 @@ namespace JoyEngine
 					{}
 				});
 		}
+
+		// HDR
+		{
+			// Downscaling first pass
+			{
+				const GUID hdrDownscaleFirstPassShaderGuid = GUID::StringToGuid("e3e039f4-4f96-4e5b-b90b-1f46d460b724"); //shaders/hdrDownscaleFirstPass.hlsl
+				const GUID hdrDownscaleFirstPassPipelineGuid = GUID::Random();
+
+				RootParams rp;
+				rp.CreateConstants(sizeof(HDRDownScaleConstants), 0);
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0);
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 0);
+
+				m_hdrDownscaleFirstPassComputePipeline = JoyContext::Resource->LoadResource<ComputePipeline, ComputePipelineArgs>(
+					hdrDownscaleFirstPassPipelineGuid,
+					{
+						hdrDownscaleFirstPassShaderGuid,
+						rp.params
+					});
+			}
+
+			// Downscaling second pass
+			{
+				const GUID hdrDownscaleFirstPassShaderGuid = GUID::StringToGuid("c3a1592f-f12d-4c25-bcbb-1e6ace76b0fb"); //shaders/hdrDownscaleSecondPass.hlsl
+				const GUID hdrDownscaleFirstPassPipelineGuid = GUID::Random();
+
+				RootParams rp;
+				rp.CreateConstants(sizeof(HDRDownScaleConstants), 0);
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 0);
+
+				m_hdrDownscaleFirstPassComputePipeline = JoyContext::Resource->LoadResource<ComputePipeline, ComputePipelineArgs>(
+					hdrDownscaleFirstPassPipelineGuid,
+					{
+						hdrDownscaleFirstPassShaderGuid,
+						rp.params
+					});
+			}
+		}
 	}
 
 	void DummyMaterialProvider::CreateSampleMaterial(const std::string& materialName, const GUID textureGuid, const GUID sharedMaterialGuid)

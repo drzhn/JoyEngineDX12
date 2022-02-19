@@ -70,6 +70,9 @@ namespace JoyEngine
 
 		ResourceHandle<SharedMaterial> m_fogPostProcessSharedMaterial;
 
+		ResourceHandle<ComputePipeline> m_hdrDownscaleFirstPassComputePipeline;
+		ResourceHandle<ComputePipeline> m_hdrDownscaleSecondPassComputePipeline;
+
 		struct MaterialData
 		{
 			ResourceHandle<Texture> textureHandle;

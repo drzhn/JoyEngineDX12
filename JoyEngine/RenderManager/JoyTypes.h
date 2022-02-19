@@ -73,6 +73,17 @@ namespace JoyEngine
 		glm::vec3 cameraWorldPos;
 		float time;
 	};
+
+	struct HDRDownScaleConstants
+	{
+		// Resolution of the down scaled target: x - width, y - height
+		glm::uvec2 Res;
+		// Total pixel in the downscaled image
+		uint32_t Domain;
+		// Number of groups dispached on the first pass
+		uint32_t GroupSize;
+	};
+
 }
 
 #endif //JOY_TYPES_H

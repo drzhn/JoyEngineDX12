@@ -27,8 +27,8 @@
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
-	uint32_t windowWidth = 1280;
-	uint32_t windowHeight = 720;
+	constexpr uint32_t windowWidth = 1280;
+	constexpr uint32_t windowHeight = 720;
 
 	// Register the window class.
 	const wchar_t CLASS_NAME[] = L"Sample Window Class";

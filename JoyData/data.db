@@ -80,6 +80,14 @@
 		{
             "guid": "5e897d4b-2ed5-4176-890b-2f17e52cb836",
             "path": "shaders/fogpostprocess.hlsl"
+        },		
+		{
+            "guid": "e3e039f4-4f96-4e5b-b90b-1f46d460b724",
+            "path": "shaders/hdrDownscaleFirstPass.hlsl"
+        },		
+		{
+            "guid": "c3a1592f-f12d-4c25-bcbb-1e6ace76b0fb",
+            "path": "shaders/hdrDownscaleSecondPass.hlsl"
         },
 		
 		

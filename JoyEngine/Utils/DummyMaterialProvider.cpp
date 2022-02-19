@@ -393,6 +393,7 @@ namespace JoyEngine
 				rp.CreateConstants(sizeof(HDRDownScaleConstants), 0);
 				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0);
 				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 0);
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1);
 
 				m_hdrDownscaleFirstPassComputePipeline = JoyContext::Resource->LoadResource<ComputePipeline, ComputePipelineArgs>(
 					hdrDownscaleFirstPassPipelineGuid,

@@ -10,6 +10,7 @@ float Adaptation : packoffset(c1); // Adaptation factor
 }
 Texture2D<float4> HDRTex : register(t0);
 RWStructuredBuffer<float> AverageLum : register(u0);
+RWTexture2D<float4> HDRDownScale : register(u1);
 
 groupshared float SharedPositions[1024];
 
@@ -33,9 +34,9 @@ float DownScale4x4(uint2 CurPixel, uint groupThreadId)
 				downScaled += HDRTex.Load(nFullResPos, int2(j, i));
 			}
 		}
-		downScaled /= 16.0;
-		// Calculate the lumenace value for this pixel
-		avgLum = dot(downScaled, LUM_FACTOR);
+		downScaled /= 16.0; // Average
+		HDRDownScale[CurPixel.xy] = downScaled; // Store the qurter resolution image
+		avgLum = dot(downScaled, LUM_FACTOR); // Calculate the lumenace value for this pixel
 		// Write the result to the shared memory
 		SharedPositions[groupThreadId] = avgLum;
 	}
@@ -90,8 +91,8 @@ void DownScale4to1(uint dispatchThreadId, uint groupThreadId, uint
 
 [numthreads(1024, 1, 1)]
 void CSMain(uint3 groupId : SV_GroupID,
-                        uint3 dispatchThreadId : SV_DispatchThreadID,
-                        uint3 groupThreadId : SV_GroupThreadID)
+            uint3 dispatchThreadId : SV_DispatchThreadID,
+            uint3 groupThreadId : SV_GroupThreadID)
 {
 	uint2 CurPixel = uint2(dispatchThreadId.x % Res.x,
 	                       dispatchThreadId.x / Res.x);

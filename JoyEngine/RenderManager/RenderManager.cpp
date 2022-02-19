@@ -83,62 +83,89 @@ namespace JoyEngine
 			D3D12_RESOURCE_STATE_RENDER_TARGET,
 			D3D12_HEAP_TYPE_DEFAULT
 		);
-		m_hdrLuminationBuffer = std::make_unique<Buffer>(
-			64 * sizeof(float),
-			D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
-			D3D12_HEAP_TYPE_DEFAULT,
-			D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS
-		);
-		D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc;
-		uavDesc.Format = DXGI_FORMAT_UNKNOWN;
-		uavDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
-		uavDesc.Buffer = {
-			0,
-			64,
-			sizeof(float),
-			0,
-			D3D12_BUFFER_UAV_FLAG_NONE
-		};
-		m_hdrLuminationBufferUAVView = std::make_unique<ResourceView>(
-			uavDesc,
-			m_hdrLuminationBuffer->GetBuffer().Get()
-		);
 
-		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc;
-		srvDesc.Format = DXGI_FORMAT_UNKNOWN;
-		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
-		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-		srvDesc.Buffer = {
-			0,
-			64,
-			sizeof(float),
-			D3D12_BUFFER_SRV_FLAG_NONE
-		};
-		m_hdrLuminationBufferSRVView = std::make_unique<ResourceView>(
-			srvDesc,
-			m_hdrLuminationBuffer->GetBuffer().Get()
-		);
+		// HDR reaources
+		{
+			m_hdrLuminationBuffer = std::make_unique<Buffer>(
+				64 * sizeof(float),
+				D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+				D3D12_HEAP_TYPE_DEFAULT,
+				D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS
+			);
 
-		m_hdrPrevLuminationBuffer = std::make_unique<Buffer>(
-			1 * sizeof(float),
-			D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
-			D3D12_HEAP_TYPE_DEFAULT,
-			D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS
-		);
-		uavDesc.Format = DXGI_FORMAT_UNKNOWN;
-		uavDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
-		uavDesc.Buffer = {
-			0,
-			1,
-			sizeof(float),
-			0,
-			D3D12_BUFFER_UAV_FLAG_NONE
-		};
-		m_hdrPrevLuminationBufferUAVView = std::make_unique<ResourceView>(
-			uavDesc,
-			m_hdrPrevLuminationBuffer->GetBuffer().Get()
-		);
+			m_hrdDownScaledTexture = std::make_unique<Texture>(
+				m_width / 4,
+				m_height / 4,
+				hdrRTVFormat,
+				D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+				D3D12_HEAP_TYPE_DEFAULT,
+				false,
+				false,
+				true,
+				1
+			);
+			D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc;
+			uavDesc.Format = hdrRTVFormat;
+			uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
+			uavDesc.Texture2D = {
+				0,
+				0
+			};
+			m_hrdDownScaledTextureUAVView = std::make_unique<ResourceView>(
+				uavDesc,
+				m_hrdDownScaledTexture->GetImage().Get()
+			);
 
+			uavDesc.Format = DXGI_FORMAT_UNKNOWN;
+			uavDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
+			uavDesc.Buffer = {
+				0,
+				64,
+				sizeof(float),
+				0,
+				D3D12_BUFFER_UAV_FLAG_NONE
+			};
+
+			m_hdrLuminationBufferUAVView = std::make_unique<ResourceView>(
+				uavDesc,
+				m_hdrLuminationBuffer->GetBuffer().Get()
+			);
+
+			D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc;
+			srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+			srvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+			srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+			srvDesc.Buffer = {
+				0,
+				64,
+				sizeof(float),
+				D3D12_BUFFER_SRV_FLAG_NONE
+			};
+			m_hdrLuminationBufferSRVView = std::make_unique<ResourceView>(
+				srvDesc,
+				m_hdrLuminationBuffer->GetBuffer().Get()
+			);
+
+			m_hdrPrevLuminationBuffer = std::make_unique<Buffer>(
+				1 * sizeof(float),
+				D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+				D3D12_HEAP_TYPE_DEFAULT,
+				D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS
+			);
+			uavDesc.Format = DXGI_FORMAT_UNKNOWN;
+			uavDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
+			uavDesc.Buffer = {
+				0,
+				1,
+				sizeof(float),
+				0,
+				D3D12_BUFFER_UAV_FLAG_NONE
+			};
+			m_hdrPrevLuminationBufferUAVView = std::make_unique<ResourceView>(
+				uavDesc,
+				m_hdrPrevLuminationBuffer->GetBuffer().Get()
+			);
+		}
 
 		m_renderTargetCopyAttachment = std::make_unique<Texture>(
 			m_width,
@@ -729,6 +756,7 @@ namespace JoyEngine
 				commandList->SetComputeRoot32BitConstants(0, sizeof(HDRDownScaleConstants) / 4, &downScaleConstants, 0);
 				AttachViewToCompute(commandList, 1, m_hdrRenderTarget->GetAttachmentView());
 				AttachViewToCompute(commandList, 2, m_hdrLuminationBufferUAVView.get());
+				AttachViewToCompute(commandList, 3, m_hrdDownScaledTextureUAVView.get());
 
 				commandList->Dispatch(groupSize, 1, 1);
 			}

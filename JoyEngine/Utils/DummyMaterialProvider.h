@@ -49,6 +49,9 @@ namespace JoyEngine
 		[[nodiscard]] ComputePipeline* GetParticleBufferGenerationComputePipeline() const noexcept { return m_particleBufferGenerationComputePipeline; }
 		[[nodiscard]] SharedMaterial* GetParticleSystemSharedMaterial() const noexcept { return m_particleSystemSharedMaterial; }
 		[[nodiscard]] SharedMaterial* GetFogPostProcessSharedMaterial() const noexcept { return m_fogPostProcessSharedMaterial; }
+
+		[[nodiscard]] ComputePipeline* GetHdrDownscaleFirstPassComputePipeline() const noexcept { return m_hdrDownscaleFirstPassComputePipeline; }
+		[[nodiscard]] ComputePipeline* GetHdrDownscaleSecondPassComputePipeline() const noexcept { return m_hdrDownscaleSecondPassComputePipeline; }
 		[[nodiscard]] SharedMaterial* GetHdrToLdrTransitionSharedMaterial() const noexcept { return m_hdrToLdrTransitionSharedMaterial; }
 	private:
 		//ResourceHandle<Texture> m_skyboxTextureHandle;

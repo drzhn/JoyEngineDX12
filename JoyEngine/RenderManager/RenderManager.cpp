@@ -83,6 +83,42 @@ namespace JoyEngine
 			D3D12_RESOURCE_STATE_RENDER_TARGET,
 			D3D12_HEAP_TYPE_DEFAULT
 		);
+		m_hdrLuminationBuffer = std::make_unique<Buffer>(
+			64 * sizeof(float),
+			D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+			D3D12_HEAP_TYPE_DEFAULT,
+			D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS
+		);
+		D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc;
+		uavDesc.Format = DXGI_FORMAT_UNKNOWN;
+		uavDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
+		uavDesc.Buffer = {
+			0,
+			64,
+			sizeof(float),
+			0,
+			D3D12_BUFFER_UAV_FLAG_NONE
+		};
+		m_hdrLuminationBufferUAVView = std::make_unique<ResourceView>(
+			uavDesc,
+			m_hdrLuminationBuffer->GetBuffer().Get()
+		);
+
+		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc;
+		srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		srvDesc.Buffer = {
+			0,
+			64,
+			sizeof(float),
+			D3D12_BUFFER_SRV_FLAG_NONE
+		};
+		m_hdrLuminationBufferSRVView = std::make_unique<ResourceView>(
+			srvDesc,
+			m_hdrLuminationBuffer->GetBuffer().Get()
+		);
+
 
 		m_renderTargetCopyAttachment = std::make_unique<Texture>(
 			m_width,
@@ -649,47 +685,93 @@ namespace JoyEngine
 
 		// HDR->LDR
 		{
-			D3D12_RESOURCE_BARRIER barriers[2];
-			barriers[0] = Transition(
-				swapchainResource,
-				D3D12_RESOURCE_STATE_PRESENT,
-				D3D12_RESOURCE_STATE_RENDER_TARGET);
-			barriers[1] = Transition(
+			uint32_t groupSize = static_cast<uint32_t>(m_width * m_height / 16.0f / 1024.0f) + 1;
+			HDRDownScaleConstants downScaleConstants = {
+				glm::uvec2(m_width / 4, m_height / 4),
+				m_width * m_height / 16,
+				groupSize
+			};
+
+			D3D12_RESOURCE_BARRIER barrier;
+			barrier = Transition(
 				hdrRTVResource,
 				D3D12_RESOURCE_STATE_RENDER_TARGET,
 				D3D12_RESOURCE_STATE_GENERIC_READ);
-			commandList->ResourceBarrier(2, barriers);
+			commandList->ResourceBarrier(1, &barrier);
 
-			SetViewportAndScissor(commandList, m_width, m_height);
+			// First pass
+			{
+				commandList->SetComputeRootSignature(JoyContext::DummyMaterials->GetHdrDownscaleFirstPassComputePipeline()->GetRootSignature().Get());
+				commandList->SetPipelineState(JoyContext::DummyMaterials->GetHdrDownscaleFirstPassComputePipeline()->GetPipelineObject().Get());
 
-			commandList->OMSetRenderTargets(
-				1,
-				&ldrRTVHandle,
-				FALSE, nullptr);
+				commandList->SetComputeRoot32BitConstants(0, sizeof(HDRDownScaleConstants) / 4, &downScaleConstants, 0);
+				AttachViewToCompute(commandList, 1, m_hdrRenderTarget->GetAttachmentView());
+				AttachViewToCompute(commandList, 2, m_hdrLuminationBufferUAVView.get());
 
-			auto sm = JoyContext::DummyMaterials->GetHdrToLdrTransitionSharedMaterial();
+				commandList->Dispatch(groupSize, 1, 1);
+			}
 
-			commandList->SetPipelineState(sm->GetPipelineObject().Get());
-			commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
-			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			// Second pass
+			{
+				commandList->SetComputeRootSignature(JoyContext::DummyMaterials->GetHdrDownscaleSecondPassComputePipeline()->GetRootSignature().Get());
+				commandList->SetPipelineState(JoyContext::DummyMaterials->GetHdrDownscaleSecondPassComputePipeline()->GetPipelineObject().Get());
 
-			AttachViewToGraphics(commandList, 0, m_hdrRenderTarget->GetAttachmentView());
+				commandList->SetComputeRoot32BitConstants(0, sizeof(HDRDownScaleConstants) / 4, &downScaleConstants, 0);
+				AttachViewToCompute(commandList, 1, m_hdrLuminationBufferUAVView.get());
 
-			commandList->DrawInstanced(
-				3,
-				1,
-				0, 0);
+				commandList->Dispatch(groupSize, 1, 1);
+			}
 
-			barriers[0] = Transition(
-				swapchainResource,
-				D3D12_RESOURCE_STATE_RENDER_TARGET,
-				D3D12_RESOURCE_STATE_PRESENT);
+			// Transition
+			{
+				D3D12_RESOURCE_BARRIER barriers[2];
+				barriers[0] = Transition(
+					swapchainResource,
+					D3D12_RESOURCE_STATE_PRESENT,
+					D3D12_RESOURCE_STATE_RENDER_TARGET);
+				barriers[1] = Transition(
+					m_hdrLuminationBuffer->GetBuffer().Get(),
+					D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+					D3D12_RESOURCE_STATE_GENERIC_READ);
+				commandList->ResourceBarrier(2, barriers);
 
-			barriers[1] = Transition(
+				SetViewportAndScissor(commandList, m_width, m_height);
+
+				commandList->OMSetRenderTargets(
+					1,
+					&ldrRTVHandle,
+					FALSE, nullptr);
+
+				auto sm = JoyContext::DummyMaterials->GetHdrToLdrTransitionSharedMaterial();
+
+				commandList->SetPipelineState(sm->GetPipelineObject().Get());
+				commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+				commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+				AttachViewToGraphics(commandList, 0, m_hdrRenderTarget->GetAttachmentView());
+				AttachViewToGraphics(commandList, 1, m_hdrLuminationBufferSRVView.get());
+
+				commandList->DrawInstanced(
+					3,
+					1,
+					0, 0);
+
+				barriers[0] = Transition(
+					swapchainResource,
+					D3D12_RESOURCE_STATE_RENDER_TARGET,
+					D3D12_RESOURCE_STATE_PRESENT);
+				barriers[1] = Transition(
+					m_hdrLuminationBuffer->GetBuffer().Get(),
+					D3D12_RESOURCE_STATE_GENERIC_READ,
+					D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+				commandList->ResourceBarrier(2, barriers);
+			}
+
+			barrier = Transition(
 				hdrRTVResource,
 				D3D12_RESOURCE_STATE_GENERIC_READ,
 				D3D12_RESOURCE_STATE_RENDER_TARGET);
-			commandList->ResourceBarrier(2, barriers);
+			commandList->ResourceBarrier(1, &barrier);
 		}
 		// transition front buffer to present state
 		// transition normal and position buffers back to render target state

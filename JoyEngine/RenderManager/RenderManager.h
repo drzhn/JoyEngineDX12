@@ -116,6 +116,9 @@ namespace JoyEngine
 		std::unique_ptr<DepthTexture> m_depthAttachment;
 		std::unique_ptr<RenderTexture> m_hdrRenderTarget;
 		std::unique_ptr<Texture> m_renderTargetCopyAttachment;
+		std::unique_ptr<Buffer> m_hdrLuminationBuffer;
+		std::unique_ptr<ResourceView> m_hdrLuminationBufferUAVView;
+		std::unique_ptr<ResourceView> m_hdrLuminationBufferSRVView;
 
 		std::unique_ptr<RenderTexture> m_positionAttachment;
 		std::unique_ptr<RenderTexture> m_normalAttachment;

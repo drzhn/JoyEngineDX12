@@ -404,17 +404,17 @@ namespace JoyEngine
 
 			// Downscaling second pass
 			{
-				const GUID hdrDownscaleFirstPassShaderGuid = GUID::StringToGuid("c3a1592f-f12d-4c25-bcbb-1e6ace76b0fb"); //shaders/hdrDownscaleSecondPass.hlsl
-				const GUID hdrDownscaleFirstPassPipelineGuid = GUID::Random();
+				const GUID hdrDownscaleSecondPassShaderGuid = GUID::StringToGuid("c3a1592f-f12d-4c25-bcbb-1e6ace76b0fb"); //shaders/hdrDownscaleSecondPass.hlsl
+				const GUID hdrDownscaleSecondPassPipelineGuid = GUID::Random();
 
 				RootParams rp;
 				rp.CreateConstants(sizeof(HDRDownScaleConstants), 0);
 				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 0);
 
-				m_hdrDownscaleFirstPassComputePipeline = JoyContext::Resource->LoadResource<ComputePipeline, ComputePipelineArgs>(
-					hdrDownscaleFirstPassPipelineGuid,
+				m_hdrDownscaleSecondPassComputePipeline = JoyContext::Resource->LoadResource<ComputePipeline, ComputePipelineArgs>(
+					hdrDownscaleSecondPassPipelineGuid,
 					{
-						hdrDownscaleFirstPassShaderGuid,
+						hdrDownscaleSecondPassShaderGuid,
 						rp.params
 					});
 			}
@@ -426,6 +426,7 @@ namespace JoyEngine
 
 				RootParams rp;
 				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1);
 
 				m_hdrToLdrTransitionSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
 					hdrToLdrTransitionSharedMaterialGuid,

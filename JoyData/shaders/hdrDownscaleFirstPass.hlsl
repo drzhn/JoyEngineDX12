@@ -7,7 +7,7 @@ uint Domain : packoffset(c0.z);
 // Number of groups dispached on the first pass
 uint GroupSize : packoffset(c0.w);
 }
-Texture2D HDRTex : register(t0);
+Texture2D<float4> HDRTex : register(t0);
 RWStructuredBuffer<float> AverageLum : register(u0);
 
 groupshared float SharedPositions[1024];

@@ -295,6 +295,7 @@ namespace JoyEngine
 
 		auto swapchainResource = m_swapchainRenderTargets[m_currentFrameIndex]->GetImage().Get();
 		auto hdrRTVResource = m_hdrRenderTarget->GetImage().Get();
+		auto copyResource = m_renderTargetCopyAttachment->GetImage().Get();
 		auto positionResource = m_positionAttachment->GetImage().Get();
 		auto normalResource = m_normalAttachment->GetImage().Get();
 		auto lightingResource = m_lightingAttachment->GetImage().Get();
@@ -623,84 +624,84 @@ namespace JoyEngine
 			}
 		}
 
-		//// Copying RTV to temporary Texture
-		//{
-		//	D3D12_RESOURCE_BARRIER barriers[2];
-		//	barriers[0] = Transition(
-		//		m_swapchainRenderTargets[m_currentFrameIndex]->GetImage().Get(),
-		//		D3D12_RESOURCE_STATE_RENDER_TARGET,
-		//		D3D12_RESOURCE_STATE_COPY_SOURCE);
+		// Copying RTV to temporary Texture
+		{
+			D3D12_RESOURCE_BARRIER barriers[2];
+			barriers[0] = Transition(
+				hdrRTVResource,
+				D3D12_RESOURCE_STATE_RENDER_TARGET,
+				D3D12_RESOURCE_STATE_COPY_SOURCE);
 
-		//	barriers[1] = Transition(
-		//		m_renderTargetCopyAttachment->GetImage().Get(),
-		//		D3D12_RESOURCE_STATE_GENERIC_READ,
-		//		D3D12_RESOURCE_STATE_COPY_DEST);
+			barriers[1] = Transition(
+				copyResource,
+				D3D12_RESOURCE_STATE_GENERIC_READ,
+				D3D12_RESOURCE_STATE_COPY_DEST);
 
-		//	commandList->ResourceBarrier(2, barriers);
+			commandList->ResourceBarrier(2, barriers);
 
-		//	commandList->CopyResource(
-		//		m_renderTargetCopyAttachment->GetImage().Get(),
-		//		m_swapchainRenderTargets[m_currentFrameIndex]->GetImage().Get()
-		//	);
+			commandList->CopyResource(
+				copyResource,
+				hdrRTVResource
+			);
 
-		//	barriers[0] = Transition(
-		//		m_renderTargetCopyAttachment->GetImage().Get(),
-		//		D3D12_RESOURCE_STATE_COPY_DEST,
-		//		D3D12_RESOURCE_STATE_GENERIC_READ
-		//	);
+			barriers[0] = Transition(
+				copyResource,
+				D3D12_RESOURCE_STATE_COPY_DEST,
+				D3D12_RESOURCE_STATE_GENERIC_READ
+			);
 
-		//	barriers[1] = Transition(
-		//		m_swapchainRenderTargets[m_currentFrameIndex]->GetImage().Get(),
-		//		D3D12_RESOURCE_STATE_COPY_SOURCE,
-		//		D3D12_RESOURCE_STATE_RENDER_TARGET);
+			barriers[1] = Transition(
+				hdrRTVResource,
+				D3D12_RESOURCE_STATE_COPY_SOURCE,
+				D3D12_RESOURCE_STATE_RENDER_TARGET);
 
-		//	commandList->ResourceBarrier(2, barriers);
-		//}
+			commandList->ResourceBarrier(2, barriers);
+		}
 
-		//// FOG post-process
-		//{
-		//	D3D12_RESOURCE_BARRIER barrier;
-		//	barrier = Transition(
-		//		m_depthAttachment->GetImage().Get(),
-		//		D3D12_RESOURCE_STATE_DEPTH_WRITE,
-		//		D3D12_RESOURCE_STATE_GENERIC_READ);
+		// FOG post-process
+		{
+			D3D12_RESOURCE_BARRIER barrier;
+			barrier = Transition(
+				depthResource,
+				D3D12_RESOURCE_STATE_DEPTH_WRITE,
+				D3D12_RESOURCE_STATE_GENERIC_READ);
 
-		//	commandList->ResourceBarrier(1, &barrier);
+			commandList->ResourceBarrier(1, &barrier);
 
-		//	auto sm = JoyContext::DummyMaterials->GetFogPostProcessSharedMaterial();
+			auto sm = JoyContext::DummyMaterials->GetFogPostProcessSharedMaterial();
 
-		//	commandList->SetPipelineState(sm->GetPipelineObject().Get());
-		//	commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
-		//	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			commandList->SetPipelineState(sm->GetPipelineObject().Get());
+			commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		//	//ID3D12DescriptorHeap* descriptorHeap[1] = { m_normalAttachment->GetAttachmentView()->GetHeap() };
-		//	//commandList->SetDescriptorHeaps(
-		//	//	1,
-		//	//	descriptorHeap);
-		//	//commandList->SetGraphicsRootDescriptorTable(1, m_normalAttachment->GetAttachmentView()->GetGPUHandle());
+			//ID3D12DescriptorHeap* descriptorHeap[1] = { m_normalAttachment->GetAttachmentView()->GetHeap() };
+			//commandList->SetDescriptorHeaps(
+			//	1,
+			//	descriptorHeap);
+			//commandList->SetGraphicsRootDescriptorTable(1, m_normalAttachment->GetAttachmentView()->GetGPUHandle());
 
-		//	AttachViewToGraphics(commandList, 0, m_depthAttachment->GetAttachmentView());
-		//	AttachViewToGraphics(commandList, 1, m_renderTargetCopyAttachment->GetResourceView());
-		//	AttachViewToGraphics(commandList, 2, m_engineDataBufferView.get());
-		//	//DirectionLightData lightData = {
-		//	//	m_directionLight->GetTransform()->GetForward(),
-		//	//	m_directionLight->GetIntensity(),
-		//	//	m_directionLight->GetAmbient()
-		//	//};
+			AttachViewToGraphics(commandList, 0, m_depthAttachment->GetAttachmentView());
+			AttachViewToGraphics(commandList, 1, m_renderTargetCopyAttachment->GetResourceView());
+			AttachViewToGraphics(commandList, 2, m_engineDataBufferView.get());
+			//DirectionLightData lightData = {
+			//	m_directionLight->GetTransform()->GetForward(),
+			//	m_directionLight->GetIntensity(),
+			//	m_directionLight->GetAmbient()
+			//};
 
-		//	//commandList->SetGraphicsRoot32BitConstants(0, sizeof(DirectionLightData) / 4, &lightData, 0);
-		//	commandList->DrawInstanced(
-		//		3,
-		//		1,
-		//		0, 0);
+			//commandList->SetGraphicsRoot32BitConstants(0, sizeof(DirectionLightData) / 4, &lightData, 0);
+			commandList->DrawInstanced(
+				3,
+				1,
+				0, 0);
 
-		//	barrier = Transition(
-		//		m_depthAttachment->GetImage().Get(),
-		//		D3D12_RESOURCE_STATE_GENERIC_READ,
-		//		D3D12_RESOURCE_STATE_DEPTH_WRITE);
+			barrier = Transition(
+				depthResource,
+				D3D12_RESOURCE_STATE_GENERIC_READ,
+				D3D12_RESOURCE_STATE_DEPTH_WRITE);
 
-		//	commandList->ResourceBarrier(1, &barrier);
-		//}
+			commandList->ResourceBarrier(1, &barrier);
+		}
 
 
 		// HDR->LDR

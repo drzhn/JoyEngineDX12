@@ -79,7 +79,7 @@ namespace JoyEngine
 
 	private:
 		void CreateImage(bool allowRenderTarget, bool isDepthTarget, bool allowUnorderedAccess, uint32_t arraySize, uint32_t mipLevels = 1);
-		void CreateImageView(bool allowRenderTarget, bool isDepthTarget, uint32_t arraySize);
+		void CreateImageView(bool allowRenderTarget, bool isDepthTarget, bool allowUnorderedAccess, uint32_t arraySize);
 
 	private:
 		uint32_t m_width = 0;
@@ -106,7 +106,7 @@ namespace JoyEngine
 			uint32_t arraySize = 1
 		);
 
-		[[nodiscard]] ResourceView* GetAttachmentView() const noexcept { return m_inputAttachmentView.get(); }
+		[[nodiscard]] ResourceView* GetSRV() const noexcept { return m_inputAttachmentView.get(); }
 
 	private:
 		std::unique_ptr<ResourceView> m_inputAttachmentView; // additional view for using this texture as input attachment
@@ -124,7 +124,25 @@ namespace JoyEngine
 			uint32_t arraySize = 1
 		);
 
-		[[nodiscard]] ResourceView* GetAttachmentView() const noexcept { return m_inputAttachmentView.get(); }
+		[[nodiscard]] ResourceView* GetSrv() const noexcept { return m_inputAttachmentView.get(); }
+
+	private:
+		std::unique_ptr<ResourceView> m_inputAttachmentView; // additional view for using this texture as input attachment
+	};
+
+	class UAVTexture final : public Texture
+	{
+	public:
+		explicit UAVTexture(
+			uint32_t width,
+			uint32_t height,
+			DXGI_FORMAT format,
+			D3D12_RESOURCE_STATES usage,
+			D3D12_HEAP_TYPE properties,
+			uint32_t arraySize = 1
+		);
+
+		[[nodiscard]] ResourceView* GetSrv() const noexcept { return m_inputAttachmentView.get(); }
 
 	private:
 		std::unique_ptr<ResourceView> m_inputAttachmentView; // additional view for using this texture as input attachment

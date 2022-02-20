@@ -86,6 +86,30 @@ namespace JoyEngine
 
 		// HDR reaources
 		{
+			m_hrdDownScaledTexture = std::make_unique<UAVTexture>(
+				m_width / 4,
+				m_height / 4,
+				hdrRTVFormat,
+				D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+				D3D12_HEAP_TYPE_DEFAULT
+			);
+
+			m_bloomFirstTexture = std::make_unique<UAVTexture>(
+				m_width / 4,
+				m_height / 4,
+				hdrRTVFormat,
+				D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+				D3D12_HEAP_TYPE_DEFAULT
+			);
+
+			m_bloomSecondTexture = std::make_unique<UAVTexture>(
+				m_width / 4,
+				m_height / 4,
+				hdrRTVFormat,
+				D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+				D3D12_HEAP_TYPE_DEFAULT
+			);
+
 			m_hdrLuminationBuffer = std::make_unique<Buffer>(
 				64 * sizeof(float),
 				D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
@@ -93,28 +117,7 @@ namespace JoyEngine
 				D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS
 			);
 
-			m_hrdDownScaledTexture = std::make_unique<Texture>(
-				m_width / 4,
-				m_height / 4,
-				hdrRTVFormat,
-				D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
-				D3D12_HEAP_TYPE_DEFAULT,
-				false,
-				false,
-				true,
-				1
-			);
 			D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc;
-			uavDesc.Format = hdrRTVFormat;
-			uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
-			uavDesc.Texture2D = {
-				0,
-				0
-			};
-			m_hrdDownScaledTextureUAVView = std::make_unique<ResourceView>(
-				uavDesc,
-				m_hrdDownScaledTexture->GetImage().Get()
-			);
 
 			uavDesc.Format = DXGI_FORMAT_UNKNOWN;
 			uavDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
@@ -513,11 +516,11 @@ namespace JoyEngine
 				commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
 				commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-				ID3D12DescriptorHeap* descriptorHeap[1] = {m_normalAttachment->GetAttachmentView()->GetHeap()};
+				ID3D12DescriptorHeap* descriptorHeap[1] = {m_normalAttachment->GetSRV()->GetHeap()};
 				commandList->SetDescriptorHeaps(
 					1,
 					descriptorHeap);
-				commandList->SetGraphicsRootDescriptorTable(1, m_normalAttachment->GetAttachmentView()->GetGPUHandle());
+				commandList->SetGraphicsRootDescriptorTable(1, m_normalAttachment->GetSRV()->GetGPUHandle());
 
 				DirectionLightData lightData = {
 					m_directionLight->GetTransform()->GetForward(),
@@ -551,18 +554,18 @@ namespace JoyEngine
 						mainCameraProjMatrix,
 					};
 
-					AttachViewToGraphics(commandList, 1, m_positionAttachment->GetAttachmentView());
-					AttachViewToGraphics(commandList, 2, m_normalAttachment->GetAttachmentView());
+					AttachViewToGraphics(commandList, 1, m_positionAttachment->GetSRV());
+					AttachViewToGraphics(commandList, 2, m_normalAttachment->GetSRV());
 
 					if (light->GetShadowmap() != nullptr)
 					{
 						if (light->GetLightType() == Spot)
 						{
-							AttachViewToGraphics(commandList, 3, light->GetShadowmap()->GetAttachmentView());
+							AttachViewToGraphics(commandList, 3, light->GetShadowmap()->GetSrv());
 						}
 						if (light->GetLightType() == Point)
 						{
-							AttachViewToGraphics(commandList, 6, light->GetShadowmap()->GetAttachmentView());
+							AttachViewToGraphics(commandList, 6, light->GetShadowmap()->GetSrv());
 						}
 						AttachViewToGraphics(commandList, 4, Texture::GetDepthPCFSampler());
 					}
@@ -701,13 +704,13 @@ namespace JoyEngine
 			commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
 			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-			//ID3D12DescriptorHeap* descriptorHeap[1] = { m_normalAttachment->GetAttachmentView()->GetHeap() };
+			//ID3D12DescriptorHeap* descriptorHeap[1] = { m_normalAttachment->GetSRV()->GetHeap() };
 			//commandList->SetDescriptorHeaps(
 			//	1,
 			//	descriptorHeap);
-			//commandList->SetGraphicsRootDescriptorTable(1, m_normalAttachment->GetAttachmentView()->GetGPUHandle());
+			//commandList->SetGraphicsRootDescriptorTable(1, m_normalAttachment->GetSRV()->GetGPUHandle());
 
-			AttachViewToGraphics(commandList, 0, m_depthAttachment->GetAttachmentView());
+			AttachViewToGraphics(commandList, 0, m_depthAttachment->GetSrv());
 			AttachViewToGraphics(commandList, 1, m_renderTargetCopyAttachment->GetResourceView());
 			AttachViewToGraphics(commandList, 2, m_engineDataBufferView.get());
 			//DirectionLightData lightData = {
@@ -738,7 +741,8 @@ namespace JoyEngine
 				glm::uvec2(m_width / 4, m_height / 4),
 				m_width * m_height / 16,
 				groupSize,
-				0.01f
+				0.01f,
+				0.2f
 			};
 
 			D3D12_RESOURCE_BARRIER barrier;
@@ -754,9 +758,9 @@ namespace JoyEngine
 				commandList->SetPipelineState(JoyContext::DummyMaterials->GetHdrDownscaleFirstPassComputePipeline()->GetPipelineObject().Get());
 
 				commandList->SetComputeRoot32BitConstants(0, sizeof(HDRDownScaleConstants) / 4, &downScaleConstants, 0);
-				AttachViewToCompute(commandList, 1, m_hdrRenderTarget->GetAttachmentView());
+				AttachViewToCompute(commandList, 1, m_hdrRenderTarget->GetSRV());
 				AttachViewToCompute(commandList, 2, m_hdrLuminationBufferUAVView.get());
-				AttachViewToCompute(commandList, 3, m_hrdDownScaledTextureUAVView.get());
+				AttachViewToCompute(commandList, 3, m_hrdDownScaledTexture->GetResourceView());
 
 				commandList->Dispatch(groupSize, 1, 1);
 			}
@@ -772,19 +776,80 @@ namespace JoyEngine
 
 				commandList->Dispatch(groupSize, 1, 1);
 			}
+			barrier = Transition(
+				m_hdrLuminationBuffer->GetBuffer().Get(),
+				D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+				D3D12_RESOURCE_STATE_GENERIC_READ);
+			commandList->ResourceBarrier(1, &barrier);
+
+			Barrier(commandList, m_hrdDownScaledTexture->GetImage().Get(),
+			        D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_GENERIC_READ);
+
+			// Bloom bright pass
+			{
+				commandList->SetComputeRootSignature(JoyContext::DummyMaterials->GetBloomBrightPassComputePipeline()->GetRootSignature().Get());
+				commandList->SetPipelineState(JoyContext::DummyMaterials->GetBloomBrightPassComputePipeline()->GetPipelineObject().Get());
+
+				commandList->SetComputeRoot32BitConstants(0, sizeof(HDRDownScaleConstants) / 4, &downScaleConstants, 0);
+				AttachViewToCompute(commandList, 1, m_hrdDownScaledTexture->GetSrv());
+				AttachViewToCompute(commandList, 2, m_hdrLuminationBufferSRVView.get());
+				AttachViewToCompute(commandList, 3, m_bloomFirstTexture->GetResourceView());
+
+				commandList->Dispatch(groupSize, 1, 1);
+			}
+
+			Barrier(commandList, m_hrdDownScaledTexture->GetImage().Get(),
+			        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+
+			Barrier(commandList, m_bloomFirstTexture->GetImage().Get(),
+			        D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_GENERIC_READ);
+
+			// Bloom vertical filter pass
+			{
+				commandList->SetComputeRootSignature(JoyContext::DummyMaterials->GetBloomVerticalFilterComputePipeline()->GetRootSignature().Get());
+				commandList->SetPipelineState(JoyContext::DummyMaterials->GetBloomVerticalFilterComputePipeline()->GetPipelineObject().Get());
+
+				commandList->SetComputeRoot32BitConstants(0, sizeof(HDRDownScaleConstants) / 4, &downScaleConstants, 0);
+				AttachViewToCompute(commandList, 1, m_bloomFirstTexture->GetSrv());
+				AttachViewToCompute(commandList, 2, m_bloomSecondTexture->GetResourceView());
+
+				commandList->Dispatch(m_height * m_width / 16, m_height / (128 - 12) + 1, 1);
+			}
+
+			Barrier(commandList, m_bloomFirstTexture->GetImage().Get(),
+			        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+
+			Barrier(commandList, m_bloomSecondTexture->GetImage().Get(),
+			        D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_GENERIC_READ);
+
+			// Bloom horizontal filter pass
+			{
+				commandList->SetComputeRootSignature(JoyContext::DummyMaterials->GetBloomHorizontalFilterComputePipeline()->GetRootSignature().Get());
+				commandList->SetPipelineState(JoyContext::DummyMaterials->GetBloomHorizontalFilterComputePipeline()->GetPipelineObject().Get());
+
+				commandList->SetComputeRoot32BitConstants(0, sizeof(HDRDownScaleConstants) / 4, &downScaleConstants, 0);
+				AttachViewToCompute(commandList, 1, m_bloomSecondTexture->GetSrv());
+				AttachViewToCompute(commandList, 2, m_bloomFirstTexture->GetResourceView());
+
+				commandList->Dispatch(m_width / 128 + 1, m_height * m_width / 16, 1);
+			}
+
+			Barrier(commandList, m_bloomSecondTexture->GetImage().Get(),
+			        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+
+			//barrier = Transition(
+			//	m_hdrLuminationBuffer->GetBuffer().Get(),
+			//	D3D12_RESOURCE_STATE_GENERIC_READ,
+			//	D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+			//commandList->ResourceBarrier(1, &barrier);
 
 			// Transition
 			{
-				D3D12_RESOURCE_BARRIER barriers[2];
-				barriers[0] = Transition(
-					swapchainResource,
-					D3D12_RESOURCE_STATE_PRESENT,
-					D3D12_RESOURCE_STATE_RENDER_TARGET);
-				barriers[1] = Transition(
-					m_hdrLuminationBuffer->GetBuffer().Get(),
-					D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
-					D3D12_RESOURCE_STATE_GENERIC_READ);
-				commandList->ResourceBarrier(2, barriers);
+				Barrier(commandList, swapchainResource, 
+					D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+				Barrier(commandList, m_bloomFirstTexture->GetImage().Get(),
+				        D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_GENERIC_READ);
+
 
 				SetViewportAndScissor(commandList, m_width, m_height);
 
@@ -799,23 +864,22 @@ namespace JoyEngine
 				commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
 				commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-				AttachViewToGraphics(commandList, 0, m_hdrRenderTarget->GetAttachmentView());
+				AttachViewToGraphics(commandList, 0, m_hdrRenderTarget->GetSRV());
 				AttachViewToGraphics(commandList, 1, m_hdrLuminationBufferSRVView.get());
+				AttachViewToGraphics(commandList, 2, m_bloomFirstTexture->GetSrv());
+				AttachViewToGraphics(commandList, 3, Texture::GetTextureSampler());
 
 				commandList->DrawInstanced(
 					3,
 					1,
 					0, 0);
 
-				barriers[0] = Transition(
-					swapchainResource,
-					D3D12_RESOURCE_STATE_RENDER_TARGET,
-					D3D12_RESOURCE_STATE_PRESENT);
-				barriers[1] = Transition(
-					m_hdrLuminationBuffer->GetBuffer().Get(),
-					D3D12_RESOURCE_STATE_GENERIC_READ,
-					D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
-				commandList->ResourceBarrier(2, barriers);
+				Barrier(commandList, swapchainResource,
+				        D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+				Barrier(commandList, m_bloomFirstTexture->GetImage().Get(),
+				        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+				Barrier(commandList, m_hdrLuminationBuffer->GetBuffer().Get(),
+				        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 			}
 
 			barrier = Transition(
@@ -882,7 +946,7 @@ namespace JoyEngine
 				{
 					if (isDrawingMainColor)
 					{
-						AttachViewToGraphics(commandList, rootIndex, m_lightingAttachment->GetAttachmentView());
+						AttachViewToGraphics(commandList, rootIndex, m_lightingAttachment->GetSRV());
 					}
 					break;
 				}
@@ -890,7 +954,7 @@ namespace JoyEngine
 				{
 					if (isDrawingMainColor)
 					{
-						AttachViewToGraphics(commandList, rootIndex, m_cubemap->GetCubemapTexture()->GetAttachmentView());
+						AttachViewToGraphics(commandList, rootIndex, m_cubemap->GetCubemapTexture()->GetSRV());
 					}
 					break;
 				}
@@ -1033,6 +1097,19 @@ namespace JoyEngine
 			rootParameterIndex, view->GetGPUHandle());
 	}
 
+
+	void RenderManager::Barrier(
+		ID3D12GraphicsCommandList* commandList,
+		ID3D12Resource* pResource,
+		D3D12_RESOURCE_STATES stateBefore,
+		D3D12_RESOURCE_STATES stateAfter)
+	{
+		const D3D12_RESOURCE_BARRIER barrier = Transition(
+			pResource,
+			stateBefore,
+			stateAfter);
+		commandList->ResourceBarrier(1, &barrier);
+	}
 
 	float RenderManager::GetAspect() const noexcept
 	{

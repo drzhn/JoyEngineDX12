@@ -100,6 +100,7 @@ namespace JoyEngine
 		static void SetViewportAndScissor(ID3D12GraphicsCommandList* commandList, uint32_t width, uint32_t height);
 		static void AttachViewToGraphics(ID3D12GraphicsCommandList* commandList, uint32_t rootParameterIndex, const ResourceView* view);
 		static void AttachViewToCompute(ID3D12GraphicsCommandList* commandList, uint32_t rootParameterIndex, const ResourceView* view);
+		static void Barrier(ID3D12GraphicsCommandList* commandList, ID3D12Resource* pResource, D3D12_RESOURCE_STATES stateBefore, D3D12_RESOURCE_STATES stateAfter);
 
 	private:
 		static constexpr DXGI_FORMAT hdrRTVFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
@@ -117,13 +118,17 @@ namespace JoyEngine
 		std::unique_ptr<RenderTexture> m_hdrRenderTarget;
 		std::unique_ptr<Texture> m_renderTargetCopyAttachment;
 
+		std::unique_ptr<UAVTexture> m_hrdDownScaledTexture;
+
+		std::unique_ptr<UAVTexture> m_bloomFirstTexture;
+		std::unique_ptr<UAVTexture> m_bloomSecondTexture;
+
 		std::unique_ptr<Buffer> m_hdrLuminationBuffer;
 		std::unique_ptr<ResourceView> m_hdrLuminationBufferUAVView;
 		std::unique_ptr<ResourceView> m_hdrLuminationBufferSRVView;
 		std::unique_ptr<Buffer> m_hdrPrevLuminationBuffer;
 		std::unique_ptr<ResourceView> m_hdrPrevLuminationBufferUAVView;
-		std::unique_ptr<Texture> m_hrdDownScaledTexture;
-		std::unique_ptr<ResourceView> m_hrdDownScaledTextureUAVView;
+
 
 		std::unique_ptr<RenderTexture> m_positionAttachment;
 		std::unique_ptr<RenderTexture> m_normalAttachment;

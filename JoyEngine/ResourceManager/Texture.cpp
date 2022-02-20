@@ -109,7 +109,7 @@ namespace JoyEngine
 		}
 
 		CreateImage(false, false, true, 1, 5);
-		CreateImageView(false, false, 1);
+		CreateImageView(false, false, false, 1);
 		JoyContext::Memory->LoadDataToImage(
 			textureStream,
 			sizeof(uint32_t) + sizeof(uint32_t),
@@ -135,7 +135,7 @@ namespace JoyEngine
 		m_memoryPropertiesFlags(properties)
 	{
 		CreateImage(allowRenderTarget, isDepthTarget, allowUnorderedAccess, arraySize);
-		CreateImageView(allowRenderTarget, isDepthTarget, arraySize);
+		CreateImageView(allowRenderTarget, isDepthTarget, allowUnorderedAccess, arraySize);
 	}
 
 	Texture::Texture(
@@ -152,7 +152,7 @@ namespace JoyEngine
 		m_memoryPropertiesFlags(properties),
 		m_texture(std::move(externalResource))
 	{
-		CreateImageView(true, false, 1); // I use this only for creating texture from system back buffer
+		CreateImageView(true, false, false, 1); // I use this only for creating texture from system back buffer
 	}
 
 	void Texture::CreateImage(bool allowRenderTarget, bool isDepthTarget, bool allowUnorderedAccess, uint32_t arraySize, uint32_t mipLevels)
@@ -201,9 +201,11 @@ namespace JoyEngine
 		);
 	}
 
-	void Texture::CreateImageView(bool allowRenderTarget, bool isDepthTarget, uint32_t arraySize)
+	void Texture::CreateImageView(bool allowRenderTarget, bool isDepthTarget, bool allowUnorderedAccess, uint32_t arraySize)
 	{
-		ASSERT(!(allowRenderTarget && isDepthTarget));
+		ASSERT(!(allowRenderTarget && isDepthTarget ));
+		ASSERT(!(allowRenderTarget && allowUnorderedAccess));
+		ASSERT(!(isDepthTarget && allowUnorderedAccess));
 		ASSERT(arraySize >= 1);
 
 		if (allowRenderTarget)
@@ -250,6 +252,18 @@ namespace JoyEngine
 			depthStencilViewDesc.Flags = D3D12_DSV_FLAG_NONE;
 
 			m_resourceView = std::make_unique<ResourceView>(depthStencilViewDesc, m_texture.Get());
+		}
+		else if (allowUnorderedAccess)
+		{
+			ASSERT(arraySize == 1);
+			D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc;
+			uavDesc.Format = m_format;
+			uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D; // TODO make for arraySize > 1
+			uavDesc.Texture2D = {
+				0,
+				0
+			};
+			m_resourceView = std::make_unique<ResourceView>(uavDesc, m_texture.Get());
 		}
 		else
 		{
@@ -344,5 +358,50 @@ namespace JoyEngine
 		m_inputAttachmentView = std::make_unique<ResourceView>(
 			desc,
 			this->GetImage().Get());
+	}
+
+	UAVTexture::UAVTexture(
+		uint32_t width,
+		uint32_t height,
+		DXGI_FORMAT format,
+		D3D12_RESOURCE_STATES usage,
+		D3D12_HEAP_TYPE properties,
+		uint32_t arraySize):
+		Texture(width,
+		        height,
+		        format,
+		        usage,
+		        properties,
+		        false,
+		        false,
+		        true,
+		        arraySize)
+	{
+		ASSERT(arraySize > 0);
+
+		D3D12_SHADER_RESOURCE_VIEW_DESC desc;
+		desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		desc.Format = this->GetFormat();
+		if (arraySize == 1)
+		{
+			desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+			desc.Texture2D = {
+				0,
+				1,
+				0,
+				0
+			};
+		}
+		else
+		{
+			desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
+			desc.TextureCube.MipLevels = 1;
+			desc.TextureCube.MostDetailedMip = 0;
+			desc.TextureCube.ResourceMinLODClamp = 0.0f;
+		}
+		m_inputAttachmentView = std::make_unique<ResourceView>(
+			desc,
+			this->GetImage().Get()
+		);
 	}
 }

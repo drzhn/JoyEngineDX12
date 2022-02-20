@@ -382,6 +382,62 @@ namespace JoyEngine
 				});
 		}
 
+		// Bloom
+		{
+			// Bright pass
+			{
+				const GUID bloomBrightPassShaderGuid = GUID::StringToGuid("110f9d5d-008a-4f07-8a7c-e0a208353bf1"); //shaders/bloomBrightPass.hlsl
+				const GUID bloomBrightPassPipelineGuid = GUID::Random();
+
+				RootParams rp;
+				rp.CreateConstants(sizeof(HDRDownScaleConstants), 0);
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0);
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1);
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 0);
+
+				m_bloomBrightPassComputePipeline = JoyContext::Resource->LoadResource<ComputePipeline, ComputePipelineArgs>(
+					bloomBrightPassPipelineGuid,
+					{
+						bloomBrightPassShaderGuid,
+						rp.params
+					});
+			}
+			// Vertical filter
+			{
+				const GUID verticalFilterShaderGuid = GUID::StringToGuid("79791a5c-5374-4e44-9ad0-f2cf57e7c8e6"); //shaders/bloomVerticalFilter.hlsl
+				const GUID verticalFilterPipelineGuid = GUID::Random();
+
+				RootParams rp;
+				rp.CreateConstants(sizeof(HDRDownScaleConstants), 0);
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0);
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 0);
+
+				m_bloomVerticalFilterComputePipeline = JoyContext::Resource->LoadResource<ComputePipeline, ComputePipelineArgs>(
+					verticalFilterPipelineGuid,
+					{
+						verticalFilterShaderGuid,
+						rp.params
+					});
+			}
+			// Horizontal filter
+			{
+				const GUID horizontalFilterShaderGuid = GUID::StringToGuid("fcdfbb5b-72ea-4b7b-b432-3f807ffc576d"); //shaders/bloomHorizontalFilter.hlsl
+				const GUID horizontalFilterPipelineGuid = GUID::Random();
+
+				RootParams rp;
+				rp.CreateConstants(sizeof(HDRDownScaleConstants), 0);
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0);
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 0);
+
+				m_bloomHorizontalFilterComputePipeline = JoyContext::Resource->LoadResource<ComputePipeline, ComputePipelineArgs>(
+					horizontalFilterPipelineGuid,
+					{
+						horizontalFilterShaderGuid,
+						rp.params
+					});
+			}
+		}
+
 		// HDR
 		{
 			// Downscaling first pass
@@ -429,6 +485,8 @@ namespace JoyEngine
 				RootParams rp;
 				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, D3D12_SHADER_VISIBILITY_PIXEL);
 				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1);
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 2);
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 0);
 
 				m_hdrToLdrTransitionSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
 					hdrToLdrTransitionSharedMaterialGuid,

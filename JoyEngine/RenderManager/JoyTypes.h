@@ -83,8 +83,8 @@ namespace JoyEngine
 		// Number of groups dispached on the first pass
 		uint32_t GroupSize;
 		float Adaptation; // Adaptation factor
+		float fBloomThreshold; // Bloom threshold percentage
 	};
-
 }
 
 #endif //JOY_TYPES_H

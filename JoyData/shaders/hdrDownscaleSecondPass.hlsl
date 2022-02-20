@@ -9,6 +9,8 @@ uint Domain : packoffset(c0.z);
 // Number of groups dispached on the first pass
 uint GroupSize : packoffset(c0.w);
 float Adaptation : packoffset(c1); // Adaptation factor
+float fBloomThreshold : packoffset(c1.y); // Bloom threshold percentage
+
 }
 
 RWStructuredBuffer<float> AverageLum : register(u0);

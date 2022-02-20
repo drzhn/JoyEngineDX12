@@ -93,6 +93,19 @@
             "guid": "aa366fc9-b8a7-4cca-b5d3-670216174566",
             "path": "shaders/hdrToLdrTransition.hlsl"
         },
+				
+		{
+            "guid": "110f9d5d-008a-4f07-8a7c-e0a208353bf1",
+            "path": "shaders/bloomBrightPass.hlsl"
+        },		
+		{
+            "guid": "fcdfbb5b-72ea-4b7b-b432-3f807ffc576d",
+            "path": "shaders/bloomHorizontalFilter.hlsl"
+        },
+		{
+            "guid": "79791a5c-5374-4e44-9ad0-f2cf57e7c8e6",
+            "path": "shaders/bloomVerticalFilter.hlsl"
+        },
 		
 		
         {

@@ -277,5 +277,8 @@
     <None Include="JoyData\shaders\hdrDownscaleFirstPass.hlsl" />
     <None Include="JoyData\shaders\hdrDownscaleSecondPass.hlsl" />
     <None Include="JoyData\shaders\hdrToLdrTransition.hlsl" />
+    <None Include="JoyData\shaders\bloomBrightPass.hlsl" />
+    <None Include="JoyData\shaders\bloomVerticalFilter.hlsl" />
+    <None Include="JoyData\shaders\bloomHorizontalFilter.hlsl" />
   </ItemGroup>
 </Project>

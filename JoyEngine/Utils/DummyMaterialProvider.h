@@ -53,6 +53,11 @@ namespace JoyEngine
 		[[nodiscard]] ComputePipeline* GetHdrDownscaleFirstPassComputePipeline() const noexcept { return m_hdrDownscaleFirstPassComputePipeline; }
 		[[nodiscard]] ComputePipeline* GetHdrDownscaleSecondPassComputePipeline() const noexcept { return m_hdrDownscaleSecondPassComputePipeline; }
 		[[nodiscard]] SharedMaterial* GetHdrToLdrTransitionSharedMaterial() const noexcept { return m_hdrToLdrTransitionSharedMaterial; }
+
+		[[nodiscard]] ComputePipeline* GetBloomBrightPassComputePipeline() const noexcept { return m_bloomBrightPassComputePipeline; }
+		[[nodiscard]] ComputePipeline* GetBloomVerticalFilterComputePipeline() const noexcept { return m_bloomVerticalFilterComputePipeline; }
+		[[nodiscard]] ComputePipeline* GetBloomHorizontalFilterComputePipeline() const noexcept { return m_bloomHorizontalFilterComputePipeline; }
+
 	private:
 		//ResourceHandle<Texture> m_skyboxTextureHandle;
 
@@ -77,6 +82,10 @@ namespace JoyEngine
 		ResourceHandle<ComputePipeline> m_hdrDownscaleFirstPassComputePipeline;
 		ResourceHandle<ComputePipeline> m_hdrDownscaleSecondPassComputePipeline;
 		ResourceHandle<SharedMaterial> m_hdrToLdrTransitionSharedMaterial;
+
+		ResourceHandle<ComputePipeline> m_bloomBrightPassComputePipeline;
+		ResourceHandle<ComputePipeline> m_bloomVerticalFilterComputePipeline;
+		ResourceHandle<ComputePipeline> m_bloomHorizontalFilterComputePipeline;
 
 
 		struct MaterialData

@@ -8,6 +8,11 @@
 #include "GraphicsManager/GraphicsManager.h"
 #include "MemoryManager/MemoryManager.h"
 #include "Utils/Assert.h"
+#include "DDS.h"
+#include "DDSTextureLoader.h"
+#include "JoyEngine.h"
+
+using namespace DirectX;
 
 namespace JoyEngine
 {
@@ -85,37 +90,75 @@ namespace JoyEngine
 		m_usageFlags(D3D12_RESOURCE_STATE_COPY_DEST),
 		m_memoryPropertiesFlags(D3D12_HEAP_TYPE_DEFAULT)
 	{
-		auto textureStream = JoyContext::Data->GetFileStream(guid, true);
-		uint32_t width, height;
-		TextureType type;
+		bool hasRawData = JoyContext::Data->HasRawData(guid);
+		auto textureStream = JoyContext::Data->GetFileStream(guid, hasRawData);
 
 		textureStream.seekg(0);
-		textureStream.read(reinterpret_cast<char*>(&width), sizeof(uint32_t));
-		textureStream.read(reinterpret_cast<char*>(&height), sizeof(uint32_t));
-		textureStream.read(reinterpret_cast<char*>(&type), sizeof(uint32_t));
-
-		m_width = width;
-		m_height = height;
-		switch (type)
+		uint32_t ddsMagicNumber = 0;
+		textureStream.read(reinterpret_cast<char*>(&ddsMagicNumber), sizeof(uint32_t));
+		if (ddsMagicNumber == DDS_MAGIC)
 		{
-		case RGBA_UNORM:
-			m_format = DXGI_FORMAT_R8G8B8A8_UNORM;
-			break;
-		case RGB_FLOAT:
-			m_format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-			break;
-		default:
-			ASSERT(false);
+			DDS_HEADER header = {};
+			textureStream.read(reinterpret_cast<char*>(&header), sizeof(DDS_HEADER));
+			m_width = header.width;
+			m_height = header.height;
+			m_format = DXGI_FORMAT_BC1_UNORM;
+			//CreateImage(false, false, false, 1, 1);
+			ID3D12Resource* resource = nullptr;// = m_texture.Get();
+			uint32_t pitch = header.pitchOrLinearSize;
+			std::vector<char> data = JoyContext::Data->GetData(guid, false, 0);
+			std::vector<D3D12_SUBRESOURCE_DATA> subresource = {
+				{
+					reinterpret_cast<void*>(data.data()),
+					m_width,
+					m_height
+				}
+			};
+			LoadDDSTextureFromMemory(
+				JoyContext::Graphics->GetDevice(),
+				reinterpret_cast<uint8_t*>(data.data()),
+				data.size(),
+				&resource,
+				subresource
+			);
+			m_texture = resource;
+			JoyContext::Memory->ChangeResourceState(m_texture.Get(),
+				D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ);
+			CreateImageView(false, false, false, 1);
 		}
+		else
+		{
+			uint32_t width, height;
+			TextureType type;
 
-		CreateImage(false, false, true, 1, 5);
-		CreateImageView(false, false, false, 1);
-		JoyContext::Memory->LoadDataToImage(
-			textureStream,
-			sizeof(uint32_t) + sizeof(uint32_t),
-			m_width,
-			m_height,
-			this);
+			textureStream.seekg(0);
+			textureStream.read(reinterpret_cast<char*>(&width), sizeof(uint32_t));
+			textureStream.read(reinterpret_cast<char*>(&height), sizeof(uint32_t));
+			textureStream.read(reinterpret_cast<char*>(&type), sizeof(uint32_t));
+
+			m_width = width;
+			m_height = height;
+			switch (type)
+			{
+			case RGBA_UNORM:
+				m_format = DXGI_FORMAT_R8G8B8A8_UNORM;
+				break;
+			case RGB_FLOAT:
+				m_format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+				break;
+			default:
+				ASSERT(false);
+			}
+
+			CreateImage(false, false, true, 1, 5);
+			CreateImageView(false, false, false, 1);
+			JoyContext::Memory->LoadDataToImage(
+				textureStream,
+				sizeof(uint32_t) + sizeof(uint32_t),
+				m_width,
+				m_height,
+				this);
+		}
 	}
 
 	Texture::Texture(

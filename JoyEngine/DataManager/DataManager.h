@@ -30,7 +30,7 @@ namespace JoyEngine
 
 		~DataManager();
 
-		std::vector<char> GetData(GUID guid, bool shouldReadRawData = false)
+		std::vector<char> GetData(GUID guid, bool shouldReadRawData = false, uint32_t offset = 0)
 		{
 			ASSERT(m_pathDatabase.find(guid) != m_pathDatabase.end());
 			std::string filename = m_dataPath + m_pathDatabase[guid].string();
@@ -38,7 +38,15 @@ namespace JoyEngine
 			{
 				filename += ".data";
 			}
-			return ReadFile(filename);
+			return ReadFile(filename, offset);
+		}
+
+		bool HasRawData(GUID guid)
+		{
+			ASSERT(m_pathDatabase.find(guid) != m_pathDatabase.end());
+			std::string filename = m_dataPath + m_pathDatabase[guid].string();
+			filename += ".data";
+			return std::filesystem::exists(filename);
 		}
 
 		std::ifstream GetFileStream(GUID guid, bool shouldReadRawData = false)

@@ -34,6 +34,10 @@
 		{
             "guid": "e8448435-7baf-4e40-ac72-b99e49284929",
             "path": "textures/wood.png"
+        },   		
+		{
+            "guid": "cf021726-708f-42d2-860e-d33a550e631b",
+            "path": "textures/DDSSample.dds"
         },      
 		
 		

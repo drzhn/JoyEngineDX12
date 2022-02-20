@@ -300,6 +300,22 @@
                     "type": "cubemap_renderer"
                 }
             ]
+        },
+
+        {
+            "name": "cube_compressed_texture_test",
+            "transform": {
+                "localPosition": [ 0.0, 0.0, 0.0 ],
+                "localRotation": [ 0.0, 0.0, 0.0 ],
+                "localScale": [ 1.0, 1.0, 1.0 ]
+            },
+            "components": [
+                {
+                    "type": "renderer",
+                    "model": "c1496bff-f383-4f46-97cc-bc9955f7f4cf",
+                    "material": "material_compressed"
+                }
+            ]
         }
     ]
 }

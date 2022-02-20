@@ -134,6 +134,31 @@ namespace JoyEngine
 		m_queue->WaitQueueIdle();
 	}
 
+	void MemoryManager::ChangeResourceState(
+		ID3D12Resource* resource,
+		D3D12_RESOURCE_STATES stateBefore,
+		D3D12_RESOURCE_STATES stateAfter
+	)
+	{
+		m_queue->ResetForFrame();
+
+		const auto commandList = m_queue->GetCommandList();
+
+
+		CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+			resource,
+			stateBefore,
+			stateAfter
+		);
+		commandList->ResourceBarrier(1, &barrier);
+
+		ASSERT_SUCC(commandList->Close());
+
+		m_queue->Execute();
+
+		m_queue->WaitQueueIdle();
+	}
+
 
 	//void MemoryManager::LoadDataToImage(
 	//	const unsigned char* data,

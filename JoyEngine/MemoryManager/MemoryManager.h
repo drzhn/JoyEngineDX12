@@ -34,6 +34,7 @@ namespace JoyEngine
 			uint32_t width,
 			uint32_t height,
 			Texture* gpuImage) const;
+		void ChangeResourceState(ID3D12Resource* resource, D3D12_RESOURCE_STATES stateBefore, D3D12_RESOURCE_STATES stateAfter);
 
 	private:
 		//void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);

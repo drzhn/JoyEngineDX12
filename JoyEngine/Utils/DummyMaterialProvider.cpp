@@ -190,6 +190,7 @@ namespace JoyEngine
 			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 0, D3D12_SHADER_VISIBILITY_PIXEL);
 			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, D3D12_SHADER_VISIBILITY_ALL);
 			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, D3D12_SHADER_VISIBILITY_PIXEL);
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 2, D3D12_SHADER_VISIBILITY_ALL);
 
 			CD3DX12_BLEND_DESC blendDesc = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 			const D3D12_RENDER_TARGET_BLEND_DESC defaultRenderTargetBlendDesc =
@@ -222,7 +223,9 @@ namespace JoyEngine
 					},
 					mainDSVFormat,
 					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
-					{}
+					{
+						{8, EngineData}
+					}
 				});
 		}
 

@@ -26,7 +26,7 @@
             "name": "direction_light",
             "transform": {
                 "localPosition": [ 1.0, 0.0, 2.0 ],
-                "localRotation": [ 45.0, 0.0, 0.0 ],
+                "localRotation": [ 45.0, 30.0, 0.0 ],
                 "localScale": [ 1.0, 1.0, 1.0 ]
             },
             "components": [

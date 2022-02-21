@@ -29,8 +29,17 @@ struct LightData
 	float4x4 projection;
 };
 
+struct EngineData
+{
+	float4 perspectiveValues;
+	float3 cameraWorldPos;
+	float time;
+};
+
+
 ConstantBuffer<MVP> mvp : register(b0);
 ConstantBuffer<LightData> lightData : register(b1);
+ConstantBuffer<EngineData> engineData : register(b2);
 
 Texture2D positionTexture : register(t0);
 Texture2D normalTexture : register(t1);
@@ -180,7 +189,11 @@ PSOutput PSMain(PSInput input) // : SV_TARGET
 	const float3 toLightDir = normalize(lightPos - worldPos);
 	const float diff = max(dot(worldNormal, toLightDir), 0.0);
 
-	output.Color = float4(1, 1, 1, 1) * diff * attenuation * lightData.intensity;
+	float3 viewDir = normalize(engineData.cameraWorldPos - worldPos);
+	float3 reflectDir = reflect(-toLightDir, worldNormal);
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+
+	output.Color = float4(1, 1, 1, 1) * (diff + spec )* attenuation * lightData.intensity;
 
 	return output;
 }

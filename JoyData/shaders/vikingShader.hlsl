@@ -49,7 +49,7 @@ PSOutput PSMain(PSInput input) // : SV_TARGET
 	const float4 mainColor = g_texture.Sample(g_sampler, input.uv);
 	const float4 light = lightAttachment.Load(float3(input.position.xy, 0));// normalTexture.Sample(g_sampler, screenPosition);// g_texture.Sample(g_sampler, input.uv);
 
-	const float ambient = 0.3f;
+	const float ambient = 0.2f;
 
 	output.Color = mainColor* (ambient + light);
 

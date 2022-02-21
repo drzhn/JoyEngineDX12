@@ -19,7 +19,8 @@ float4 ToneMapping(float4 HDRColor)
 	return HDRColor * LScale;
 }
 
-inline float4 ComputeNonStereoScreenPos(float4 pos) {
+inline float4 ComputeNonStereoScreenPos(float4 pos)
+{
 	float4 o = pos * 0.5f;
 	o.xy = float2(o.x, o.y * -1) + o.w;
 	o.zw = pos.zw;
@@ -50,6 +51,11 @@ float4 PSMain(PSInput input) : SV_Target
 
 	color += BloomScale * BloomTexture.Sample(LinearSampler, screenPosition);
 
+	//float gamma = 2.2;
+	//color.rgb = pow(color.rgb, float3(1, 1, 1) * (1.0 / gamma));
+
 	color = ToneMapping(color);
+
+
 	return color;
 }

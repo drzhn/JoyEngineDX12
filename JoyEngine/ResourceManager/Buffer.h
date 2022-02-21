@@ -26,12 +26,28 @@ namespace JoyEngine
 	class Buffer final : public Resource
 	{
 	public:
-		Buffer() = delete;
+		Buffer() = default;
+
+		Buffer(const Buffer& other) = delete; /*:
+			m_size(other.m_size),
+			m_currentResourceState(other.m_currentResourceState),
+			m_properties(other.m_properties),
+			m_buffer(other.m_buffer)
+		{
+		}*/
+
+		Buffer(Buffer&& other) = delete;/* noexcept :
+			m_size(other.m_size),
+			m_currentResourceState(other.m_currentResourceState),
+			m_properties(other.m_properties),
+			m_buffer(other.m_buffer)
+		{
+		}*/
 
 		explicit Buffer(
 			uint64_t size,
 			D3D12_RESOURCE_STATES usage,
-			D3D12_HEAP_TYPE properties, 
+			D3D12_HEAP_TYPE properties,
 			D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE
 		);
 
@@ -51,7 +67,6 @@ namespace JoyEngine
 		uint64_t m_size = 0;
 		D3D12_RESOURCE_STATES m_currentResourceState;
 		CD3DX12_HEAP_PROPERTIES m_properties;
-
 		ComPtr<ID3D12Resource> m_buffer;
 	};
 }

@@ -118,6 +118,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)JoyEngine;$(SolutionDir)Libs\rapidjson\include;$(SolutionDir)Libs\glm;$(SolutionDir)Libs\DirectXTK12\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -135,6 +136,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)JoyEngine;$(SolutionDir)Libs\rapidjson\include;$(SolutionDir)Libs\glm;$(SolutionDir)Libs\DirectXTK12\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

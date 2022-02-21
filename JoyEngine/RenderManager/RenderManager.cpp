@@ -516,11 +516,10 @@ namespace JoyEngine
 				commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
 				commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-				ID3D12DescriptorHeap* descriptorHeap[1] = {m_normalAttachment->GetSRV()->GetHeap()};
-				commandList->SetDescriptorHeaps(
-					1,
-					descriptorHeap);
-				commandList->SetGraphicsRootDescriptorTable(1, m_normalAttachment->GetSRV()->GetGPUHandle());
+				AttachViewToGraphics(commandList, 2, m_positionAttachment->GetSRV());
+				AttachViewToGraphics(commandList, 3, m_normalAttachment->GetSRV());
+
+				ProcessEngineBindings(commandList, sm->GetEngineBindings(), nullptr, true);
 
 				DirectionLightData lightData = {
 					m_directionLight->GetTransform()->GetForward(),
@@ -571,6 +570,7 @@ namespace JoyEngine
 					}
 
 					AttachViewToGraphics(commandList, 5, light->GetLightDataBufferView());
+					ProcessEngineBindings(commandList, sm->GetEngineBindings(), &mvp, true);
 
 					commandList->SetGraphicsRoot32BitConstants(0, sizeof(MVP) / 4, &mvp, 0);
 					commandList->DrawIndexedInstanced(
@@ -926,7 +926,7 @@ namespace JoyEngine
 	void RenderManager::ProcessEngineBindings(
 		ID3D12GraphicsCommandList* commandList,
 		const std::map<uint32_t, EngineBindingType>& bindings,
-		MVP mvp,
+		MVP* mvp,
 		bool isDrawingMainColor
 	) const
 	{
@@ -939,7 +939,8 @@ namespace JoyEngine
 			{
 			case ModelViewProjection:
 				{
-					commandList->SetGraphicsRoot32BitConstants(rootIndex, sizeof(MVP) / 4, &mvp, 0);
+					ASSERT(mvp != nullptr)
+					commandList->SetGraphicsRoot32BitConstants(rootIndex, sizeof(MVP) / 4, mvp, 0);
 					break;
 				}
 			case LightAttachment:
@@ -1033,7 +1034,7 @@ namespace JoyEngine
 					//AttachViewToGraphics(commandList, index, param.second);
 				}
 
-				ProcessEngineBindings(commandList, sm->GetEngineBindings(), mvp, isDrawingMainColor);
+				ProcessEngineBindings(commandList, sm->GetEngineBindings(), &mvp, isDrawingMainColor);
 
 				commandList->DrawIndexedInstanced(
 					mr->GetMesh()->GetIndexSize(),

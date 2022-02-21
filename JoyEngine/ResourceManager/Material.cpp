@@ -11,6 +11,10 @@
 #include "ResourceManager/ResourceManager.h"
 #include "RenderManager/RenderManager.h"
 
+#include "SharedMaterial.h"
+#include "ResourceManager/Buffer.h"
+#include "ResourceManager/Texture.h"
+
 namespace JoyEngine
 {
 	Material::Material(GUID guid) : Resource(guid)
@@ -19,16 +23,16 @@ namespace JoyEngine
 	}
 
 	Material::Material(GUID guid, MaterialArgs data) :
-		Resource(guid), m_sharedMaterial(data.sharedMaterial), m_rootParams(data.rootParams)
+		Resource(guid),
+		m_sharedMaterial(data.sharedMaterial),
+		m_rootParams(data.rootParams),
+		m_textures(data.textures),
+		m_buffers(data.buffers)
 	{
-		for (const auto& rp : data.rootParams)
-		{
-			m_heaps.push_back(rp.second);
-		}
-	}
-
-	Material::~Material()
-	{
+		//for (const auto& rp : data.rootParams)
+		//{
+		//	m_heaps.push_back(rp.second);
+		//}
 	}
 
 	SharedMaterial* Material::GetSharedMaterial() const noexcept

@@ -31,13 +31,12 @@ namespace JoyEngine
 		DummyMaterialProvider() = default;
 		~DummyMaterialProvider() = default;
 		void Init();
-		void CreateSampleMaterial(const std::string& materialName, const GUID textureGuid, const GUID sharedMaterialGuid);
 
 		[[nodiscard]] GUID GetMaterialGuid(const std::string& materialName) const noexcept
 		{
 			ASSERT(m_sampleMaterials.find(materialName) != m_sampleMaterials.end());
 
-			return m_sampleMaterials.find(materialName)->second.materialHandle->GetGuid();
+			return m_sampleMaterials.find(materialName)->second->GetGuid();
 		}
 
 		[[nodiscard]] ComputePipeline* GetMipsGenerationComputePipeline() const noexcept { return m_generateMipsComputePipeline; }
@@ -88,15 +87,23 @@ namespace JoyEngine
 		ResourceHandle<ComputePipeline> m_bloomHorizontalFilterComputePipeline;
 
 
-		struct MaterialData
-		{
-			ResourceHandle<Texture> textureHandle;
-			ResourceHandle<Material> materialHandle;
-		};
-
 		ResourceHandle<SharedMaterial> m_sampleSharedMaterialHandle;
 		ResourceHandle<SharedMaterial> m_dynamicCubemapReflectionsSharedMaterialHandle;
-		std::map<std::string, MaterialData> m_sampleMaterials;
+		std::map<std::string, ResourceHandle<Material>> m_sampleMaterials;
+
+	private:
+		void CreatePBRMaterial(
+			const std::string& materialName,
+			const GUID diffuseTextureGuid,
+			const GUID normalTextureGuid,
+			const GUID specularTextureGuid,
+			const GUID roughnessTextureGuid,
+			const GUID sharedMaterialGuid);
+
+		void CreateSampleMaterial(
+			const std::string& materialName,
+			const GUID textureGuid,
+			const GUID sharedMaterialGuid);
 	};
 }
 

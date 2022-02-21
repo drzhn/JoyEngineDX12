@@ -43,7 +43,6 @@ PSInput VSMain(float3 position : POSITION, float3 color : COLOR, float3 normal: 
 
 PSOutput PSMain(PSInput input) // : SV_TARGET
 {
-	float4 lightPos = float4(1, 2, 0, 1);
 	PSOutput output;
 	const float2 screenPosition = (input.clipPos.xy / input.clipPos.w);
 	const float4 mainColor = g_texture.Sample(g_sampler, input.uv);

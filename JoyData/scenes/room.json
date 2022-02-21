@@ -316,6 +316,23 @@
                     "material": "material_compressed"
                 }
             ]
+        },
+
+
+        {
+            "name": "anna_pbr_test",
+            "transform": {
+                "localPosition": [ 0.0, 0.0, 0.0 ],
+                "localRotation": [ 0.0, 180.0, 0.0 ],
+                "localScale": [ 0.05, 0.05, 0.05 ]
+            },
+            "components": [
+                {
+                    "type": "renderer",
+                    "model": "2529df0e-9a8e-4730-9b8d-a70b4b93251a",
+                    "material": "anna_pbr"
+                }
+            ]
         }
     ]
 }

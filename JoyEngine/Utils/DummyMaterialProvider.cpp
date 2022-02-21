@@ -154,7 +154,9 @@ namespace JoyEngine
 
 			RootParams rp;
 			rp.CreateConstants(sizeof(DirectionLightData) / 4, 0, D3D12_SHADER_VISIBILITY_ALL);
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, D3D12_SHADER_VISIBILITY_ALL);
 			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, D3D12_SHADER_VISIBILITY_PIXEL);
 
 			m_directionLightProcessingSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
 				directionLightProcessingSharedMaterialGuid,
@@ -173,7 +175,9 @@ namespace JoyEngine
 					},
 					mainDSVFormat,
 					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
-					{}
+					{
+						{1, EngineData}
+					}
 				});
 		}
 
@@ -224,7 +228,7 @@ namespace JoyEngine
 					mainDSVFormat,
 					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 					{
-						{8, EngineData}
+						{7, EngineData}
 					}
 				});
 		}
@@ -306,6 +310,52 @@ namespace JoyEngine
 			CreateSampleMaterial("material_2", GUID::StringToGuid("e8448435-7baf-4e40-ac72-b99e49284929"), sharedMaterialGuid); // textures/wood.png
 			CreateSampleMaterial("material_3", GUID::StringToGuid("7e50aa82-5696-428c-a088-538fb78c0ee6"), sharedMaterialGuid); // textures/Chopping-Board.jpg
 			CreateSampleMaterial("material_compressed", GUID::StringToGuid("cf021726-708f-42d2-860e-d33a550e631b"), sharedMaterialGuid); // textures/DDSSample.dds
+		}
+
+		// PBR material
+		{
+			const GUID shaderGuid = GUID::StringToGuid("01da575c-6970-4ac1-97e5-823817af8b34"); // shaders/annaShader.hlsl
+			const GUID sharedMaterialGuid = GUID::Random();
+
+			RootParams rp;
+			rp.CreateConstants(sizeof(MVP) / 4, 0);
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, D3D12_SHADER_VISIBILITY_PIXEL);
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 2, D3D12_SHADER_VISIBILITY_PIXEL);
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, D3D12_SHADER_VISIBILITY_PIXEL);
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 4, D3D12_SHADER_VISIBILITY_PIXEL);
+
+			m_sampleSharedMaterialHandle = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
+				sharedMaterialGuid,
+				{
+					shaderGuid,
+					JoyShaderTypeVertex | JoyShaderTypePixel,
+					true,
+					true,
+					true,
+					D3D12_CULL_MODE_BACK,
+					D3D12_COMPARISON_FUNC_LESS_EQUAL,
+					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
+					rp.params,
+					{
+						mainRTVFormat
+					},
+					mainDSVFormat,
+					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
+					{
+						{0, ModelViewProjection},
+						{2, LightAttachment}
+					}
+				});
+
+			CreatePBRMaterial("anna_pbr",
+			                  GUID::StringToGuid("797b0023-1f05-4b37-a331-835903cfc005"), // textures/Std_Skin_Head_Diffuse.jpg
+			                  GUID::StringToGuid("028b0f63-ff0c-4c39-aee5-e13afb20e747"), // textures/Std_Skin_Head_Normal.jpg
+			                  GUID::StringToGuid("17a24dcb-72ae-4a6a-b4d6-5ddac79c77ff"), // textures/Std_Skin_Head_SpecMask_invert.jpg
+			                  GUID::StringToGuid("cd13654b-102a-4e8c-8f2a-d720b2ca0903"), // textures/Std_Skin_Head_roughness.jpg
+			                  sharedMaterialGuid);
 		}
 
 		// Particle system drawing
@@ -515,6 +565,48 @@ namespace JoyEngine
 		}
 	}
 
+	void DummyMaterialProvider::CreatePBRMaterial(
+		const std::string& materialName,
+		const GUID diffuseTextureGuid,
+		const GUID normalTextureGuid,
+		const GUID specularTextureGuid,
+		const GUID roughnessTextureGuid,
+		const GUID sharedMaterialGuid)
+	{
+		const GUID materialGuid = GUID::Random();
+		ResourceHandle<Texture> diffuseTexture = ResourceHandle(JoyContext::Resource->LoadResource<Texture>(diffuseTextureGuid));
+		ResourceHandle<Texture> normalTexture = ResourceHandle(JoyContext::Resource->LoadResource<Texture>(normalTextureGuid));
+		ResourceHandle<Texture> specularTexture = ResourceHandle(JoyContext::Resource->LoadResource<Texture>(specularTextureGuid));
+		ResourceHandle<Texture> roughnessTexture = ResourceHandle(JoyContext::Resource->LoadResource<Texture>(roughnessTextureGuid));
+
+		const std::map<uint32_t, ID3D12DescriptorHeap*> materialRootParams = {
+			{3, diffuseTexture->GetResourceView()->GetHeap()},
+			{4, normalTexture->GetResourceView()->GetHeap()},
+			{5, specularTexture->GetResourceView()->GetHeap()},
+			{6, roughnessTexture->GetResourceView()->GetHeap()},
+			{1, Texture::GetTextureSampler()->GetHeap()}
+		};
+
+
+		ResourceHandle<Material> material = ResourceHandle(JoyContext::Resource->LoadResource<Material, MaterialArgs>(
+			materialGuid,
+			{
+				sharedMaterialGuid,
+				materialRootParams,
+				{
+					diffuseTexture,
+					normalTexture,
+					specularTexture,
+					roughnessTexture
+				},
+				{}
+			}));
+		m_sampleMaterials.insert({
+			materialName,
+			material
+		});
+	}
+
 	void DummyMaterialProvider::CreateSampleMaterial(const std::string& materialName, const GUID textureGuid, const GUID sharedMaterialGuid)
 	{
 		const GUID materialGuid = GUID::Random();
@@ -530,13 +622,14 @@ namespace JoyEngine
 			{
 				sharedMaterialGuid,
 				materialRootParams,
+				{
+					texture
+				},
+				{}
 			}));
 		m_sampleMaterials.insert({
 			materialName,
-			{
-				texture,
-				material
-			}
+			material
 		});
 	}
 }

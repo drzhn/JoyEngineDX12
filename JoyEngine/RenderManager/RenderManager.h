@@ -93,7 +93,7 @@ namespace JoyEngine
 		void ProcessEngineBindings(
 			ID3D12GraphicsCommandList* commandList,
 			const std::map<uint32_t, EngineBindingType>& bindings,
-			MVP mvp,
+			MVP* mvp,
 			bool isDrawingMainColor
 		) const;
 

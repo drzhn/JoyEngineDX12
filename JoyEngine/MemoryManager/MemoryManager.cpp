@@ -64,9 +64,12 @@ namespace JoyEngine
 	void MemoryManager::LoadDataToImage(
 		std::ifstream& stream,
 		uint64_t offset,
+		uint32_t RowPitch,
+		uint32_t SlicePitch,
 		uint32_t width,
 		uint32_t height,
-		Texture* gpuImage) const
+		Texture* gpuImage,
+		uint32_t mipMapsCount) const
 	{
 		const uint64_t imageSize = GetRequiredIntermediateSize(gpuImage->GetImage().Get(), 0, 1);
 
@@ -78,8 +81,8 @@ namespace JoyEngine
 
 		D3D12_SUBRESOURCE_DATA textureData = {};
 		textureData.pData = ptr->GetMappedPtr();
-		textureData.RowPitch = width * 4; // TODO: WHAT IF TEXTURE COMPRESSED???
-		textureData.SlicePitch = textureData.RowPitch * height;
+		textureData.RowPitch = RowPitch; //width * 4;
+		textureData.SlicePitch = SlicePitch; //textureData.RowPitch * height;
 
 		m_queue->ResetForFrame();
 
@@ -101,32 +104,35 @@ namespace JoyEngine
 		);
 		commandList->ResourceBarrier(1, &barrier);
 
-		commandList->SetComputeRootSignature(JoyContext::DummyMaterials->GetMipsGenerationComputePipeline()->GetRootSignature().Get());
-		commandList->SetPipelineState(JoyContext::DummyMaterials->GetMipsGenerationComputePipeline()->GetPipelineObject().Get());
-
 		std::vector<ResourceView> mipViews;
-		for (uint32_t i = 0; i < 4; i++)
+
+		if (mipMapsCount > 1)
 		{
-			D3D12_UNORDERED_ACCESS_VIEW_DESC desc;
-			desc.Format = gpuImage->GetFormat();
-			desc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
-			desc.Texture2D = {
-				i + 1,
-				0
-			};
-			mipViews.emplace_back(desc, gpuImage->GetImage().Get());
+			commandList->SetComputeRootSignature(JoyContext::DummyMaterials->GetMipsGenerationComputePipeline()->GetRootSignature().Get());
+			commandList->SetPipelineState(JoyContext::DummyMaterials->GetMipsGenerationComputePipeline()->GetPipelineObject().Get());
 
-			AttachView(commandList, i, &mipViews[i]);
+			for (uint32_t i = 0; i < 4; i++)
+			{
+				D3D12_UNORDERED_ACCESS_VIEW_DESC desc;
+				desc.Format = gpuImage->GetFormat();
+				desc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
+				desc.Texture2D = {
+					i + 1,
+					0
+				};
+				mipViews.emplace_back(desc, gpuImage->GetImage().Get());
+
+				AttachView(commandList, i, &mipViews[i]);
+			}
+
+			AttachView(commandList, 4, gpuImage->GetResourceView());
+			AttachView(commandList, 5, Texture::GetPointSampler());
+
+
+			commandList->SetComputeRoot32BitConstant(6, width >> 1, 0);
+			commandList->SetComputeRoot32BitConstant(6, height >> 1, 1);
+			commandList->Dispatch((width >> 1) / 8, (height >> 1) / 8, 1);
 		}
-
-		AttachView(commandList, 4, gpuImage->GetResourceView());
-		AttachView(commandList, 5, Texture::GetPointSampler());
-
-
-		commandList->SetComputeRoot32BitConstant(6, width >> 1, 0);
-		commandList->SetComputeRoot32BitConstant(6, height >> 1, 1);
-		commandList->Dispatch((width >> 1) / 8, (height >> 1) / 8, 1);
-
 		ASSERT_SUCC(commandList->Close());
 
 		m_queue->Execute();

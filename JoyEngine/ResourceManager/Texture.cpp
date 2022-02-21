@@ -104,16 +104,12 @@ namespace JoyEngine
 			m_height = header.height;
 			m_format = DXGI_FORMAT_BC1_UNORM;
 			//CreateImage(false, false, false, 1, 1);
-			ID3D12Resource* resource = nullptr;// = m_texture.Get();
+			ID3D12Resource* resource = nullptr; // = m_texture.Get();
 			uint32_t pitch = header.pitchOrLinearSize;
+			// yes, i know i unload data two times.
+			// TODO make special d3d12heap for intermediate data and allocate data there
 			std::vector<char> data = JoyContext::Data->GetData(guid, false, 0);
-			std::vector<D3D12_SUBRESOURCE_DATA> subresource = {
-				{
-					reinterpret_cast<void*>(data.data()),
-					m_width,
-					m_height
-				}
-			};
+			std::vector<D3D12_SUBRESOURCE_DATA> subresource;
 			LoadDDSTextureFromMemory(
 				JoyContext::Graphics->GetDevice(),
 				reinterpret_cast<uint8_t*>(data.data()),
@@ -122,9 +118,16 @@ namespace JoyEngine
 				subresource
 			);
 			m_texture = resource;
-			JoyContext::Memory->ChangeResourceState(m_texture.Get(),
-				D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ);
 			CreateImageView(false, false, false, 1);
+			JoyContext::Memory->LoadDataToImage(
+				textureStream,
+				sizeof(uint32_t) + sizeof(DDS_HEADER),
+				subresource[0].RowPitch,
+				subresource[0].SlicePitch,
+				m_width,
+				m_height,
+				this,
+				1);
 		}
 		else
 		{
@@ -155,9 +158,12 @@ namespace JoyEngine
 			JoyContext::Memory->LoadDataToImage(
 				textureStream,
 				sizeof(uint32_t) + sizeof(uint32_t),
+				m_width * 4,
+				m_width * m_height * 4,
 				m_width,
 				m_height,
-				this);
+				this,
+				5);
 		}
 	}
 

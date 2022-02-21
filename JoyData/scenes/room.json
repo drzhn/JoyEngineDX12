@@ -305,14 +305,14 @@
         {
             "name": "cube_compressed_texture_test",
             "transform": {
-                "localPosition": [ 0.0, 0.0, 0.0 ],
-                "localRotation": [ 0.0, 0.0, 0.0 ],
-                "localScale": [ 1.0, 1.0, 1.0 ]
+                "localPosition": [ -5.0, 0.0, 5.0 ],
+                "localRotation": [ -90.0, 0.0, 180.0 ],
+                "localScale": [ 3.55, 2.0, 2.0 ]
             },
             "components": [
                 {
                     "type": "renderer",
-                    "model": "c1496bff-f383-4f46-97cc-bc9955f7f4cf",
+                    "model": "7489a35d-1173-48cd-9ad0-606f13c33319",
                     "material": "material_compressed"
                 }
             ]

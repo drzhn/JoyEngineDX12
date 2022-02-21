@@ -31,9 +31,11 @@ namespace JoyEngine
 		void LoadDataToImage(
 			std::ifstream& stream,
 			uint64_t offset,
+			uint32_t RowPitch,
+			uint32_t SlicePitch,
 			uint32_t width,
 			uint32_t height,
-			Texture* gpuImage) const;
+			Texture* gpuImage, uint32_t mipMapsCount = 1) const;
 		void ChangeResourceState(ID3D12Resource* resource, D3D12_RESOURCE_STATES stateBefore, D3D12_RESOURCE_STATES stateAfter);
 
 	private:

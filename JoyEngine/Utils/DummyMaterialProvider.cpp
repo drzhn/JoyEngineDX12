@@ -320,12 +320,12 @@ namespace JoyEngine
 			RootParams rp;
 			rp.CreateConstants(sizeof(MVP) / 4, 0);
 			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 0, D3D12_SHADER_VISIBILITY_PIXEL);
-
 			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, D3D12_SHADER_VISIBILITY_PIXEL);
 			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, D3D12_SHADER_VISIBILITY_PIXEL);
 			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 2, D3D12_SHADER_VISIBILITY_PIXEL);
 			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, D3D12_SHADER_VISIBILITY_PIXEL);
 			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 4, D3D12_SHADER_VISIBILITY_PIXEL);
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 5, D3D12_SHADER_VISIBILITY_PIXEL);
 			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, D3D12_SHADER_VISIBILITY_ALL);
 
 			m_sampleSharedMaterialHandle = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
@@ -348,7 +348,7 @@ namespace JoyEngine
 					{
 						{0, ModelViewProjection},
 						{2, LightAttachment},
-						{7, EngineData}
+						{8, EngineData}
 					}
 				});
 
@@ -357,6 +357,7 @@ namespace JoyEngine
 			                  GUID::StringToGuid("028b0f63-ff0c-4c39-aee5-e13afb20e747"), // textures/Std_Skin_Head_Normal.jpg
 			                  GUID::StringToGuid("17a24dcb-72ae-4a6a-b4d6-5ddac79c77ff"), // textures/Std_Skin_Head_SpecMask_invert.jpg
 			                  GUID::StringToGuid("cd13654b-102a-4e8c-8f2a-d720b2ca0903"), // textures/Std_Skin_Head_roughness.jpg
+			                  GUID::StringToGuid("9694ff4a-d639-4488-a421-c58494d6c56b"), // textures/Day Sun Mid SimpleCloudLayer 3.png
 			                  sharedMaterialGuid);
 		}
 
@@ -573,6 +574,7 @@ namespace JoyEngine
 		const GUID normalTextureGuid,
 		const GUID specularTextureGuid,
 		const GUID roughnessTextureGuid,
+		const GUID environmentTextureGuid,
 		const GUID sharedMaterialGuid)
 	{
 		const GUID materialGuid = GUID::Random();
@@ -580,12 +582,14 @@ namespace JoyEngine
 		ResourceHandle<Texture> normalTexture = ResourceHandle(JoyContext::Resource->LoadResource<Texture>(normalTextureGuid));
 		ResourceHandle<Texture> specularTexture = ResourceHandle(JoyContext::Resource->LoadResource<Texture>(specularTextureGuid));
 		ResourceHandle<Texture> roughnessTexture = ResourceHandle(JoyContext::Resource->LoadResource<Texture>(roughnessTextureGuid));
+		ResourceHandle<Texture> environmentTexture = ResourceHandle(JoyContext::Resource->LoadResource<Texture>(environmentTextureGuid));
 
 		const std::map<uint32_t, ID3D12DescriptorHeap*> materialRootParams = {
 			{3, diffuseTexture->GetResourceView()->GetHeap()},
 			{4, normalTexture->GetResourceView()->GetHeap()},
 			{5, specularTexture->GetResourceView()->GetHeap()},
 			{6, roughnessTexture->GetResourceView()->GetHeap()},
+			{7, environmentTexture->GetResourceView()->GetHeap()},
 			{1, Texture::GetTextureSampler()->GetHeap()}
 		};
 
@@ -599,7 +603,8 @@ namespace JoyEngine
 					diffuseTexture,
 					normalTexture,
 					specularTexture,
-					roughnessTexture
+					roughnessTexture,
+					environmentTexture
 				},
 				{}
 			}));

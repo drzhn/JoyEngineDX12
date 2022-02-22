@@ -98,6 +98,7 @@ namespace JoyEngine
 			const GUID normalTextureGuid,
 			const GUID specularTextureGuid,
 			const GUID roughnessTextureGuid,
+			const GUID environmentTextureGuid, 
 			const GUID sharedMaterialGuid);
 
 		void CreateSampleMaterial(

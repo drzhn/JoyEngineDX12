@@ -284,7 +284,7 @@
         },
 
         {
-            "name": "cube_dynamic_reflections_test",
+            "name": "sphere_dynamic_reflections_test",
             "transform": {
                 "localPosition": [ 2.0, 0.0, 2.5 ],
                 "localRotation": [ 0.0, 0.0, 0.0 ],

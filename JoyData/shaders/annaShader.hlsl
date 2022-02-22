@@ -35,6 +35,7 @@ Texture2D diffuseTexture : register(t1);
 Texture2D normalTexture : register(t2);
 Texture2D specularTexture : register(t3);
 Texture2D roughnessTexture : register(t4);
+Texture2D environmentTexture : register(t5);
 
 SamplerState g_sampler : register(s0);
 
@@ -101,6 +102,25 @@ float3 fresnelSchlick(float cosTheta, float3 F0)
 	return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }
 
+static const float2 invAtan = float2(0.1591, 0.3183);
+
+float2 SampleSphericalMap(float3 v)
+{
+	//float2 uv = float2(atan2(v.z, v.x), asin(v.y));
+	//uv *= invAtan;
+	//uv += 0.5;
+
+	float r = length(v);
+	float theta = acos(-v.y / r);
+	float phi = atan2(v.x, -v.z);
+	float2 uv = float2(
+		0.5 + phi / 6.2831852,
+		theta / 3.1415926
+	);
+	return uv;
+}
+
+
 PSInput VSMain(float3 position : POSITION, float3 color : COLOR, float3 normal: NORMAL, float2 uv : TEXCOORD)
 {
 	PSInput result;
@@ -125,8 +145,38 @@ PSOutput PSMain(PSInput input) // : SV_TARGET
 	const float4 roughness = roughnessTexture.Sample(g_sampler, input.uv);
 	const float4 light = lightAttachment.Load(float3(input.position.xy, 0)); // normalTexture.Sample(g_sampler, screenPosition);// g_texture.Sample(g_sampler, input.uv);
 
-	//float3 rgb_normal = normal * 0.5 + 0.5;
+	float2 uv = SampleSphericalMap(normalize(-input.worldNormal.xyz)); // make sure to normalize localPos
+	float4 irradiance = environmentTexture.Sample(g_sampler, uv);
 
+	//float3 irradiance = float3(0, 0, 0);
+
+	//float3 up = float3(0.0, 1.0, 0.0);
+	//float3 right = normalize(cross(up, normal));
+	//up = normalize(cross(normal, right));
+
+	//float sampleDelta = 0.25;
+	//uint nrSamples = 0;
+	//for (float phi = 0.0; phi < 2.0 * PI; phi += sampleDelta)
+	//{
+	//	for (float theta = 0.0; theta < 0.5 * PI; theta += sampleDelta)
+	//	{
+	//		// spherical to cartesian (in tangent space)
+	//		float3 tangentSample = float3(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
+	//		// tangent space to world
+
+	//		//float4 envColor = environmentTexture.Sample(g_sampler, uv);
+	//		float3 sampleVec = tangentSample.x * right + tangentSample.y * up + tangentSample.z * normalize(input.worldNormal);
+	//		float2 uv = SampleSphericalMap(normalize(sampleVec)); // make sure to normalize localPos
+
+	//		irradiance += environmentTexture.Sample(g_sampler, uv).rgb * cos(theta) * sin(theta);
+	//		nrSamples++;
+	//	}
+	//}
+	//irradiance = PI * irradiance * (1.0 / float(nrSamples));
+	//output.Color = float4(irradiance, 1);
+	//return output;
+
+	//float3 rgb_normal = normal * 0.5 + 0.5;
 	//float3 Tangent = normalize(float3(mul(mvp.model, float4(ddy(input.worldPos).xyz, 0.0)).xyz));
 	//float3 Bitangent = normalize(float3(mul(mvp.model, float4(ddx(input.worldPos).xyz, 0.0)).xyz));
 	//float3 Normal = input.worldNormal.xyz;
@@ -165,7 +215,7 @@ PSOutput PSMain(PSInput input) // : SV_TARGET
 
 		float3 numerator = NDF * G * F;
 		float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001;
-		float3 spec = numerator / denominator;// *specular;
+		float3 spec = numerator / denominator; // *specular;
 
 		// add to outgoing radiance Lo
 		float NdotL = max(dot(N, L), 0.0);

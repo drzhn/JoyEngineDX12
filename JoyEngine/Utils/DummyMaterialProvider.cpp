@@ -326,6 +326,7 @@ namespace JoyEngine
 			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 2, D3D12_SHADER_VISIBILITY_PIXEL);
 			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, D3D12_SHADER_VISIBILITY_PIXEL);
 			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 4, D3D12_SHADER_VISIBILITY_PIXEL);
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, D3D12_SHADER_VISIBILITY_ALL);
 
 			m_sampleSharedMaterialHandle = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
 				sharedMaterialGuid,
@@ -346,7 +347,8 @@ namespace JoyEngine
 					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 					{
 						{0, ModelViewProjection},
-						{2, LightAttachment}
+						{2, LightAttachment},
+						{7, EngineData}
 					}
 				});
 

@@ -190,7 +190,13 @@ namespace JoyEngine
 			D3D12_RESOURCE_STATE_RENDER_TARGET,
 			D3D12_HEAP_TYPE_DEFAULT);
 
-		m_normalAttachment = std::make_unique<RenderTexture>(
+		m_worldNormalAttachment = std::make_unique<RenderTexture>(
+			m_width, m_height,
+			gBufferFormat,
+			D3D12_RESOURCE_STATE_RENDER_TARGET,
+			D3D12_HEAP_TYPE_DEFAULT);
+
+		m_viewNormalAttachment = std::make_unique<RenderTexture>(
 			m_width, m_height,
 			gBufferFormat,
 			D3D12_RESOURCE_STATE_RENDER_TARGET,
@@ -327,7 +333,8 @@ namespace JoyEngine
 		auto hdrRTVResource = m_hdrRenderTarget->GetImage().Get();
 		auto copyResource = m_renderTargetCopyAttachment->GetImage().Get();
 		auto positionResource = m_positionAttachment->GetImage().Get();
-		auto normalResource = m_normalAttachment->GetImage().Get();
+		auto worldNormalResource = m_worldNormalAttachment->GetImage().Get();
+		auto viewNormalResource = m_viewNormalAttachment->GetImage().Get();
 		auto lightingResource = m_lightingAttachment->GetImage().Get();
 		auto depthResource = m_depthAttachment->GetImage().Get();
 
@@ -335,7 +342,8 @@ namespace JoyEngine
 		auto hdrRTVHandle = m_hdrRenderTarget->GetResourceView()->GetHandle();
 		auto ldrRTVHandle = m_swapchainRenderTargets[m_currentFrameIndex]->GetResourceView()->GetHandle();
 		auto positionHandle = m_positionAttachment->GetResourceView()->GetHandle();
-		auto normalHandle = m_normalAttachment->GetResourceView()->GetHandle();
+		auto worldNormalHandle = m_worldNormalAttachment->GetResourceView()->GetHandle();
+		auto viewNormalHandle = m_viewNormalAttachment->GetResourceView()->GetHandle();
 		auto lightHandle = m_lightingAttachment->GetResourceView()->GetHandle();
 
 		ASSERT(m_currentCamera != nullptr);
@@ -358,16 +366,17 @@ namespace JoyEngine
 		SetViewportAndScissor(commandList, m_width, m_height);
 		// Drawing GBUFFER textures
 		{
-			D3D12_CPU_DESCRIPTOR_HANDLE gbufferHandles[] = {positionHandle, normalHandle};
+			D3D12_CPU_DESCRIPTOR_HANDLE gbufferHandles[] = {positionHandle, worldNormalHandle, viewNormalHandle};
 			commandList->OMSetRenderTargets(
-				2,
+				3,
 				gbufferHandles,
 				FALSE,
 				&dsvHandle);
 
 			const float clearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
 			commandList->ClearRenderTargetView(positionHandle, clearColor, 0, nullptr);
-			commandList->ClearRenderTargetView(normalHandle, clearColor, 0, nullptr);
+			commandList->ClearRenderTargetView(worldNormalHandle, clearColor, 0, nullptr);
+			commandList->ClearRenderTargetView(viewNormalHandle, clearColor, 0, nullptr);
 			commandList->ClearRenderTargetView(lightHandle, clearColor, 0, nullptr);
 			commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
@@ -380,19 +389,12 @@ namespace JoyEngine
 
 		// Transition normal and position texture to generic read state
 		{
-			// Indicate that the back buffer will now be used to present.
-			D3D12_RESOURCE_BARRIER positionToReadBarrier = Transition(
-				positionResource,
-				D3D12_RESOURCE_STATE_RENDER_TARGET,
-				D3D12_RESOURCE_STATE_GENERIC_READ);
-			commandList->ResourceBarrier(1, &positionToReadBarrier);
-
-			// Indicate that the back buffer will now be used to present.
-			D3D12_RESOURCE_BARRIER normalToReadBarrier = Transition(
-				normalResource,
-				D3D12_RESOURCE_STATE_RENDER_TARGET,
-				D3D12_RESOURCE_STATE_GENERIC_READ);
-			commandList->ResourceBarrier(1, &normalToReadBarrier);
+			Barrier(commandList, positionResource,
+			        D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
+			Barrier(commandList, worldNormalResource,
+			        D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
+			Barrier(commandList, viewNormalResource,
+			        D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
 		}
 
 		//Drawing cubemap
@@ -402,11 +404,9 @@ namespace JoyEngine
 
 			auto cubemapDSV = m_cubemap->GetDepthTexture()->GetResourceView()->GetHandle();
 
-			D3D12_RESOURCE_BARRIER barrier = Transition(
-				m_cubemap->GetCubemapTexture()->GetImage().Get(),
-				D3D12_RESOURCE_STATE_GENERIC_READ,
-				D3D12_RESOURCE_STATE_RENDER_TARGET);
-			commandList->ResourceBarrier(1, &barrier);
+			Barrier(commandList, m_cubemap->GetCubemapTexture()->GetImage().Get(),
+			        D3D12_RESOURCE_STATE_GENERIC_READ,
+			        D3D12_RESOURCE_STATE_RENDER_TARGET);
 
 			for (uint32_t i = 0; i < 6; i++)
 			{
@@ -428,12 +428,9 @@ namespace JoyEngine
 				);
 			}
 
-			barrier = Transition(
-				m_cubemap->GetCubemapTexture()->GetImage().Get(),
-				D3D12_RESOURCE_STATE_RENDER_TARGET,
-				D3D12_RESOURCE_STATE_GENERIC_READ
-			);
-			commandList->ResourceBarrier(1, &barrier);
+			Barrier(commandList, m_cubemap->GetCubemapTexture()->GetImage().Get(),
+			        D3D12_RESOURCE_STATE_RENDER_TARGET,
+			        D3D12_RESOURCE_STATE_GENERIC_READ);
 		}
 
 		//Light processing
@@ -517,7 +514,7 @@ namespace JoyEngine
 				commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 				AttachViewToGraphics(commandList, 2, m_positionAttachment->GetSRV());
-				AttachViewToGraphics(commandList, 3, m_normalAttachment->GetSRV());
+				AttachViewToGraphics(commandList, 3, m_worldNormalAttachment->GetSRV());
 
 				ProcessEngineBindings(commandList, sm->GetEngineBindings(), nullptr, true);
 
@@ -554,7 +551,7 @@ namespace JoyEngine
 					};
 
 					AttachViewToGraphics(commandList, 1, m_positionAttachment->GetSRV());
-					AttachViewToGraphics(commandList, 2, m_normalAttachment->GetSRV());
+					AttachViewToGraphics(commandList, 2, m_worldNormalAttachment->GetSRV());
 
 					if (light->GetShadowmap() != nullptr)
 					{
@@ -704,11 +701,11 @@ namespace JoyEngine
 			commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
 			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-			//ID3D12DescriptorHeap* descriptorHeap[1] = { m_normalAttachment->GetSRV()->GetHeap() };
+			//ID3D12DescriptorHeap* descriptorHeap[1] = { m_worldNormalAttachment->GetSRV()->GetHeap() };
 			//commandList->SetDescriptorHeaps(
 			//	1,
 			//	descriptorHeap);
-			//commandList->SetGraphicsRootDescriptorTable(1, m_normalAttachment->GetSRV()->GetGPUHandle());
+			//commandList->SetGraphicsRootDescriptorTable(1, m_worldNormalAttachment->GetSRV()->GetGPUHandle());
 
 			AttachViewToGraphics(commandList, 0, m_depthAttachment->GetSrv());
 			AttachViewToGraphics(commandList, 1, m_renderTargetCopyAttachment->GetResourceView());
@@ -845,8 +842,8 @@ namespace JoyEngine
 
 			// Transition
 			{
-				Barrier(commandList, swapchainResource, 
-					D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+				Barrier(commandList, swapchainResource,
+				        D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 				Barrier(commandList, m_bloomFirstTexture->GetImage().Get(),
 				        D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_GENERIC_READ);
 
@@ -891,23 +888,14 @@ namespace JoyEngine
 		// transition front buffer to present state
 		// transition normal and position buffers back to render target state
 		{
-			D3D12_RESOURCE_BARRIER positionToRenderBarrier = Transition(
-				m_positionAttachment->GetImage().Get(),
-				D3D12_RESOURCE_STATE_GENERIC_READ,
-				D3D12_RESOURCE_STATE_RENDER_TARGET);
-			commandList->ResourceBarrier(1, &positionToRenderBarrier);
-
-			D3D12_RESOURCE_BARRIER normalToRenderBarrier = Transition(
-				m_normalAttachment->GetImage().Get(),
-				D3D12_RESOURCE_STATE_GENERIC_READ,
-				D3D12_RESOURCE_STATE_RENDER_TARGET);
-			commandList->ResourceBarrier(1, &normalToRenderBarrier);
-
-			D3D12_RESOURCE_BARRIER lightToRenderBarrier = Transition(
-				m_lightingAttachment->GetImage().Get(),
-				D3D12_RESOURCE_STATE_GENERIC_READ,
-				D3D12_RESOURCE_STATE_RENDER_TARGET);
-			commandList->ResourceBarrier(1, &lightToRenderBarrier);
+			Barrier(commandList, positionResource,
+			        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
+			Barrier(commandList, worldNormalResource,
+			        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
+			Barrier(commandList, viewNormalResource,
+			        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
+			Barrier(commandList, lightingResource,
+			        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
 		}
 
 		ASSERT_SUCC(commandList->Close());

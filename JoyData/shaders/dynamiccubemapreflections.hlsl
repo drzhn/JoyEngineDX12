@@ -1,3 +1,5 @@
+#include "common.hlsl"
+
 struct PSInput
 {
 	float4 position : SV_POSITION;
@@ -9,20 +11,6 @@ struct PSInput
 struct PSOutput
 {
 	float4 Color: SV_Target;
-};
-
-struct MVP
-{
-	float4x4 model;
-	float4x4 view;
-	float4x4 projection;
-};
-
-struct EngineData
-{
-	float4 perspectiveValues;
-	float3 cameraWorldPos;
-	float time;
 };
 
 Texture2D g_texture : register(t0);

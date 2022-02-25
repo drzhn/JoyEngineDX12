@@ -17,6 +17,15 @@ namespace JoyEngine
 			D3D12_HEAP_TYPE_DEFAULT,
 			6
 		);
+
+		m_cubemapConvoluted = std::make_unique<RenderTexture>(
+			m_textureSize,
+			m_textureSize,
+			RenderManager::GetHdrRTVFormat(),
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			D3D12_HEAP_TYPE_DEFAULT,
+			6
+		);
 		m_depthTexture = std::make_unique<Texture>(
 			m_textureSize,
 			m_textureSize,

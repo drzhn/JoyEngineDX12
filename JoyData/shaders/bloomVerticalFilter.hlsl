@@ -1,14 +1,5 @@
-cbuffer HDRDownScaleConstants : register(b0)
-{
-// Resolution of the down scaled target: x - width, y - height
-uint2 Res : packoffset(c0);
-// Total pixel in the downscaled image
-uint Domain : packoffset(c0.z);
-// Number of groups dispached on the first pass
-uint GroupSize : packoffset(c0.w);
-float Adaptation : packoffset(c1); // Adaptation factor
-float fBloomThreshold : packoffset(c1.y); // Bloom threshold percentage
-}
+#include "common.hlsl"
+
 
 static const float SampleWeights[13] = {
 	0.002216,
@@ -28,6 +19,7 @@ static const float SampleWeights[13] = {
 #define kernelhalf 6
 #define groupthreads 128
 
+ConstantBuffer<HDRDownScaleConstants> constants: register(b0);
 Texture2D<float4> Input : register(t0);
 RWTexture2D<float4> Output : register(u0);
 
@@ -37,13 +29,13 @@ groupshared float4 SharedInput[groupthreads];
 void CSMain(uint3 Gid : SV_GroupID, uint GI : SV_GroupIndex)
 {
 	int2 coord = int2(Gid.x, GI - kernelhalf + (groupthreads - kernelhalf * 2) * Gid.y);
-	coord = clamp(coord, int2(0, 0), int2(Res.x - 1, Res.y - 1));
+	coord = clamp(coord, int2(0, 0), int2(constants.Res.x - 1, constants.Res.y - 1));
 	SharedInput[GI] = Input.Load(int3(coord, 0));
 	GroupMemoryBarrierWithGroupSync();
 	// Vertical blur
 	if (GI >= kernelhalf && GI < (groupthreads - kernelhalf) &&
 		((GI - kernelhalf + (groupthreads - kernelhalf * 2) * Gid.y)
-			< Res.y))
+			< constants.Res.y))
 	{
 		float4 vOut = 0;
 		[unroll]

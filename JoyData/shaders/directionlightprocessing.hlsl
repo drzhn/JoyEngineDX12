@@ -1,20 +1,8 @@
+#include "common.hlsl"
+
 struct PSOutput
 {
 	float4 Color: SV_Target;
-};
-
-struct DirectionLightData
-{
-	float3 direction;
-	float intensity;
-	float ambient;
-};
-
-struct EngineData
-{
-	float4 perspectiveValues;
-	float3 cameraWorldPos;
-	float time;
 };
 
 ConstantBuffer<DirectionLightData> lightData : register(b0);

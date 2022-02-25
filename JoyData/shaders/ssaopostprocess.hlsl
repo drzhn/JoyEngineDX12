@@ -9,6 +9,17 @@ ConstantBuffer<EngineData> data : register(b0);
 Texture2D<float> depthTexture : register(t0);
 Texture2D<float4> colorTexture : register(t1);
 
+static const float2 gTexCoords[6] =
+{
+	float2(0.0f, 1.0f),
+	float2(0.0f, 0.0f),
+	float2(1.0f, 0.0f),
+
+	float2(0.0f, 1.0f),
+	float2(1.0f, 0.0f),
+	float2(1.0f, 1.0f)
+};
+
 inline float LinearEyeDepth(float depth)
 {
 	const float zNear = 0.1f;

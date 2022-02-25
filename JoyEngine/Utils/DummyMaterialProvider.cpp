@@ -83,6 +83,7 @@ namespace JoyEngine
 					rp.params,
 					{
 						mainGBufferFormat,
+						mainGBufferFormat,
 						mainGBufferFormat
 					},
 					mainDSVFormat,

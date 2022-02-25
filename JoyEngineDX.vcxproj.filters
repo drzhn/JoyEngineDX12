@@ -283,5 +283,8 @@
     <None Include="JoyData\shaders\bloomBrightPass.hlsl" />
     <None Include="JoyData\shaders\bloomVerticalFilter.hlsl" />
     <None Include="JoyData\shaders\bloomHorizontalFilter.hlsl" />
+    <None Include="JoyData\shaders\dynamiccubemapconvolition.hlsl" />
+    <None Include="JoyData\shaders\ssaopostprocess.hlsl" />
+    <None Include="JoyData\shaders\common.hlsl" />
   </ItemGroup>
 </Project>

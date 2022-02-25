@@ -28,6 +28,7 @@ namespace JoyEngine
 		const uint32_t m_textureSize = 512;
 
 		std::unique_ptr<RenderTexture> m_cubemap;
+		std::unique_ptr<RenderTexture> m_cubemapConvoluted;
 		std::unique_ptr<Texture> m_depthTexture;
 		CameraUnit m_cameraUnit;
 	};

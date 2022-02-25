@@ -10,6 +10,8 @@
 #include "DataManager/DataManager.h"
 #include "GraphicsManager/GraphicsManager.h"
 
+#define D3D_COMPILE_STANDARD_FILE_INCLUDE ((ID3DInclude*)(UINT_PTR)1)
+
 namespace JoyEngine
 {
 	Shader::Shader(GUID guid) : Resource(guid)
@@ -24,7 +26,7 @@ namespace JoyEngine
 
 	void Shader::InitShader()
 	{
-		const std::wstring shaderPath = JoyContext::Data->GetAbsolutePath(m_guid).wstring();
+		const std::string shaderPath = JoyContext::Data->GetAbsolutePath(m_guid).string();
 
 		const std::vector<char> shaderData = JoyContext::Data->GetData(m_guid);
 
@@ -42,8 +44,9 @@ namespace JoyEngine
 			hr = (D3DCompile(
 				shaderData.data(),
 				shaderData.size(),
-				"shader", nullptr,
+				shaderPath.c_str(),
 				nullptr,
+				D3D_COMPILE_STANDARD_FILE_INCLUDE,
 				"CSMain", "cs_5_1", compileFlags, 0, &m_computeModule, &errorMessages));
 
 			if (FAILED(hr) && errorMessages)
@@ -60,8 +63,9 @@ namespace JoyEngine
 			hr = (D3DCompile(
 				shaderData.data(),
 				shaderData.size(),
-				"shader", nullptr,
+				shaderPath.c_str(),
 				nullptr,
+				D3D_COMPILE_STANDARD_FILE_INCLUDE,
 				"VSMain", "vs_5_1", compileFlags, 0, &m_vertexModule, &errorMessages));
 
 			if (FAILED(hr) && errorMessages)
@@ -78,9 +82,9 @@ namespace JoyEngine
 			hr = (D3DCompile(
 				shaderData.data(),
 				shaderData.size(),
-				"shader",
+				shaderPath.c_str(),
 				nullptr,
-				nullptr,
+				D3D_COMPILE_STANDARD_FILE_INCLUDE,
 				"GSMain",
 				"gs_5_1", compileFlags, 0, &m_geometryModule, &errorMessages));
 
@@ -98,9 +102,9 @@ namespace JoyEngine
 			hr = (D3DCompile(
 				shaderData.data(),
 				shaderData.size(),
-				"shader",
+				shaderPath.c_str(),
 				nullptr,
-				nullptr,
+				D3D_COMPILE_STANDARD_FILE_INCLUDE,
 				"PSMain",
 				"ps_5_1", compileFlags, 0, &m_fragmentModule, &errorMessages));
 

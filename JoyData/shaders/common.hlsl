@@ -3,6 +3,7 @@ struct EngineData
 	float4 perspectiveValues;
 	float3 cameraWorldPos;
 	float time;
+	float4x4 cameraInvProj;
 };
 
 

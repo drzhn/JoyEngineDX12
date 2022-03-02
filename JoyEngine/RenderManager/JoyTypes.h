@@ -72,6 +72,7 @@ namespace JoyEngine
 		glm::vec4 perspectiveValues;
 		glm::vec3 cameraWorldPos;
 		float time;
+		glm::mat4 cameraInvProj;
 	};
 
 	struct HDRDownScaleConstants

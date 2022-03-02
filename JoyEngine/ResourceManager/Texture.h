@@ -28,10 +28,12 @@ namespace JoyEngine
 		static void InitSamplers();
 		static ResourceView* GetTextureSampler();
 		static ResourceView* GetDepthPCFSampler();
+		static ResourceView* GetDepthSampler();
 		static ResourceView* GetPointSampler();
 	private:
 		static std::unique_ptr<ResourceView> m_textureSampler;
 		static std::unique_ptr<ResourceView> m_depthPCFSampler;
+		static std::unique_ptr<ResourceView> m_depthSampler;
 		static std::unique_ptr<ResourceView> m_pointSampler;
 	public:
 		explicit Texture() = default;
@@ -106,7 +108,7 @@ namespace JoyEngine
 			uint32_t arraySize = 1
 		);
 
-		[[nodiscard]] ResourceView* GetSRV() const noexcept { return m_inputAttachmentView.get(); }
+		[[nodiscard]] ResourceView* GetSrv() const noexcept { return m_inputAttachmentView.get(); }
 
 	private:
 		std::unique_ptr<ResourceView> m_inputAttachmentView; // additional view for using this texture as input attachment

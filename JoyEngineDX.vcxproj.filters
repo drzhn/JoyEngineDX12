@@ -123,6 +123,9 @@
     <ClCompile Include="JoyEngine\Components\CubemapRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="JoyEngine\RenderManager\SSAO.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="JoyEngine\JoyContext.h">
@@ -263,6 +266,9 @@
     <ClInclude Include="JoyEngine\ResourceManager\DDS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="JoyEngine\RenderManager\SSAO.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="JoyData\shaders\gbufferwrite.hlsl" />
@@ -286,5 +292,6 @@
     <None Include="JoyData\shaders\dynamiccubemapconvolition.hlsl" />
     <None Include="JoyData\shaders\ssaopostprocess.hlsl" />
     <None Include="JoyData\shaders\common.hlsl" />
+    <None Include="JoyData\shaders\ssaoappend.hlsl" />
   </ItemGroup>
 </Project>

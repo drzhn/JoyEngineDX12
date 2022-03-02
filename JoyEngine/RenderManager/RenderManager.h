@@ -14,6 +14,7 @@
 #include <wrl.h>
 
 #include "JoyTypes.h"
+#include "SSAO.h"
 #include "ResourceManager/SharedMaterial.h"
 using Microsoft::WRL::ComPtr;
 
@@ -39,6 +40,8 @@ namespace JoyEngine
 		~RenderManager() = default;
 
 		void Init();
+
+		void Start();
 
 		void Stop();
 
@@ -134,6 +137,8 @@ namespace JoyEngine
 		std::unique_ptr<RenderTexture> m_worldNormalAttachment;
 		std::unique_ptr<RenderTexture> m_viewNormalAttachment;
 		std::unique_ptr<RenderTexture> m_lightingAttachment;
+
+		std::unique_ptr<SSAO> m_ssaoEffect;
 
 		ResourceHandle<Mesh> m_planeMesh;
 

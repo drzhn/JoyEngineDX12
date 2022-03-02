@@ -1,4 +1,4 @@
-Texture2D<float4> colorTexture : register(t0);
+Texture2D<float4> viewNormalTexture : register(t0);
 StructuredBuffer<float> AvgLum : register(t1);
 
 Texture2D<float4> BloomTexture : register(t2);
@@ -47,7 +47,7 @@ float4 PSMain(PSInput input) : SV_Target
 {
 	const float2 screenPosition = (input.clipPos.xy / input.clipPos.w);
 
-	float4 color = colorTexture.Load(float3(input.position.xy, 0));
+	float4 color = viewNormalTexture.Load(float3(input.position.xy, 0));
 
 	color += BloomScale * BloomTexture.Sample(LinearSampler, screenPosition);
 

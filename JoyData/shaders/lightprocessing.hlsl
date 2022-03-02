@@ -148,6 +148,7 @@ PSOutput PSMain(PSInput input) // : SV_TARGET
 		// Convert to shadow map UV values
 		UVD.xy = 0.5 * UVD.xy + 0.5;
 		UVD.y = 1.0 - UVD.y;
+
 		float bias = 0.001;
 		UVD.z -= bias;
 		// Compute the hardware PCF value

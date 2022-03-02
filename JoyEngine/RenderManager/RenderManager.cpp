@@ -19,6 +19,7 @@
 #include "DescriptorManager/DescriptorManager.h"
 #include "GraphicsManager/GraphicsManager.h"
 #include "Utils/DummyMaterialProvider.h"
+#include "SSAO.h"
 
 #define GLM_FORCE_RADIANS
 
@@ -221,6 +222,12 @@ namespace JoyEngine
 		);
 	}
 
+	void RenderManager::Start()
+	{
+		m_ssaoEffect = std::make_unique<SSAO>(m_width / 2, m_height / 2, gBufferFormat);
+		m_queue->WaitQueueIdle();
+	}
+
 
 	void RenderManager::Stop()
 	{
@@ -323,6 +330,13 @@ namespace JoyEngine
 		return barrier;
 	}
 
+	// Transform NDC space [-1,+1]^2 to texture space [0,1]^2
+	glm::mat4 T = glm::mat4(
+		0.5f, 0.0f, 0.0f, 0.0f,
+		0.0f, -0.5f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.5f, 0.5f, 0.0f, 1.0f);
+
 	void RenderManager::Update()
 	{
 		m_queue->ResetForFrame(m_currentFrameIndex);
@@ -360,7 +374,7 @@ namespace JoyEngine
 			mainCameraProjMatrix[3][2],
 			mainCameraProjMatrix[2][2]
 		);
-
+		data->cameraInvProj = glm::inverse(mainCameraProjMatrix);
 
 		// Set necessary state.
 		SetViewportAndScissor(commandList, m_width, m_height);
@@ -513,8 +527,8 @@ namespace JoyEngine
 				commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
 				commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-				AttachViewToGraphics(commandList, 2, m_positionAttachment->GetSRV());
-				AttachViewToGraphics(commandList, 3, m_worldNormalAttachment->GetSRV());
+				AttachViewToGraphics(commandList, 2, m_positionAttachment->GetSrv());
+				AttachViewToGraphics(commandList, 3, m_worldNormalAttachment->GetSrv());
 
 				ProcessEngineBindings(commandList, sm->GetEngineBindings(), nullptr, true);
 
@@ -550,8 +564,8 @@ namespace JoyEngine
 						mainCameraProjMatrix,
 					};
 
-					AttachViewToGraphics(commandList, 1, m_positionAttachment->GetSRV());
-					AttachViewToGraphics(commandList, 2, m_worldNormalAttachment->GetSRV());
+					AttachViewToGraphics(commandList, 1, m_positionAttachment->GetSrv());
+					AttachViewToGraphics(commandList, 2, m_worldNormalAttachment->GetSrv());
 
 					if (light->GetShadowmap() != nullptr)
 					{
@@ -685,49 +699,70 @@ namespace JoyEngine
 			commandList->ResourceBarrier(2, barriers);
 		}
 
-		// FOG post-process
 		{
-			D3D12_RESOURCE_BARRIER barrier;
-			barrier = Transition(
-				depthResource,
-				D3D12_RESOURCE_STATE_DEPTH_WRITE,
-				D3D12_RESOURCE_STATE_GENERIC_READ);
+			Barrier(commandList, depthResource,
+			        D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_GENERIC_READ);
+			// FOG post-process
+			{
+				auto sm = JoyContext::DummyMaterials->GetFogPostProcessSharedMaterial();
 
-			commandList->ResourceBarrier(1, &barrier);
+				commandList->SetPipelineState(sm->GetPipelineObject().Get());
+				commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+				commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-			auto sm = JoyContext::DummyMaterials->GetFogPostProcessSharedMaterial();
+				AttachViewToGraphics(commandList, 0, m_depthAttachment->GetSrv());
+				AttachViewToGraphics(commandList, 1, m_renderTargetCopyAttachment->GetResourceView());
+				AttachViewToGraphics(commandList, 2, m_engineDataBufferView.get());
 
-			commandList->SetPipelineState(sm->GetPipelineObject().Get());
-			commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
-			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+				commandList->DrawInstanced(
+					3,
+					1,
+					0, 0);
+			}
 
-			//ID3D12DescriptorHeap* descriptorHeap[1] = { m_worldNormalAttachment->GetSRV()->GetHeap() };
-			//commandList->SetDescriptorHeaps(
-			//	1,
-			//	descriptorHeap);
-			//commandList->SetGraphicsRootDescriptorTable(1, m_worldNormalAttachment->GetSRV()->GetGPUHandle());
+			// SSAO post-process
+			{
+				const auto renderHandle = m_ssaoEffect->GetRenderHandle();
+				commandList->OMSetRenderTargets(
+					1,
+					&renderHandle,
+					FALSE, nullptr);
 
-			AttachViewToGraphics(commandList, 0, m_depthAttachment->GetSrv());
-			AttachViewToGraphics(commandList, 1, m_renderTargetCopyAttachment->GetResourceView());
-			AttachViewToGraphics(commandList, 2, m_engineDataBufferView.get());
-			//DirectionLightData lightData = {
-			//	m_directionLight->GetTransform()->GetForward(),
-			//	m_directionLight->GetIntensity(),
-			//	m_directionLight->GetAmbient()
-			//};
+				const float clearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
+				commandList->ClearRenderTargetView(renderHandle, clearColor, 0, nullptr);
 
-			//commandList->SetGraphicsRoot32BitConstants(0, sizeof(DirectionLightData) / 4, &lightData, 0);
-			commandList->DrawInstanced(
-				3,
-				1,
-				0, 0);
+				auto sm = JoyContext::DummyMaterials->GetSsaoPostProcessSharedMaterial();
 
-			barrier = Transition(
-				depthResource,
-				D3D12_RESOURCE_STATE_GENERIC_READ,
-				D3D12_RESOURCE_STATE_DEPTH_WRITE);
+				SetViewportAndScissor(commandList, m_ssaoEffect->GetWidth(), m_ssaoEffect->GetHeight());
+				commandList->SetPipelineState(sm->GetPipelineObject().Get());
+				commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+				commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-			commandList->ResourceBarrier(1, &barrier);
+				MVP mvp{
+					glm::mat4(),
+					mainCameraViewMatrix,
+					mainCameraProjMatrix,
+				};
+				commandList->SetGraphicsRoot32BitConstants(0, sizeof(MVP) / 4, &mvp, 0);
+				AttachViewToGraphics(commandList, 1, m_engineDataBufferView.get());
+				AttachViewToGraphics(commandList, 2, m_ssaoEffect->GetOffsetBufferView());
+
+				AttachViewToGraphics(commandList, 3, m_depthAttachment->GetSrv());
+				AttachViewToGraphics(commandList, 4, m_viewNormalAttachment->GetSrv());
+				AttachViewToGraphics(commandList, 5, m_ssaoEffect->GetRandomNoiseTextureView());
+
+				AttachViewToGraphics(commandList, 6, Texture::GetDepthSampler());
+				AttachViewToGraphics(commandList, 7, Texture::GetTextureSampler());
+				AttachViewToGraphics(commandList, 8, Texture::GetPointSampler());
+
+				commandList->DrawInstanced(
+					6,
+					1,
+					0, 0);
+			}
+
+			Barrier(commandList, depthResource,
+			        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_DEPTH_WRITE);
 		}
 
 
@@ -755,7 +790,7 @@ namespace JoyEngine
 				commandList->SetPipelineState(JoyContext::DummyMaterials->GetHdrDownscaleFirstPassComputePipeline()->GetPipelineObject().Get());
 
 				commandList->SetComputeRoot32BitConstants(0, sizeof(HDRDownScaleConstants) / 4, &downScaleConstants, 0);
-				AttachViewToCompute(commandList, 1, m_hdrRenderTarget->GetSRV());
+				AttachViewToCompute(commandList, 1, m_hdrRenderTarget->GetSrv());
 				AttachViewToCompute(commandList, 2, m_hdrLuminationBufferUAVView.get());
 				AttachViewToCompute(commandList, 3, m_hrdDownScaledTexture->GetResourceView());
 
@@ -861,7 +896,7 @@ namespace JoyEngine
 				commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
 				commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-				AttachViewToGraphics(commandList, 0, m_hdrRenderTarget->GetSRV());
+				AttachViewToGraphics(commandList, 0, m_hdrRenderTarget->GetSrv());
 				AttachViewToGraphics(commandList, 1, m_hdrLuminationBufferSRVView.get());
 				AttachViewToGraphics(commandList, 2, m_bloomFirstTexture->GetSrv());
 				AttachViewToGraphics(commandList, 3, Texture::GetTextureSampler());
@@ -935,7 +970,7 @@ namespace JoyEngine
 				{
 					if (isDrawingMainColor)
 					{
-						AttachViewToGraphics(commandList, rootIndex, m_lightingAttachment->GetSRV());
+						AttachViewToGraphics(commandList, rootIndex, m_lightingAttachment->GetSrv());
 					}
 					break;
 				}
@@ -943,7 +978,7 @@ namespace JoyEngine
 				{
 					if (isDrawingMainColor)
 					{
-						AttachViewToGraphics(commandList, rootIndex, m_cubemap->GetCubemapTexture()->GetSRV());
+						AttachViewToGraphics(commandList, rootIndex, m_cubemap->GetCubemapTexture()->GetSrv());
 					}
 					break;
 				}

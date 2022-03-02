@@ -18,6 +18,7 @@ namespace JoyEngine
 {
 	std::unique_ptr<ResourceView> Texture::m_textureSampler = nullptr;
 	std::unique_ptr<ResourceView> Texture::m_depthPCFSampler = nullptr;
+	std::unique_ptr<ResourceView> Texture::m_depthSampler = nullptr;
 	std::unique_ptr<ResourceView> Texture::m_pointSampler = nullptr;
 
 	void Texture::InitSamplers()
@@ -50,6 +51,22 @@ namespace JoyEngine
 		depthPCFSamplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_LESS;
 		m_depthPCFSampler = std::make_unique<ResourceView>(depthPCFSamplerDesc);
 
+		D3D12_SAMPLER_DESC depthSamplerDesc = {};
+		depthSamplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+		depthSamplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+		depthSamplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+		depthSamplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+		depthSamplerDesc.BorderColor[0] = 1.0f;
+		depthSamplerDesc.BorderColor[1] = 1.0f;
+		depthSamplerDesc.BorderColor[2] = 1.0f;
+		depthSamplerDesc.BorderColor[3] = 1.0f;
+		depthSamplerDesc.MinLOD = 0;
+		depthSamplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
+		depthSamplerDesc.MipLODBias = 0.0f;
+		depthSamplerDesc.MaxAnisotropy = 1;
+		depthSamplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+		m_depthSampler = std::make_unique<ResourceView>(depthSamplerDesc);
+
 		D3D12_SAMPLER_DESC pointSamplerDesc = {};
 		pointSamplerDesc.Filter = D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT;
 		pointSamplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
@@ -77,6 +94,12 @@ namespace JoyEngine
 	{
 		ASSERT(m_depthPCFSampler != nullptr);
 		return m_depthPCFSampler.get();
+	}
+
+	ResourceView* Texture::GetDepthSampler()
+	{
+		ASSERT(m_depthSampler != nullptr);
+		return m_depthSampler.get();
 	}
 
 	ResourceView* Texture::GetPointSampler()

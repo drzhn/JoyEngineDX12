@@ -79,6 +79,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 	WindowHandler::RegisterMessageHandler(graphicsContext, hwnd);
 
 	graphicsContext->Init();
+	graphicsContext->Start();
 
 
 	ShowWindow(hwnd, nCmdShow);

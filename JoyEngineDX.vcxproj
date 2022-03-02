@@ -156,6 +156,7 @@
     <ClCompile Include="JoyEngine\Components\ParticleSystem.cpp" />
     <ClCompile Include="JoyEngine\GameplayComponents\CameraBehaviour.cpp" />
     <ClCompile Include="JoyEngine\GameplayComponents\RoomBehaviour.cpp" />
+    <ClCompile Include="JoyEngine\RenderManager\SSAO.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\Buffer.cpp" />
     <ClCompile Include="JoyEngine\DataManager\DataManager.cpp" />
     <ClCompile Include="JoyEngine\DescriptorManager\DescriptorManager.cpp" />
@@ -195,6 +196,7 @@
     <ClInclude Include="JoyEngine\d3dx12.h" />
     <ClInclude Include="JoyEngine\GameplayComponents\CameraBehaviour.h" />
     <ClInclude Include="JoyEngine\GameplayComponents\RoomBehaviour.h" />
+    <ClInclude Include="JoyEngine\RenderManager\SSAO.h" />
     <ClInclude Include="JoyEngine\ResourceManager\Buffer.h" />
     <ClInclude Include="JoyEngine\DataManager\DataManager.h" />
     <ClInclude Include="JoyEngine\DescriptorManager\DescriptorManager.h" />
@@ -335,6 +337,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="JoyData\shaders\common.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="JoyData\shaders\ssaoappend.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

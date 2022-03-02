@@ -7,14 +7,9 @@ struct PSInput
 	float2 TexC : TEXCOORD0;
 };
 
-struct OffsetVectors
-{
-	float4 data[14];
-};
-
 ConstantBuffer<MVP> mvp : register(b0);
 ConstantBuffer<EngineData> engineData : register(b1);
-ConstantBuffer<OffsetVectors> gOffsetVectors : register(b2);
+ConstantBuffer<SSAOData> ssaoData : register(b2);
 
 Texture2D<float> depthTexture : register(t0);
 Texture2D<float4> viewNormalTexture : register(t1);
@@ -117,7 +112,7 @@ float4 PSMain(PSInput v) : SV_Target
 		// Are offset vectors are fixed and uniformly distributed (so that our offset vectors
 		// do not clump in the same direction).  If we reflect them about a random vector
 		// then we get a random uniform distribution of offset vectors.
-		float3 offset = reflect(gOffsetVectors.data[i].xyz, randVec);
+		float3 offset = reflect(ssaoData.offsetVectors[i].xyz, randVec);
 
 		// Flip offset vector if it is behind the plane defined by (p, n).
 		float flip = sign(dot(offset, n));

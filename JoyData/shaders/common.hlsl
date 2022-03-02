@@ -6,7 +6,6 @@ struct EngineData
 	float4x4 cameraInvProj;
 };
 
-
 struct MVP
 {
 	float4x4 model;
@@ -42,4 +41,13 @@ struct LightData
 
 	float4x4 view[6];
 	float4x4 projection;
+};
+
+struct SSAOData
+{
+	float4 offsetVectors[14];
+	float2 invRenderTargetSize;
+	uint isHorizontal;
+	uint _dummy;
+	float4 blurWeights[3];
 };

@@ -442,41 +442,84 @@ namespace JoyEngine
 
 		// SSAO
 		{
-			const GUID ssaoPostEffectShaderGuid = GUID::StringToGuid("3cf96278-de88-4614-bb23-5cfa2b54e41a"); //shaders/ssaopostprocess.hlsl
-			const GUID ssaoPostEffectSharedMaterialGuid = GUID::Random();
+			// SSAO Generation
+			{
+				const GUID ssaoPostEffectShaderGuid = GUID::StringToGuid("3cf96278-de88-4614-bb23-5cfa2b54e41a"); //shaders/ssaopostprocess.hlsl
+				const GUID ssaoPostEffectSharedMaterialGuid = GUID::Random();
 
-			RootParams rp;
-			rp.CreateConstants(sizeof(MVP) / 4, 0);
-			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, D3D12_SHADER_VISIBILITY_ALL);
-			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 2, D3D12_SHADER_VISIBILITY_ALL);
+				RootParams rp;
+				rp.CreateConstants(sizeof(MVP) / 4, 0);
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, D3D12_SHADER_VISIBILITY_ALL);
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 2, D3D12_SHADER_VISIBILITY_ALL);
 
-			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, D3D12_SHADER_VISIBILITY_PIXEL);
-			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, D3D12_SHADER_VISIBILITY_PIXEL);
-			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 2, D3D12_SHADER_VISIBILITY_PIXEL);
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, D3D12_SHADER_VISIBILITY_PIXEL);
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 2, D3D12_SHADER_VISIBILITY_PIXEL);
 
-			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 0, D3D12_SHADER_VISIBILITY_PIXEL);
-			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, D3D12_SHADER_VISIBILITY_PIXEL);
-			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 2, D3D12_SHADER_VISIBILITY_PIXEL);
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, D3D12_SHADER_VISIBILITY_PIXEL);
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 2, D3D12_SHADER_VISIBILITY_PIXEL);
 
-			m_ssaoPostProcessSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
-				ssaoPostEffectSharedMaterialGuid,
-				{
-					ssaoPostEffectShaderGuid,
-					JoyShaderTypeVertex | JoyShaderTypePixel,
-					false,
-					false,
-					false,
-					D3D12_CULL_MODE_NONE,
-					D3D12_COMPARISON_FUNC_GREATER_EQUAL,
-					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
-					rp.params,
+				m_ssaoPostProcessSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
+					ssaoPostEffectSharedMaterialGuid,
 					{
-						mainRTVFormat
-					},
-					mainDSVFormat,
-					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
-					{}
-				});
+						ssaoPostEffectShaderGuid,
+						JoyShaderTypeVertex | JoyShaderTypePixel,
+						false,
+						false,
+						false,
+						D3D12_CULL_MODE_NONE,
+						D3D12_COMPARISON_FUNC_GREATER_EQUAL,
+						CD3DX12_BLEND_DESC(D3D12_DEFAULT),
+						rp.params,
+						{
+							mainRTVFormat
+						},
+						mainDSVFormat,
+						D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
+						{}
+					});
+			}
+
+			// SSAO Blur pass
+			{
+				const GUID ssaoBlurShaderGuid = GUID::StringToGuid("81312dae-c920-4cd6-bd08-87d1a2a3b6f4"); //shaders/ssaoblur.hlsl
+				const GUID ssaoBlurSharedMaterialGuid = GUID::Random();
+
+				RootParams rp;
+				rp.CreateConstants(sizeof(MVP) / 4, 0);
+				rp.CreateConstants(sizeof(uint32_t) / 4, 1);
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 2, D3D12_SHADER_VISIBILITY_ALL);
+
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, D3D12_SHADER_VISIBILITY_PIXEL);
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 2, D3D12_SHADER_VISIBILITY_PIXEL);
+
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, D3D12_SHADER_VISIBILITY_PIXEL);
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 2, D3D12_SHADER_VISIBILITY_PIXEL);
+
+				m_ssaoBlurSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
+					ssaoBlurSharedMaterialGuid,
+					{
+						ssaoBlurShaderGuid,
+						JoyShaderTypeVertex | JoyShaderTypePixel,
+						false,
+						false,
+						false,
+						D3D12_CULL_MODE_NONE,
+						D3D12_COMPARISON_FUNC_GREATER_EQUAL,
+						CD3DX12_BLEND_DESC(D3D12_DEFAULT),
+						rp.params,
+						{
+							mainRTVFormat
+						},
+						mainDSVFormat,
+						D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
+						{}
+					});
+			}
+
 		}
 
 		// Bloom

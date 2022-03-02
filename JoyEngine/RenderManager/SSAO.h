@@ -24,10 +24,16 @@ namespace JoyEngine
 		SSAO() = delete;
 		SSAO(uint32_t width, uint32_t height, DXGI_FORMAT format);
 		~SSAO() = default;
+
+		void SetDirection(bool isHorizontal) const;
+
 		[[nodiscard]] ID3D12Resource* GetRenderResource() const { return m_ssaoRenderTarget->GetImage().Get(); }
 		[[nodiscard]] D3D12_CPU_DESCRIPTOR_HANDLE GetRenderHandle() const { return m_ssaoRenderTarget->GetResourceView()->GetHandle(); }
-		[[nodiscard]] ResourceView* GetOffsetBufferView() const { return m_offsetBufferView.get(); }
+		[[nodiscard]] ID3D12Resource* GetCopyResource() const { return m_ssaoCopyResource->GetImage().Get(); }
+
+		[[nodiscard]] ResourceView* GetSSAODataBufferView() const { return m_ssaoDataBufferView.get(); }
 		[[nodiscard]] ResourceView* GetRandomNoiseTextureView() const { return m_randomColorTexture->GetResourceView(); }
+		[[nodiscard]] ResourceView* GetCopyResourceTextureView() const { return m_ssaoCopyResource->GetResourceView(); }
 
 		[[nodiscard]] uint32_t GetWidth() const noexcept { return m_width; }
 		[[nodiscard]] uint32_t GetHeight() const noexcept { return m_height; }
@@ -35,9 +41,11 @@ namespace JoyEngine
 	private:
 		uint32_t m_width;
 		uint32_t m_height;
-		std::unique_ptr<Buffer> m_offsetBuffer;
-		std::unique_ptr<ResourceView> m_offsetBufferView;
+		std::unique_ptr<Buffer> m_ssaoDataBuffer;
+		std::unique_ptr<ResourceView> m_ssaoDataBufferView;
+
 		std::unique_ptr<RenderTexture> m_ssaoRenderTarget;
+		std::unique_ptr<Texture> m_ssaoCopyResource;
 		ResourceHandle<Texture> m_randomColorTexture;
 	};
 }

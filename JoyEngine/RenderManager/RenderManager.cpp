@@ -224,7 +224,7 @@ namespace JoyEngine
 
 	void RenderManager::Start()
 	{
-		m_ssaoEffect = std::make_unique<SSAO>(m_width / 2, m_height / 2, gBufferFormat);
+		m_ssaoEffect = std::make_unique<SSAO>(m_width, m_height, gBufferFormat);
 		m_queue->WaitQueueIdle();
 	}
 
@@ -720,45 +720,104 @@ namespace JoyEngine
 					0, 0);
 			}
 
-			// SSAO post-process
+			// SSAO
 			{
 				const auto renderHandle = m_ssaoEffect->GetRenderHandle();
 				commandList->OMSetRenderTargets(
 					1,
 					&renderHandle,
 					FALSE, nullptr);
-
-				const float clearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
-				commandList->ClearRenderTargetView(renderHandle, clearColor, 0, nullptr);
-
-				auto sm = JoyContext::DummyMaterials->GetSsaoPostProcessSharedMaterial();
-
 				SetViewportAndScissor(commandList, m_ssaoEffect->GetWidth(), m_ssaoEffect->GetHeight());
-				commandList->SetPipelineState(sm->GetPipelineObject().Get());
-				commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
-				commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 				MVP mvp{
 					glm::mat4(),
 					mainCameraViewMatrix,
 					mainCameraProjMatrix,
 				};
+
+				// SSAO post-process
+				{
+					const float clearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
+					commandList->ClearRenderTargetView(renderHandle, clearColor, 0, nullptr);
+
+					auto sm = JoyContext::DummyMaterials->GetSsaoPostProcessSharedMaterial();
+
+					commandList->SetPipelineState(sm->GetPipelineObject().Get());
+					commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+					commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+					commandList->SetGraphicsRoot32BitConstants(0, sizeof(MVP) / 4, &mvp, 0);
+					AttachViewToGraphics(commandList, 1, m_engineDataBufferView.get());
+					AttachViewToGraphics(commandList, 2, m_ssaoEffect->GetSSAODataBufferView());
+
+					AttachViewToGraphics(commandList, 3, m_depthAttachment->GetSrv());
+					AttachViewToGraphics(commandList, 4, m_viewNormalAttachment->GetSrv());
+					AttachViewToGraphics(commandList, 5, m_ssaoEffect->GetRandomNoiseTextureView());
+
+					AttachViewToGraphics(commandList, 6, Texture::GetDepthSampler());
+					AttachViewToGraphics(commandList, 7, Texture::GetTextureSampler());
+					AttachViewToGraphics(commandList, 8, Texture::GetPointSampler());
+
+					commandList->DrawInstanced(
+						6,
+						1,
+						0, 0);
+				}
+
+				uint32_t direction = 0;
+
+				auto sm = JoyContext::DummyMaterials->GetSsaoBlurSharedMaterial();
+
+				commandList->SetPipelineState(sm->GetPipelineObject().Get());
+				commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+				commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
 				commandList->SetGraphicsRoot32BitConstants(0, sizeof(MVP) / 4, &mvp, 0);
-				AttachViewToGraphics(commandList, 1, m_engineDataBufferView.get());
-				AttachViewToGraphics(commandList, 2, m_ssaoEffect->GetOffsetBufferView());
+				AttachViewToGraphics(commandList, 2, m_ssaoEffect->GetSSAODataBufferView());
 
 				AttachViewToGraphics(commandList, 3, m_depthAttachment->GetSrv());
 				AttachViewToGraphics(commandList, 4, m_viewNormalAttachment->GetSrv());
-				AttachViewToGraphics(commandList, 5, m_ssaoEffect->GetRandomNoiseTextureView());
+
 
 				AttachViewToGraphics(commandList, 6, Texture::GetDepthSampler());
 				AttachViewToGraphics(commandList, 7, Texture::GetTextureSampler());
 				AttachViewToGraphics(commandList, 8, Texture::GetPointSampler());
 
-				commandList->DrawInstanced(
-					6,
-					1,
-					0, 0);
+				for (uint32_t i = 0; i < 4; i++)
+				{
+					direction = direction == 0 ? 1 : 0;
+
+					Barrier(commandList, m_ssaoEffect->GetRenderResource(),
+					        D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);
+
+					//Barrier(commandList, m_ssaoEffect->GetCopyResource(),
+					//	D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_COPY_DEST);
+
+					commandList->CopyResource(m_ssaoEffect->GetCopyResource(), m_ssaoEffect->GetRenderResource());
+
+					Barrier(commandList, m_ssaoEffect->GetCopyResource(),
+					        D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ);
+
+					Barrier(commandList, m_ssaoEffect->GetRenderResource(),
+					        D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
+
+					// SSAO blur pass
+					{
+						const float clearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
+						commandList->ClearRenderTargetView(renderHandle, clearColor, 0, nullptr);
+
+						AttachViewToGraphics(commandList, 5, m_ssaoEffect->GetCopyResourceTextureView());
+						commandList->SetGraphicsRoot32BitConstants(1, sizeof(uint32_t) / 4, &direction, 0);
+
+						commandList->DrawInstanced(
+							6,
+							1,
+							0, 0);
+					}
+
+					Barrier(commandList, m_ssaoEffect->GetCopyResource(),
+					        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_COPY_DEST);
+				}
 			}
 
 			Barrier(commandList, depthResource,

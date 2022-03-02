@@ -86,6 +86,15 @@ namespace JoyEngine
 		float Adaptation; // Adaptation factor
 		float fBloomThreshold; // Bloom threshold percentage
 	};
+
+	struct SSAOData
+	{
+		glm::vec4 offsetVectors[14];
+		glm::vec2 invRenderTargetSize;
+		uint32_t isHorizontal;
+		uint32_t _dummy;
+		glm::vec4 blurWeights[3];
+	};
 }
 
 #endif //JOY_TYPES_H

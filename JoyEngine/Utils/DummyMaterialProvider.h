@@ -58,6 +58,7 @@ namespace JoyEngine
 		[[nodiscard]] ComputePipeline* GetBloomHorizontalFilterComputePipeline() const noexcept { return m_bloomHorizontalFilterComputePipeline; }
 
 		[[nodiscard]] SharedMaterial* GetSsaoPostProcessSharedMaterial() const noexcept { return m_ssaoPostProcessSharedMaterial; }
+		[[nodiscard]] SharedMaterial* GetSsaoBlurSharedMaterial() const noexcept { return m_ssaoBlurSharedMaterial; }
 
 	private:
 		//ResourceHandle<Texture> m_skyboxTextureHandle;
@@ -94,6 +95,7 @@ namespace JoyEngine
 		std::map<std::string, ResourceHandle<Material>> m_sampleMaterials;
 
 		ResourceHandle<SharedMaterial> m_ssaoPostProcessSharedMaterial;
+		ResourceHandle<SharedMaterial> m_ssaoBlurSharedMaterial;
 
 	private:
 		void CreatePBRMaterial(

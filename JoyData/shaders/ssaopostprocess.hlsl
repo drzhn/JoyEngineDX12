@@ -77,7 +77,7 @@ PSInput VSMain(uint vid : SV_VertexID)
 	return vout;
 }
 
-float4 PSMain(PSInput v) : SV_Target
+float PSMain(PSInput v) : SV_Target
 {
 	//float4 n = viewNormalTexture.Load(float3(v.PosH.xy, 0));
 	//float pz = depthTexture.Load(float3(v.PosH.xy, 0));
@@ -166,7 +166,6 @@ float4 PSMain(PSInput v) : SV_Target
 	float access = 1.0f - occlusionSum;
 
 	// Sharpen the contrast of the SSAO map to make the SSAO affect more dramatic.
-	float3 color = float3(1, 1, 1) * saturate(pow(access, 6.0f));
+	return saturate(pow(access, 6.0f));
 
-	return float4(color, 1);
 }

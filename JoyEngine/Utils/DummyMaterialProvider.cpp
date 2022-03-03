@@ -38,6 +38,7 @@ namespace JoyEngine
 		DXGI_FORMAT swapchainLdrFormat = RenderManager::GetLdrRTVFormat();
 		DXGI_FORMAT mainGBufferFormat = RenderManager::GetGBufferFormat();
 		DXGI_FORMAT mainDSVFormat = RenderManager::GetDepthFormat();
+		DXGI_FORMAT ssaoFormat = RenderManager::GetSSAOFormat();
 
 
 		// Mip map generation
@@ -473,7 +474,7 @@ namespace JoyEngine
 						CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 						rp.params,
 						{
-							mainRTVFormat
+							ssaoFormat
 						},
 						mainDSVFormat,
 						D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
@@ -512,7 +513,7 @@ namespace JoyEngine
 						CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 						rp.params,
 						{
-							mainRTVFormat
+							ssaoFormat
 						},
 						mainDSVFormat,
 						D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,

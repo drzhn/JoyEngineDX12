@@ -54,7 +54,7 @@ float NdcDepthToViewDepth(float z_ndc)
 	return viewZ;
 }
 
-float4 PSMain(VertexOut pin) : SV_Target
+float PSMain(VertexOut pin) : SV_Target
 {
 	// unpack into float array.
 	float blurWeights[12] =
@@ -75,7 +75,7 @@ float4 PSMain(VertexOut pin) : SV_Target
 	}
 
 	// The center value always contributes to the sum.
-	float4 color = blurWeights[gBlurRadius] * gInputMap.SampleLevel(gsamPointClamp, pin.TexC, 0.0);
+	float color = blurWeights[gBlurRadius] * gInputMap.SampleLevel(gsamPointClamp, pin.TexC, 0.0).r;
 	float totalWeight = blurWeights[gBlurRadius];
 
 	float3 centerNormal = viewNormalTexture.SampleLevel(gsamPointClamp, pin.TexC, 0.0f).xyz;
@@ -106,7 +106,7 @@ float4 PSMain(VertexOut pin) : SV_Target
 
 			// Add neighbor pixel to blur.
 			color += weight * gInputMap.SampleLevel(
-				gsamPointClamp, tex, 0.0);
+				gsamPointClamp, tex, 0.0).r;
 
 			totalWeight += weight;
 		}

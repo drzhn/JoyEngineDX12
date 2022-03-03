@@ -224,7 +224,7 @@ namespace JoyEngine
 
 	void RenderManager::Start()
 	{
-		m_ssaoEffect = std::make_unique<SSAO>(m_width, m_height, gBufferFormat);
+		m_ssaoEffect = std::make_unique<SSAO>(m_width, m_height, ssaoFormat);
 		m_queue->WaitQueueIdle();
 	}
 

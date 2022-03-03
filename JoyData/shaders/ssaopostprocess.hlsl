@@ -166,6 +166,6 @@ float PSMain(PSInput v) : SV_Target
 	float access = 1.0f - occlusionSum;
 
 	// Sharpen the contrast of the SSAO map to make the SSAO affect more dramatic.
-	return saturate(pow(access, 6.0f));
+	return access;// saturate(pow(access, 6.0f));
 
 }

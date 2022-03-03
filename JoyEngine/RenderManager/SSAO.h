@@ -33,6 +33,7 @@ namespace JoyEngine
 
 		[[nodiscard]] ResourceView* GetSSAODataBufferView() const { return m_ssaoDataBufferView.get(); }
 		[[nodiscard]] ResourceView* GetRandomNoiseTextureView() const { return m_randomColorTexture->GetResourceView(); }
+		[[nodiscard]] ResourceView* GetSSAOTextureView() const { return m_ssaoRenderTarget->GetSrv(); }
 		[[nodiscard]] ResourceView* GetCopyResourceTextureView() const { return m_ssaoCopyResource->GetResourceView(); }
 
 		[[nodiscard]] uint32_t GetWidth() const noexcept { return m_width; }

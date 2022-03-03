@@ -59,6 +59,7 @@ namespace JoyEngine
 
 		[[nodiscard]] SharedMaterial* GetSsaoPostProcessSharedMaterial() const noexcept { return m_ssaoPostProcessSharedMaterial; }
 		[[nodiscard]] SharedMaterial* GetSsaoBlurSharedMaterial() const noexcept { return m_ssaoBlurSharedMaterial; }
+		[[nodiscard]] SharedMaterial* GetSsaoAppendSharedMaterial() const noexcept { return m_ssaoAppendSharedMaterial; }
 
 	private:
 		//ResourceHandle<Texture> m_skyboxTextureHandle;
@@ -96,6 +97,7 @@ namespace JoyEngine
 
 		ResourceHandle<SharedMaterial> m_ssaoPostProcessSharedMaterial;
 		ResourceHandle<SharedMaterial> m_ssaoBlurSharedMaterial;
+		ResourceHandle<SharedMaterial> m_ssaoAppendSharedMaterial;
 
 	private:
 		void CreatePBRMaterial(

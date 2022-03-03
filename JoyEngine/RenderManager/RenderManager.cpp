@@ -665,43 +665,12 @@ namespace JoyEngine
 			}
 		}
 
-		// Copying RTV to temporary Texture
-		{
-			D3D12_RESOURCE_BARRIER barriers[2];
-			barriers[0] = Transition(
-				hdrRTVResource,
-				D3D12_RESOURCE_STATE_RENDER_TARGET,
-				D3D12_RESOURCE_STATE_COPY_SOURCE);
-
-			barriers[1] = Transition(
-				copyResource,
-				D3D12_RESOURCE_STATE_GENERIC_READ,
-				D3D12_RESOURCE_STATE_COPY_DEST);
-
-			commandList->ResourceBarrier(2, barriers);
-
-			commandList->CopyResource(
-				copyResource,
-				hdrRTVResource
-			);
-
-			barriers[0] = Transition(
-				copyResource,
-				D3D12_RESOURCE_STATE_COPY_DEST,
-				D3D12_RESOURCE_STATE_GENERIC_READ
-			);
-
-			barriers[1] = Transition(
-				hdrRTVResource,
-				D3D12_RESOURCE_STATE_COPY_SOURCE,
-				D3D12_RESOURCE_STATE_RENDER_TARGET);
-
-			commandList->ResourceBarrier(2, barriers);
-		}
-
 		{
 			Barrier(commandList, depthResource,
 			        D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_GENERIC_READ);
+
+			CopyRTVResource(commandList, hdrRTVResource, copyResource);
+
 			// FOG post-process
 			{
 				auto sm = JoyContext::DummyMaterials->GetFogPostProcessSharedMaterial();
@@ -764,45 +733,45 @@ namespace JoyEngine
 						0, 0);
 				}
 
-				uint32_t direction = 0;
-
-				auto sm = JoyContext::DummyMaterials->GetSsaoBlurSharedMaterial();
-
-				commandList->SetPipelineState(sm->GetPipelineObject().Get());
-				commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
-				commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-				commandList->SetGraphicsRoot32BitConstants(0, sizeof(MVP) / 4, &mvp, 0);
-				AttachViewToGraphics(commandList, 2, m_ssaoEffect->GetSSAODataBufferView());
-
-				AttachViewToGraphics(commandList, 3, m_depthAttachment->GetSrv());
-				AttachViewToGraphics(commandList, 4, m_viewNormalAttachment->GetSrv());
-
-
-				AttachViewToGraphics(commandList, 6, Texture::GetDepthSampler());
-				AttachViewToGraphics(commandList, 7, Texture::GetTextureSampler());
-				AttachViewToGraphics(commandList, 8, Texture::GetPointSampler());
-
-				for (uint32_t i = 0; i < 4; i++)
+				// SSAO blur pass
 				{
-					direction = direction == 0 ? 1 : 0;
+					uint32_t direction = 0;
 
-					Barrier(commandList, m_ssaoEffect->GetRenderResource(),
-					        D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);
+					auto sm = JoyContext::DummyMaterials->GetSsaoBlurSharedMaterial();
 
-					//Barrier(commandList, m_ssaoEffect->GetCopyResource(),
-					//	D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_COPY_DEST);
+					commandList->SetPipelineState(sm->GetPipelineObject().Get());
+					commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+					commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-					commandList->CopyResource(m_ssaoEffect->GetCopyResource(), m_ssaoEffect->GetRenderResource());
+					commandList->SetGraphicsRoot32BitConstants(0, sizeof(MVP) / 4, &mvp, 0);
+					AttachViewToGraphics(commandList, 2, m_ssaoEffect->GetSSAODataBufferView());
 
-					Barrier(commandList, m_ssaoEffect->GetCopyResource(),
-					        D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ);
+					AttachViewToGraphics(commandList, 3, m_depthAttachment->GetSrv());
+					AttachViewToGraphics(commandList, 4, m_viewNormalAttachment->GetSrv());
 
-					Barrier(commandList, m_ssaoEffect->GetRenderResource(),
-					        D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
-					// SSAO blur pass
+					AttachViewToGraphics(commandList, 6, Texture::GetDepthSampler());
+					AttachViewToGraphics(commandList, 7, Texture::GetTextureSampler());
+					AttachViewToGraphics(commandList, 8, Texture::GetPointSampler());
+
+					for (uint32_t i = 0; i < 4; i++)
 					{
+						direction = direction == 0 ? 1 : 0;
+
+						Barrier(commandList, m_ssaoEffect->GetRenderResource(),
+						        D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);
+
+						//Barrier(commandList, m_ssaoEffect->GetCopyResource(),
+						//	D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_COPY_DEST);
+
+						commandList->CopyResource(m_ssaoEffect->GetCopyResource(), m_ssaoEffect->GetRenderResource());
+
+						Barrier(commandList, m_ssaoEffect->GetCopyResource(),
+						        D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ);
+
+						Barrier(commandList, m_ssaoEffect->GetRenderResource(),
+						        D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
+
 						const float clearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
 						commandList->ClearRenderTargetView(renderHandle, clearColor, 0, nullptr);
 
@@ -813,10 +782,40 @@ namespace JoyEngine
 							6,
 							1,
 							0, 0);
-					}
 
-					Barrier(commandList, m_ssaoEffect->GetCopyResource(),
-					        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_COPY_DEST);
+						Barrier(commandList, m_ssaoEffect->GetCopyResource(),
+						        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_COPY_DEST);
+					}
+				}
+
+				CopyRTVResource(commandList, hdrRTVResource, copyResource);
+
+				// SSAO Append
+				{
+					Barrier(commandList, m_ssaoEffect->GetRenderResource(),
+					        D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
+
+					commandList->OMSetRenderTargets(
+						1,
+						&hdrRTVHandle,
+						FALSE, nullptr);
+
+					auto sm = JoyContext::DummyMaterials->GetSsaoAppendSharedMaterial();
+
+					commandList->SetPipelineState(sm->GetPipelineObject().Get());
+					commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+					commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+					AttachViewToGraphics(commandList, 0, m_ssaoEffect->GetSSAOTextureView());
+					AttachViewToGraphics(commandList, 1, m_renderTargetCopyAttachment->GetResourceView());
+
+					commandList->DrawInstanced(
+						3,
+						1,
+						0, 0);
+
+					Barrier(commandList, m_ssaoEffect->GetRenderResource(),
+					        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
 				}
 			}
 
@@ -1192,6 +1191,32 @@ namespace JoyEngine
 			stateBefore,
 			stateAfter);
 		commandList->ResourceBarrier(1, &barrier);
+	}
+
+
+	void RenderManager::CopyRTVResource(
+		ID3D12GraphicsCommandList* commandList,
+		ID3D12Resource* rtvResource,
+		ID3D12Resource* copyResource
+	)
+	{
+		Barrier(commandList, rtvResource,
+		        D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);
+
+		Barrier(commandList, copyResource,
+		        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_COPY_DEST);
+
+
+		commandList->CopyResource(
+			copyResource,
+			rtvResource
+		);
+
+		Barrier(commandList, copyResource,
+		        D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ);
+
+		Barrier(commandList, rtvResource,
+		        D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
 	}
 
 	float RenderManager::GetAspect() const noexcept

@@ -151,6 +151,10 @@
 		{
             "guid": "81312dae-c920-4cd6-bd08-87d1a2a3b6f4",
             "path": "shaders/ssaoblur.hlsl"
+        },		
+		{
+            "guid": "c7986e89-5d7e-4348-903e-761f007c3f12",
+            "path": "shaders/ssaoappend.hlsl"
         },
 		
 		

@@ -43,6 +43,13 @@ struct LightData
 	float4x4 projection;
 };
 
+struct CubemapConvolutionConstants
+{
+	float4x4 model;
+	float4x4 view[6];
+	float4x4 projection;
+};
+
 struct SSAOData
 {
 	float4 offsetVectors[14];

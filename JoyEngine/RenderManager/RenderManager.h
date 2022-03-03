@@ -144,6 +144,7 @@ namespace JoyEngine
 		std::unique_ptr<SSAO> m_ssaoEffect;
 
 		ResourceHandle<Mesh> m_planeMesh;
+		ResourceHandle<Mesh> m_cubeMesh;
 
 		std::unique_ptr<Buffer> m_engineDataBuffer;
 		std::unique_ptr<ResourceView> m_engineDataBufferView;

@@ -67,6 +67,13 @@ namespace JoyEngine
 		glm::mat4 proj;
 	};
 
+	struct CubemapConvolutionConstants
+	{
+		glm::mat4 model;
+		glm::mat4 view[6];
+		glm::mat4 projection;
+	};
+
 	struct JoyData
 	{
 		glm::vec4 perspectiveValues;

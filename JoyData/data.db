@@ -82,6 +82,10 @@
 		{
             "guid": "4a8ea369-904f-4d9a-9061-b4eedacc3918",
             "path": "shaders/dynamiccubemapreflections.hlsl"
+        },		
+		{
+            "guid": "613710d9-304e-453b-a655-b1c842904f4c",
+            "path": "shaders/dynamiccubemapconvolition.hlsl"
         },
         {
             "guid": "48ffacc9-5c00-4058-b359-cf72189896ac",

@@ -61,6 +61,9 @@ namespace JoyEngine
 		[[nodiscard]] SharedMaterial* GetSsaoBlurSharedMaterial() const noexcept { return m_ssaoBlurSharedMaterial; }
 		[[nodiscard]] SharedMaterial* GetSsaoAppendSharedMaterial() const noexcept { return m_ssaoAppendSharedMaterial; }
 
+
+		[[nodiscard]] SharedMaterial* GetCubemapConvolutionSharedMaterial() const noexcept { return m_cubemapConvolutionSharedMaterial; }
+
 	private:
 		//ResourceHandle<Texture> m_skyboxTextureHandle;
 
@@ -92,8 +95,10 @@ namespace JoyEngine
 
 
 		ResourceHandle<SharedMaterial> m_sampleSharedMaterialHandle;
-		ResourceHandle<SharedMaterial> m_dynamicCubemapReflectionsSharedMaterialHandle;
 		std::map<std::string, ResourceHandle<Material>> m_sampleMaterials;
+
+		ResourceHandle<SharedMaterial> m_dynamicCubemapReflectionsSharedMaterialHandle;
+		ResourceHandle<SharedMaterial> m_cubemapConvolutionSharedMaterial;
 
 		ResourceHandle<SharedMaterial> m_ssaoPostProcessSharedMaterial;
 		ResourceHandle<SharedMaterial> m_ssaoBlurSharedMaterial;

@@ -210,6 +210,7 @@ namespace JoyEngine
 			D3D12_HEAP_TYPE_DEFAULT);
 
 		m_planeMesh = GUID::StringToGuid("7489a35d-1173-48cd-9ad0-606f13c33319");
+		m_cubeMesh = GUID::StringToGuid("c1496bff-f383-4f46-97cc-bc9955f7f4cf");
 
 
 		uint32_t bufferSize = ((sizeof(JoyData) - 1) / 256 + 1) * 256; // Device requirement. TODO check this 
@@ -417,6 +418,7 @@ namespace JoyEngine
 			SetViewportAndScissor(commandList, m_cubemap->GetTextureSize(), m_cubemap->GetTextureSize());
 
 			auto cubemapDSV = m_cubemap->GetDepthTexture()->GetResourceView()->GetHandle();
+			auto cubemapConvoluted = m_cubemap->GetCubemapConvolutedTexture()->GetResourceView()->GetHandle();
 
 			Barrier(commandList, m_cubemap->GetCubemapTexture()->GetImage().Get(),
 			        D3D12_RESOURCE_STATE_GENERIC_READ,
@@ -445,6 +447,36 @@ namespace JoyEngine
 			Barrier(commandList, m_cubemap->GetCubemapTexture()->GetImage().Get(),
 			        D3D12_RESOURCE_STATE_RENDER_TARGET,
 			        D3D12_RESOURCE_STATE_GENERIC_READ);
+
+			// Cubemap convolution
+			{
+				SetViewportAndScissor(commandList, m_cubemap->GetConvolutedTextureSize(), m_cubemap->GetConvolutedTextureSize());
+
+				auto sm = JoyContext::DummyMaterials->GetCubemapConvolutionSharedMaterial();
+
+				commandList->SetPipelineState(sm->GetPipelineObject().Get());
+				commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+				commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+				commandList->IASetVertexBuffers(0, 1, m_cubeMesh->GetVertexBufferView());
+				commandList->IASetIndexBuffer(m_cubeMesh->GetIndexBufferView());
+
+				commandList->OMSetRenderTargets(
+					1,
+					&cubemapConvoluted,
+					FALSE,
+					nullptr);
+
+				const float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+				commandList->ClearRenderTargetView(cubemapConvoluted, clearColor, 0, nullptr);
+				AttachViewToGraphics(commandList, 0, m_cubemap->GetConvolutionConstantsBufferView());
+				AttachViewToGraphics(commandList, 1, m_cubemap->GetCubemapTexture()->GetSrv());
+				AttachViewToGraphics(commandList, 2, Texture::GetTextureSampler());
+
+				commandList->DrawIndexedInstanced(
+					m_cubeMesh->GetIndexSize(),
+					1,
+					0, 0, 0);
+			}
 		}
 
 		//Light processing
@@ -590,17 +622,11 @@ namespace JoyEngine
 						0, 0, 0);
 				}
 			}
-		}
 
-		// Transition light texture to generic read state
-		{
-			D3D12_RESOURCE_BARRIER lightToReadBarrier = Transition(
-				lightingResource,
-				D3D12_RESOURCE_STATE_RENDER_TARGET,
-				D3D12_RESOURCE_STATE_GENERIC_READ);
-			commandList->ResourceBarrier(1, &lightToReadBarrier);
+			// Transition light texture to generic read state
+			Barrier(commandList, lightingResource,
+			        D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
 		}
-
 
 		//Drawing main color
 		{

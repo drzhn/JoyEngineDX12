@@ -235,43 +235,77 @@ namespace JoyEngine
 				});
 		}
 
-		// Dynamic cubemap reflections
+		// CUBEMAPS
 		{
-			const GUID dynamicCubemapShaderGUID = GUID::StringToGuid("4a8ea369-904f-4d9a-9061-b4eedacc3918"); // shaders/dynamiccubemapreflections.hlsl
-			const GUID sharedMaterialGuid = GUID::Random();
+			// Dynamic cubemap reflections
+			{
+				const GUID dynamicCubemapShaderGUID = GUID::StringToGuid("4a8ea369-904f-4d9a-9061-b4eedacc3918"); // shaders/dynamiccubemapreflections.hlsl
+				const GUID sharedMaterialGuid = GUID::Random();
 
-			RootParams rp;
-			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, D3D12_SHADER_VISIBILITY_PIXEL);
-			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 0, D3D12_SHADER_VISIBILITY_PIXEL);
-			rp.CreateConstants(sizeof(MVP) / 4, 0);
-			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, D3D12_SHADER_VISIBILITY_PIXEL);
-			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, D3D12_SHADER_VISIBILITY_ALL);
+				RootParams rp;
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+				rp.CreateConstants(sizeof(MVP) / 4, 0);
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, D3D12_SHADER_VISIBILITY_PIXEL);
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, D3D12_SHADER_VISIBILITY_ALL);
 
-			m_dynamicCubemapReflectionsSharedMaterialHandle = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
-				sharedMaterialGuid,
-				{
-					dynamicCubemapShaderGUID,
-					JoyShaderTypeVertex | JoyShaderTypePixel,
-					true,
-					true,
-					true,
-					D3D12_CULL_MODE_BACK,
-					D3D12_COMPARISON_FUNC_LESS_EQUAL,
-					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
-					rp.params,
+				m_dynamicCubemapReflectionsSharedMaterialHandle = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
+					sharedMaterialGuid,
 					{
-						mainRTVFormat
-					},
-					mainDSVFormat,
-					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
-					{
-						{2, ModelViewProjection},
-						{3, EnvironmentCubemap},
-						{4, EngineData}
-					}
-				});
+						dynamicCubemapShaderGUID,
+						JoyShaderTypeVertex | JoyShaderTypePixel,
+						true,
+						true,
+						true,
+						D3D12_CULL_MODE_BACK,
+						D3D12_COMPARISON_FUNC_LESS_EQUAL,
+						CD3DX12_BLEND_DESC(D3D12_DEFAULT),
+						rp.params,
+						{
+							mainRTVFormat
+						},
+						mainDSVFormat,
+						D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
+						{
+							{2, ModelViewProjection},
+							{3, EnvironmentCubemap},
+							{4, EngineData}
+						}
+					});
 
-			CreateSampleMaterial("dynamic_reflections", GUID::StringToGuid("7e50aa82-5696-428c-a088-538fb78c0ee6"), sharedMaterialGuid); // textures/Chopping-Board.jpg
+				CreateSampleMaterial("dynamic_reflections", GUID::StringToGuid("7e50aa82-5696-428c-a088-538fb78c0ee6"), sharedMaterialGuid); // textures/Chopping-Board.jpg
+			}
+
+			// Cubemap convolution 
+			{
+				const GUID cubemapConvolutionShaderGuid = GUID::StringToGuid("613710d9-304e-453b-a655-b1c842904f4c"); //shaders/dynamiccubemapconvolition.hlsl
+				const GUID cubemapConvolutionSharedMaterialGuid = GUID::Random();
+
+				RootParams rp;
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, D3D12_SHADER_VISIBILITY_ALL);
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, D3D12_SHADER_VISIBILITY_ALL);
+				rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 0, D3D12_SHADER_VISIBILITY_ALL);
+
+				m_cubemapConvolutionSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
+					cubemapConvolutionSharedMaterialGuid,
+					{
+						cubemapConvolutionShaderGuid,
+						JoyShaderTypeVertex | JoyShaderTypePixel | JoyShaderTypeGeometry,
+						true,
+						false,
+						false,
+						D3D12_CULL_MODE_NONE,
+						D3D12_COMPARISON_FUNC_LESS_EQUAL,
+						CD3DX12_BLEND_DESC(D3D12_DEFAULT),
+						rp.params,
+						{
+							mainRTVFormat
+						}, 
+						mainDSVFormat,
+						D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
+						{}
+					});
+			}
 		}
 
 		// Sample material

@@ -302,6 +302,13 @@ namespace JoyEngine
 					desc.Texture2DArray.PlaneSlice = 0;
 					m_resourceViewArray[i] = std::make_unique<ResourceView>(desc, m_texture.Get());
 				}
+
+				desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2DARRAY;
+				desc.Texture2DArray.ArraySize = arraySize; 
+				desc.Texture2DArray.FirstArraySlice = 0;
+				desc.Texture2DArray.MipSlice = 0;
+				desc.Texture2DArray.PlaneSlice = 0;
+				m_resourceView = std::make_unique<ResourceView>(desc, m_texture.Get());
 			}
 			else
 			{

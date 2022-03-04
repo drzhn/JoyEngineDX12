@@ -23,7 +23,7 @@ namespace JoyEngine
 			m_convolutedTextureSize,
 			m_convolutedTextureSize,
 			RenderManager::GetHdrRTVFormat(),
-			D3D12_RESOURCE_STATE_RENDER_TARGET,
+			D3D12_RESOURCE_STATE_GENERIC_READ,
 			D3D12_HEAP_TYPE_DEFAULT,
 			6
 		);

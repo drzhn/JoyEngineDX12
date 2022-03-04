@@ -418,7 +418,6 @@ namespace JoyEngine
 			SetViewportAndScissor(commandList, m_cubemap->GetTextureSize(), m_cubemap->GetTextureSize());
 
 			auto cubemapDSV = m_cubemap->GetDepthTexture()->GetResourceView()->GetHandle();
-			auto cubemapConvoluted = m_cubemap->GetCubemapConvolutedTexture()->GetResourceView()->GetHandle();
 
 			Barrier(commandList, m_cubemap->GetCubemapTexture()->GetImage().Get(),
 			        D3D12_RESOURCE_STATE_GENERIC_READ,
@@ -450,6 +449,10 @@ namespace JoyEngine
 
 			// Cubemap convolution
 			{
+				Barrier(commandList, m_cubemap->GetCubemapConvolutedTexture()->GetImage().Get(),
+				        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
+
+				auto cubemapConvoluted = m_cubemap->GetCubemapConvolutedTexture()->GetResourceView()->GetHandle();
 				SetViewportAndScissor(commandList, m_cubemap->GetConvolutedTextureSize(), m_cubemap->GetConvolutedTextureSize());
 
 				auto sm = JoyContext::DummyMaterials->GetCubemapConvolutionSharedMaterial();
@@ -466,7 +469,7 @@ namespace JoyEngine
 					FALSE,
 					nullptr);
 
-				const float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+				const float clearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
 				commandList->ClearRenderTargetView(cubemapConvoluted, clearColor, 0, nullptr);
 				AttachViewToGraphics(commandList, 0, m_cubemap->GetConvolutionConstantsBufferView());
 				AttachViewToGraphics(commandList, 1, m_cubemap->GetCubemapTexture()->GetSrv());
@@ -476,6 +479,9 @@ namespace JoyEngine
 					m_cubeMesh->GetIndexSize(),
 					1,
 					0, 0, 0);
+
+				Barrier(commandList, m_cubemap->GetCubemapConvolutedTexture()->GetImage().Get(),
+				        D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
 			}
 		}
 
@@ -1063,6 +1069,14 @@ namespace JoyEngine
 					if (isDrawingMainColor)
 					{
 						AttachViewToGraphics(commandList, rootIndex, m_cubemap->GetCubemapTexture()->GetSrv());
+					}
+					break;
+				}
+			case EnvironmentConvolutedCubemap:
+				{
+					if (isDrawingMainColor)
+					{
+						AttachViewToGraphics(commandList, rootIndex, m_cubemap->GetCubemapConvolutedTexture()->GetSrv());
 					}
 					break;
 				}

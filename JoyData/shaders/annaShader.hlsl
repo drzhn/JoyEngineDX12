@@ -23,7 +23,7 @@ Texture2D diffuseTexture : register(t1);
 Texture2D normalTexture : register(t2);
 Texture2D specularTexture : register(t3);
 Texture2D roughnessTexture : register(t4);
-Texture2D environmentTexture : register(t5);
+TextureCube environmentTexture : register(t5);
 
 SamplerState g_sampler : register(s0);
 
@@ -133,43 +133,8 @@ PSOutput PSMain(PSInput input) // : SV_TARGET
 	const float4 roughness = roughnessTexture.Sample(g_sampler, input.uv);
 	const float4 light = lightAttachment.Load(float3(input.position.xy, 0)); // normalTexture.Sample(g_sampler, screenPosition);// g_texture.Sample(g_sampler, input.uv);
 
-	float2 uv = SampleSphericalMap(normalize(-input.worldNormal.xyz)); // make sure to normalize localPos
-	float4 irradiance = environmentTexture.Sample(g_sampler, uv);
-
-	//float3 irradiance = float3(0, 0, 0);
-
-	//float3 up = float3(0.0, 1.0, 0.0);
-	//float3 right = normalize(cross(up, normal));
-	//up = normalize(cross(normal, right));
-
-	//float sampleDelta = 0.25;
-	//uint nrSamples = 0;
-	//for (float phi = 0.0; phi < 2.0 * PI; phi += sampleDelta)
-	//{
-	//	for (float theta = 0.0; theta < 0.5 * PI; theta += sampleDelta)
-	//	{
-	//		// spherical to cartesian (in tangent space)
-	//		float3 tangentSample = float3(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
-	//		// tangent space to world
-
-	//		//float4 envColor = environmentTexture.Sample(g_sampler, uv);
-	//		float3 sampleVec = tangentSample.x * right + tangentSample.y * up + tangentSample.z * normalize(input.worldNormal);
-	//		float2 uv = SampleSphericalMap(normalize(sampleVec)); // make sure to normalize localPos
-
-	//		irradiance += environmentTexture.Sample(g_sampler, uv).rgb * cos(theta) * sin(theta);
-	//		nrSamples++;
-	//	}
-	//}
-	//irradiance = PI * irradiance * (1.0 / float(nrSamples));
-	//output.Color = float4(irradiance, 1);
-	//return output;
-
-	//float3 rgb_normal = normal * 0.5 + 0.5;
-	//float3 Tangent = normalize(float3(mul(mvp.model, float4(ddy(input.worldPos).xyz, 0.0)).xyz));
-	//float3 Bitangent = normalize(float3(mul(mvp.model, float4(ddx(input.worldPos).xyz, 0.0)).xyz));
-	//float3 Normal = input.worldNormal.xyz;
-	//float3x3 TBN = float3x3(Tangent, Bitangent, Normal);
-	//rgb_normal = normalize(mul(TBN, rgb_normal));
+	//float2 uv = SampleSphericalMap(normalize(-input.worldNormal.xyz)); // make sure to normalize localPos
+	float4 irradiance = environmentTexture.Sample(g_sampler, input.worldNormal);
 
 	float metallic = 0.9f;
 
@@ -210,7 +175,7 @@ PSOutput PSMain(PSInput input) // : SV_TARGET
 		Lo += (kD * diffuse / PI + spec) * radiance * NdotL;
 	}
 
-	float3 ambient = float3(1, 1, 1) * 0.03 * diffuse;
+	float3 ambient = irradiance * diffuse;
 	float3 color = ambient + Lo;
 
 	color = color / (color + float3(1, 1, 1));

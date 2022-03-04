@@ -16,6 +16,7 @@ namespace JoyEngine
 		ModelViewProjection,
 		LightAttachment,
 		EnvironmentCubemap,
+		EnvironmentConvolutedCubemap,
 		EngineData
 	};
 

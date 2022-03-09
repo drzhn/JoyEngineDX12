@@ -697,6 +697,7 @@ namespace JoyEngine
 			}
 		}
 
+		// POST EFFECTS
 		{
 			Barrier(commandList, depthResource,
 			        D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_GENERIC_READ);

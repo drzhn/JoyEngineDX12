@@ -475,6 +475,42 @@ namespace JoyEngine
 				});
 		}
 
+		// SSLR post-effect
+		{
+			const GUID sslrPostEffectShaderGuid = GUID::StringToGuid("70d5a60a-615a-4344-977f-d2ad9d37b0cf"); //shaders/sslrpostprocess.hlsl
+			const GUID sslrPostEffectSharedMaterialGuid = GUID::Random();
+
+			RootParams rp;
+			rp.CreateConstants(sizeof(MVP) / 4, 0);
+
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, D3D12_SHADER_VISIBILITY_PIXEL);
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 2, D3D12_SHADER_VISIBILITY_PIXEL);
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, D3D12_SHADER_VISIBILITY_PIXEL);
+
+			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+
+			m_sslrPostProcessSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
+				sslrPostEffectSharedMaterialGuid,
+				{
+					sslrPostEffectShaderGuid,
+					JoyShaderTypeVertex | JoyShaderTypePixel,
+					false,
+					false,
+					false,
+					D3D12_CULL_MODE_NONE,
+					D3D12_COMPARISON_FUNC_GREATER_EQUAL,
+					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
+					rp.params,
+					{
+						mainRTVFormat
+					},
+					mainDSVFormat,
+					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
+					{}
+				});
+		}
+
 		// SSAO
 		{
 			// SSAO Generation

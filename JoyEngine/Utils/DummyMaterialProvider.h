@@ -104,6 +104,8 @@ namespace JoyEngine
 		ResourceHandle<SharedMaterial> m_ssaoBlurSharedMaterial;
 		ResourceHandle<SharedMaterial> m_ssaoAppendSharedMaterial;
 
+		ResourceHandle<SharedMaterial> m_sslrPostProcessSharedMaterial;
+
 	private:
 		void CreatePBRMaterial(
 			const std::string& materialName,

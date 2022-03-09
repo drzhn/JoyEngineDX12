@@ -160,6 +160,10 @@
             "guid": "c7986e89-5d7e-4348-903e-761f007c3f12",
             "path": "shaders/ssaoappend.hlsl"
         },
+		{
+            "guid": "70d5a60a-615a-4344-977f-d2ad9d37b0cf",
+            "path": "shaders/sslrpostprocess.hlsl"
+        },
 		
 		
         {

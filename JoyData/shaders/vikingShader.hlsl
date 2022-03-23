@@ -15,7 +15,7 @@ struct PSOutput
 Texture2D g_texture : register(t0);
 SamplerState g_sampler : register(s0);
 ConstantBuffer<MVP> mvp : register(b0);
-Texture2D lightAttachment : register(t1);
+//Texture2D lightAttachment : register(t1);
 
 inline float4 ComputeNonStereoScreenPos(float4 pos) {
 	float4 o = pos * 0.5f;
@@ -41,11 +41,11 @@ PSOutput PSMain(PSInput input) // : SV_TARGET
 	PSOutput output;
 	const float2 screenPosition = (input.clipPos.xy / input.clipPos.w);
 	const float4 mainColor = g_texture.Sample(g_sampler, input.uv);
-	const float4 light = lightAttachment.Load(float3(input.position.xy, 0));// normalTexture.Sample(g_sampler, screenPosition);// g_texture.Sample(g_sampler, input.uv);
+	//const float4 light = lightAttachment.Load(float3(input.position.xy, 0));// normalTexture.Sample(g_sampler, screenPosition);// g_texture.Sample(g_sampler, input.uv);
 
 	const float ambient = 0.2f;
 
-	output.Color = mainColor* (ambient + light);
+	output.Color = mainColor;// *(ambient + light);
 
 	return output;
 }

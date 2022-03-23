@@ -77,106 +77,106 @@ namespace JoyEngine
 				D3D12_HEAP_TYPE_DEFAULT);
 		}
 
-		m_hdrRenderTarget = std::make_unique<RenderTexture>(
-			m_width,
-			m_height,
-			hdrRTVFormat,
-			D3D12_RESOURCE_STATE_RENDER_TARGET,
-			D3D12_HEAP_TYPE_DEFAULT
-		);
+		//m_hdrRenderTarget = std::make_unique<RenderTexture>(
+		//	m_width,
+		//	m_height,
+		//	hdrRTVFormat,
+		//	D3D12_RESOURCE_STATE_RENDER_TARGET,
+		//	D3D12_HEAP_TYPE_DEFAULT
+		//);
 
-		// HDR reaources
-		{
-			m_hrdDownScaledTexture = std::make_unique<UAVTexture>(
-				m_width / 4,
-				m_height / 4,
-				hdrRTVFormat,
-				D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
-				D3D12_HEAP_TYPE_DEFAULT
-			);
+		//// HDR reaources
+		//{
+		//	m_hrdDownScaledTexture = std::make_unique<UAVTexture>(
+		//		m_width / 4,
+		//		m_height / 4,
+		//		hdrRTVFormat,
+		//		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		//		D3D12_HEAP_TYPE_DEFAULT
+		//	);
 
-			m_bloomFirstTexture = std::make_unique<UAVTexture>(
-				m_width / 4,
-				m_height / 4,
-				hdrRTVFormat,
-				D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
-				D3D12_HEAP_TYPE_DEFAULT
-			);
+		//	m_bloomFirstTexture = std::make_unique<UAVTexture>(
+		//		m_width / 4,
+		//		m_height / 4,
+		//		hdrRTVFormat,
+		//		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		//		D3D12_HEAP_TYPE_DEFAULT
+		//	);
 
-			m_bloomSecondTexture = std::make_unique<UAVTexture>(
-				m_width / 4,
-				m_height / 4,
-				hdrRTVFormat,
-				D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
-				D3D12_HEAP_TYPE_DEFAULT
-			);
+		//	m_bloomSecondTexture = std::make_unique<UAVTexture>(
+		//		m_width / 4,
+		//		m_height / 4,
+		//		hdrRTVFormat,
+		//		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		//		D3D12_HEAP_TYPE_DEFAULT
+		//	);
 
-			m_hdrLuminationBuffer = std::make_unique<Buffer>(
-				64 * sizeof(float),
-				D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
-				D3D12_HEAP_TYPE_DEFAULT,
-				D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS
-			);
+		//	m_hdrLuminationBuffer = std::make_unique<Buffer>(
+		//		64 * sizeof(float),
+		//		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		//		D3D12_HEAP_TYPE_DEFAULT,
+		//		D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS
+		//	);
 
-			D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc;
+		//	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc;
 
-			uavDesc.Format = DXGI_FORMAT_UNKNOWN;
-			uavDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
-			uavDesc.Buffer = {
-				0,
-				64,
-				sizeof(float),
-				0,
-				D3D12_BUFFER_UAV_FLAG_NONE
-			};
+		//	uavDesc.Format = DXGI_FORMAT_UNKNOWN;
+		//	uavDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
+		//	uavDesc.Buffer = {
+		//		0,
+		//		64,
+		//		sizeof(float),
+		//		0,
+		//		D3D12_BUFFER_UAV_FLAG_NONE
+		//	};
 
-			m_hdrLuminationBufferUAVView = std::make_unique<ResourceView>(
-				uavDesc,
-				m_hdrLuminationBuffer->GetBuffer().Get()
-			);
+		//	m_hdrLuminationBufferUAVView = std::make_unique<ResourceView>(
+		//		uavDesc,
+		//		m_hdrLuminationBuffer->GetBuffer().Get()
+		//	);
 
-			D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc;
-			srvDesc.Format = DXGI_FORMAT_UNKNOWN;
-			srvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
-			srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-			srvDesc.Buffer = {
-				0,
-				64,
-				sizeof(float),
-				D3D12_BUFFER_SRV_FLAG_NONE
-			};
-			m_hdrLuminationBufferSRVView = std::make_unique<ResourceView>(
-				srvDesc,
-				m_hdrLuminationBuffer->GetBuffer().Get()
-			);
+		//	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc;
+		//	srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+		//	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+		//	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		//	srvDesc.Buffer = {
+		//		0,
+		//		64,
+		//		sizeof(float),
+		//		D3D12_BUFFER_SRV_FLAG_NONE
+		//	};
+		//	m_hdrLuminationBufferSRVView = std::make_unique<ResourceView>(
+		//		srvDesc,
+		//		m_hdrLuminationBuffer->GetBuffer().Get()
+		//	);
 
-			m_hdrPrevLuminationBuffer = std::make_unique<Buffer>(
-				1 * sizeof(float),
-				D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
-				D3D12_HEAP_TYPE_DEFAULT,
-				D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS
-			);
-			uavDesc.Format = DXGI_FORMAT_UNKNOWN;
-			uavDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
-			uavDesc.Buffer = {
-				0,
-				1,
-				sizeof(float),
-				0,
-				D3D12_BUFFER_UAV_FLAG_NONE
-			};
-			m_hdrPrevLuminationBufferUAVView = std::make_unique<ResourceView>(
-				uavDesc,
-				m_hdrPrevLuminationBuffer->GetBuffer().Get()
-			);
-		}
+		//	m_hdrPrevLuminationBuffer = std::make_unique<Buffer>(
+		//		1 * sizeof(float),
+		//		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		//		D3D12_HEAP_TYPE_DEFAULT,
+		//		D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS
+		//	);
+		//	uavDesc.Format = DXGI_FORMAT_UNKNOWN;
+		//	uavDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
+		//	uavDesc.Buffer = {
+		//		0,
+		//		1,
+		//		sizeof(float),
+		//		0,
+		//		D3D12_BUFFER_UAV_FLAG_NONE
+		//	};
+		//	m_hdrPrevLuminationBufferUAVView = std::make_unique<ResourceView>(
+		//		uavDesc,
+		//		m_hdrPrevLuminationBuffer->GetBuffer().Get()
+		//	);
+		//}
 
-		m_renderTargetCopyAttachment = std::make_unique<Texture>(
-			m_width,
-			m_height,
-			hdrRTVFormat,
-			D3D12_RESOURCE_STATE_GENERIC_READ,
-			D3D12_HEAP_TYPE_DEFAULT);
+		//m_renderTargetCopyAttachment = std::make_unique<Texture>(
+		//	m_width,
+		//	m_height,
+		//	hdrRTVFormat,
+		//	D3D12_RESOURCE_STATE_GENERIC_READ,
+		//	D3D12_HEAP_TYPE_DEFAULT);
 
 		m_depthAttachment = std::make_unique<DepthTexture>(
 			m_width,
@@ -185,47 +185,47 @@ namespace JoyEngine
 			D3D12_RESOURCE_STATE_DEPTH_WRITE,
 			D3D12_HEAP_TYPE_DEFAULT);
 
-		m_positionAttachment = std::make_unique<RenderTexture>(
-			m_width, m_height,
-			gBufferFormat,
-			D3D12_RESOURCE_STATE_RENDER_TARGET,
-			D3D12_HEAP_TYPE_DEFAULT);
+		//m_positionAttachment = std::make_unique<RenderTexture>(
+		//	m_width, m_height,
+		//	gBufferFormat,
+		//	D3D12_RESOURCE_STATE_RENDER_TARGET,
+		//	D3D12_HEAP_TYPE_DEFAULT);
 
-		m_worldNormalAttachment = std::make_unique<RenderTexture>(
-			m_width, m_height,
-			gBufferFormat,
-			D3D12_RESOURCE_STATE_RENDER_TARGET,
-			D3D12_HEAP_TYPE_DEFAULT);
+		//m_worldNormalAttachment = std::make_unique<RenderTexture>(
+		//	m_width, m_height,
+		//	gBufferFormat,
+		//	D3D12_RESOURCE_STATE_RENDER_TARGET,
+		//	D3D12_HEAP_TYPE_DEFAULT);
 
-		m_viewNormalAttachment = std::make_unique<RenderTexture>(
-			m_width, m_height,
-			gBufferFormat,
-			D3D12_RESOURCE_STATE_RENDER_TARGET,
-			D3D12_HEAP_TYPE_DEFAULT);
+		//m_viewNormalAttachment = std::make_unique<RenderTexture>(
+		//	m_width, m_height,
+		//	gBufferFormat,
+		//	D3D12_RESOURCE_STATE_RENDER_TARGET,
+		//	D3D12_HEAP_TYPE_DEFAULT);
 
-		m_lightingAttachment = std::make_unique<RenderTexture>(
-			m_width, m_height,
-			gBufferFormat,
-			D3D12_RESOURCE_STATE_RENDER_TARGET,
-			D3D12_HEAP_TYPE_DEFAULT);
+		//m_lightingAttachment = std::make_unique<RenderTexture>(
+		//	m_width, m_height,
+		//	gBufferFormat,
+		//	D3D12_RESOURCE_STATE_RENDER_TARGET,
+		//	D3D12_HEAP_TYPE_DEFAULT);
 
-		m_planeMesh = GUID::StringToGuid("7489a35d-1173-48cd-9ad0-606f13c33319");
-		m_cubeMesh = GUID::StringToGuid("c1496bff-f383-4f46-97cc-bc9955f7f4cf");
+		//m_planeMesh = GUID::StringToGuid("7489a35d-1173-48cd-9ad0-606f13c33319");
+		//m_cubeMesh = GUID::StringToGuid("c1496bff-f383-4f46-97cc-bc9955f7f4cf");
 
 
-		uint32_t bufferSize = ((sizeof(JoyData) - 1) / 256 + 1) * 256; // Device requirement. TODO check this 
-		m_engineDataBuffer = std::make_unique<Buffer>(bufferSize, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD);
-		m_engineDataBufferView = std::make_unique<ResourceView>(
-			D3D12_CONSTANT_BUFFER_VIEW_DESC{
-				m_engineDataBuffer->GetBuffer()->GetGPUVirtualAddress(),
-				bufferSize
-			}
-		);
+		//uint32_t bufferSize = ((sizeof(JoyData) - 1) / 256 + 1) * 256; // Device requirement. TODO check this 
+		//m_engineDataBuffer = std::make_unique<Buffer>(bufferSize, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD);
+		//m_engineDataBufferView = std::make_unique<ResourceView>(
+		//	D3D12_CONSTANT_BUFFER_VIEW_DESC{
+		//		m_engineDataBuffer->GetBuffer()->GetGPUVirtualAddress(),
+		//		bufferSize
+		//	}
+		//);
 	}
 
 	void RenderManager::Start()
 	{
-		m_ssaoEffect = std::make_unique<SSAO>(m_width, m_height, ssaoFormat);
+		//m_ssaoEffect = std::make_unique<SSAO>(m_width, m_height, ssaoFormat);
 		m_queue->WaitQueueIdle();
 	}
 
@@ -251,29 +251,29 @@ namespace JoyEngine
 
 	void RenderManager::RegisterLight(Light* light)
 	{
-		ASSERT(light->GetLightType() != Direction);
-		m_lights.insert(light);
+		//ASSERT(light->GetLightType() != Direction);
+		//m_lights.insert(light);
 	}
 
 	void RenderManager::UnregisterLight(Light* light)
 	{
-		if (m_lights.find(light) == m_lights.end())
-		{
-			ASSERT(false);
-		}
-		m_lights.erase(light);
+		//if (m_lights.find(light) == m_lights.end())
+		//{
+		//	ASSERT(false);
+		//}
+		//m_lights.erase(light);
 	}
 
 	void RenderManager::RegisterDirectionLight(Light* light)
 	{
-		ASSERT(light->GetLightType() == Direction);
-		m_directionLight = light;
+		//ASSERT(light->GetLightType() == Direction);
+		//m_directionLight = light;
 	}
 
 	void RenderManager::UnregisterDirectionLight(Light* light)
 	{
-		ASSERT(m_directionLight == light);
-		m_directionLight = nullptr;
+		//ASSERT(m_directionLight == light);
+		//m_directionLight = nullptr;
 	}
 
 	void RenderManager::RegisterCamera(Camera* camera)
@@ -290,28 +290,28 @@ namespace JoyEngine
 
 	void RenderManager::RegisterParticleSystem(ParticleSystem* ps)
 	{
-		m_particleSystems.insert(ps);
+		//m_particleSystems.insert(ps);
 	}
 
 	void RenderManager::UnregisterParticleSystem(ParticleSystem* ps)
 	{
-		if (m_particleSystems.find(ps) == m_particleSystems.end())
-		{
-			ASSERT(false);
-		}
-		m_particleSystems.erase(ps);
+		//if (m_particleSystems.find(ps) == m_particleSystems.end())
+		//{
+		//	ASSERT(false);
+		//}
+		//m_particleSystems.erase(ps);
 	}
 
 	void RenderManager::RegisterCubemapRenderer(CubemapRenderer* cr)
 	{
-		ASSERT(m_cubemap == nullptr);
-		m_cubemap = cr;
+		//ASSERT(m_cubemap == nullptr);
+		//m_cubemap = cr;
 	}
 
 	void RenderManager::UnregisterCubemapRenderer(CubemapRenderer* cr)
 	{
-		ASSERT(m_cubemap == cr);
-		m_cubemap = nullptr;
+		//ASSERT(m_cubemap == cr);
+		//m_cubemap = nullptr;
 	}
 
 	inline D3D12_RESOURCE_BARRIER Transition(
@@ -345,294 +345,298 @@ namespace JoyEngine
 		const auto commandList = m_queue->GetCommandList();
 
 		auto swapchainResource = m_swapchainRenderTargets[m_currentFrameIndex]->GetImage().Get();
-		auto hdrRTVResource = m_hdrRenderTarget->GetImage().Get();
-		auto copyResource = m_renderTargetCopyAttachment->GetImage().Get();
-		auto positionResource = m_positionAttachment->GetImage().Get();
-		auto worldNormalResource = m_worldNormalAttachment->GetImage().Get();
-		auto viewNormalResource = m_viewNormalAttachment->GetImage().Get();
-		auto lightingResource = m_lightingAttachment->GetImage().Get();
+		//auto hdrRTVResource = m_hdrRenderTarget->GetImage().Get();
+		//auto copyResource = m_renderTargetCopyAttachment->GetImage().Get();
+		//auto positionResource = m_positionAttachment->GetImage().Get();
+		//auto worldNormalResource = m_worldNormalAttachment->GetImage().Get();
+		//auto viewNormalResource = m_viewNormalAttachment->GetImage().Get();
+		//auto lightingResource = m_lightingAttachment->GetImage().Get();
 		auto depthResource = m_depthAttachment->GetImage().Get();
 
 		auto dsvHandle = m_depthAttachment->GetResourceView()->GetHandle();
-		auto hdrRTVHandle = m_hdrRenderTarget->GetResourceView()->GetHandle();
 		auto ldrRTVHandle = m_swapchainRenderTargets[m_currentFrameIndex]->GetResourceView()->GetHandle();
-		auto positionHandle = m_positionAttachment->GetResourceView()->GetHandle();
-		auto worldNormalHandle = m_worldNormalAttachment->GetResourceView()->GetHandle();
-		auto viewNormalHandle = m_viewNormalAttachment->GetResourceView()->GetHandle();
-		auto lightHandle = m_lightingAttachment->GetResourceView()->GetHandle();
+
+		//auto hdrRTVHandle = m_hdrRenderTarget->GetResourceView()->GetHandle();
+		//auto positionHandle = m_positionAttachment->GetResourceView()->GetHandle();
+		//auto worldNormalHandle = m_worldNormalAttachment->GetResourceView()->GetHandle();
+		//auto viewNormalHandle = m_viewNormalAttachment->GetResourceView()->GetHandle();
+		//auto lightHandle = m_lightingAttachment->GetResourceView()->GetHandle();
 
 		ASSERT(m_currentCamera != nullptr);
 		const glm::mat4 mainCameraViewMatrix = m_currentCamera->GetViewMatrix();
 		const glm::mat4 mainCameraProjMatrix = m_currentCamera->GetProjMatrix();
 
-		const auto ptr = m_engineDataBuffer->GetMappedPtr();
-		const auto data = static_cast<JoyData*>(ptr->GetMappedPtr());
-		data->cameraWorldPos = m_currentCamera->GetTransform()->GetPosition();
-		data->time = Time::GetTime();
-		data->perspectiveValues = glm::vec4(
-			1.0f / mainCameraProjMatrix[0][0],
-			1.0f / mainCameraProjMatrix[1][1],
-			mainCameraProjMatrix[3][2],
-			mainCameraProjMatrix[2][2]
-		);
-		data->cameraInvProj = glm::inverse(mainCameraProjMatrix);
+		//const auto ptr = m_engineDataBuffer->GetMappedPtr();
+		//const auto data = static_cast<JoyData*>(ptr->GetMappedPtr());
+		//data->cameraWorldPos = m_currentCamera->GetTransform()->GetPosition();
+		//data->time = Time::GetTime();
+		//data->perspectiveValues = glm::vec4(
+		//	1.0f / mainCameraProjMatrix[0][0],
+		//	1.0f / mainCameraProjMatrix[1][1],
+		//	mainCameraProjMatrix[3][2],
+		//	mainCameraProjMatrix[2][2]
+		//);
+		//data->cameraInvProj = glm::inverse(mainCameraProjMatrix);
 
 		// Set necessary state.
+
+		Barrier(commandList, swapchainResource,
+		        D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 		SetViewportAndScissor(commandList, m_width, m_height);
-		// Drawing GBUFFER textures
-		{
-			D3D12_CPU_DESCRIPTOR_HANDLE gbufferHandles[] = {positionHandle, worldNormalHandle, viewNormalHandle};
-			commandList->OMSetRenderTargets(
-				3,
-				gbufferHandles,
-				FALSE,
-				&dsvHandle);
+		//// Drawing GBUFFER textures
+		//{
+		//	D3D12_CPU_DESCRIPTOR_HANDLE gbufferHandles[] = {positionHandle, worldNormalHandle, viewNormalHandle};
+		//	commandList->OMSetRenderTargets(
+		//		3,
+		//		gbufferHandles,
+		//		FALSE,
+		//		&dsvHandle);
 
-			const float clearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
-			commandList->ClearRenderTargetView(positionHandle, clearColor, 0, nullptr);
-			commandList->ClearRenderTargetView(worldNormalHandle, clearColor, 0, nullptr);
-			commandList->ClearRenderTargetView(viewNormalHandle, clearColor, 0, nullptr);
-			commandList->ClearRenderTargetView(lightHandle, clearColor, 0, nullptr);
-			commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+		//	const float clearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
+		//	commandList->ClearRenderTargetView(positionHandle, clearColor, 0, nullptr);
+		//	commandList->ClearRenderTargetView(worldNormalHandle, clearColor, 0, nullptr);
+		//	commandList->ClearRenderTargetView(viewNormalHandle, clearColor, 0, nullptr);
+		//	commandList->ClearRenderTargetView(lightHandle, clearColor, 0, nullptr);
+		//	commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
-			auto sm = JoyContext::DummyMaterials->GetGBufferSharedMaterial();
-			commandList->SetPipelineState(sm->GetPipelineObject().Get());
-			commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+		//	auto sm = JoyContext::DummyMaterials->GetGBufferSharedMaterial();
+		//	commandList->SetPipelineState(sm->GetPipelineObject().Get());
+		//	commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
 
-			RenderEntireScene(commandList, mainCameraViewMatrix, mainCameraProjMatrix);
-		}
+		//	RenderEntireScene(commandList, mainCameraViewMatrix, mainCameraProjMatrix);
+		//}
 
-		// Transition normal and position texture to generic read state
-		{
-			Barrier(commandList, positionResource,
-			        D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
-			Barrier(commandList, worldNormalResource,
-			        D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
-			Barrier(commandList, viewNormalResource,
-			        D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
-		}
+		//// Transition normal and position texture to generic read state
+		//{
+		//	Barrier(commandList, positionResource,
+		//	        D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
+		//	Barrier(commandList, worldNormalResource,
+		//	        D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
+		//	Barrier(commandList, viewNormalResource,
+		//	        D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
+		//}
 
-		//Drawing cubemap
-		if (m_cubemap != nullptr)
-		{
-			SetViewportAndScissor(commandList, m_cubemap->GetTextureSize(), m_cubemap->GetTextureSize());
+		////Drawing cubemap
+		//if (m_cubemap != nullptr)
+		//{
+		//	SetViewportAndScissor(commandList, m_cubemap->GetTextureSize(), m_cubemap->GetTextureSize());
 
-			auto cubemapDSV = m_cubemap->GetDepthTexture()->GetResourceView()->GetHandle();
+		//	auto cubemapDSV = m_cubemap->GetDepthTexture()->GetResourceView()->GetHandle();
 
-			Barrier(commandList, m_cubemap->GetCubemapTexture()->GetImage().Get(),
-			        D3D12_RESOURCE_STATE_GENERIC_READ,
-			        D3D12_RESOURCE_STATE_RENDER_TARGET);
+		//	Barrier(commandList, m_cubemap->GetCubemapTexture()->GetImage().Get(),
+		//	        D3D12_RESOURCE_STATE_GENERIC_READ,
+		//	        D3D12_RESOURCE_STATE_RENDER_TARGET);
 
-			for (uint32_t i = 0; i < 6; i++)
-			{
-				auto cubemapRTV = m_cubemap->GetCubemapTexture()->GetResourceViewArray()[i]->GetHandle();
-				commandList->OMSetRenderTargets(
-					1,
-					&cubemapRTV,
-					FALSE, &cubemapDSV);
+		//	for (uint32_t i = 0; i < 6; i++)
+		//	{
+		//		auto cubemapRTV = m_cubemap->GetCubemapTexture()->GetResourceViewArray()[i]->GetHandle();
+		//		commandList->OMSetRenderTargets(
+		//			1,
+		//			&cubemapRTV,
+		//			FALSE, &cubemapDSV);
 
-				const float clearColor[] = {0.0f, 0.2f, 0.4f, 1.0f};
-				commandList->ClearRenderTargetView(cubemapRTV, clearColor, 0, nullptr);
-				commandList->ClearDepthStencilView(cubemapDSV, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+		//		const float clearColor[] = {0.0f, 0.2f, 0.4f, 1.0f};
+		//		commandList->ClearRenderTargetView(cubemapRTV, clearColor, 0, nullptr);
+		//		commandList->ClearDepthStencilView(cubemapDSV, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
-				RenderEntireSceneWithMaterials(
-					commandList,
-					m_cubemap->GetCubeViewMatrix(i),
-					m_cubemap->GetProjMatrix(),
-					false
-				);
-			}
+		//		RenderEntireSceneWithMaterials(
+		//			commandList,
+		//			m_cubemap->GetCubeViewMatrix(i),
+		//			m_cubemap->GetProjMatrix(),
+		//			false
+		//		);
+		//	}
 
-			Barrier(commandList, m_cubemap->GetCubemapTexture()->GetImage().Get(),
-			        D3D12_RESOURCE_STATE_RENDER_TARGET,
-			        D3D12_RESOURCE_STATE_GENERIC_READ);
+		//	Barrier(commandList, m_cubemap->GetCubemapTexture()->GetImage().Get(),
+		//	        D3D12_RESOURCE_STATE_RENDER_TARGET,
+		//	        D3D12_RESOURCE_STATE_GENERIC_READ);
 
-			// Cubemap convolution
-			{
-				Barrier(commandList, m_cubemap->GetCubemapConvolutedTexture()->GetImage().Get(),
-				        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		//	// Cubemap convolution
+		//	{
+		//		Barrier(commandList, m_cubemap->GetCubemapConvolutedTexture()->GetImage().Get(),
+		//		        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
-				auto cubemapConvoluted = m_cubemap->GetCubemapConvolutedTexture()->GetResourceView()->GetHandle();
-				SetViewportAndScissor(commandList, m_cubemap->GetConvolutedTextureSize(), m_cubemap->GetConvolutedTextureSize());
+		//		auto cubemapConvoluted = m_cubemap->GetCubemapConvolutedTexture()->GetResourceView()->GetHandle();
+		//		SetViewportAndScissor(commandList, m_cubemap->GetConvolutedTextureSize(), m_cubemap->GetConvolutedTextureSize());
 
-				auto sm = JoyContext::DummyMaterials->GetCubemapConvolutionSharedMaterial();
+		//		auto sm = JoyContext::DummyMaterials->GetCubemapConvolutionSharedMaterial();
 
-				commandList->SetPipelineState(sm->GetPipelineObject().Get());
-				commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
-				commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-				commandList->IASetVertexBuffers(0, 1, m_cubeMesh->GetVertexBufferView());
-				commandList->IASetIndexBuffer(m_cubeMesh->GetIndexBufferView());
+		//		commandList->SetPipelineState(sm->GetPipelineObject().Get());
+		//		commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+		//		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		//		commandList->IASetVertexBuffers(0, 1, m_cubeMesh->GetVertexBufferView());
+		//		commandList->IASetIndexBuffer(m_cubeMesh->GetIndexBufferView());
 
-				commandList->OMSetRenderTargets(
-					1,
-					&cubemapConvoluted,
-					FALSE,
-					nullptr);
+		//		commandList->OMSetRenderTargets(
+		//			1,
+		//			&cubemapConvoluted,
+		//			FALSE,
+		//			nullptr);
 
-				const float clearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
-				commandList->ClearRenderTargetView(cubemapConvoluted, clearColor, 0, nullptr);
-				AttachViewToGraphics(commandList, 0, m_cubemap->GetConvolutionConstantsBufferView());
-				AttachViewToGraphics(commandList, 1, m_cubemap->GetCubemapTexture()->GetSrv());
-				AttachViewToGraphics(commandList, 2, Texture::GetTextureSampler());
+		//		const float clearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
+		//		commandList->ClearRenderTargetView(cubemapConvoluted, clearColor, 0, nullptr);
+		//		AttachViewToGraphics(commandList, 0, m_cubemap->GetConvolutionConstantsBufferView());
+		//		AttachViewToGraphics(commandList, 1, m_cubemap->GetCubemapTexture()->GetSrv());
+		//		AttachViewToGraphics(commandList, 2, Texture::GetTextureSampler());
 
-				commandList->DrawIndexedInstanced(
-					m_cubeMesh->GetIndexSize(),
-					1,
-					0, 0, 0);
+		//		commandList->DrawIndexedInstanced(
+		//			m_cubeMesh->GetIndexSize(),
+		//			1,
+		//			0, 0, 0);
 
-				Barrier(commandList, m_cubemap->GetCubemapConvolutedTexture()->GetImage().Get(),
-				        D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
-			}
-		}
+		//		Barrier(commandList, m_cubemap->GetCubemapConvolutedTexture()->GetImage().Get(),
+		//		        D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
+		//	}
+		////}
 
-		//Light processing
-		{
-			// shadow maps generation
-			for (const auto& light : m_lights)
-			{
-				if (light->GetShadowmap() == nullptr) continue;
+		////Light processing
+		//{
+		//	// shadow maps generation
+		//	for (const auto& light : m_lights)
+		//	{
+		//		if (light->GetShadowmap() == nullptr) continue;
 
-				SetViewportAndScissor(commandList, light->GetShadowmap()->GetWidth(), light->GetShadowmap()->GetHeight());
+		//		SetViewportAndScissor(commandList, light->GetShadowmap()->GetWidth(), light->GetShadowmap()->GetHeight());
 
-				D3D12_RESOURCE_BARRIER depthToDSVBarrier = Transition(
-					light->GetShadowmap()->GetImage().Get(),
-					D3D12_RESOURCE_STATE_GENERIC_READ,
-					D3D12_RESOURCE_STATE_DEPTH_WRITE);
-				commandList->ResourceBarrier(1, &depthToDSVBarrier);
+		//		D3D12_RESOURCE_BARRIER depthToDSVBarrier = Transition(
+		//			light->GetShadowmap()->GetImage().Get(),
+		//			D3D12_RESOURCE_STATE_GENERIC_READ,
+		//			D3D12_RESOURCE_STATE_DEPTH_WRITE);
+		//		commandList->ResourceBarrier(1, &depthToDSVBarrier);
 
-				auto shadowmapHandle = light->GetShadowmap()->GetResourceView()->GetHandle();
-				if (light->GetLightType() == Spot)
-				{
-					auto sm = JoyContext::DummyMaterials->GetShadowProcessingSharedMaterial();
+		//		auto shadowmapHandle = light->GetShadowmap()->GetResourceView()->GetHandle();
+		//		if (light->GetLightType() == Spot)
+		//		{
+		//			auto sm = JoyContext::DummyMaterials->GetShadowProcessingSharedMaterial();
 
-					commandList->SetPipelineState(sm->GetPipelineObject().Get());
-					commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
-					commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-					commandList->OMSetRenderTargets(
-						0,
-						nullptr,
-						FALSE,
-						&shadowmapHandle);
+		//			commandList->SetPipelineState(sm->GetPipelineObject().Get());
+		//			commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+		//			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		//			commandList->OMSetRenderTargets(
+		//				0,
+		//				nullptr,
+		//				FALSE,
+		//				&shadowmapHandle);
 
-					commandList->ClearDepthStencilView(shadowmapHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+		//			commandList->ClearDepthStencilView(shadowmapHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
-					RenderEntireScene(commandList, light->GetViewMatrix(), light->GetProjMatrix());
-				}
+		//			RenderEntireScene(commandList, light->GetViewMatrix(), light->GetProjMatrix());
+		//		}
 
-				if (light->GetLightType() == Point)
-				{
-					auto sm = JoyContext::DummyMaterials->GetShadowPointProcessingSharedMaterial();
+		//		if (light->GetLightType() == Point)
+		//		{
+		//			auto sm = JoyContext::DummyMaterials->GetShadowPointProcessingSharedMaterial();
 
-					commandList->SetPipelineState(sm->GetPipelineObject().Get());
-					commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
-					commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-					commandList->OMSetRenderTargets(
-						0,
-						nullptr,
-						FALSE,
-						&shadowmapHandle);
+		//			commandList->SetPipelineState(sm->GetPipelineObject().Get());
+		//			commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+		//			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		//			commandList->OMSetRenderTargets(
+		//				0,
+		//				nullptr,
+		//				FALSE,
+		//				&shadowmapHandle);
 
-					commandList->ClearDepthStencilView(shadowmapHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+		//			commandList->ClearDepthStencilView(shadowmapHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
-					AttachViewToGraphics(commandList, 1, light->GetLightDataBufferView());
+		//			AttachViewToGraphics(commandList, 1, light->GetLightDataBufferView());
 
-					RenderEntireScene(commandList, light->GetViewMatrix(), light->GetProjMatrix());
-				}
-				D3D12_RESOURCE_BARRIER depthToSrvBarrier = Transition(
-					light->GetShadowmap()->GetImage().Get(),
-					D3D12_RESOURCE_STATE_DEPTH_WRITE,
-					D3D12_RESOURCE_STATE_GENERIC_READ);
-				commandList->ResourceBarrier(1, &depthToSrvBarrier);
-			}
+		//			RenderEntireScene(commandList, light->GetViewMatrix(), light->GetProjMatrix());
+		//		}
+		//		D3D12_RESOURCE_BARRIER depthToSrvBarrier = Transition(
+		//			light->GetShadowmap()->GetImage().Get(),
+		//			D3D12_RESOURCE_STATE_DEPTH_WRITE,
+		//			D3D12_RESOURCE_STATE_GENERIC_READ);
+		//		commandList->ResourceBarrier(1, &depthToSrvBarrier);
+		//	}
 
-			SetViewportAndScissor(commandList, m_width, m_height);
+		//	SetViewportAndScissor(commandList, m_width, m_height);
 
-			commandList->OMSetRenderTargets(
-				1,
-				&lightHandle,
-				FALSE,
-				&dsvHandle);
+		//	commandList->OMSetRenderTargets(
+		//		1,
+		//		&lightHandle,
+		//		FALSE,
+		//		&dsvHandle);
 
-			const float clearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
-			commandList->ClearRenderTargetView(lightHandle, clearColor, 0, nullptr);
+		//	const float clearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
+		//	commandList->ClearRenderTargetView(lightHandle, clearColor, 0, nullptr);
 
-			// Direction light
-			if (m_directionLight != nullptr)
-			{
-				auto sm = JoyContext::DummyMaterials->GetDirectionLightProcessingSharedMaterial();
+		//	// Direction light
+		//	if (m_directionLight != nullptr)
+		//	{
+		//		auto sm = JoyContext::DummyMaterials->GetDirectionLightProcessingSharedMaterial();
 
-				commandList->SetPipelineState(sm->GetPipelineObject().Get());
-				commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
-				commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		//		commandList->SetPipelineState(sm->GetPipelineObject().Get());
+		//		commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+		//		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-				AttachViewToGraphics(commandList, 2, m_positionAttachment->GetSrv());
-				AttachViewToGraphics(commandList, 3, m_worldNormalAttachment->GetSrv());
+		//		AttachViewToGraphics(commandList, 2, m_positionAttachment->GetSrv());
+		//		AttachViewToGraphics(commandList, 3, m_worldNormalAttachment->GetSrv());
 
-				ProcessEngineBindings(commandList, sm->GetEngineBindings(), nullptr, true);
+		//		ProcessEngineBindings(commandList, sm->GetEngineBindings(), nullptr, true);
 
-				DirectionLightData lightData = {
-					m_directionLight->GetTransform()->GetForward(),
-					m_directionLight->GetIntensity(),
-					m_directionLight->GetAmbient()
-				};
+		//		DirectionLightData lightData = {
+		//			m_directionLight->GetTransform()->GetForward(),
+		//			m_directionLight->GetIntensity(),
+		//			m_directionLight->GetAmbient()
+		//		};
 
-				commandList->SetGraphicsRoot32BitConstants(0, sizeof(DirectionLightData) / 4, &lightData, 0);
-				commandList->DrawInstanced(
-					3,
-					1,
-					0, 0);
-			}
+		//		commandList->SetGraphicsRoot32BitConstants(0, sizeof(DirectionLightData) / 4, &lightData, 0);
+		//		commandList->DrawInstanced(
+		//			3,
+		//			1,
+		//			0, 0);
+		//	}
 
-			// Other lights
-			{
-				auto sm = JoyContext::DummyMaterials->GetLightProcessingSharedMaterial();
+		//	// Other lights
+		//	{
+		//		auto sm = JoyContext::DummyMaterials->GetLightProcessingSharedMaterial();
 
-				commandList->SetPipelineState(sm->GetPipelineObject().Get());
-				commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+		//		commandList->SetPipelineState(sm->GetPipelineObject().Get());
+		//		commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
 
-				commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-				commandList->IASetVertexBuffers(0, 1, m_planeMesh->GetVertexBufferView());
-				commandList->IASetIndexBuffer(m_planeMesh->GetIndexBufferView());
+		//		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		//		commandList->IASetVertexBuffers(0, 1, m_planeMesh->GetVertexBufferView());
+		//		commandList->IASetIndexBuffer(m_planeMesh->GetIndexBufferView());
 
-				for (const auto& light : m_lights)
-				{
-					MVP mvp{
-						light->GetTransform()->GetModelMatrix(),
-						mainCameraViewMatrix,
-						mainCameraProjMatrix,
-					};
+		//		for (const auto& light : m_lights)
+		//		{
+		//			MVP mvp{
+		//				light->GetTransform()->GetModelMatrix(),
+		//				mainCameraViewMatrix,
+		//				mainCameraProjMatrix,
+		//			};
 
-					AttachViewToGraphics(commandList, 1, m_positionAttachment->GetSrv());
-					AttachViewToGraphics(commandList, 2, m_worldNormalAttachment->GetSrv());
+		//			AttachViewToGraphics(commandList, 1, m_positionAttachment->GetSrv());
+		//			AttachViewToGraphics(commandList, 2, m_worldNormalAttachment->GetSrv());
 
-					if (light->GetShadowmap() != nullptr)
-					{
-						if (light->GetLightType() == Spot)
-						{
-							AttachViewToGraphics(commandList, 3, light->GetShadowmap()->GetSrv());
-						}
-						if (light->GetLightType() == Point)
-						{
-							AttachViewToGraphics(commandList, 6, light->GetShadowmap()->GetSrv());
-						}
-						AttachViewToGraphics(commandList, 4, Texture::GetDepthPCFSampler());
-					}
+		//			if (light->GetShadowmap() != nullptr)
+		//			{
+		//				if (light->GetLightType() == Spot)
+		//				{
+		//					AttachViewToGraphics(commandList, 3, light->GetShadowmap()->GetSrv());
+		//				}
+		//				if (light->GetLightType() == Point)
+		//				{
+		//					AttachViewToGraphics(commandList, 6, light->GetShadowmap()->GetSrv());
+		//				}
+		//				AttachViewToGraphics(commandList, 4, Texture::GetDepthPCFSampler());
+		//			}
 
-					AttachViewToGraphics(commandList, 5, light->GetLightDataBufferView());
-					ProcessEngineBindings(commandList, sm->GetEngineBindings(), &mvp, true);
+		//			AttachViewToGraphics(commandList, 5, light->GetLightDataBufferView());
+		//			ProcessEngineBindings(commandList, sm->GetEngineBindings(), &mvp, true);
 
-					commandList->SetGraphicsRoot32BitConstants(0, sizeof(MVP) / 4, &mvp, 0);
-					commandList->DrawIndexedInstanced(
-						m_planeMesh->GetIndexSize(),
-						1,
-						0, 0, 0);
-				}
-			}
+		//			commandList->SetGraphicsRoot32BitConstants(0, sizeof(MVP) / 4, &mvp, 0);
+		//			commandList->DrawIndexedInstanced(
+		//				m_planeMesh->GetIndexSize(),
+		//				1,
+		//				0, 0, 0);
+		//		}
+		//	}
 
-			// Transition light texture to generic read state
-			Barrier(commandList, lightingResource,
-			        D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
-		}
+		//	// Transition light texture to generic read state
+		//	Barrier(commandList, lightingResource,
+		//	        D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
+		//}
 
 		//Drawing main color
 		{
@@ -640,419 +644,422 @@ namespace JoyEngine
 
 			commandList->OMSetRenderTargets(
 				1,
-				&hdrRTVHandle,
+				&ldrRTVHandle,
 				FALSE, &dsvHandle);
 
 			const float clearColor[] = {0.0f, 0.2f, 0.4f, 1.0f};
-			commandList->ClearRenderTargetView(hdrRTVHandle, clearColor, 0, nullptr);
+			commandList->ClearRenderTargetView(ldrRTVHandle, clearColor, 0, nullptr);
 			commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 			RenderEntireSceneWithMaterials(commandList, mainCameraViewMatrix, mainCameraProjMatrix, true);
 		}
 
-		// Drawing particles 
-		{
-			for (const auto& ps : m_particleSystems)
-			{
-				CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-					ps->GetBuffer()->GetBuffer().Get(),
-					D3D12_RESOURCE_STATE_GENERIC_READ,
-					D3D12_RESOURCE_STATE_UNORDERED_ACCESS
-				);
-				commandList->ResourceBarrier(1, &barrier);
-
-				commandList->SetComputeRootSignature(JoyContext::DummyMaterials->GetParticleBufferGenerationComputePipeline()->GetRootSignature().Get());
-				commandList->SetPipelineState(JoyContext::DummyMaterials->GetParticleBufferGenerationComputePipeline()->GetPipelineObject().Get());
-
-				AttachViewToCompute(commandList, 0, ps->GetResourceView());
-
-				uint32_t x = 0;
-				float y = Time::GetTime();
-				memcpy(&x, &y, sizeof(float)); // i don't like it too
-
-				commandList->SetComputeRoot32BitConstant(1, x, 0);
-				uint32_t size = ps->GetSize();
-				commandList->Dispatch(size / 8, size / 8, size / 8);
-
-				barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-					ps->GetBuffer()->GetBuffer().Get(),
-					D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
-					D3D12_RESOURCE_STATE_GENERIC_READ
-				);
-				commandList->ResourceBarrier(1, &barrier);
-
-				commandList->SetPipelineState(JoyContext::DummyMaterials->GetParticleSystemSharedMaterial()->GetPipelineObject().Get());
-				commandList->SetGraphicsRootSignature(JoyContext::DummyMaterials->GetParticleSystemSharedMaterial()->GetRootSignature().Get());
-
-				MVP mvp{
-					ps->GetTransform()->GetModelMatrix(),
-					mainCameraViewMatrix,
-					mainCameraProjMatrix
-				};
-
-				commandList->SetGraphicsRoot32BitConstants(0, sizeof(MVP) / 4, &mvp, 0);
-				AttachViewToGraphics(commandList, 1, ps->GetResourceView());
-				commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
-				commandList->DrawInstanced(size * size * size, 1, 0, 0);
-			}
-		}
-
-		// POST EFFECTS
-		{
-			Barrier(commandList, depthResource,
-			        D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_GENERIC_READ);
-
-			MVP mvp{
-				glm::mat4(),
-				mainCameraViewMatrix,
-				mainCameraProjMatrix,
-			};
-
-			//CopyRTVResource(commandList, hdrRTVResource, copyResource);
-
-			//// SSLR post-process
-			//{
-			//	commandList->OMSetRenderTargets(
-			//		1,
-			//		&hdrRTVHandle,
-			//		FALSE, nullptr);
-
-			//	auto sm = JoyContext::DummyMaterials->GetSSLRPostProcessSharedMaterial();
-
-			//	commandList->SetPipelineState(sm->GetPipelineObject().Get());
-			//	commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
-			//	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-			//	commandList->SetGraphicsRoot32BitConstants(0, sizeof(MVP) / 4, &mvp, 0);
-			//	AttachViewToGraphics(commandList, 1, m_depthAttachment->GetSrv());
-			//	AttachViewToGraphics(commandList, 2, m_worldNormalAttachment->GetSrv());
-			//	AttachViewToGraphics(commandList, 3, m_positionAttachment->GetSrv());
-			//	AttachViewToGraphics(commandList, 4, m_renderTargetCopyAttachment->GetResourceView());
-			//	AttachViewToGraphics(commandList, 5, Texture::GetPointSampler());
-			//	AttachViewToGraphics(commandList, 6, Texture::GetTextureSampler());
-			//	AttachViewToGraphics(commandList, 7, m_engineDataBufferView.get());
-
-			//	commandList->DrawInstanced(
-			//		3,
-			//		1,
-			//		0, 0);
-			//}
-
-			CopyRTVResource(commandList, hdrRTVResource, copyResource);
-
-			// FOG post-process
-			{
-				auto sm = JoyContext::DummyMaterials->GetFogPostProcessSharedMaterial();
-
-				commandList->SetPipelineState(sm->GetPipelineObject().Get());
-				commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
-				commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-				AttachViewToGraphics(commandList, 0, m_depthAttachment->GetSrv());
-				AttachViewToGraphics(commandList, 1, m_renderTargetCopyAttachment->GetResourceView());
-				AttachViewToGraphics(commandList, 2, m_engineDataBufferView.get());
+		//// Drawing particles 
+		//{
+		//	for (const auto& ps : m_particleSystems)
+		//	{
+		//		CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		//			ps->GetBuffer()->GetBuffer().Get(),
+		//			D3D12_RESOURCE_STATE_GENERIC_READ,
+		//			D3D12_RESOURCE_STATE_UNORDERED_ACCESS
+		//		);
+		//		commandList->ResourceBarrier(1, &barrier);
+
+		//		commandList->SetComputeRootSignature(JoyContext::DummyMaterials->GetParticleBufferGenerationComputePipeline()->GetRootSignature().Get());
+		//		commandList->SetPipelineState(JoyContext::DummyMaterials->GetParticleBufferGenerationComputePipeline()->GetPipelineObject().Get());
+
+		//		AttachViewToCompute(commandList, 0, ps->GetResourceView());
+
+		//		uint32_t x = 0;
+		//		float y = Time::GetTime();
+		//		memcpy(&x, &y, sizeof(float)); // i don't like it too
+
+		//		commandList->SetComputeRoot32BitConstant(1, x, 0);
+		//		uint32_t size = ps->GetSize();
+		//		commandList->Dispatch(size / 8, size / 8, size / 8);
+
+		//		barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		//			ps->GetBuffer()->GetBuffer().Get(),
+		//			D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		//			D3D12_RESOURCE_STATE_GENERIC_READ
+		//		);
+		//		commandList->ResourceBarrier(1, &barrier);
+
+		//		commandList->SetPipelineState(JoyContext::DummyMaterials->GetParticleSystemSharedMaterial()->GetPipelineObject().Get());
+		//		commandList->SetGraphicsRootSignature(JoyContext::DummyMaterials->GetParticleSystemSharedMaterial()->GetRootSignature().Get());
+
+		//		MVP mvp{
+		//			ps->GetTransform()->GetModelMatrix(),
+		//			mainCameraViewMatrix,
+		//			mainCameraProjMatrix
+		//		};
+
+		//		commandList->SetGraphicsRoot32BitConstants(0, sizeof(MVP) / 4, &mvp, 0);
+		//		AttachViewToGraphics(commandList, 1, ps->GetResourceView());
+		//		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
+		//		commandList->DrawInstanced(size * size * size, 1, 0, 0);
+		//	}
+		//}
+
+		//// POST EFFECTS
+		//{
+		//	Barrier(commandList, depthResource,
+		//	        D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_GENERIC_READ);
+
+		//	MVP mvp{
+		//		glm::mat4(),
+		//		mainCameraViewMatrix,
+		//		mainCameraProjMatrix,
+		//	};
+
+		//	//CopyRTVResource(commandList, hdrRTVResource, copyResource);
+
+		//	//// SSLR post-process
+		//	//{
+		//	//	commandList->OMSetRenderTargets(
+		//	//		1,
+		//	//		&hdrRTVHandle,
+		//	//		FALSE, nullptr);
+
+		//	//	auto sm = JoyContext::DummyMaterials->GetSSLRPostProcessSharedMaterial();
+
+		//	//	commandList->SetPipelineState(sm->GetPipelineObject().Get());
+		//	//	commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+		//	//	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		//	//	commandList->SetGraphicsRoot32BitConstants(0, sizeof(MVP) / 4, &mvp, 0);
+		//	//	AttachViewToGraphics(commandList, 1, m_depthAttachment->GetSrv());
+		//	//	AttachViewToGraphics(commandList, 2, m_worldNormalAttachment->GetSrv());
+		//	//	AttachViewToGraphics(commandList, 3, m_positionAttachment->GetSrv());
+		//	//	AttachViewToGraphics(commandList, 4, m_renderTargetCopyAttachment->GetResourceView());
+		//	//	AttachViewToGraphics(commandList, 5, Texture::GetPointSampler());
+		//	//	AttachViewToGraphics(commandList, 6, Texture::GetTextureSampler());
+		//	//	AttachViewToGraphics(commandList, 7, m_engineDataBufferView.get());
+
+		//	//	commandList->DrawInstanced(
+		//	//		3,
+		//	//		1,
+		//	//		0, 0);
+		//	//}
+
+		//	CopyRTVResource(commandList, hdrRTVResource, copyResource);
+
+		//	// FOG post-process
+		//	{
+		//		auto sm = JoyContext::DummyMaterials->GetFogPostProcessSharedMaterial();
+
+		//		commandList->SetPipelineState(sm->GetPipelineObject().Get());
+		//		commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+		//		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		//		AttachViewToGraphics(commandList, 0, m_depthAttachment->GetSrv());
+		//		AttachViewToGraphics(commandList, 1, m_renderTargetCopyAttachment->GetResourceView());
+		//		AttachViewToGraphics(commandList, 2, m_engineDataBufferView.get());
 
-				commandList->DrawInstanced(
-					3,
-					1,
-					0, 0);
-			}
+		//		commandList->DrawInstanced(
+		//			3,
+		//			1,
+		//			0, 0);
+		//	}
 
-			// SSAO
-			{
-				const auto renderHandle = m_ssaoEffect->GetRenderHandle();
-				commandList->OMSetRenderTargets(
-					1,
-					&renderHandle,
-					FALSE, nullptr);
-				SetViewportAndScissor(commandList, m_ssaoEffect->GetWidth(), m_ssaoEffect->GetHeight());
+		//	// SSAO
+		//	{
+		//		const auto renderHandle = m_ssaoEffect->GetRenderHandle();
+		//		commandList->OMSetRenderTargets(
+		//			1,
+		//			&renderHandle,
+		//			FALSE, nullptr);
+		//		SetViewportAndScissor(commandList, m_ssaoEffect->GetWidth(), m_ssaoEffect->GetHeight());
 
-				// SSAO post-process
-				{
-					const float clearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
-					commandList->ClearRenderTargetView(renderHandle, clearColor, 0, nullptr);
+		//		// SSAO post-process
+		//		{
+		//			const float clearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
+		//			commandList->ClearRenderTargetView(renderHandle, clearColor, 0, nullptr);
 
-					auto sm = JoyContext::DummyMaterials->GetSsaoPostProcessSharedMaterial();
+		//			auto sm = JoyContext::DummyMaterials->GetSsaoPostProcessSharedMaterial();
 
-					commandList->SetPipelineState(sm->GetPipelineObject().Get());
-					commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
-					commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		//			commandList->SetPipelineState(sm->GetPipelineObject().Get());
+		//			commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+		//			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-					commandList->SetGraphicsRoot32BitConstants(0, sizeof(MVP) / 4, &mvp, 0);
-					AttachViewToGraphics(commandList, 1, m_engineDataBufferView.get());
-					AttachViewToGraphics(commandList, 2, m_ssaoEffect->GetSSAODataBufferView());
+		//			commandList->SetGraphicsRoot32BitConstants(0, sizeof(MVP) / 4, &mvp, 0);
+		//			AttachViewToGraphics(commandList, 1, m_engineDataBufferView.get());
+		//			AttachViewToGraphics(commandList, 2, m_ssaoEffect->GetSSAODataBufferView());
 
-					AttachViewToGraphics(commandList, 3, m_depthAttachment->GetSrv());
-					AttachViewToGraphics(commandList, 4, m_viewNormalAttachment->GetSrv());
-					AttachViewToGraphics(commandList, 5, m_ssaoEffect->GetRandomNoiseTextureView());
+		//			AttachViewToGraphics(commandList, 3, m_depthAttachment->GetSrv());
+		//			AttachViewToGraphics(commandList, 4, m_viewNormalAttachment->GetSrv());
+		//			AttachViewToGraphics(commandList, 5, m_ssaoEffect->GetRandomNoiseTextureView());
 
-					AttachViewToGraphics(commandList, 6, Texture::GetDepthSampler());
-					AttachViewToGraphics(commandList, 7, Texture::GetTextureSampler());
-					AttachViewToGraphics(commandList, 8, Texture::GetPointSampler());
+		//			AttachViewToGraphics(commandList, 6, Texture::GetDepthSampler());
+		//			AttachViewToGraphics(commandList, 7, Texture::GetTextureSampler());
+		//			AttachViewToGraphics(commandList, 8, Texture::GetPointSampler());
 
-					commandList->DrawInstanced(
-						6,
-						1,
-						0, 0);
-				}
+		//			commandList->DrawInstanced(
+		//				6,
+		//				1,
+		//				0, 0);
+		//		}
 
-				// SSAO blur pass
-				{
-					uint32_t direction = 0;
+		//		// SSAO blur pass
+		//		{
+		//			uint32_t direction = 0;
 
-					auto sm = JoyContext::DummyMaterials->GetSsaoBlurSharedMaterial();
+		//			auto sm = JoyContext::DummyMaterials->GetSsaoBlurSharedMaterial();
 
-					commandList->SetPipelineState(sm->GetPipelineObject().Get());
-					commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
-					commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		//			commandList->SetPipelineState(sm->GetPipelineObject().Get());
+		//			commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+		//			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-					commandList->SetGraphicsRoot32BitConstants(0, sizeof(MVP) / 4, &mvp, 0);
-					AttachViewToGraphics(commandList, 2, m_ssaoEffect->GetSSAODataBufferView());
-
-					AttachViewToGraphics(commandList, 3, m_depthAttachment->GetSrv());
-					AttachViewToGraphics(commandList, 4, m_viewNormalAttachment->GetSrv());
-
-
-					AttachViewToGraphics(commandList, 6, Texture::GetDepthSampler());
-					AttachViewToGraphics(commandList, 7, Texture::GetTextureSampler());
-					AttachViewToGraphics(commandList, 8, Texture::GetPointSampler());
-
-					for (uint32_t i = 0; i < 4; i++)
-					{
-						direction = direction == 0 ? 1 : 0;
-
-						Barrier(commandList, m_ssaoEffect->GetRenderResource(),
-						        D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);
-
-						//Barrier(commandList, m_ssaoEffect->GetCopyResource(),
-						//	D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_COPY_DEST);
-
-						commandList->CopyResource(m_ssaoEffect->GetCopyResource(), m_ssaoEffect->GetRenderResource());
-
-						Barrier(commandList, m_ssaoEffect->GetCopyResource(),
-						        D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ);
-
-						Barrier(commandList, m_ssaoEffect->GetRenderResource(),
-						        D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
-
-						const float clearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
-						commandList->ClearRenderTargetView(renderHandle, clearColor, 0, nullptr);
-
-						AttachViewToGraphics(commandList, 5, m_ssaoEffect->GetCopyResourceTextureView());
-						commandList->SetGraphicsRoot32BitConstants(1, sizeof(uint32_t) / 4, &direction, 0);
-
-						commandList->DrawInstanced(
-							6,
-							1,
-							0, 0);
-
-						Barrier(commandList, m_ssaoEffect->GetCopyResource(),
-						        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_COPY_DEST);
-					}
-				}
-
-				CopyRTVResource(commandList, hdrRTVResource, copyResource);
-
-				// SSAO Append
-				{
-					Barrier(commandList, m_ssaoEffect->GetRenderResource(),
-					        D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
-
-					commandList->OMSetRenderTargets(
-						1,
-						&hdrRTVHandle,
-						FALSE, nullptr);
-
-					auto sm = JoyContext::DummyMaterials->GetSsaoAppendSharedMaterial();
-
-					commandList->SetPipelineState(sm->GetPipelineObject().Get());
-					commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
-					commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-					AttachViewToGraphics(commandList, 0, m_ssaoEffect->GetSSAOTextureView());
-					AttachViewToGraphics(commandList, 1, m_renderTargetCopyAttachment->GetResourceView());
-
-					commandList->DrawInstanced(
-						3,
-						1,
-						0, 0);
-
-					Barrier(commandList, m_ssaoEffect->GetRenderResource(),
-					        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
-				}
-			}
-
-			Barrier(commandList, depthResource,
-			        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_DEPTH_WRITE);
-		}
-
-
-		// HDR->LDR
-		{
-			uint32_t groupSize = static_cast<uint32_t>(m_width * m_height / 16.0f / 1024.0f) + 1;
-			HDRDownScaleConstants downScaleConstants = {
-				glm::uvec2(m_width / 4, m_height / 4),
-				m_width * m_height / 16,
-				groupSize,
-				0.01f,
-				0.2f
-			};
-
-			D3D12_RESOURCE_BARRIER barrier;
-			barrier = Transition(
-				hdrRTVResource,
-				D3D12_RESOURCE_STATE_RENDER_TARGET,
-				D3D12_RESOURCE_STATE_GENERIC_READ);
-			commandList->ResourceBarrier(1, &barrier);
-
-			// First pass
-			{
-				commandList->SetComputeRootSignature(JoyContext::DummyMaterials->GetHdrDownscaleFirstPassComputePipeline()->GetRootSignature().Get());
-				commandList->SetPipelineState(JoyContext::DummyMaterials->GetHdrDownscaleFirstPassComputePipeline()->GetPipelineObject().Get());
-
-				commandList->SetComputeRoot32BitConstants(0, sizeof(HDRDownScaleConstants) / 4, &downScaleConstants, 0);
-				AttachViewToCompute(commandList, 1, m_hdrRenderTarget->GetSrv());
-				AttachViewToCompute(commandList, 2, m_hdrLuminationBufferUAVView.get());
-				AttachViewToCompute(commandList, 3, m_hrdDownScaledTexture->GetResourceView());
+		//			commandList->SetGraphicsRoot32BitConstants(0, sizeof(MVP) / 4, &mvp, 0);
+		//			AttachViewToGraphics(commandList, 2, m_ssaoEffect->GetSSAODataBufferView());
+
+		//			AttachViewToGraphics(commandList, 3, m_depthAttachment->GetSrv());
+		//			AttachViewToGraphics(commandList, 4, m_viewNormalAttachment->GetSrv());
+
+
+		//			AttachViewToGraphics(commandList, 6, Texture::GetDepthSampler());
+		//			AttachViewToGraphics(commandList, 7, Texture::GetTextureSampler());
+		//			AttachViewToGraphics(commandList, 8, Texture::GetPointSampler());
+
+		//			for (uint32_t i = 0; i < 4; i++)
+		//			{
+		//				direction = direction == 0 ? 1 : 0;
+
+		//				Barrier(commandList, m_ssaoEffect->GetRenderResource(),
+		//				        D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);
+
+		//				//Barrier(commandList, m_ssaoEffect->GetCopyResource(),
+		//				//	D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_COPY_DEST);
+
+		//				commandList->CopyResource(m_ssaoEffect->GetCopyResource(), m_ssaoEffect->GetRenderResource());
+
+		//				Barrier(commandList, m_ssaoEffect->GetCopyResource(),
+		//				        D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ);
+
+		//				Barrier(commandList, m_ssaoEffect->GetRenderResource(),
+		//				        D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
+
+		//				const float clearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
+		//				commandList->ClearRenderTargetView(renderHandle, clearColor, 0, nullptr);
+
+		//				AttachViewToGraphics(commandList, 5, m_ssaoEffect->GetCopyResourceTextureView());
+		//				commandList->SetGraphicsRoot32BitConstants(1, sizeof(uint32_t) / 4, &direction, 0);
+
+		//				commandList->DrawInstanced(
+		//					6,
+		//					1,
+		//					0, 0);
+
+		//				Barrier(commandList, m_ssaoEffect->GetCopyResource(),
+		//				        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_COPY_DEST);
+		//			}
+		//		}
+
+		//		CopyRTVResource(commandList, hdrRTVResource, copyResource);
+
+		//		// SSAO Append
+		//		{
+		//			Barrier(commandList, m_ssaoEffect->GetRenderResource(),
+		//			        D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
+
+		//			commandList->OMSetRenderTargets(
+		//				1,
+		//				&hdrRTVHandle,
+		//				FALSE, nullptr);
+
+		//			auto sm = JoyContext::DummyMaterials->GetSsaoAppendSharedMaterial();
+
+		//			commandList->SetPipelineState(sm->GetPipelineObject().Get());
+		//			commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+		//			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		//			AttachViewToGraphics(commandList, 0, m_ssaoEffect->GetSSAOTextureView());
+		//			AttachViewToGraphics(commandList, 1, m_renderTargetCopyAttachment->GetResourceView());
+
+		//			commandList->DrawInstanced(
+		//				3,
+		//				1,
+		//				0, 0);
+
+		//			Barrier(commandList, m_ssaoEffect->GetRenderResource(),
+		//			        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		//		}
+		//	}
+
+		//	Barrier(commandList, depthResource,
+		//	        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_DEPTH_WRITE);
+		//}
+
+
+		//// HDR->LDR
+		//{
+		//	uint32_t groupSize = static_cast<uint32_t>(m_width * m_height / 16.0f / 1024.0f) + 1;
+		//	HDRDownScaleConstants downScaleConstants = {
+		//		glm::uvec2(m_width / 4, m_height / 4),
+		//		m_width * m_height / 16,
+		//		groupSize,
+		//		0.01f,
+		//		0.2f
+		//	};
+
+		//	D3D12_RESOURCE_BARRIER barrier;
+		//	barrier = Transition(
+		//		hdrRTVResource,
+		//		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		//		D3D12_RESOURCE_STATE_GENERIC_READ);
+		//	commandList->ResourceBarrier(1, &barrier);
+
+		//	// First pass
+		//	{
+		//		commandList->SetComputeRootSignature(JoyContext::DummyMaterials->GetHdrDownscaleFirstPassComputePipeline()->GetRootSignature().Get());
+		//		commandList->SetPipelineState(JoyContext::DummyMaterials->GetHdrDownscaleFirstPassComputePipeline()->GetPipelineObject().Get());
+
+		//		commandList->SetComputeRoot32BitConstants(0, sizeof(HDRDownScaleConstants) / 4, &downScaleConstants, 0);
+		//		AttachViewToCompute(commandList, 1, m_hdrRenderTarget->GetSrv());
+		//		AttachViewToCompute(commandList, 2, m_hdrLuminationBufferUAVView.get());
+		//		AttachViewToCompute(commandList, 3, m_hrdDownScaledTexture->GetResourceView());
 
-				commandList->Dispatch(groupSize, 1, 1);
-			}
+		//		commandList->Dispatch(groupSize, 1, 1);
+		//	}
 
-			// Second pass
-			{
-				commandList->SetComputeRootSignature(JoyContext::DummyMaterials->GetHdrDownscaleSecondPassComputePipeline()->GetRootSignature().Get());
-				commandList->SetPipelineState(JoyContext::DummyMaterials->GetHdrDownscaleSecondPassComputePipeline()->GetPipelineObject().Get());
+		//	// Second pass
+		//	{
+		//		commandList->SetComputeRootSignature(JoyContext::DummyMaterials->GetHdrDownscaleSecondPassComputePipeline()->GetRootSignature().Get());
+		//		commandList->SetPipelineState(JoyContext::DummyMaterials->GetHdrDownscaleSecondPassComputePipeline()->GetPipelineObject().Get());
 
-				commandList->SetComputeRoot32BitConstants(0, sizeof(HDRDownScaleConstants) / 4, &downScaleConstants, 0);
-				AttachViewToCompute(commandList, 1, m_hdrLuminationBufferUAVView.get());
-				AttachViewToCompute(commandList, 2, m_hdrPrevLuminationBufferUAVView.get());
-
-				commandList->Dispatch(groupSize, 1, 1);
-			}
-			barrier = Transition(
-				m_hdrLuminationBuffer->GetBuffer().Get(),
-				D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
-				D3D12_RESOURCE_STATE_GENERIC_READ);
-			commandList->ResourceBarrier(1, &barrier);
-
-			Barrier(commandList, m_hrdDownScaledTexture->GetImage().Get(),
-			        D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_GENERIC_READ);
-
-			// Bloom bright pass
-			{
-				commandList->SetComputeRootSignature(JoyContext::DummyMaterials->GetBloomBrightPassComputePipeline()->GetRootSignature().Get());
-				commandList->SetPipelineState(JoyContext::DummyMaterials->GetBloomBrightPassComputePipeline()->GetPipelineObject().Get());
-
-				commandList->SetComputeRoot32BitConstants(0, sizeof(HDRDownScaleConstants) / 4, &downScaleConstants, 0);
-				AttachViewToCompute(commandList, 1, m_hrdDownScaledTexture->GetSrv());
-				AttachViewToCompute(commandList, 2, m_hdrLuminationBufferSRVView.get());
-				AttachViewToCompute(commandList, 3, m_bloomFirstTexture->GetResourceView());
-
-				commandList->Dispatch(groupSize, 1, 1);
-			}
-
-			Barrier(commandList, m_hrdDownScaledTexture->GetImage().Get(),
-			        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
-
-			Barrier(commandList, m_bloomFirstTexture->GetImage().Get(),
-			        D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_GENERIC_READ);
-
-			// Bloom vertical filter pass
-			{
-				commandList->SetComputeRootSignature(JoyContext::DummyMaterials->GetBloomVerticalFilterComputePipeline()->GetRootSignature().Get());
-				commandList->SetPipelineState(JoyContext::DummyMaterials->GetBloomVerticalFilterComputePipeline()->GetPipelineObject().Get());
-
-				commandList->SetComputeRoot32BitConstants(0, sizeof(HDRDownScaleConstants) / 4, &downScaleConstants, 0);
-				AttachViewToCompute(commandList, 1, m_bloomFirstTexture->GetSrv());
-				AttachViewToCompute(commandList, 2, m_bloomSecondTexture->GetResourceView());
-
-				commandList->Dispatch(m_height * m_width / 16, m_height / (128 - 12) + 1, 1);
-			}
-
-			Barrier(commandList, m_bloomFirstTexture->GetImage().Get(),
-			        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
-
-			Barrier(commandList, m_bloomSecondTexture->GetImage().Get(),
-			        D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_GENERIC_READ);
-
-			// Bloom horizontal filter pass
-			{
-				commandList->SetComputeRootSignature(JoyContext::DummyMaterials->GetBloomHorizontalFilterComputePipeline()->GetRootSignature().Get());
-				commandList->SetPipelineState(JoyContext::DummyMaterials->GetBloomHorizontalFilterComputePipeline()->GetPipelineObject().Get());
-
-				commandList->SetComputeRoot32BitConstants(0, sizeof(HDRDownScaleConstants) / 4, &downScaleConstants, 0);
-				AttachViewToCompute(commandList, 1, m_bloomSecondTexture->GetSrv());
-				AttachViewToCompute(commandList, 2, m_bloomFirstTexture->GetResourceView());
-
-				commandList->Dispatch(m_width / 128 + 1, m_height * m_width / 16, 1);
-			}
-
-			Barrier(commandList, m_bloomSecondTexture->GetImage().Get(),
-			        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
-
-			//barrier = Transition(
-			//	m_hdrLuminationBuffer->GetBuffer().Get(),
-			//	D3D12_RESOURCE_STATE_GENERIC_READ,
-			//	D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
-			//commandList->ResourceBarrier(1, &barrier);
-
-			// Transition
-			{
-				Barrier(commandList, swapchainResource,
-				        D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-				Barrier(commandList, m_bloomFirstTexture->GetImage().Get(),
-				        D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_GENERIC_READ);
-
-
-				SetViewportAndScissor(commandList, m_width, m_height);
-
-				commandList->OMSetRenderTargets(
-					1,
-					&ldrRTVHandle,
-					FALSE, nullptr);
-
-				auto sm = JoyContext::DummyMaterials->GetHdrToLdrTransitionSharedMaterial();
-
-				commandList->SetPipelineState(sm->GetPipelineObject().Get());
-				commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
-				commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-				AttachViewToGraphics(commandList, 0, m_hdrRenderTarget->GetSrv());
-				AttachViewToGraphics(commandList, 1, m_hdrLuminationBufferSRVView.get());
-				AttachViewToGraphics(commandList, 2, m_bloomFirstTexture->GetSrv());
-				AttachViewToGraphics(commandList, 3, Texture::GetTextureSampler());
-
-				commandList->DrawInstanced(
-					3,
-					1,
-					0, 0);
-
-				Barrier(commandList, swapchainResource,
-				        D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-				Barrier(commandList, m_bloomFirstTexture->GetImage().Get(),
-				        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
-				Barrier(commandList, m_hdrLuminationBuffer->GetBuffer().Get(),
-				        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
-			}
-
-			barrier = Transition(
-				hdrRTVResource,
-				D3D12_RESOURCE_STATE_GENERIC_READ,
-				D3D12_RESOURCE_STATE_RENDER_TARGET);
-			commandList->ResourceBarrier(1, &barrier);
-		}
-		// transition front buffer to present state
-		// transition normal and position buffers back to render target state
-		{
-			Barrier(commandList, positionResource,
-			        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
-			Barrier(commandList, worldNormalResource,
-			        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
-			Barrier(commandList, viewNormalResource,
-			        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
-			Barrier(commandList, lightingResource,
-			        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
-		}
+		//		commandList->SetComputeRoot32BitConstants(0, sizeof(HDRDownScaleConstants) / 4, &downScaleConstants, 0);
+		//		AttachViewToCompute(commandList, 1, m_hdrLuminationBufferUAVView.get());
+		//		AttachViewToCompute(commandList, 2, m_hdrPrevLuminationBufferUAVView.get());
+
+		//		commandList->Dispatch(groupSize, 1, 1);
+		//	}
+		//	barrier = Transition(
+		//		m_hdrLuminationBuffer->GetBuffer().Get(),
+		//		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		//		D3D12_RESOURCE_STATE_GENERIC_READ);
+		//	commandList->ResourceBarrier(1, &barrier);
+
+		//	Barrier(commandList, m_hrdDownScaledTexture->GetImage().Get(),
+		//	        D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_GENERIC_READ);
+
+		//	// Bloom bright pass
+		//	{
+		//		commandList->SetComputeRootSignature(JoyContext::DummyMaterials->GetBloomBrightPassComputePipeline()->GetRootSignature().Get());
+		//		commandList->SetPipelineState(JoyContext::DummyMaterials->GetBloomBrightPassComputePipeline()->GetPipelineObject().Get());
+
+		//		commandList->SetComputeRoot32BitConstants(0, sizeof(HDRDownScaleConstants) / 4, &downScaleConstants, 0);
+		//		AttachViewToCompute(commandList, 1, m_hrdDownScaledTexture->GetSrv());
+		//		AttachViewToCompute(commandList, 2, m_hdrLuminationBufferSRVView.get());
+		//		AttachViewToCompute(commandList, 3, m_bloomFirstTexture->GetResourceView());
+
+		//		commandList->Dispatch(groupSize, 1, 1);
+		//	}
+
+		//	Barrier(commandList, m_hrdDownScaledTexture->GetImage().Get(),
+		//	        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+
+		//	Barrier(commandList, m_bloomFirstTexture->GetImage().Get(),
+		//	        D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_GENERIC_READ);
+
+		//	// Bloom vertical filter pass
+		//	{
+		//		commandList->SetComputeRootSignature(JoyContext::DummyMaterials->GetBloomVerticalFilterComputePipeline()->GetRootSignature().Get());
+		//		commandList->SetPipelineState(JoyContext::DummyMaterials->GetBloomVerticalFilterComputePipeline()->GetPipelineObject().Get());
+
+		//		commandList->SetComputeRoot32BitConstants(0, sizeof(HDRDownScaleConstants) / 4, &downScaleConstants, 0);
+		//		AttachViewToCompute(commandList, 1, m_bloomFirstTexture->GetSrv());
+		//		AttachViewToCompute(commandList, 2, m_bloomSecondTexture->GetResourceView());
+
+		//		commandList->Dispatch(m_height * m_width / 16, m_height / (128 - 12) + 1, 1);
+		//	}
+
+		//	Barrier(commandList, m_bloomFirstTexture->GetImage().Get(),
+		//	        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+
+		//	Barrier(commandList, m_bloomSecondTexture->GetImage().Get(),
+		//	        D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_GENERIC_READ);
+
+		//	// Bloom horizontal filter pass
+		//	{
+		//		commandList->SetComputeRootSignature(JoyContext::DummyMaterials->GetBloomHorizontalFilterComputePipeline()->GetRootSignature().Get());
+		//		commandList->SetPipelineState(JoyContext::DummyMaterials->GetBloomHorizontalFilterComputePipeline()->GetPipelineObject().Get());
+
+		//		commandList->SetComputeRoot32BitConstants(0, sizeof(HDRDownScaleConstants) / 4, &downScaleConstants, 0);
+		//		AttachViewToCompute(commandList, 1, m_bloomSecondTexture->GetSrv());
+		//		AttachViewToCompute(commandList, 2, m_bloomFirstTexture->GetResourceView());
+
+		//		commandList->Dispatch(m_width / 128 + 1, m_height * m_width / 16, 1);
+		//	}
+
+		//	Barrier(commandList, m_bloomSecondTexture->GetImage().Get(),
+		//	        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+
+		//	//barrier = Transition(
+		//	//	m_hdrLuminationBuffer->GetBuffer().Get(),
+		//	//	D3D12_RESOURCE_STATE_GENERIC_READ,
+		//	//	D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+		//	//commandList->ResourceBarrier(1, &barrier);
+
+		//	// Transition
+		//	{
+		//		Barrier(commandList, swapchainResource,
+		//		        D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		//		Barrier(commandList, m_bloomFirstTexture->GetImage().Get(),
+		//		        D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_GENERIC_READ);
+
+
+		//		SetViewportAndScissor(commandList, m_width, m_height);
+
+		//		commandList->OMSetRenderTargets(
+		//			1,
+		//			&ldrRTVHandle,
+		//			FALSE, nullptr);
+
+		//		auto sm = JoyContext::DummyMaterials->GetHdrToLdrTransitionSharedMaterial();
+
+		//		commandList->SetPipelineState(sm->GetPipelineObject().Get());
+		//		commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+		//		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		//		AttachViewToGraphics(commandList, 0, m_hdrRenderTarget->GetSrv());
+		//		AttachViewToGraphics(commandList, 1, m_hdrLuminationBufferSRVView.get());
+		//		AttachViewToGraphics(commandList, 2, m_bloomFirstTexture->GetSrv());
+		//		AttachViewToGraphics(commandList, 3, Texture::GetTextureSampler());
+
+		//		commandList->DrawInstanced(
+		//			3,
+		//			1,
+		//			0, 0);
+
+		//		Barrier(commandList, swapchainResource,
+		//		        D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+		//		Barrier(commandList, m_bloomFirstTexture->GetImage().Get(),
+		//		        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+		//		Barrier(commandList, m_hdrLuminationBuffer->GetBuffer().Get(),
+		//		        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+		//	}
+
+		//	barrier = Transition(
+		//		hdrRTVResource,
+		//		D3D12_RESOURCE_STATE_GENERIC_READ,
+		//		D3D12_RESOURCE_STATE_RENDER_TARGET);
+		//	commandList->ResourceBarrier(1, &barrier);
+		//}
+		//// transition front buffer to present state
+		//// transition normal and position buffers back to render target state
+		//{
+		//	Barrier(commandList, positionResource,
+		//	        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		//	Barrier(commandList, worldNormalResource,
+		//	        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		//	Barrier(commandList, viewNormalResource,
+		//	        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		//	Barrier(commandList, lightingResource,
+		//	        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		//}
+
+		Barrier(commandList, swapchainResource,
+		        D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 
 		ASSERT_SUCC(commandList->Close());
 
@@ -1087,35 +1094,35 @@ namespace JoyEngine
 					commandList->SetGraphicsRoot32BitConstants(rootIndex, sizeof(MVP) / 4, mvp, 0);
 					break;
 				}
-			case LightAttachment:
-				{
-					if (isDrawingMainColor)
-					{
-						AttachViewToGraphics(commandList, rootIndex, m_lightingAttachment->GetSrv());
-					}
-					break;
-				}
-			case EnvironmentCubemap:
-				{
-					if (isDrawingMainColor)
-					{
-						AttachViewToGraphics(commandList, rootIndex, m_cubemap->GetCubemapTexture()->GetSrv());
-					}
-					break;
-				}
-			case EnvironmentConvolutedCubemap:
-				{
-					if (isDrawingMainColor)
-					{
-						AttachViewToGraphics(commandList, rootIndex, m_cubemap->GetCubemapConvolutedTexture()->GetSrv());
-					}
-					break;
-				}
-			case EngineData:
-				{
-					AttachViewToGraphics(commandList, rootIndex, m_engineDataBufferView.get());
-					break;
-				}
+			//case LightAttachment:
+			//	{
+			//		if (isDrawingMainColor)
+			//		{
+			//			AttachViewToGraphics(commandList, rootIndex, m_lightingAttachment->GetSrv());
+			//		}
+			//		break;
+			//	}
+			//case EnvironmentCubemap:
+			//	{
+			//		if (isDrawingMainColor)
+			//		{
+			//			AttachViewToGraphics(commandList, rootIndex, m_cubemap->GetCubemapTexture()->GetSrv());
+			//		}
+			//		break;
+			//	}
+			//case EnvironmentConvolutedCubemap:
+			//	{
+			//		if (isDrawingMainColor)
+			//		{
+			//			AttachViewToGraphics(commandList, rootIndex, m_cubemap->GetCubemapConvolutedTexture()->GetSrv());
+			//		}
+			//		break;
+			//	}
+			//case EngineData:
+			//	{
+			//		AttachViewToGraphics(commandList, rootIndex, m_engineDataBufferView.get());
+			//		break;
+			//	}
 			default:
 				ASSERT(false);
 			}

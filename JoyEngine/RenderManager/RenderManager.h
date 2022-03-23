@@ -76,9 +76,9 @@ namespace JoyEngine
 		[[nodiscard]] float GetHeight() const noexcept;
 		[[nodiscard]] static DXGI_FORMAT GetHdrRTVFormat() noexcept { return hdrRTVFormat; }
 		[[nodiscard]] static DXGI_FORMAT GetLdrRTVFormat() noexcept { return ldrRTVFormat; }
-		[[nodiscard]] static DXGI_FORMAT GetGBufferFormat() noexcept { return gBufferFormat; }
+		//[[nodiscard]] static DXGI_FORMAT GetGBufferFormat() noexcept { return gBufferFormat; }
 		[[nodiscard]] static DXGI_FORMAT GetDepthFormat() noexcept { return depthFormat; }
-		[[nodiscard]] static DXGI_FORMAT GetSSAOFormat() noexcept { return ssaoFormat; }
+		//[[nodiscard]] static DXGI_FORMAT GetSSAOFormat() noexcept { return ssaoFormat; }
 
 	private:
 		void RenderEntireScene(
@@ -108,11 +108,11 @@ namespace JoyEngine
 		static void CopyRTVResource(ID3D12GraphicsCommandList* commandList, ID3D12Resource* rtvResource, ID3D12Resource* copyResource);
 
 	private:
-		static constexpr DXGI_FORMAT hdrRTVFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
+		static constexpr DXGI_FORMAT hdrRTVFormat =  DXGI_FORMAT_R16G16B16A16_FLOAT;
 		static constexpr DXGI_FORMAT ldrRTVFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-		static constexpr DXGI_FORMAT gBufferFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
+		//static constexpr DXGI_FORMAT gBufferFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
 		static constexpr DXGI_FORMAT depthFormat = DXGI_FORMAT_D32_FLOAT;
-		static constexpr DXGI_FORMAT ssaoFormat = DXGI_FORMAT_R16_FLOAT;
+		//static constexpr DXGI_FORMAT ssaoFormat = DXGI_FORMAT_R16_FLOAT;
 
 		static constexpr UINT FrameCount = 3;
 
@@ -121,39 +121,39 @@ namespace JoyEngine
 		std::array<std::unique_ptr<Texture>, FrameCount> m_swapchainRenderTargets;
 
 		std::unique_ptr<DepthTexture> m_depthAttachment;
-		std::unique_ptr<RenderTexture> m_hdrRenderTarget;
-		std::unique_ptr<Texture> m_renderTargetCopyAttachment;
+		//std::unique_ptr<RenderTexture> m_hdrRenderTarget;
+		//std::unique_ptr<Texture> m_renderTargetCopyAttachment;
 
-		std::unique_ptr<UAVTexture> m_hrdDownScaledTexture;
+		//std::unique_ptr<UAVTexture> m_hrdDownScaledTexture;
 
-		std::unique_ptr<UAVTexture> m_bloomFirstTexture;
-		std::unique_ptr<UAVTexture> m_bloomSecondTexture;
+		//std::unique_ptr<UAVTexture> m_bloomFirstTexture;
+		//std::unique_ptr<UAVTexture> m_bloomSecondTexture;
 
-		std::unique_ptr<Buffer> m_hdrLuminationBuffer;
-		std::unique_ptr<ResourceView> m_hdrLuminationBufferUAVView;
-		std::unique_ptr<ResourceView> m_hdrLuminationBufferSRVView;
-		std::unique_ptr<Buffer> m_hdrPrevLuminationBuffer;
-		std::unique_ptr<ResourceView> m_hdrPrevLuminationBufferUAVView;
+		//std::unique_ptr<Buffer> m_hdrLuminationBuffer;
+		//std::unique_ptr<ResourceView> m_hdrLuminationBufferUAVView;
+		//std::unique_ptr<ResourceView> m_hdrLuminationBufferSRVView;
+		//std::unique_ptr<Buffer> m_hdrPrevLuminationBuffer;
+		//std::unique_ptr<ResourceView> m_hdrPrevLuminationBufferUAVView;
 
 
-		std::unique_ptr<RenderTexture> m_positionAttachment;
-		std::unique_ptr<RenderTexture> m_worldNormalAttachment;
-		std::unique_ptr<RenderTexture> m_viewNormalAttachment;
-		std::unique_ptr<RenderTexture> m_lightingAttachment;
+		//std::unique_ptr<RenderTexture> m_positionAttachment;
+		//std::unique_ptr<RenderTexture> m_worldNormalAttachment;
+		//std::unique_ptr<RenderTexture> m_viewNormalAttachment;
+		//std::unique_ptr<RenderTexture> m_lightingAttachment;
 
-		std::unique_ptr<SSAO> m_ssaoEffect;
+		//std::unique_ptr<SSAO> m_ssaoEffect;
 
-		ResourceHandle<Mesh> m_planeMesh;
-		ResourceHandle<Mesh> m_cubeMesh;
+		//ResourceHandle<Mesh> m_planeMesh;
+		//ResourceHandle<Mesh> m_cubeMesh;
 
-		std::unique_ptr<Buffer> m_engineDataBuffer;
-		std::unique_ptr<ResourceView> m_engineDataBufferView;
+		//std::unique_ptr<Buffer> m_engineDataBuffer;
+		//std::unique_ptr<ResourceView> m_engineDataBufferView;
 
-		std::set<ParticleSystem*> m_particleSystems;
+		//std::set<ParticleSystem*> m_particleSystems;
 		std::set<SharedMaterial*> m_sharedMaterials;
-		std::set<Light*> m_lights;
-		Light* m_directionLight;
-		CubemapRenderer* m_cubemap; // TODO add collection of cubemaps
+		//std::set<Light*> m_lights;
+		//Light* m_directionLight;
+		//CubemapRenderer* m_cubemap; // TODO add collection of cubemaps
 		Camera* m_currentCamera;
 
 		std::unique_ptr<CommandQueue> m_queue;

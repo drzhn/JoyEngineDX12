@@ -186,7 +186,7 @@ namespace JoyEngine
 				m_width,
 				m_height,
 				this,
-				5);
+				1);
 		}
 	}
 

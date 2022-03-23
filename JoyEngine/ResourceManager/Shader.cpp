@@ -75,24 +75,29 @@ namespace JoyEngine
 	{
 		const char* entryPoint = nullptr;
 		const char* target = nullptr;
+		D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL;
 
 		switch (type)
 		{
 		case JoyShaderTypeVertex:
 			entryPoint = "VSMain";
 			target = "vs_5_1";
+			visibility = D3D12_SHADER_VISIBILITY_VERTEX;
 			break;
 		case JoyShaderTypeGeometry:
 			entryPoint = "GSMain";
 			target = "gs_5_1";
+			visibility = D3D12_SHADER_VISIBILITY_GEOMETRY;
 			break;
 		case JoyShaderTypePixel:
 			entryPoint = "PSMain";
 			target = "ps_5_1";
+			visibility = D3D12_SHADER_VISIBILITY_PIXEL;
 			break;
 		case JoyShaderTypeCompute:
 			entryPoint = "CSMain";
 			target = "cs_5_1";
+			visibility = D3D12_SHADER_VISIBILITY_ALL;
 			break;
 		default:
 			ASSERT(false);
@@ -138,15 +143,25 @@ namespace JoyEngine
 		{
 			D3D12_SHADER_INPUT_BIND_DESC inputBindDesc;
 			reflection->GetResourceBindingDesc(i, &inputBindDesc);
-			m_inputMap.insert({
-				inputBindDesc.Name,
-				{
-					inputBindDesc.Type,
-					inputBindDesc.BindPoint,
-					inputBindDesc.BindCount,
-					inputBindDesc.Space
-				}
-			});
+
+			std::string name = inputBindDesc.Name;
+			if (m_inputMap.find(name) == m_inputMap.end())
+			{
+				m_inputMap.insert({
+					inputBindDesc.Name,
+					{
+						inputBindDesc.Type,
+						inputBindDesc.BindPoint,
+						inputBindDesc.BindCount,
+						inputBindDesc.Space,
+						visibility
+					}
+				});
+			}
+			else
+			{
+				m_inputMap[name].Visibility = D3D12_SHADER_VISIBILITY_ALL;
+			}
 		}
 	}
 }

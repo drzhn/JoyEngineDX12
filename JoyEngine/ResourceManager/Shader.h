@@ -18,6 +18,7 @@ namespace JoyEngine
 		uint32_t BindPoint; // Starting bind point
 		uint32_t BindCount; // Number of contiguous bind points (for arrays)
 		uint32_t Space; // Register space
+		D3D12_SHADER_VISIBILITY Visibility;
 	};
 
 	typedef

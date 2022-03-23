@@ -2,6 +2,7 @@
 #define SHADER_H
 
 #include <d3d12.h>
+#include <map>
 
 #include "d3dx12.h"
 
@@ -11,6 +12,14 @@ using Microsoft::WRL::ComPtr;
 
 namespace JoyEngine
 {
+	struct ShaderInput
+	{
+		D3D_SHADER_INPUT_TYPE Type; // Type of resource (e.g. texture, cbuffer, etc.)
+		uint32_t BindPoint; // Starting bind point
+		uint32_t BindCount; // Number of contiguous bind points (for arrays)
+		uint32_t Space; // Register space
+	};
+
 	typedef
 	enum ShaderType
 	{
@@ -34,6 +43,7 @@ namespace JoyEngine
 		explicit Shader(GUID);
 		explicit Shader(GUID, ShaderTypeFlags shaderType);
 		void InitShader();
+		void CompileShader(ShaderType type, const char* shaderPath, const std::vector<char>& shaderData, ComPtr<ID3DBlob>& module);
 
 		~Shader() final = default;
 
@@ -52,6 +62,8 @@ namespace JoyEngine
 		ComPtr<ID3DBlob> m_fragmentModule;
 		ComPtr<ID3DBlob> m_geometryModule;
 		ComPtr<ID3DBlob> m_computeModule;
+
+		std::map<std::string, ShaderInput> m_inputMap;
 	};
 }
 

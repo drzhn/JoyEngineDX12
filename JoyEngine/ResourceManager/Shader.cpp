@@ -30,6 +30,74 @@ namespace JoyEngine
 
 		const std::vector<char> shaderData = JoyContext::Data->GetData(m_guid);
 
+		if (m_shaderType & JoyShaderTypeCompute)
+		{
+			CompileShader(
+				JoyShaderTypeCompute,
+				shaderPath.c_str(),
+				shaderData,
+				m_computeModule
+			);
+		}
+
+		if (m_shaderType & JoyShaderTypeVertex)
+		{
+			CompileShader(
+				JoyShaderTypeVertex,
+				shaderPath.c_str(),
+				shaderData,
+				m_vertexModule
+			);
+		}
+
+		if (m_shaderType & JoyShaderTypeGeometry)
+		{
+			CompileShader(
+				JoyShaderTypeGeometry,
+				shaderPath.c_str(),
+				shaderData,
+				m_geometryModule
+			);
+		}
+
+		if (m_shaderType & JoyShaderTypePixel)
+		{
+			CompileShader(
+				JoyShaderTypePixel,
+				shaderPath.c_str(),
+				shaderData,
+				m_fragmentModule
+			);
+		}
+	}
+
+	void Shader::CompileShader(ShaderType type, const char* shaderPath, const std::vector<char>& shaderData, ComPtr<ID3DBlob>& module)
+	{
+		const char* entryPoint = nullptr;
+		const char* target = nullptr;
+
+		switch (type)
+		{
+		case JoyShaderTypeVertex:
+			entryPoint = "VSMain";
+			target = "vs_5_1";
+			break;
+		case JoyShaderTypeGeometry:
+			entryPoint = "GSMain";
+			target = "gs_5_1";
+			break;
+		case JoyShaderTypePixel:
+			entryPoint = "PSMain";
+			target = "ps_5_1";
+			break;
+		case JoyShaderTypeCompute:
+			entryPoint = "CSMain";
+			target = "cs_5_1";
+			break;
+		default:
+			ASSERT(false);
+		}
+
 #if defined(_DEBUG)
 		// Enable better shader debugging with the graphics debugging tools.
 		constexpr UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
@@ -39,98 +107,46 @@ namespace JoyEngine
 		ID3DBlob* errorMessages = nullptr;
 		HRESULT hr;
 
-		if (m_shaderType & JoyShaderTypeCompute)
+		hr = (D3DCompile(
+			shaderData.data(),
+			shaderData.size(),
+			shaderPath,
+			nullptr,
+			D3D_COMPILE_STANDARD_FILE_INCLUDE,
+			entryPoint,
+			target, compileFlags, 0, &module, &errorMessages));
+
+		if (FAILED(hr) && errorMessages)
 		{
-			hr = (D3DCompile(
-				shaderData.data(),
-				shaderData.size(),
-				shaderPath.c_str(),
-				nullptr,
-				D3D_COMPILE_STANDARD_FILE_INCLUDE,
-				"CSMain", "cs_5_1", compileFlags, 0, &m_computeModule, &errorMessages));
-
-			if (FAILED(hr) && errorMessages)
-			{
-				const char* errorMsg = static_cast<const char*>(errorMessages->GetBufferPointer());
-				OutputDebugStringA(errorMsg);
-			}
-
-			errorMessages = nullptr;
-
-			ComPtr<ID3D12ShaderReflection> reflection;
-			hr = D3DReflect(m_computeModule->GetBufferPointer(),
-			                m_computeModule->GetBufferSize(),
-			                IID_PPV_ARGS(&reflection)
-			);
-
-			ASSERT(!FAILED(hr));
-
-			D3D12_SHADER_DESC desc;
-			reflection->GetDesc(&desc);
-
-			for (uint32_t i=0; i < desc.BoundResources; i++)
-			{
-				D3D12_SHADER_INPUT_BIND_DESC inputBindDesc;
-				reflection->GetResourceBindingDesc(i, &inputBindDesc);
-
-			}
+			const char* errorMsg = static_cast<const char*>(errorMessages->GetBufferPointer());
+			OutputDebugStringA(errorMsg);
+			ASSERT(false);
 		}
 
-		if (m_shaderType & JoyShaderTypeVertex)
+		ComPtr<ID3D12ShaderReflection> reflection;
+		hr = D3DReflect(module->GetBufferPointer(),
+		                module->GetBufferSize(),
+		                IID_PPV_ARGS(&reflection)
+		);
+
+		ASSERT(!FAILED(hr));
+
+		D3D12_SHADER_DESC desc;
+		reflection->GetDesc(&desc);
+
+		for (uint32_t i = 0; i < desc.BoundResources; i++)
 		{
-			hr = (D3DCompile(
-				shaderData.data(),
-				shaderData.size(),
-				shaderPath.c_str(),
-				nullptr,
-				D3D_COMPILE_STANDARD_FILE_INCLUDE,
-				"VSMain", "vs_5_1", compileFlags, 0, &m_vertexModule, &errorMessages));
-
-			if (FAILED(hr) && errorMessages)
-			{
-				const char* errorMsg = static_cast<const char*>(errorMessages->GetBufferPointer());
-				OutputDebugStringA(errorMsg);
-			}
-
-			errorMessages = nullptr;
-		}
-
-		if (m_shaderType & JoyShaderTypeGeometry)
-		{
-			hr = (D3DCompile(
-				shaderData.data(),
-				shaderData.size(),
-				shaderPath.c_str(),
-				nullptr,
-				D3D_COMPILE_STANDARD_FILE_INCLUDE,
-				"GSMain",
-				"gs_5_1", compileFlags, 0, &m_geometryModule, &errorMessages));
-
-			if (FAILED(hr) && errorMessages)
-			{
-				const char* errorMsg = static_cast<const char*>(errorMessages->GetBufferPointer());
-				OutputDebugStringA(errorMsg);
-			}
-
-			errorMessages = nullptr;
-		}
-
-		if (m_shaderType & JoyShaderTypePixel)
-		{
-			hr = (D3DCompile(
-				shaderData.data(),
-				shaderData.size(),
-				shaderPath.c_str(),
-				nullptr,
-				D3D_COMPILE_STANDARD_FILE_INCLUDE,
-				"PSMain",
-				"ps_5_1", compileFlags, 0, &m_fragmentModule, &errorMessages));
-
-			if (FAILED(hr) && errorMessages)
-			{
-				const char* errorMsg = static_cast<const char*>(errorMessages->GetBufferPointer());
-				OutputDebugStringA(errorMsg);
-			}
+			D3D12_SHADER_INPUT_BIND_DESC inputBindDesc;
+			reflection->GetResourceBindingDesc(i, &inputBindDesc);
+			m_inputMap.insert({
+				inputBindDesc.Name,
+				{
+					inputBindDesc.Type,
+					inputBindDesc.BindPoint,
+					inputBindDesc.BindCount,
+					inputBindDesc.Space
+				}
+			});
 		}
 	}
 }

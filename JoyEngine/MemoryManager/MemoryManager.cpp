@@ -106,33 +106,33 @@ namespace JoyEngine
 
 		std::vector<ResourceView> mipViews;
 
-		if (mipMapsCount > 1)
-		{
-			commandList->SetComputeRootSignature(JoyContext::DummyMaterials->GetMipsGenerationComputePipeline()->GetRootSignature().Get());
-			commandList->SetPipelineState(JoyContext::DummyMaterials->GetMipsGenerationComputePipeline()->GetPipelineObject().Get());
+		//if (mipMapsCount > 1)
+		//{
+		//	commandList->SetComputeRootSignature(JoyContext::DummyMaterials->GetMipsGenerationComputePipeline()->GetRootSignature().Get());
+		//	commandList->SetPipelineState(JoyContext::DummyMaterials->GetMipsGenerationComputePipeline()->GetPipelineObject().Get());
 
-			for (uint32_t i = 0; i < 4; i++)
-			{
-				D3D12_UNORDERED_ACCESS_VIEW_DESC desc;
-				desc.Format = gpuImage->GetFormat();
-				desc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
-				desc.Texture2D = {
-					i + 1,
-					0
-				};
-				mipViews.emplace_back(desc, gpuImage->GetImage().Get());
+		//	for (uint32_t i = 0; i < 4; i++)
+		//	{
+		//		D3D12_UNORDERED_ACCESS_VIEW_DESC desc;
+		//		desc.Format = gpuImage->GetFormat();
+		//		desc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
+		//		desc.Texture2D = {
+		//			i + 1,
+		//			0
+		//		};
+		//		mipViews.emplace_back(desc, gpuImage->GetImage().Get());
 
-				AttachView(commandList, i, &mipViews[i]);
-			}
+		//		AttachView(commandList, i, &mipViews[i]);
+		//	}
 
-			AttachView(commandList, 4, gpuImage->GetResourceView());
-			AttachView(commandList, 5, Texture::GetPointSampler());
+		//	AttachView(commandList, 4, gpuImage->GetResourceView());
+		//	AttachView(commandList, 5, Texture::GetPointSampler());
 
 
-			commandList->SetComputeRoot32BitConstant(6, width >> 1, 0);
-			commandList->SetComputeRoot32BitConstant(6, height >> 1, 1);
-			commandList->Dispatch((width >> 1) / 8, (height >> 1) / 8, 1);
-		}
+		//	commandList->SetComputeRoot32BitConstant(6, width >> 1, 0);
+		//	commandList->SetComputeRoot32BitConstant(6, height >> 1, 1);
+		//	commandList->Dispatch((width >> 1) / 8, (height >> 1) / 8, 1);
+		//}
 		ASSERT_SUCC(commandList->Close());
 
 		m_queue->Execute();

@@ -56,6 +56,24 @@ namespace JoyEngine
 			}
 
 			errorMessages = nullptr;
+
+			ComPtr<ID3D12ShaderReflection> reflection;
+			hr = D3DReflect(m_computeModule->GetBufferPointer(),
+			                m_computeModule->GetBufferSize(),
+			                IID_PPV_ARGS(&reflection)
+			);
+
+			ASSERT(!FAILED(hr));
+
+			D3D12_SHADER_DESC desc;
+			reflection->GetDesc(&desc);
+
+			for (uint32_t i=0; i < desc.BoundResources; i++)
+			{
+				D3D12_SHADER_INPUT_BIND_DESC inputBindDesc;
+				reflection->GetResourceBindingDesc(i, &inputBindDesc);
+
+			}
 		}
 
 		if (m_shaderType & JoyShaderTypeVertex)

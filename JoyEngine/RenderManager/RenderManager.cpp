@@ -702,6 +702,42 @@ namespace JoyEngine
 			Barrier(commandList, depthResource,
 			        D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_GENERIC_READ);
 
+			MVP mvp{
+				glm::mat4(),
+				mainCameraViewMatrix,
+				mainCameraProjMatrix,
+			};
+
+			//CopyRTVResource(commandList, hdrRTVResource, copyResource);
+
+			//// SSLR post-process
+			//{
+			//	commandList->OMSetRenderTargets(
+			//		1,
+			//		&hdrRTVHandle,
+			//		FALSE, nullptr);
+
+			//	auto sm = JoyContext::DummyMaterials->GetSSLRPostProcessSharedMaterial();
+
+			//	commandList->SetPipelineState(sm->GetPipelineObject().Get());
+			//	commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+			//	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+			//	commandList->SetGraphicsRoot32BitConstants(0, sizeof(MVP) / 4, &mvp, 0);
+			//	AttachViewToGraphics(commandList, 1, m_depthAttachment->GetSrv());
+			//	AttachViewToGraphics(commandList, 2, m_worldNormalAttachment->GetSrv());
+			//	AttachViewToGraphics(commandList, 3, m_positionAttachment->GetSrv());
+			//	AttachViewToGraphics(commandList, 4, m_renderTargetCopyAttachment->GetResourceView());
+			//	AttachViewToGraphics(commandList, 5, Texture::GetPointSampler());
+			//	AttachViewToGraphics(commandList, 6, Texture::GetTextureSampler());
+			//	AttachViewToGraphics(commandList, 7, m_engineDataBufferView.get());
+
+			//	commandList->DrawInstanced(
+			//		3,
+			//		1,
+			//		0, 0);
+			//}
+
 			CopyRTVResource(commandList, hdrRTVResource, copyResource);
 
 			// FOG post-process
@@ -730,12 +766,6 @@ namespace JoyEngine
 					&renderHandle,
 					FALSE, nullptr);
 				SetViewportAndScissor(commandList, m_ssaoEffect->GetWidth(), m_ssaoEffect->GetHeight());
-
-				MVP mvp{
-					glm::mat4(),
-					mainCameraViewMatrix,
-					mainCameraProjMatrix,
-				};
 
 				// SSAO post-process
 				{

@@ -3,27 +3,38 @@
 struct PSInput
 {
 	float4 position : SV_POSITION;
-	float4 screenPos : POSITION;
 	float3 clipPos : TEXCOORD0;
+	float2 screenPos : TEXCOORD1;
 };
 
 ConstantBuffer<MVP> mvp : register(b0);
-//ConstantBuffer<EngineData> engineData : register(b1);
+ConstantBuffer<EngineData> engineData : register(b1);
 //ConstantBuffer<SSAOData> ssaoData : register(b2);
 
 Texture2D<float> depthTexture : register(t0);
-Texture2D<float4> viewNormalTexture : register(t1);
+Texture2D<float4> worldNormalTexture : register(t1);
 Texture2D<float4> worldPositionTexture : register(t2);
 Texture2D<float4> colorTexture : register(t3);
 
 //SamplerState gsamDepthMap : register(s0);
-//SamplerState gsamLinearWrap : register(s1);
 SamplerState gsamPointClamp : register(s0);
+SamplerState gsamLinearWrap : register(s1);
 
 
-static const float ViewAngleThreshold = 0.8f;
-static const float PixelSize = 2.0 / 768.0f;
-static const int nNumSteps = 1024;
+static const float ViewAngleThreshold = 0.1f;
+static const float PixelSize = 1.0 / 720.0f;
+static const int nNumSteps = 500;
+
+static const float2 gTexCoords[6] =
+{
+	float2(0.0f, 1.0f),
+	float2(0.0f, 0.0f),
+	float2(1.0f, 0.0f),
+
+	float2(0.0f, 1.0f),
+	float2(1.0f, 0.0f),
+	float2(1.0f, 1.0f)
+};
 
 inline float LinearEyeDepth(float depth)
 {
@@ -40,6 +51,20 @@ inline float4 ComputeNonStereoScreenPos(float4 pos)
 	return o;
 }
 
+inline float3 GetUV(float3 pos)
+{
+	float3 UVD;
+	// Transform the world position to shadow projected space
+	float4 posShadowMap = mul(mvp.projection, float4(pos, 1.0));
+	// Transform the position to shadow clip space
+	UVD = posShadowMap.xyz / posShadowMap.w;
+	// Convert to shadow map UV values
+	UVD.xy = 0.5 * UVD.xy + 0.5;
+	UVD.y = 1.0 - UVD.y;
+
+	return UVD;
+}
+
 
 PSInput VSMain(uint id : SV_VertexID)
 {
@@ -48,70 +73,112 @@ PSInput VSMain(uint id : SV_VertexID)
 	input.position = float4(uv * float2(2, -2) + float2(-1, 1), 0, 1);
 	input.screenPos = ComputeNonStereoScreenPos(input.position);
 	input.clipPos = input.position / input.position.w;
+
+	// Quad covering screen in NDC space.
+	//input.screenPos = gTexCoords[id];
+	//input.position = float4(2.0f * input.screenPos.x - 1.0f, 1.0f - 2.0f * input.screenPos.y, 0.0f, 1.0f);
+	//input.clipPos = input.position / input.position.w;
+
 	return input;
 }
 
 float4 PSMain(PSInput input) : SV_Target
 {
 	const float4 worldPosition = worldPositionTexture.Load(float3(input.position.xy, 0));
-	const float4 viewNormal = viewNormalTexture.Load(float3(input.position.xy, 0));
+	const float4 worldNormal = worldNormalTexture.Load(float3(input.position.xy, 0));
+
 
 	// Pixel position and normal in view space
 	float3 vsPos = mul(mvp.view, worldPosition).xyz;
-	float3 vsNorm = normalize(viewNormal).xyz;
+
+	float3 vsNorm = normalize(mul(mvp.view, float4(worldNormal.xyz, 0)).xyz);
 	// Calculate the camera to pixel direction
 	float3 eyeToPixel = normalize(vsPos);
 	// Calculate the reflected view direction
-	float3 vsReflect = reflect(eyeToPixel, vsNorm);
+	float3 vsReflect = normalize(reflect(eyeToPixel, vsNorm));
 	// The initial reflection color for the pixel
 	float4 reflectColor = float4(0.0, 0.0, 0.0, 0.0);
-	// Don't bother with reflected vector above the threshold vector
-	if (vsReflect.z > ViewAngleThreshold)
+
+	float distance = 10;
+	float delta = distance / nNumSteps;
+	float L = delta;
+
+	//float rz = depthTexture.SampleLevel(gsamPointClamp, GetUV(vsPos).xy, 0.0f).r;
+	//rz = LinearEyeDepth(rz);
+	//if (vsPos.z > 5 && vsPos.z < 5.1)
+	//{
+	//	return float4(1, 1, 1, 1);
+	//}
+	//else if (rz > 5 && rz < 5.1)
+	//{
+	//	return float4(1, 0, 0, 1);
+	//}
+	//else
+	//	return float4(0, 0, 0, 0);
+
+	for (uint i = 0; i < nNumSteps; i++)
 	{
-		// Fade the reflection as the view angles gets close to the threshold
-		float viewAngleThresholdInv = 1.0 - ViewAngleThreshold;
-		float viewAngleFade = (vsReflect.z - ViewAngleThreshold) / viewAngleThresholdInv;
-		// Transform the View Space Reflection to clip-space
-		float3 vsPosReflect = vsPos + vsReflect;
-		float3 csPosReflect = mul(mvp.projection, float4(vsPosReflect, 1.0)).xyz / vsPosReflect.z;
-		float3 csReflect = csPosReflect - input.clipPos;
-		// Resize Screen Space Reflection to an appropriate length.
-		float reflectScale = PixelSize / length(csReflect.xy);
-		csReflect *= reflectScale;
-		// Calculate the offsets in texture space
-		float3 currOffset = input.clipPos + csReflect;
-		currOffset.xy = currOffset.xy * float2(0.5, -0.5) + 0.5;
-		float3 lastOffset = input.clipPos;
-		lastOffset.xy = lastOffset.xy * float2(0.5, -0.5) + 0.5;
-		csReflect = float3(csReflect.x * 0.5, csReflect.y * -0.5,
-		                   csReflect.z);
-		// Iterate over the HDR texture searching for intersection
-		for (int nCurStep = 0; nCurStep < nNumSteps; nCurStep++)
+		float3 newPos = vsPos + vsReflect * L;
+
+		float3 uv = GetUV(newPos);
+
+		//uv.z += 0.001f;
+
+		float rz = depthTexture.SampleLevel(gsamPointClamp, uv.xy, 0.0f).r + 0.001f;
+		rz = LinearEyeDepth(rz);
+
+		float d = newPos.z - rz;
+
+		if (abs(d) < 0.02f)
 		{
-			// Sample from depth buffer
-			float curSample = depthTexture.SampleLevel(gsamPointClamp, currOffset.xy, 0.0).x + 0.005f;
-			if (curSample < currOffset.z)
-			{
-				// Correct the offset based on the sampled depth
-				currOffset.xy = lastOffset.xy + (currOffset.z - curSample) *
-					csReflect.xy;
-				// Get the HDR value at the location
-				reflectColor.xyz = colorTexture.SampleLevel(gsamPointClamp,
-				                                      currOffset.xy, 0.0).xyz;
-				//// Fade out samples close to the texture edges
-				//float edgeFade = saturate(distance(currOffset.xy,
-				//                                   float2(0.5, 0.5)) * 2.0 - EdgeDistThreshold);
-				//// Find the fade value
-				//reflectColor.w = min(viewAngleFade, 1.0 - edgeFade * edgeFade);
-				// Apply the reflection sacle
-				reflectColor.w *= reflectScale;
-				// Advance past the final iteration to break the loop
-				nCurStep = nNumSteps;
-			}
-			// Advance to the next sample
-			lastOffset = currOffset;
-			currOffset += csReflect;
+			reflectColor = colorTexture.SampleLevel(gsamLinearWrap, uv.xy, 0.0f);
+			//reflectColor.xyz *= (distance - L) / distance;
+			break;
 		}
+		L += delta;
 	}
+
 	return reflectColor;
 }
+
+float3 GetViewPosition(float2 UV, float depth)
+{
+	float4 position = 1.0f;
+	position.x = UV.x * 2.0f - 1.0f;
+	position.y = -(UV.y * 2.0f - 1.0f);
+	position.z = depth;
+	//Transform Position from Homogenous Space to World Space 
+	position = mul(engineData.cameraInvProj, position);
+	position /= position.w;
+	return position.xyz;
+}
+
+
+//float4 PSMain(PSInput input) : SV_Target
+//{
+//	const float4 worldPosition = worldPositionTexture.Load(float3(input.position.xy, 0));
+//	const float4 worldNormal = worldNormalTexture.Load(float3(input.position.xy, 0));
+//
+//
+//	// Pixel position and normal in view space
+//	float3 texelPosition = mul(mvp.view, worldPosition).xyz;
+//	float3 vsNorm = normalize(mul(mvp.view, float4(worldNormal.xyz, 0)).xyz);
+//
+//	float3 currentRay = 0;
+//	float3 nuv = 0;
+//	float L = 0.1f;
+//
+//	float3 viewDir = normalize(texelPosition);
+//	float3 reflectDir = normalize(reflect(viewDir, vsNorm));
+//
+//	for (int i = 0; i < 10; i++)
+//	{
+//		currentRay = texelPosition + reflectDir * L;
+//		nuv = GetUV(currentRay); // проецирование позиции на экран
+//		float depth = depthTexture.SampleLevel(gsamPointClamp, nuv.xy, 0.0f).r; // чтение глубины из DepthMap по UV
+//		float3 newPosition = GetViewPosition(nuv.xy, depth);
+//		L = length(texelPosition - newPosition);
+//	}
+//
+//	return colorTexture.SampleLevel(gsamPointClamp, nuv.xy, 0.0f);
+//}

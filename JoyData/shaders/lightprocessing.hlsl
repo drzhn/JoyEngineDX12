@@ -70,7 +70,8 @@ float3 ProcessSpot(float2 uv, float angle, float height)
 float CalcAttenuationByDistance(float distance, float maxDistance)
 {
 	if (distance > maxDistance) return 0;
-	return 1 / (1 + 0.09f * distance + 0.032f * distance * distance);
+	//return 1 / (1 + 0.09f * distance + 0.032f * distance * distance);
+	return 1 - distance / maxDistance / maxDistance;
 }
 
 float3 CalcAttenuationForSpot(float3 lightPosition, float3 fragPosition, float3 lightDir, float halfAngleRad, float height)
@@ -115,6 +116,7 @@ PSOutput PSMain(PSInput input) // : SV_TARGET
 	float3 lightPos;
 	float attenuation = 1;
 
+	// point light
 	if (lightData.radius > 0 && lightData.height == 0)
 	{
 		lightPos = mul(mvp.model, float4(0, 0, 0, 1));
@@ -129,6 +131,7 @@ PSOutput PSMain(PSInput input) // : SV_TARGET
 		float Depth = (LightPerspectiveValues.x * Z + LightPerspectiveValues.y) / Z;
 		attenuation *= shadowMapPointTexture.SampleCmpLevelZero(PCFSampler, ToPixel, Depth - bias);
 	}
+	//spot light
 	else if (lightData.angle > 0 && lightData.height > 0)
 	{
 		lightPos = mul(mvp.model, float4(0, 0, 0, 1));
@@ -154,6 +157,7 @@ PSOutput PSMain(PSInput input) // : SV_TARGET
 		// Compute the hardware PCF value
 		attenuation *= shadowMapSpotTexture.SampleCmpLevelZero(PCFSampler, UVD.xy, UVD.z);
 	}
+	// capsule light
 	else if (lightData.radius > 0 && lightData.height > 0)
 	{
 		const float3 a = mul(mvp.model, float4(-lightData.height / 2, 0, 0, 1));

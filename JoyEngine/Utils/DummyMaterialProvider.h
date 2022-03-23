@@ -48,6 +48,7 @@ namespace JoyEngine
 		[[nodiscard]] ComputePipeline* GetParticleBufferGenerationComputePipeline() const noexcept { return m_particleBufferGenerationComputePipeline; }
 		[[nodiscard]] SharedMaterial* GetParticleSystemSharedMaterial() const noexcept { return m_particleSystemSharedMaterial; }
 		[[nodiscard]] SharedMaterial* GetFogPostProcessSharedMaterial() const noexcept { return m_fogPostProcessSharedMaterial; }
+		[[nodiscard]] SharedMaterial* GetSSLRPostProcessSharedMaterial() const noexcept { return m_sslrPostProcessSharedMaterial; }
 
 		[[nodiscard]] ComputePipeline* GetHdrDownscaleFirstPassComputePipeline() const noexcept { return m_hdrDownscaleFirstPassComputePipeline; }
 		[[nodiscard]] ComputePipeline* GetHdrDownscaleSecondPassComputePipeline() const noexcept { return m_hdrDownscaleSecondPassComputePipeline; }

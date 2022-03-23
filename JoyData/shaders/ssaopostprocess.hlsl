@@ -12,7 +12,7 @@ ConstantBuffer<EngineData> engineData : register(b1);
 ConstantBuffer<SSAOData> ssaoData : register(b2);
 
 Texture2D<float> depthTexture : register(t0);
-Texture2D<float4> viewNormalTexture : register(t1);
+Texture2D<float4> worldNormalTexture : register(t1);
 Texture2D gRandomVecMap : register(t2);
 
 SamplerState gsamDepthMap : register(s0);
@@ -79,7 +79,7 @@ PSInput VSMain(uint vid : SV_VertexID)
 
 float PSMain(PSInput v) : SV_Target
 {
-	//float4 n = viewNormalTexture.Load(float3(v.PosH.xy, 0));
+	//float4 n = worldNormalTexture.Load(float3(v.PosH.xy, 0));
 	//float pz = depthTexture.Load(float3(v.PosH.xy, 0));
 
 	// p -- the point we are computing the ambient occlusion for.
@@ -88,7 +88,7 @@ float PSMain(PSInput v) : SV_Target
 	// r -- a potential occluder that might occlude p.
 
 	// Get viewspace normal and z-coord of this pixel.  
-	float3 n = normalize(viewNormalTexture.SampleLevel(gsamPointClamp, v.TexC, 0.0f).xyz);
+	float3 n = normalize(worldNormalTexture.SampleLevel(gsamPointClamp, v.TexC, 0.0f).xyz);
 
 	float pz = depthTexture.SampleLevel(gsamDepthMap, v.TexC, 0.0f).r;
 	pz = LinearEyeDepth(pz);

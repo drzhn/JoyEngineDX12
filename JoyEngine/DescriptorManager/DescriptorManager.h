@@ -17,14 +17,16 @@ namespace JoyEngine
 	public :
 		DescriptorManager() = default;
 		void Init();
-		D3D12_CPU_DESCRIPTOR_HANDLE AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE type);
+		void AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t& index, D3D12_CPU_DESCRIPTOR_HANDLE& cpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE& gpuHandle);
+		void FreeDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t index);
 
 	private:
 		struct HeapEntry
 		{
 			ComPtr<ID3D12DescriptorHeap> heap;
 			uint32_t descriptorSize;
-			D3D12_CPU_DESCRIPTOR_HANDLE heapStart;
+			D3D12_CPU_DESCRIPTOR_HANDLE cpuHeapStart;
+			D3D12_GPU_DESCRIPTOR_HANDLE gpuHeapStart;
 			uint32_t currentDescriptorIndex = 0;
 		};
 

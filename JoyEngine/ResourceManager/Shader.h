@@ -49,6 +49,8 @@ namespace JoyEngine
 		~Shader() final = default;
 
 		[[nodiscard]] ShaderTypeFlags GetShaderType() const noexcept { return m_shaderType; }
+		[[nodiscard]] const std::map<std::string, ShaderInput>& GetInputMap() { return m_inputMap; }
+
 		[[nodiscard]] ComPtr<ID3DBlob> GetVertexShadeModule() const noexcept { return m_vertexModule; }
 		[[nodiscard]] ComPtr<ID3DBlob> GetFragmentShadeModule() const noexcept { return m_fragmentModule; }
 		[[nodiscard]] ComPtr<ID3DBlob> GetGeometryShadeModule() const noexcept { return m_geometryModule; }

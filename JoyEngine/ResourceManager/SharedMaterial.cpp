@@ -15,6 +15,8 @@
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <wrl.h>
+
+#include "Common/HashDefs.h"
 using Microsoft::WRL::ComPtr;
 
 namespace JoyEngine
@@ -104,18 +106,134 @@ namespace JoyEngine
 	SharedMaterial::SharedMaterial(GUID guid) :
 		Resource(guid) // UNUSED
 	{
-		ASSERT(false);
-		//rapidjson::Document json = JoyContext::Data->GetSerializedData(m_guid, sharedMaterial);
+		rapidjson::Document json = JoyContext::Data->GetSerializedData(m_guid, sharedMaterial);
 
-		//m_shader = GUID::StringToGuid(json["shader"].GetString());
+		m_shader = GUID::StringToGuid(json["shader"].GetString());
 
-		//m_hasVertexInput = json["hasVertexInput"].GetBool();
-		//m_hasMVP = json["hasMVP"].GetBool();
-		//m_depthTest = json["depthTest"].GetBool();
-		//m_depthWrite = json["depthWrite"].GetBool();
+		m_hasVertexInput = json["hasVertexInput"].GetBool();
+		m_depthTest = json["depthTest"].GetBool();
+		m_depthWrite = json["depthWrite"].GetBool();
 
-		//CreateGraphicsPipeline();
-		//JoyContext::Render->RegisterSharedMaterial(this);
+		std::string depthCompStr = json["comparison"].GetString();
+		switch (strHash(depthCompStr.c_str()))
+		{
+		case strHash("less_equal"):
+			m_depthComparisonFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+			break;
+		default:
+			ASSERT(false)
+		}
+
+		std::string cullModeStr = json["cull"].GetString();
+		switch (strHash(cullModeStr.c_str()))
+		{
+		case strHash("back"):
+			m_cullMode = D3D12_CULL_MODE_BACK;
+			break;
+		case strHash("front"):
+			m_cullMode = D3D12_CULL_MODE_FRONT;
+			break;
+		case strHash("none"):
+			m_cullMode = D3D12_CULL_MODE_NONE;
+			break;
+		default:
+			ASSERT(false)
+		}
+
+		std::string blendStr = json["blend"].GetString();
+		CD3DX12_BLEND_DESC blendDesc;
+		switch (strHash(blendStr.c_str()))
+		{
+		case strHash("default"):
+			blendDesc = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+			break;
+		default:
+			ASSERT(false)
+		}
+
+		std::string topologyStr = json["topology"].GetString();
+		D3D12_PRIMITIVE_TOPOLOGY_TYPE topology;
+		switch (strHash(topologyStr.c_str()))
+		{
+		case strHash("triangle"):
+			topology = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+			break;
+		default:
+			ASSERT(false)
+		}
+
+		std::vector<DXGI_FORMAT> renderTargetsFormats(json["rtvFormats"].GetArray().Size());
+		uint32_t i = 0;
+		for (auto& format : json["rtvFormats"].GetArray())
+		{
+			std::string formatStr = format.GetString();
+			switch (strHash(formatStr.c_str()))
+			{
+			case strHash("rgba8_unorm"):
+				renderTargetsFormats[i] = DXGI_FORMAT_R8G8B8A8_UNORM;
+				break;
+			default:
+				ASSERT(false)
+			}
+			i++;
+		}
+
+
+		std::list<CD3DX12_DESCRIPTOR_RANGE1> ranges;
+		std::vector<CD3DX12_ROOT_PARAMETER1> params;
+		for (const auto& pair : m_shader->GetInputMap())
+		{
+			const std::string& name = pair.first;
+			const ShaderInput& input = pair.second;
+
+			if (name == "mvp")
+			{
+				params.emplace_back();
+				params[params.size() - 1].InitAsConstants(
+					sizeof(MVP) / 4, input.BindPoint, input.Space, input.Visibility);
+				m_engineBindings.insert({static_cast<uint32_t>(params.size() - 1), ModelViewProjection});
+			}
+			else
+			{
+				D3D12_DESCRIPTOR_RANGE_TYPE type;
+				switch (input.Type)
+				{
+				case D3D_SIT_CBUFFER: type = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+					break;
+				case D3D_SIT_TEXTURE: type = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+					break;
+				case D3D_SIT_SAMPLER: type = D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
+					break;
+
+				case D3D_SIT_UAV_RWTYPED:
+				case D3D_SIT_STRUCTURED:
+				case D3D_SIT_UAV_RWSTRUCTURED:
+				case D3D_SIT_UAV_RWBYTEADDRESS:
+				case D3D_SIT_UAV_APPEND_STRUCTURED:
+				case D3D_SIT_UAV_CONSUME_STRUCTURED:
+				case D3D_SIT_UAV_RWSTRUCTURED_WITH_COUNTER:
+				case D3D_SIT_UAV_FEEDBACKTEXTURE:
+					type = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
+					break;
+
+				case D3D_SIT_TBUFFER:
+				case D3D_SIT_BYTEADDRESS:
+				case D3D_SIT_RTACCELERATIONSTRUCTURE:
+				default:
+					ASSERT(false);
+				}
+				ranges.emplace_back();
+				ranges.back().Init(type, input.BindCount, input.BindPoint, input.Space, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
+				params.emplace_back();
+				params[params.size() - 1].InitAsDescriptorTable(input.BindCount, &ranges.back(), input.Visibility);
+			}
+		}
+
+		DXGI_FORMAT depthFormat = DXGI_FORMAT_D32_FLOAT;
+
+		CreateRootSignature(params);
+		CreateGraphicsPipeline(renderTargetsFormats, blendDesc, depthFormat, topology);
+		JoyContext::Render->RegisterSharedMaterial(this);
 	}
 
 	SharedMaterial::SharedMaterial(const GUID guid, const SharedMaterialArgs args) :

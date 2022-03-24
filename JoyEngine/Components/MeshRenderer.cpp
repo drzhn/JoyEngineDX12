@@ -34,11 +34,11 @@ namespace JoyEngine {
     }
 
     void MeshRenderer::SetMaterial(const std::string& materialName) {
-        //if (m_material != nullptr) {
-        //    JoyContext::Resource->UnloadResource(materialGuid);
-        //}
-        //m_material = JoyContext::Resource->LoadResource<Material>(materialGuid);
         m_material = JoyContext::DummyMaterials->GetMaterialGuid(materialName);
+    }
+
+    void MeshRenderer::SetMaterial(const GUID& materialGuid) {
+        m_material = JoyContext::Resource->LoadResource<Material>(materialGuid);
     }
 
     Mesh *MeshRenderer::GetMesh() const noexcept {

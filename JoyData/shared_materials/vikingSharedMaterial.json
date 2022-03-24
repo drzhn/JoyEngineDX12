@@ -2,33 +2,13 @@
     "type": "sharedMaterial",
     "shader": "183d6cfe-ca85-4e0b-ab36-7b1ca0f99d34",
     "hasVertexInput": true,
-    "hasMVP": true,
     "depthTest": true,
     "depthWrite": true,
-    "bindings": [
-        {
-            "index": 0,
-            "type": "color",
-            "name": "color",
-            "count": 1
-        },
-        {
-            "index": 0,
-            "type": "int",
-            "name": "array",
-            "count": 3
-        },
-        {
-            "index": 0,
-            "type": "float",
-            "name": "someFloat",
-            "count": 1
-        },
-        {
-            "index": 1,
-            "type": "texture",
-            "name": "mainTexture",
-            "count": 1
-        }
+    "cull": "back",
+    "comparison": "less_equal",
+    "blend": "default",
+    "topology": "triangle",
+    "rtvFormats": [
+        "rgba8_unorm"
     ]
 }

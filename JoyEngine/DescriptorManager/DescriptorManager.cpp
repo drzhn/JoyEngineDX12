@@ -27,22 +27,33 @@ namespace JoyEngine
 
 			entry.descriptorSize =
 				JoyContext::Graphics->GetDevice()->GetDescriptorHandleIncrementSize(type);
-			entry.heapStart = entry.heap->GetCPUDescriptorHandleForHeapStart();
+			entry.cpuHeapStart = entry.heap->GetCPUDescriptorHandleForHeapStart();
+			entry.gpuHeapStart = entry.heap->GetGPUDescriptorHandleForHeapStart();
 		}
 	}
 
-	D3D12_CPU_DESCRIPTOR_HANDLE DescriptorManager::AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE type)
+	void DescriptorManager::AllocateDescriptor(
+		D3D12_DESCRIPTOR_HEAP_TYPE type,
+		_Out_ uint32_t& index,
+		_Out_ D3D12_CPU_DESCRIPTOR_HANDLE& cpuHandle,
+		_Out_ D3D12_GPU_DESCRIPTOR_HANDLE& gpuHandle
+	)
 	{
-		D3D12_CPU_DESCRIPTOR_HANDLE handle;
-
 		HeapEntry& entry = m_descriptorStorage[type];
 
 		ASSERT(entry.currentDescriptorIndex < DESCRIPTORS_COUNT)
 
-		handle.ptr = entry.heapStart.ptr + entry.currentDescriptorIndex * entry.descriptorSize;
+		cpuHandle.ptr = entry.cpuHeapStart.ptr + entry.currentDescriptorIndex * entry.descriptorSize;
+		gpuHandle.ptr = entry.gpuHeapStart.ptr + entry.currentDescriptorIndex * entry.descriptorSize;
+		index = entry.currentDescriptorIndex;
 
 		entry.currentDescriptorIndex++;
+	}
 
-		return handle;
+	void DescriptorManager::FreeDescriptor(
+		D3D12_DESCRIPTOR_HEAP_TYPE type,
+		uint32_t index)
+	{
+		// TODO
 	}
 }

@@ -20,10 +20,20 @@
 		{
             "guid": "47000776-d056-43a2-bacb-c3e54701294a",
             "path": "models/Sphere.obj"
-        },		
-		{
+        },
+        {
             "guid": "2529df0e-9a8e-4730-9b8d-a70b4b93251a",
             "path": "models/Anna_Head.obj"
+        },
+
+        {
+            "guid": "74eac505-944d-45af-acdf-51bcb04fee30",
+            "path": "shared_materials/vikingSharedMaterial.json"
+        },
+
+        {
+            "guid": "cbab0eb5-74a0-400f-92c2-8aae39175ed7",
+            "path": "materials/vikingMaterial.json"
         },
 		
 		

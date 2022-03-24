@@ -19,7 +19,8 @@ namespace JoyEngine
 {
 	Material::Material(GUID guid) : Resource(guid)
 	{
-		//rapidjson::Document json = JoyContext::Data->GetSerializedData(guid, material);
+		rapidjson::Document json = JoyContext::Data->GetSerializedData(guid, material);
+		m_sharedMaterial = GUID::StringToGuid(json["sharedMaterial"].GetString());
 	}
 
 	Material::Material(GUID guid, MaterialArgs data) :

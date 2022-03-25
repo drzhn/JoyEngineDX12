@@ -1,4 +1,4 @@
-﻿#include "DummyMaterialProvider.h"
+﻿#include "EngineMaterialProvider.h"
 
 #include <d3d12.h>
 
@@ -31,7 +31,7 @@ namespace JoyEngine
 		params[params.size() - 1].InitAsConstants(number, shaderRegister, 0, visibility);
 	}
 
-	void DummyMaterialProvider::Init()
+	void EngineMaterialProvider::Init()
 	{
 		Texture::InitSamplers();
 		DXGI_FORMAT mainRTVFormat = RenderManager::GetHdrRTVFormat();
@@ -308,45 +308,45 @@ namespace JoyEngine
 		//	}
 		//}
 
-		// Sample material
-		{
-			const GUID shaderGuid = GUID::StringToGuid("183d6cfe-ca85-4e0b-ab36-7b1ca0f99d34");
-			const GUID sharedMaterialGuid = GUID::Random();
+		//// Sample material
+		//{
+		//	const GUID shaderGuid = GUID::StringToGuid("183d6cfe-ca85-4e0b-ab36-7b1ca0f99d34");
+		//	const GUID sharedMaterialGuid = GUID::Random();
 
-			RootParams rp;
-			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, D3D12_SHADER_VISIBILITY_PIXEL);
-			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 0, D3D12_SHADER_VISIBILITY_PIXEL);
-			rp.CreateConstants(sizeof(MVP) / 4, 0);
-			rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, D3D12_SHADER_VISIBILITY_PIXEL);
+		//	RootParams rp;
+		//	rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+		//	rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+		//	rp.CreateConstants(sizeof(MVP) / 4, 0);
+		//	rp.CreateDescriptorTable(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, D3D12_SHADER_VISIBILITY_PIXEL);
 
-			m_sampleSharedMaterialHandle = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
-				sharedMaterialGuid,
-				{
-					shaderGuid,
-					JoyShaderTypeVertex | JoyShaderTypePixel,
-					true,
-					true,
-					true,
-					D3D12_CULL_MODE_BACK,
-					D3D12_COMPARISON_FUNC_LESS_EQUAL,
-					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
-					rp.params,
-					{
-						swapchainLdrFormat
-					},
-					mainDSVFormat,
-					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
-					{
-						{2, ModelViewProjection},
-						//{3, LightAttachment}
-					}
-				});
+		//	m_sampleSharedMaterialHandle = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
+		//		sharedMaterialGuid,
+		//		{
+		//			shaderGuid,
+		//			JoyShaderTypeVertex | JoyShaderTypePixel,
+		//			true,
+		//			true,
+		//			true,
+		//			D3D12_CULL_MODE_BACK,
+		//			D3D12_COMPARISON_FUNC_LESS_EQUAL,
+		//			CD3DX12_BLEND_DESC(D3D12_DEFAULT),
+		//			rp.params,
+		//			{
+		//				swapchainLdrFormat
+		//			},
+		//			mainDSVFormat,
+		//			D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
+		//			{
+		//				{2, ModelViewProjection},
+		//				//{3, LightAttachment}
+		//			}
+		//		});
 
-			CreateSampleMaterial("material_1", GUID::StringToGuid("1d451f58-3f84-4b2b-8c6f-fe8e2821d7f0"), sharedMaterialGuid); // viking_room.png
-			CreateSampleMaterial("material_2", GUID::StringToGuid("e8448435-7baf-4e40-ac72-b99e49284929"), sharedMaterialGuid); // textures/wood.png
-			CreateSampleMaterial("material_3", GUID::StringToGuid("7e50aa82-5696-428c-a088-538fb78c0ee6"), sharedMaterialGuid); // textures/Chopping-Board.jpg
-			CreateSampleMaterial("material_compressed", GUID::StringToGuid("cf021726-708f-42d2-860e-d33a550e631b"), sharedMaterialGuid); // textures/DDSSample.dds
-		}
+		//	CreateSampleMaterial("material_1", GUID::StringToGuid("1d451f58-3f84-4b2b-8c6f-fe8e2821d7f0"), sharedMaterialGuid); // viking_room.png
+		//	CreateSampleMaterial("material_2", GUID::StringToGuid("e8448435-7baf-4e40-ac72-b99e49284929"), sharedMaterialGuid); // textures/wood.png
+		//	CreateSampleMaterial("material_3", GUID::StringToGuid("7e50aa82-5696-428c-a088-538fb78c0ee6"), sharedMaterialGuid); // textures/Chopping-Board.jpg
+		//	CreateSampleMaterial("material_compressed", GUID::StringToGuid("cf021726-708f-42d2-860e-d33a550e631b"), sharedMaterialGuid); // textures/DDSSample.dds
+		//}
 
 		//// PBR material
 		//{
@@ -754,7 +754,7 @@ namespace JoyEngine
 		//}
 	}
 
-	void DummyMaterialProvider::CreatePBRMaterial(
+	void EngineMaterialProvider::CreatePBRMaterial(
 		const std::string& materialName,
 		const GUID diffuseTextureGuid,
 		const GUID normalTextureGuid,
@@ -762,63 +762,63 @@ namespace JoyEngine
 		const GUID roughnessTextureGuid,
 		const GUID sharedMaterialGuid)
 	{
-		const GUID materialGuid = GUID::Random();
-		ResourceHandle<Texture> diffuseTexture = ResourceHandle(JoyContext::Resource->LoadResource<Texture>(diffuseTextureGuid));
-		ResourceHandle<Texture> normalTexture = ResourceHandle(JoyContext::Resource->LoadResource<Texture>(normalTextureGuid));
-		ResourceHandle<Texture> specularTexture = ResourceHandle(JoyContext::Resource->LoadResource<Texture>(specularTextureGuid));
-		ResourceHandle<Texture> roughnessTexture = ResourceHandle(JoyContext::Resource->LoadResource<Texture>(roughnessTextureGuid));
+		//const GUID materialGuid = GUID::Random();
+		//ResourceHandle<Texture> diffuseTexture = ResourceHandle(JoyContext::Resource->LoadResource<Texture>(diffuseTextureGuid));
+		//ResourceHandle<Texture> normalTexture = ResourceHandle(JoyContext::Resource->LoadResource<Texture>(normalTextureGuid));
+		//ResourceHandle<Texture> specularTexture = ResourceHandle(JoyContext::Resource->LoadResource<Texture>(specularTextureGuid));
+		//ResourceHandle<Texture> roughnessTexture = ResourceHandle(JoyContext::Resource->LoadResource<Texture>(roughnessTextureGuid));
 
-		const std::map<uint32_t, ID3D12DescriptorHeap*> materialRootParams = {
-			{3, diffuseTexture->GetResourceView()->GetHeap()},
-			{4, normalTexture->GetResourceView()->GetHeap()},
-			{5, specularTexture->GetResourceView()->GetHeap()},
-			{6, roughnessTexture->GetResourceView()->GetHeap()},
-			{1, Texture::GetTextureSampler()->GetHeap()}
-		};
+		//const std::map<uint32_t, ID3D12DescriptorHeap*> materialRootParams = {
+		//	//{3, diffuseTexture->GetResourceView()->GetHeap()},
+		//	//{4, normalTexture->GetResourceView()->GetHeap()},
+		//	//{5, specularTexture->GetResourceView()->GetHeap()},
+		//	//{6, roughnessTexture->GetResourceView()->GetHeap()},
+		//	//{1, Texture::GetTextureSampler()->GetHeap()}
+		//};
 
 
-		ResourceHandle<Material> material = ResourceHandle(JoyContext::Resource->LoadResource<Material, MaterialArgs>(
-			materialGuid,
-			{
-				sharedMaterialGuid,
-				materialRootParams,
-				{
-					diffuseTexture,
-					normalTexture,
-					specularTexture,
-					roughnessTexture,
-				},
-				{}
-			}));
-		m_sampleMaterials.insert({
-			materialName,
-			material
-		});
+		//ResourceHandle<Material> material = ResourceHandle(JoyContext::Resource->LoadResource<Material, MaterialArgs>(
+		//	materialGuid,
+		//	{
+		//		sharedMaterialGuid,
+		//		materialRootParams,
+		//		{
+		//			diffuseTexture,
+		//			normalTexture,
+		//			specularTexture,
+		//			roughnessTexture,
+		//		},
+		//		{}
+		//	}));
+		//m_sampleMaterials.insert({
+		//	materialName,
+		//	material
+		//});
 	}
 
-	void DummyMaterialProvider::CreateSampleMaterial(const std::string& materialName, const GUID textureGuid, const GUID sharedMaterialGuid)
+	void EngineMaterialProvider::CreateSampleMaterial(const std::string& materialName, const GUID textureGuid, const GUID sharedMaterialGuid)
 	{
-		const GUID materialGuid = GUID::Random();
-		ResourceHandle<Texture> texture = ResourceHandle(JoyContext::Resource->LoadResource<Texture>(textureGuid));
+		//const GUID materialGuid = GUID::Random();
+		//ResourceHandle<Texture> texture = ResourceHandle(JoyContext::Resource->LoadResource<Texture>(textureGuid));
 
-		// TODO make const std::map<uint32_t, ResourceView*>
-		const std::map<uint32_t, ID3D12DescriptorHeap*> materialRootParams = {
-			{0, texture->GetResourceView()->GetHeap()},
-			{1, Texture::GetTextureSampler()->GetHeap()}
-		};
-		ResourceHandle<Material> material = ResourceHandle(JoyContext::Resource->LoadResource<Material, MaterialArgs>(
-			materialGuid,
-			{
-				sharedMaterialGuid,
-				materialRootParams,
-				{
-					texture
-				},
-				{}
-			}));
-		m_sampleMaterials.insert({
-			materialName,
-			material
-		});
+		//// TODO make const std::map<uint32_t, ResourceView*>
+		//const std::map<uint32_t, ID3D12DescriptorHeap*> materialRootParams = {
+		//	//{0, texture->GetResourceView()->GetHeap()},
+		//	//{1, Texture::GetTextureSampler()->GetHeap()}
+		//};
+		//ResourceHandle<Material> material = ResourceHandle(JoyContext::Resource->LoadResource<Material, MaterialArgs>(
+		//	materialGuid,
+		//	{
+		//		sharedMaterialGuid,
+		//		materialRootParams,
+		//		{
+		//			texture
+		//		},
+		//		{}
+		//	}));
+		//m_sampleMaterials.insert({
+		//	materialName,
+		//	material
+		//});
 	}
 }

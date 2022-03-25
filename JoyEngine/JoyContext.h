@@ -11,7 +11,7 @@ namespace JoyEngine
 	class ResourceManager;
 	class SceneManager;
 	class RenderManager;
-	class DummyMaterialProvider;
+	class EngineMaterialProvider;
 
 	class JoyContext
 	{
@@ -25,7 +25,7 @@ namespace JoyEngine
 			ResourceManager* resourceManager,
 			SceneManager* sceneManager,
 			RenderManager* renderManager,
-			DummyMaterialProvider* dummyMaterialProvider
+			EngineMaterialProvider* engineMaterialProvider
 		);
 
 		static InputManager* Input;
@@ -36,7 +36,7 @@ namespace JoyEngine
 		static ResourceManager* Resource;
 		static SceneManager* Scene;
 		static RenderManager* Render;
-		static DummyMaterialProvider* DummyMaterials;
+		static EngineMaterialProvider* EngineMaterials;
 	};
 }
 

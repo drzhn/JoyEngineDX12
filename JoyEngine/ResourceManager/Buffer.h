@@ -27,22 +27,8 @@ namespace JoyEngine
 	{
 	public:
 		Buffer() = default;
-
-		Buffer(const Buffer& other) = delete; /*:
-			m_size(other.m_size),
-			m_currentResourceState(other.m_currentResourceState),
-			m_properties(other.m_properties),
-			m_buffer(other.m_buffer)
-		{
-		}*/
-
-		Buffer(Buffer&& other) = delete;/* noexcept :
-			m_size(other.m_size),
-			m_currentResourceState(other.m_currentResourceState),
-			m_properties(other.m_properties),
-			m_buffer(other.m_buffer)
-		{
-		}*/
+		Buffer(const Buffer& other) = delete;
+		Buffer(Buffer&& other) = delete;
 
 		explicit Buffer(
 			uint64_t size,

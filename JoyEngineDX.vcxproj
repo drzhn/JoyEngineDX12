@@ -181,7 +181,7 @@
     <ClCompile Include="JoyEngine\SceneManager\Scene.cpp" />
     <ClCompile Include="JoyEngine\SceneManager\SceneManager.cpp" />
     <ClCompile Include="JoyEngine\SceneManager\Transform.cpp" />
-    <ClCompile Include="JoyEngine\Utils\DummyMaterialProvider.cpp" />
+    <ClCompile Include="JoyEngine\EngineMaterialProvider\EngineMaterialProvider.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="WindowHandler.cpp" />
   </ItemGroup>
@@ -229,7 +229,7 @@
     <ClInclude Include="JoyEngine\SceneManager\SceneManager.h" />
     <ClInclude Include="JoyEngine\SceneManager\Transform.h" />
     <ClInclude Include="JoyEngine\Utils\Assert.h" />
-    <ClInclude Include="JoyEngine\Utils\DummyMaterialProvider.h" />
+    <ClInclude Include="JoyEngine\EngineMaterialProvider\EngineMaterialProvider.h" />
     <ClInclude Include="JoyEngine\Utils\FileUtils.h" />
     <ClInclude Include="JoyEngine\Utils\GUID.h" />
     <ClInclude Include="WindowHandler.h" />

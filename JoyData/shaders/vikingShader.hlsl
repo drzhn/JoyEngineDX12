@@ -12,8 +12,8 @@ struct PSOutput
 	float4 Color: SV_Target;
 };
 
-Texture2D g_texture : register(t0);
-SamplerState g_sampler : register(s0);
+Texture2D mainTexture : register(t0);
+SamplerState textureSampler : register(s0);
 ConstantBuffer<MVP> mvp : register(b0);
 //Texture2D lightAttachment : register(t1);
 
@@ -40,8 +40,8 @@ PSOutput PSMain(PSInput input) // : SV_TARGET
 {
 	PSOutput output;
 	const float2 screenPosition = (input.clipPos.xy / input.clipPos.w);
-	const float4 mainColor = g_texture.Sample(g_sampler, input.uv);
-	//const float4 light = lightAttachment.Load(float3(input.position.xy, 0));// normalTexture.Sample(g_sampler, screenPosition);// g_texture.Sample(g_sampler, input.uv);
+	const float4 mainColor = mainTexture.Sample(textureSampler, input.uv);
+	//const float4 light = lightAttachment.Load(float3(input.position.xy, 0));// normalTexture.Sample(textureSampler, screenPosition);// mainTexture.Sample(textureSampler, input.uv);
 
 	const float ambient = 0.2f;
 

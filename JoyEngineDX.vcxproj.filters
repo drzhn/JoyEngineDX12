@@ -99,7 +99,7 @@
     <ClCompile Include="JoyEngine\GameplayComponents\RoomBehaviour.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JoyEngine\Utils\DummyMaterialProvider.cpp">
+    <ClCompile Include="JoyEngine\EngineMaterialProvider\EngineMaterialProvider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="JoyEngine\ResourceManager\Material.cpp">
@@ -236,7 +236,7 @@
     <ClInclude Include="JoyEngine\GameplayComponents\RoomBehaviour.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JoyEngine\Utils\DummyMaterialProvider.h">
+    <ClInclude Include="JoyEngine\EngineMaterialProvider\EngineMaterialProvider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JoyEngine\ResourceManager\Material.h">

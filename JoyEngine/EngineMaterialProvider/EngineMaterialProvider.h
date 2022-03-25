@@ -25,11 +25,11 @@ namespace JoyEngine
 			D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL);
 	};
 
-	class DummyMaterialProvider
+	class EngineMaterialProvider
 	{
 	public:
-		DummyMaterialProvider() = default;
-		~DummyMaterialProvider() = default;
+		EngineMaterialProvider() = default;
+		~EngineMaterialProvider() = default;
 		void Init();
 
 		[[nodiscard]] GUID GetMaterialGuid(const std::string& materialName) const noexcept

@@ -10,5 +10,9 @@
     "topology": "triangle",
     "rtvFormats": [
         "rgba8_unorm"
+    ],
+    "shaderTypes": [
+        "vertex",
+        "pixel"
     ]
 }

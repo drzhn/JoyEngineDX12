@@ -7,7 +7,7 @@
 
 #include "ResourceManager/ResourceManager.h"
 #include "Common/Resource.h"
-#include "Utils/DummyMaterialProvider.h"
+#include "EngineMaterialProvider/EngineMaterialProvider.h"
 
 namespace JoyEngine {
     void MeshRenderer::Enable() {
@@ -34,7 +34,7 @@ namespace JoyEngine {
     }
 
     void MeshRenderer::SetMaterial(const std::string& materialName) {
-        m_material = JoyContext::DummyMaterials->GetMaterialGuid(materialName);
+        m_material = JoyContext::EngineMaterials->GetMaterialGuid(materialName);
     }
 
     void MeshRenderer::SetMaterial(const GUID& materialGuid) {

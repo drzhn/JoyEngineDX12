@@ -40,6 +40,18 @@ namespace JoyEngine
 		},
 	};
 
+	const ShaderInput& AbstractPipelineObject::GetShaderInputByName(const std::string& name) const
+	{
+		ASSERT(m_shader->GetInputMap().find(name) != m_shader->GetInputMap().end());
+		return m_shader->GetInputMap().find(name)->second;
+	}
+
+	uint32_t AbstractPipelineObject::GetRootIndexByName(const std::string& name) const
+	{
+		ASSERT(m_rootIndices.find(name) != m_rootIndices.end());
+		return m_rootIndices.find(name)->second;
+	}
+
 	void AbstractPipelineObject::CreateRootSignature(const std::vector<CD3DX12_ROOT_PARAMETER1>& rootParams)
 	{
 		D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = {};
@@ -104,11 +116,40 @@ namespace JoyEngine
 	// =============================== SHARED MATERIAL =================================
 
 	SharedMaterial::SharedMaterial(GUID guid) :
-		Resource(guid) // UNUSED
+		Resource(guid)
 	{
 		rapidjson::Document json = JoyContext::Data->GetSerializedData(m_guid, sharedMaterial);
 
-		m_shader = GUID::StringToGuid(json["shader"].GetString());
+		ShaderTypeFlags shaderTypeFlags = 0;
+		for (auto& type : json["shaderTypes"].GetArray())
+		{
+			std::string typeStr = type.GetString();
+			switch (strHash(typeStr.c_str()))
+			{
+			case strHash("vertex"): shaderTypeFlags |= JoyShaderTypeVertex;
+				break;
+			case strHash("hull"): shaderTypeFlags |= JoyShaderTypeHull;
+				break;
+			case strHash("domain"): shaderTypeFlags |= JoyShaderTypeDomain;
+				break;
+			case strHash("geometry"): shaderTypeFlags |= JoyShaderTypeGeometry;
+				break;
+			case strHash("pixel"): shaderTypeFlags |= JoyShaderTypePixel;
+				break;
+			case strHash("amplification"): shaderTypeFlags |= JoyShaderTypeAmplification;
+				break;
+			case strHash("mesh"): shaderTypeFlags |= JoyShaderTypeMesh;
+				break;
+			case strHash("compute"): shaderTypeFlags |= JoyShaderTypeCompute;
+				break;
+			default:
+				ASSERT(false)
+			}
+		}
+
+		Shader* shaderPtr = JoyContext::Resource->LoadResource<Shader>(
+			GUID::StringToGuid(json["shader"].GetString()), shaderTypeFlags);
+		m_shader = shaderPtr;
 
 		m_hasVertexInput = json["hasVertexInput"].GetBool();
 		m_depthTest = json["depthTest"].GetBool();
@@ -226,6 +267,7 @@ namespace JoyEngine
 				ranges.back().Init(type, input.BindCount, input.BindPoint, input.Space, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
 				params.emplace_back();
 				params[params.size() - 1].InitAsDescriptorTable(input.BindCount, &ranges.back(), input.Visibility);
+				m_rootIndices.insert({name, static_cast<uint32_t>(params.size() - 1)});
 			}
 		}
 

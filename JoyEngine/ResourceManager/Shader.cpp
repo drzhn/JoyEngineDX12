@@ -14,11 +14,6 @@
 
 namespace JoyEngine
 {
-	Shader::Shader(GUID guid) : Resource(guid)
-	{
-		InitShader();
-	}
-
 	Shader::Shader(GUID guid, ShaderTypeFlags shaderType) : Resource(guid), m_shaderType(shaderType)
 	{
 		InitShader();

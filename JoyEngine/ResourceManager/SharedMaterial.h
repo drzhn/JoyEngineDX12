@@ -20,12 +20,6 @@ namespace JoyEngine
 		EngineData
 	};
 
-	//struct EngineBindingDesc
-	//{
-	//	uint32_t rootParameterIndex;
-	//	EngineBindingType type;
-	//};
-
 	struct SharedMaterialArgs
 	{
 		GUID shader;
@@ -54,12 +48,16 @@ namespace JoyEngine
 	public:
 		[[nodiscard]] ComPtr<ID3D12RootSignature> GetRootSignature() const noexcept { return m_rootSignature; }
 		[[nodiscard]] ComPtr<ID3D12PipelineState> GetPipelineObject() const noexcept { return m_pipelineState; };
+		[[nodiscard]] const ShaderInput& GetShaderInputByName(const std::string&) const;
+		[[nodiscard]] uint32_t GetRootIndexByName(const std::string&) const;
 
 	protected:
 		ComPtr<ID3D12RootSignature> m_rootSignature;
 		ComPtr<ID3D12PipelineState> m_pipelineState;
 		ResourceHandle<Shader> m_shader;
+		std::map<std::string, uint32_t> m_rootIndices;
 
+	protected:
 		void CreateRootSignature(const std::vector<CD3DX12_ROOT_PARAMETER1>& rootParams);
 	};
 

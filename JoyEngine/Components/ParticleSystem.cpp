@@ -4,7 +4,6 @@
 #include "RenderManager/RenderManager.h"
 #include "ResourceManager/Buffer.h"
 #include "ResourceManager/SharedMaterial.h"
-#include "Utils/DummyMaterialProvider.h"
 
 
 namespace JoyEngine

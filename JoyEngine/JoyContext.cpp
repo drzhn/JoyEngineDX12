@@ -18,7 +18,7 @@ namespace JoyEngine
 
 	RenderManager* JoyContext::Render = nullptr;
 
-	DummyMaterialProvider* JoyContext::DummyMaterials = nullptr;
+	EngineMaterialProvider* JoyContext::EngineMaterials = nullptr;
 
 	void JoyContext::Init(
 		InputManager* inputManager, 
@@ -29,7 +29,7 @@ namespace JoyEngine
 		ResourceManager* resourceManager, 
 		SceneManager* sceneManager,
 		RenderManager* renderManager,
-		DummyMaterialProvider* dummyMaterialProvider
+		EngineMaterialProvider* engineMaterialProvider
 	)
 	{
 		Input = inputManager;
@@ -40,7 +40,7 @@ namespace JoyEngine
 		Resource = resourceManager;
 		Scene = sceneManager;
 		Render = renderManager;
-		DummyMaterials = dummyMaterialProvider;
+		EngineMaterials = engineMaterialProvider;
 		
 	}
 }

@@ -18,7 +18,7 @@
 #include "Components/ParticleSystem.h"
 #include "DescriptorManager/DescriptorManager.h"
 #include "GraphicsManager/GraphicsManager.h"
-#include "Utils/DummyMaterialProvider.h"
+#include "EngineMaterialProvider/EngineMaterialProvider.h"
 #include "SSAO.h"
 
 #define GLM_FORCE_RADIANS
@@ -353,14 +353,14 @@ namespace JoyEngine
 		//auto lightingResource = m_lightingAttachment->GetImage().Get();
 		auto depthResource = m_depthAttachment->GetImage().Get();
 
-		auto dsvHandle = m_depthAttachment->GetResourceView()->GetHandle();
-		auto ldrRTVHandle = m_swapchainRenderTargets[m_currentFrameIndex]->GetResourceView()->GetHandle();
+		auto dsvHandle = m_depthAttachment->GetResourceView()->GetCPUHandle();
+		auto ldrRTVHandle = m_swapchainRenderTargets[m_currentFrameIndex]->GetResourceView()->GetCPUHandle();
 
-		//auto hdrRTVHandle = m_hdrRenderTarget->GetResourceView()->GetHandle();
-		//auto positionHandle = m_positionAttachment->GetResourceView()->GetHandle();
-		//auto worldNormalHandle = m_worldNormalAttachment->GetResourceView()->GetHandle();
-		//auto viewNormalHandle = m_viewNormalAttachment->GetResourceView()->GetHandle();
-		//auto lightHandle = m_lightingAttachment->GetResourceView()->GetHandle();
+		//auto hdrRTVHandle = m_hdrRenderTarget->GetResourceView()->GetCPUHandle();
+		//auto positionHandle = m_positionAttachment->GetResourceView()->GetCPUHandle();
+		//auto worldNormalHandle = m_worldNormalAttachment->GetResourceView()->GetCPUHandle();
+		//auto viewNormalHandle = m_viewNormalAttachment->GetResourceView()->GetCPUHandle();
+		//auto lightHandle = m_lightingAttachment->GetResourceView()->GetCPUHandle();
 
 		ASSERT(m_currentCamera != nullptr);
 		const glm::mat4 mainCameraViewMatrix = m_currentCamera->GetViewMatrix();
@@ -399,7 +399,7 @@ namespace JoyEngine
 		//	commandList->ClearRenderTargetView(lightHandle, clearColor, 0, nullptr);
 		//	commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
-		//	auto sm = JoyContext::DummyMaterials->GetGBufferSharedMaterial();
+		//	auto sm = JoyContext::EngineMaterials->GetGBufferSharedMaterial();
 		//	commandList->SetPipelineState(sm->GetPipelineObject().Get());
 		//	commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
 
@@ -421,7 +421,7 @@ namespace JoyEngine
 		//{
 		//	SetViewportAndScissor(commandList, m_cubemap->GetTextureSize(), m_cubemap->GetTextureSize());
 
-		//	auto cubemapDSV = m_cubemap->GetDepthTexture()->GetResourceView()->GetHandle();
+		//	auto cubemapDSV = m_cubemap->GetDepthTexture()->GetResourceView()->GetCPUHandle();
 
 		//	Barrier(commandList, m_cubemap->GetCubemapTexture()->GetImage().Get(),
 		//	        D3D12_RESOURCE_STATE_GENERIC_READ,
@@ -429,7 +429,7 @@ namespace JoyEngine
 
 		//	for (uint32_t i = 0; i < 6; i++)
 		//	{
-		//		auto cubemapRTV = m_cubemap->GetCubemapTexture()->GetResourceViewArray()[i]->GetHandle();
+		//		auto cubemapRTV = m_cubemap->GetCubemapTexture()->GetResourceViewArray()[i]->GetCPUHandle();
 		//		commandList->OMSetRenderTargets(
 		//			1,
 		//			&cubemapRTV,
@@ -456,10 +456,10 @@ namespace JoyEngine
 		//		Barrier(commandList, m_cubemap->GetCubemapConvolutedTexture()->GetImage().Get(),
 		//		        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
-		//		auto cubemapConvoluted = m_cubemap->GetCubemapConvolutedTexture()->GetResourceView()->GetHandle();
+		//		auto cubemapConvoluted = m_cubemap->GetCubemapConvolutedTexture()->GetResourceView()->GetCPUHandle();
 		//		SetViewportAndScissor(commandList, m_cubemap->GetConvolutedTextureSize(), m_cubemap->GetConvolutedTextureSize());
 
-		//		auto sm = JoyContext::DummyMaterials->GetCubemapConvolutionSharedMaterial();
+		//		auto sm = JoyContext::EngineMaterials->GetCubemapConvolutionSharedMaterial();
 
 		//		commandList->SetPipelineState(sm->GetPipelineObject().Get());
 		//		commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
@@ -504,10 +504,10 @@ namespace JoyEngine
 		//			D3D12_RESOURCE_STATE_DEPTH_WRITE);
 		//		commandList->ResourceBarrier(1, &depthToDSVBarrier);
 
-		//		auto shadowmapHandle = light->GetShadowmap()->GetResourceView()->GetHandle();
+		//		auto shadowmapHandle = light->GetShadowmap()->GetResourceView()->GetCPUHandle();
 		//		if (light->GetLightType() == Spot)
 		//		{
-		//			auto sm = JoyContext::DummyMaterials->GetShadowProcessingSharedMaterial();
+		//			auto sm = JoyContext::EngineMaterials->GetShadowProcessingSharedMaterial();
 
 		//			commandList->SetPipelineState(sm->GetPipelineObject().Get());
 		//			commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
@@ -525,7 +525,7 @@ namespace JoyEngine
 
 		//		if (light->GetLightType() == Point)
 		//		{
-		//			auto sm = JoyContext::DummyMaterials->GetShadowPointProcessingSharedMaterial();
+		//			auto sm = JoyContext::EngineMaterials->GetShadowPointProcessingSharedMaterial();
 
 		//			commandList->SetPipelineState(sm->GetPipelineObject().Get());
 		//			commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
@@ -563,7 +563,7 @@ namespace JoyEngine
 		//	// Direction light
 		//	if (m_directionLight != nullptr)
 		//	{
-		//		auto sm = JoyContext::DummyMaterials->GetDirectionLightProcessingSharedMaterial();
+		//		auto sm = JoyContext::EngineMaterials->GetDirectionLightProcessingSharedMaterial();
 
 		//		commandList->SetPipelineState(sm->GetPipelineObject().Get());
 		//		commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
@@ -589,7 +589,7 @@ namespace JoyEngine
 
 		//	// Other lights
 		//	{
-		//		auto sm = JoyContext::DummyMaterials->GetLightProcessingSharedMaterial();
+		//		auto sm = JoyContext::EngineMaterials->GetLightProcessingSharedMaterial();
 
 		//		commandList->SetPipelineState(sm->GetPipelineObject().Get());
 		//		commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
@@ -665,8 +665,8 @@ namespace JoyEngine
 		//		);
 		//		commandList->ResourceBarrier(1, &barrier);
 
-		//		commandList->SetComputeRootSignature(JoyContext::DummyMaterials->GetParticleBufferGenerationComputePipeline()->GetRootSignature().Get());
-		//		commandList->SetPipelineState(JoyContext::DummyMaterials->GetParticleBufferGenerationComputePipeline()->GetPipelineObject().Get());
+		//		commandList->SetComputeRootSignature(JoyContext::EngineMaterials->GetParticleBufferGenerationComputePipeline()->GetRootSignature().Get());
+		//		commandList->SetPipelineState(JoyContext::EngineMaterials->GetParticleBufferGenerationComputePipeline()->GetPipelineObject().Get());
 
 		//		AttachViewToCompute(commandList, 0, ps->GetResourceView());
 
@@ -685,8 +685,8 @@ namespace JoyEngine
 		//		);
 		//		commandList->ResourceBarrier(1, &barrier);
 
-		//		commandList->SetPipelineState(JoyContext::DummyMaterials->GetParticleSystemSharedMaterial()->GetPipelineObject().Get());
-		//		commandList->SetGraphicsRootSignature(JoyContext::DummyMaterials->GetParticleSystemSharedMaterial()->GetRootSignature().Get());
+		//		commandList->SetPipelineState(JoyContext::EngineMaterials->GetParticleSystemSharedMaterial()->GetPipelineObject().Get());
+		//		commandList->SetGraphicsRootSignature(JoyContext::EngineMaterials->GetParticleSystemSharedMaterial()->GetRootSignature().Get());
 
 		//		MVP mvp{
 		//			ps->GetTransform()->GetModelMatrix(),
@@ -721,7 +721,7 @@ namespace JoyEngine
 		//	//		&hdrRTVHandle,
 		//	//		FALSE, nullptr);
 
-		//	//	auto sm = JoyContext::DummyMaterials->GetSSLRPostProcessSharedMaterial();
+		//	//	auto sm = JoyContext::EngineMaterials->GetSSLRPostProcessSharedMaterial();
 
 		//	//	commandList->SetPipelineState(sm->GetPipelineObject().Get());
 		//	//	commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
@@ -746,7 +746,7 @@ namespace JoyEngine
 
 		//	// FOG post-process
 		//	{
-		//		auto sm = JoyContext::DummyMaterials->GetFogPostProcessSharedMaterial();
+		//		auto sm = JoyContext::EngineMaterials->GetFogPostProcessSharedMaterial();
 
 		//		commandList->SetPipelineState(sm->GetPipelineObject().Get());
 		//		commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
@@ -776,7 +776,7 @@ namespace JoyEngine
 		//			const float clearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
 		//			commandList->ClearRenderTargetView(renderHandle, clearColor, 0, nullptr);
 
-		//			auto sm = JoyContext::DummyMaterials->GetSsaoPostProcessSharedMaterial();
+		//			auto sm = JoyContext::EngineMaterials->GetSsaoPostProcessSharedMaterial();
 
 		//			commandList->SetPipelineState(sm->GetPipelineObject().Get());
 		//			commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
@@ -804,7 +804,7 @@ namespace JoyEngine
 		//		{
 		//			uint32_t direction = 0;
 
-		//			auto sm = JoyContext::DummyMaterials->GetSsaoBlurSharedMaterial();
+		//			auto sm = JoyContext::EngineMaterials->GetSsaoBlurSharedMaterial();
 
 		//			commandList->SetPipelineState(sm->GetPipelineObject().Get());
 		//			commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
@@ -867,7 +867,7 @@ namespace JoyEngine
 		//				&hdrRTVHandle,
 		//				FALSE, nullptr);
 
-		//			auto sm = JoyContext::DummyMaterials->GetSsaoAppendSharedMaterial();
+		//			auto sm = JoyContext::EngineMaterials->GetSsaoAppendSharedMaterial();
 
 		//			commandList->SetPipelineState(sm->GetPipelineObject().Get());
 		//			commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
@@ -911,8 +911,8 @@ namespace JoyEngine
 
 		//	// First pass
 		//	{
-		//		commandList->SetComputeRootSignature(JoyContext::DummyMaterials->GetHdrDownscaleFirstPassComputePipeline()->GetRootSignature().Get());
-		//		commandList->SetPipelineState(JoyContext::DummyMaterials->GetHdrDownscaleFirstPassComputePipeline()->GetPipelineObject().Get());
+		//		commandList->SetComputeRootSignature(JoyContext::EngineMaterials->GetHdrDownscaleFirstPassComputePipeline()->GetRootSignature().Get());
+		//		commandList->SetPipelineState(JoyContext::EngineMaterials->GetHdrDownscaleFirstPassComputePipeline()->GetPipelineObject().Get());
 
 		//		commandList->SetComputeRoot32BitConstants(0, sizeof(HDRDownScaleConstants) / 4, &downScaleConstants, 0);
 		//		AttachViewToCompute(commandList, 1, m_hdrRenderTarget->GetSrv());
@@ -924,8 +924,8 @@ namespace JoyEngine
 
 		//	// Second pass
 		//	{
-		//		commandList->SetComputeRootSignature(JoyContext::DummyMaterials->GetHdrDownscaleSecondPassComputePipeline()->GetRootSignature().Get());
-		//		commandList->SetPipelineState(JoyContext::DummyMaterials->GetHdrDownscaleSecondPassComputePipeline()->GetPipelineObject().Get());
+		//		commandList->SetComputeRootSignature(JoyContext::EngineMaterials->GetHdrDownscaleSecondPassComputePipeline()->GetRootSignature().Get());
+		//		commandList->SetPipelineState(JoyContext::EngineMaterials->GetHdrDownscaleSecondPassComputePipeline()->GetPipelineObject().Get());
 
 		//		commandList->SetComputeRoot32BitConstants(0, sizeof(HDRDownScaleConstants) / 4, &downScaleConstants, 0);
 		//		AttachViewToCompute(commandList, 1, m_hdrLuminationBufferUAVView.get());
@@ -944,8 +944,8 @@ namespace JoyEngine
 
 		//	// Bloom bright pass
 		//	{
-		//		commandList->SetComputeRootSignature(JoyContext::DummyMaterials->GetBloomBrightPassComputePipeline()->GetRootSignature().Get());
-		//		commandList->SetPipelineState(JoyContext::DummyMaterials->GetBloomBrightPassComputePipeline()->GetPipelineObject().Get());
+		//		commandList->SetComputeRootSignature(JoyContext::EngineMaterials->GetBloomBrightPassComputePipeline()->GetRootSignature().Get());
+		//		commandList->SetPipelineState(JoyContext::EngineMaterials->GetBloomBrightPassComputePipeline()->GetPipelineObject().Get());
 
 		//		commandList->SetComputeRoot32BitConstants(0, sizeof(HDRDownScaleConstants) / 4, &downScaleConstants, 0);
 		//		AttachViewToCompute(commandList, 1, m_hrdDownScaledTexture->GetSrv());
@@ -963,8 +963,8 @@ namespace JoyEngine
 
 		//	// Bloom vertical filter pass
 		//	{
-		//		commandList->SetComputeRootSignature(JoyContext::DummyMaterials->GetBloomVerticalFilterComputePipeline()->GetRootSignature().Get());
-		//		commandList->SetPipelineState(JoyContext::DummyMaterials->GetBloomVerticalFilterComputePipeline()->GetPipelineObject().Get());
+		//		commandList->SetComputeRootSignature(JoyContext::EngineMaterials->GetBloomVerticalFilterComputePipeline()->GetRootSignature().Get());
+		//		commandList->SetPipelineState(JoyContext::EngineMaterials->GetBloomVerticalFilterComputePipeline()->GetPipelineObject().Get());
 
 		//		commandList->SetComputeRoot32BitConstants(0, sizeof(HDRDownScaleConstants) / 4, &downScaleConstants, 0);
 		//		AttachViewToCompute(commandList, 1, m_bloomFirstTexture->GetSrv());
@@ -981,8 +981,8 @@ namespace JoyEngine
 
 		//	// Bloom horizontal filter pass
 		//	{
-		//		commandList->SetComputeRootSignature(JoyContext::DummyMaterials->GetBloomHorizontalFilterComputePipeline()->GetRootSignature().Get());
-		//		commandList->SetPipelineState(JoyContext::DummyMaterials->GetBloomHorizontalFilterComputePipeline()->GetPipelineObject().Get());
+		//		commandList->SetComputeRootSignature(JoyContext::EngineMaterials->GetBloomHorizontalFilterComputePipeline()->GetRootSignature().Get());
+		//		commandList->SetPipelineState(JoyContext::EngineMaterials->GetBloomHorizontalFilterComputePipeline()->GetPipelineObject().Get());
 
 		//		commandList->SetComputeRoot32BitConstants(0, sizeof(HDRDownScaleConstants) / 4, &downScaleConstants, 0);
 		//		AttachViewToCompute(commandList, 1, m_bloomSecondTexture->GetSrv());
@@ -1015,7 +1015,7 @@ namespace JoyEngine
 		//			&ldrRTVHandle,
 		//			FALSE, nullptr);
 
-		//		auto sm = JoyContext::DummyMaterials->GetHdrToLdrTransitionSharedMaterial();
+		//		auto sm = JoyContext::EngineMaterials->GetHdrToLdrTransitionSharedMaterial();
 
 		//		commandList->SetPipelineState(sm->GetPipelineObject().Get());
 		//		commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
@@ -1165,6 +1165,13 @@ namespace JoyEngine
 		bool isDrawingMainColor
 	) const
 	{
+		ID3D12DescriptorHeap* heaps[2]
+		{
+			JoyContext::Descriptors->GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV),
+			JoyContext::Descriptors->GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER)
+		};
+		commandList->SetDescriptorHeaps(2, heaps);
+
 		for (auto const& sm : m_sharedMaterials)
 		{
 			commandList->SetPipelineState(sm->GetPipelineObject().Get());
@@ -1183,14 +1190,8 @@ namespace JoyEngine
 				};
 				for (auto param : mr->GetMaterial()->GetRootParams())
 				{
-					uint32_t index = param.first;
-					D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = param.second->GetGPUDescriptorHandleForHeapStart();
-					ID3D12DescriptorHeap* heaps[1] = {param.second};
-					commandList->SetDescriptorHeaps(1, heaps);
-					commandList->SetGraphicsRootDescriptorTable(index, gpuHandle);
-
-					// TODO: 
-					//AttachViewToGraphics(commandList, index, param.second);
+					const uint32_t index = param.first;
+					AttachViewToGraphics(commandList, index, param.second);
 				}
 
 				ProcessEngineBindings(commandList, sm->GetEngineBindings(), &mvp, isDrawingMainColor);
@@ -1233,11 +1234,11 @@ namespace JoyEngine
 		const ResourceView* view
 	)
 	{
-		ID3D12DescriptorHeap* heaps1[1] = {view->GetHeap()};
-		commandList->SetDescriptorHeaps(
-			1,
-			heaps1);
-		D3D12_GPU_DESCRIPTOR_HANDLE null = {0};
+		//ID3D12DescriptorHeap* heaps1[1] = {view->GetHeap()};
+		//commandList->SetDescriptorHeaps(
+		//	1,
+		//	heaps1);
+		//D3D12_GPU_DESCRIPTOR_HANDLE null = {0};
 		commandList->SetGraphicsRootDescriptorTable(
 			rootParameterIndex, view->GetGPUHandle());
 	}
@@ -1248,11 +1249,11 @@ namespace JoyEngine
 		const ResourceView* view
 	)
 	{
-		ID3D12DescriptorHeap* heaps1[1] = {view->GetHeap()};
-		commandList->SetDescriptorHeaps(
-			1,
-			heaps1);
-		D3D12_GPU_DESCRIPTOR_HANDLE null = {0};
+		//ID3D12DescriptorHeap* heaps1[1] = {view->GetHeap()};
+		//commandList->SetDescriptorHeaps(
+		//	1,
+		//	heaps1);
+		//D3D12_GPU_DESCRIPTOR_HANDLE null = {0};
 		commandList->SetComputeRootDescriptorTable(
 			rootParameterIndex, view->GetGPUHandle());
 	}

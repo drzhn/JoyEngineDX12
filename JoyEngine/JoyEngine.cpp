@@ -6,7 +6,7 @@
 
 #include "SceneManager/SceneManager.h"
 #include "RenderManager/RenderManager.h"
-#include "Utils/DummyMaterialProvider.h"
+#include "EngineMaterialProvider/EngineMaterialProvider.h"
 #include "MemoryManager/MemoryManager.h"
 #include "ResourceManager/ResourceManager.h"
 #include "DataManager/DataManager.h"
@@ -30,7 +30,7 @@ namespace JoyEngine
 		m_resourceManager(new ResourceManager()),
 		m_sceneManager(new SceneManager()),
 		m_renderManager(new RenderManager()),
-		m_dummyMaterials(new DummyMaterialProvider())
+		m_engineMaterials(new EngineMaterialProvider())
 	{
 		ASSERT(m_inputManager != nullptr);
 		ASSERT(m_graphicsContext != nullptr);
@@ -40,7 +40,7 @@ namespace JoyEngine
 		ASSERT(m_resourceManager != nullptr);
 		ASSERT(m_sceneManager != nullptr);
 		ASSERT(m_renderManager != nullptr);
-		ASSERT(m_dummyMaterials != nullptr);
+		ASSERT(m_engineMaterials != nullptr);
 
 		JoyContext::Init(
 			m_inputManager.get(),
@@ -51,7 +51,7 @@ namespace JoyEngine
 			m_resourceManager.get(),
 			m_sceneManager.get(),
 			m_renderManager.get(),
-			m_dummyMaterials.get()
+			m_engineMaterials.get()
 		);
 
 		OutputDebugStringA("Context created\n");
@@ -64,7 +64,7 @@ namespace JoyEngine
 		m_memoryManager->Init();
 		m_descriptorSetManager->Init();
 		m_renderManager->Init();
-		m_dummyMaterials->Init();
+		m_engineMaterials->Init();
 		m_sceneManager->Init();
 
 		const auto currentTime = std::chrono::high_resolution_clock::now();
@@ -98,7 +98,7 @@ namespace JoyEngine
 		// will destroy managers in certain order
 		m_inputManager = nullptr;
 		m_sceneManager = nullptr; // unregister mesh renderers, remove descriptor set, pipelines, pipeline layouts
-		m_dummyMaterials = nullptr; //delete swapchain, synchronisation, framebuffers
+		m_engineMaterials = nullptr; //delete swapchain, synchronisation, framebuffers
 		m_renderManager = nullptr; //delete swapchain, synchronisation, framebuffers
 		m_resourceManager = nullptr; //delete all scene render data (buffers, textures)
 		m_descriptorSetManager = nullptr;

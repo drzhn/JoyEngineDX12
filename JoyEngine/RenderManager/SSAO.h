@@ -28,7 +28,7 @@ namespace JoyEngine
 		void SetDirection(bool isHorizontal) const;
 
 		[[nodiscard]] ID3D12Resource* GetRenderResource() const { return m_ssaoRenderTarget->GetImage().Get(); }
-		[[nodiscard]] D3D12_CPU_DESCRIPTOR_HANDLE GetRenderHandle() const { return m_ssaoRenderTarget->GetResourceView()->GetHandle(); }
+		[[nodiscard]] D3D12_CPU_DESCRIPTOR_HANDLE GetRenderHandle() const { return m_ssaoRenderTarget->GetResourceView()->GetCPUHandle(); }
 		[[nodiscard]] ID3D12Resource* GetCopyResource() const { return m_ssaoCopyResource->GetImage().Get(); }
 
 		[[nodiscard]] ResourceView* GetSSAODataBufferView() const { return m_ssaoDataBufferView.get(); }

@@ -19,7 +19,7 @@
 #include "ResourceManager/ResourceView.h"
 #include "ResourceManager/Texture.h"
 #include "Utils/Assert.h"
-#include "Utils/DummyMaterialProvider.h"
+#include "EngineMaterialProvider/EngineMaterialProvider.h"
 //#include "Utils/FileUtils.h"
 
 namespace JoyEngine
@@ -47,13 +47,13 @@ namespace JoyEngine
 		const ResourceView* view
 	)
 	{
-		ID3D12DescriptorHeap* heaps1[1] = {view->GetHeap()};
-		commandList->SetDescriptorHeaps(
-			1,
-			heaps1);
-		D3D12_GPU_DESCRIPTOR_HANDLE null = {0};
-		commandList->SetComputeRootDescriptorTable(
-			rootParameterIndex, view->GetGPUHandle());
+		//ID3D12DescriptorHeap* heaps1[1] = {view->GetHeap()};
+		//commandList->SetDescriptorHeaps(
+		//	1,
+		//	heaps1);
+		//D3D12_GPU_DESCRIPTOR_HANDLE null = {0};
+		//commandList->SetComputeRootDescriptorTable(
+		//	rootParameterIndex, view->GetGPUHandle());
 	}
 
 	void MemoryManager::Init()
@@ -108,8 +108,8 @@ namespace JoyEngine
 
 		//if (mipMapsCount > 1)
 		//{
-		//	commandList->SetComputeRootSignature(JoyContext::DummyMaterials->GetMipsGenerationComputePipeline()->GetRootSignature().Get());
-		//	commandList->SetPipelineState(JoyContext::DummyMaterials->GetMipsGenerationComputePipeline()->GetPipelineObject().Get());
+		//	commandList->SetComputeRootSignature(JoyContext::EngineMaterials->GetMipsGenerationComputePipeline()->GetRootSignature().Get());
+		//	commandList->SetPipelineState(JoyContext::EngineMaterials->GetMipsGenerationComputePipeline()->GetPipelineObject().Get());
 
 		//	for (uint32_t i = 0; i < 4; i++)
 		//	{

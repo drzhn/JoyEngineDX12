@@ -56,4 +56,9 @@ namespace JoyEngine
 	{
 		// TODO
 	}
+
+	ID3D12DescriptorHeap* DescriptorManager::GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE type) const
+	{
+		return m_descriptorStorage.find(type)->second.heap.Get();
+	}
 }

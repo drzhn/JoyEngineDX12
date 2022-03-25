@@ -26,6 +26,8 @@ namespace JoyEngine
 			D3D12_DESCRIPTOR_HEAP_TYPE type,
 			uint32_t index);
 
+		ID3D12DescriptorHeap* GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE) const;
+
 	private:
 		struct HeapEntry
 		{

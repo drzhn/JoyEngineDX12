@@ -21,16 +21,16 @@ namespace JoyEngine
 	class Buffer;
 	class SharedMaterial;
 
-	struct MaterialArgs
-	{
-		GUID sharedMaterial;
-		std::map<uint32_t, ID3D12DescriptorHeap*> rootParams;
+	//struct MaterialArgs
+	//{
+	//	GUID sharedMaterial;
+	//	std::map<uint32_t, ID3D12DescriptorHeap*> rootParams;
 
-		// material is responsible for storing references to resources
-		// TODO combine texture and buffer to some AbstractResource
-		std::vector<ResourceHandle<Texture>> textures;
-		std::vector<std::shared_ptr<Buffer*>> buffers;
-	};
+	//	// material is responsible for storing references to resources
+	//	// TODO combine texture and buffer to some AbstractResource
+	//	std::vector<ResourceHandle<Texture>> textures;
+	//	std::vector<std::shared_ptr<Buffer>> buffers;
+	//};
 
 	class Material final : public Resource
 	{
@@ -38,22 +38,20 @@ namespace JoyEngine
 		Material() = delete;
 
 		explicit Material(GUID);
-		explicit Material(GUID, MaterialArgs);
+		//explicit Material(GUID, MaterialArgs);
 
 		~Material() override = default;
 
 		[[nodiscard]] SharedMaterial* GetSharedMaterial() const noexcept;
 
 		[[nodiscard]] bool IsLoaded() const noexcept override;
-		std::map<uint32_t, ID3D12DescriptorHeap*>& GetRootParams() { return m_rootParams; }
-		//std::vector<ID3D12DescriptorHeap*>& GetHeaps() { return m_heaps; }
+		[[nodiscard]] const std::map<uint32_t, ResourceView*>& GetRootParams() { return m_rootParams; }
 	private :
 		ResourceHandle<SharedMaterial> m_sharedMaterial;
-		std::map<uint32_t, ID3D12DescriptorHeap*> m_rootParams;
-		//std::vector<ID3D12DescriptorHeap*> m_heaps;
+		std::map<uint32_t, ResourceView*> m_rootParams;
 
 		std::vector<ResourceHandle<Texture>> m_textures;
-		std::vector<std::shared_ptr<Buffer*>> m_buffers;
+		std::vector<std::unique_ptr<Buffer>> m_buffers;
 	};
 }
 

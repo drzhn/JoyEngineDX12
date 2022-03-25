@@ -41,7 +41,6 @@ namespace JoyEngine
 	public :
 		Shader() = delete;
 
-		explicit Shader(GUID);
 		explicit Shader(GUID, ShaderTypeFlags shaderType);
 		void InitShader();
 		void CompileShader(ShaderType type, const char* shaderPath, const std::vector<char>& shaderData, ComPtr<ID3DBlob>& module);
@@ -59,7 +58,7 @@ namespace JoyEngine
 		[[nodiscard]] bool IsLoaded() const noexcept override { return true; }
 
 	private :
-		ShaderTypeFlags m_shaderType = JoyShaderTypeVertex | JoyShaderTypePixel;
+		ShaderTypeFlags m_shaderType = 0;
 
 		ComPtr<ID3DBlob> m_vertexModule;
 		ComPtr<ID3DBlob> m_fragmentModule;

@@ -10,7 +10,7 @@
 #include "MemoryManager/MemoryManager.h"
 #include "ResourceManager/ResourceManager.h"
 #include "DataManager/DataManager.h"
-//#include "DescriptorManager/DescriptorManager.h"
+#include "DescriptorManager/DescriptorManager.h"
 #include "GraphicsManager/GraphicsManager.h"
 #include "Common/Time.h"
 #include "InputManager/InputManager.h"
@@ -26,7 +26,7 @@ namespace JoyEngine
 		m_graphicsContext(new GraphicsManager(instance, windowHandle, width, height)),
 		m_memoryManager(new MemoryManager()),
 		m_dataManager(new DataManager()),
-		//m_descriptorSetManager(new DescriptorManager()),
+		m_descriptorSetManager(new DescriptorManager()),
 		m_resourceManager(new ResourceManager()),
 		m_sceneManager(new SceneManager()),
 		m_renderManager(new RenderManager()),
@@ -36,7 +36,7 @@ namespace JoyEngine
 		ASSERT(m_graphicsContext != nullptr);
 		ASSERT(m_memoryManager != nullptr);
 		ASSERT(m_dataManager != nullptr);
-		//ASSERT(m_descriptorSetManager != nullptr);
+		ASSERT(m_descriptorSetManager != nullptr);
 		ASSERT(m_resourceManager != nullptr);
 		ASSERT(m_sceneManager != nullptr);
 		ASSERT(m_renderManager != nullptr);
@@ -47,7 +47,7 @@ namespace JoyEngine
 			m_graphicsContext.get(),
 			m_memoryManager.get(),
 			m_dataManager.get(),
-			//m_descriptorSetManager.get(),
+			m_descriptorSetManager.get(),
 			m_resourceManager.get(),
 			m_sceneManager.get(),
 			m_renderManager.get(),
@@ -62,7 +62,7 @@ namespace JoyEngine
 		Time::Init(m_deltaTimeHandler);
 
 		m_memoryManager->Init();
-		//m_descriptorSetManager->Init();
+		m_descriptorSetManager->Init();
 		m_renderManager->Init();
 		m_dummyMaterials->Init();
 		m_sceneManager->Init();
@@ -101,7 +101,7 @@ namespace JoyEngine
 		m_dummyMaterials = nullptr; //delete swapchain, synchronisation, framebuffers
 		m_renderManager = nullptr; //delete swapchain, synchronisation, framebuffers
 		m_resourceManager = nullptr; //delete all scene render data (buffers, textures)
-		//m_descriptorSetManager = nullptr;
+		m_descriptorSetManager = nullptr;
 		m_dataManager = nullptr;
 		m_memoryManager = nullptr; //free gpu memory
 		m_graphicsContext = nullptr; //delete surface, device, instance

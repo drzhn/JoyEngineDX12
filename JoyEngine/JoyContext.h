@@ -7,7 +7,7 @@ namespace JoyEngine
 	class GraphicsManager;
 	class MemoryManager;
 	class DataManager;
-	//class DescriptorManager;
+	class DescriptorManager;
 	class ResourceManager;
 	class SceneManager;
 	class RenderManager;
@@ -21,7 +21,7 @@ namespace JoyEngine
 			GraphicsManager* graphicsContext,
 			MemoryManager* memoryManager,
 			DataManager* dataManager,
-			//DescriptorManager* descriptorManager,
+			DescriptorManager* descriptorManager,
 			ResourceManager* resourceManager,
 			SceneManager* sceneManager,
 			RenderManager* renderManager,
@@ -32,7 +32,7 @@ namespace JoyEngine
 		static GraphicsManager* Graphics;
 		static MemoryManager* Memory;
 		static DataManager* Data;
-		//static DescriptorManager* Descriptors;
+		static DescriptorManager* Descriptors;
 		static ResourceManager* Resource;
 		static SceneManager* Scene;
 		static RenderManager* Render;

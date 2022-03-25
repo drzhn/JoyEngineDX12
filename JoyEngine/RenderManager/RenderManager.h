@@ -74,11 +74,12 @@ namespace JoyEngine
 		[[nodiscard]] float GetAspect() const noexcept;
 		[[nodiscard]] float GetWidth() const noexcept;
 		[[nodiscard]] float GetHeight() const noexcept;
+		[[nodiscard]] static DXGI_FORMAT GetMainColorFormat() noexcept { return ldrRTVFormat; }
 		[[nodiscard]] static DXGI_FORMAT GetHdrRTVFormat() noexcept { return hdrRTVFormat; }
 		[[nodiscard]] static DXGI_FORMAT GetLdrRTVFormat() noexcept { return ldrRTVFormat; }
-		//[[nodiscard]] static DXGI_FORMAT GetGBufferFormat() noexcept { return gBufferFormat; }
+		[[nodiscard]] static DXGI_FORMAT GetGBufferFormat() noexcept { return gBufferFormat; }
 		[[nodiscard]] static DXGI_FORMAT GetDepthFormat() noexcept { return depthFormat; }
-		//[[nodiscard]] static DXGI_FORMAT GetSSAOFormat() noexcept { return ssaoFormat; }
+		[[nodiscard]] static DXGI_FORMAT GetSSAOFormat() noexcept { return ssaoFormat; }
 
 	private:
 		void RenderEntireScene(
@@ -110,9 +111,9 @@ namespace JoyEngine
 	private:
 		static constexpr DXGI_FORMAT hdrRTVFormat =  DXGI_FORMAT_R16G16B16A16_FLOAT;
 		static constexpr DXGI_FORMAT ldrRTVFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-		//static constexpr DXGI_FORMAT gBufferFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
+		static constexpr DXGI_FORMAT gBufferFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
 		static constexpr DXGI_FORMAT depthFormat = DXGI_FORMAT_D32_FLOAT;
-		//static constexpr DXGI_FORMAT ssaoFormat = DXGI_FORMAT_R16_FLOAT;
+		static constexpr DXGI_FORMAT ssaoFormat = DXGI_FORMAT_R16_FLOAT;
 
 		static constexpr UINT FrameCount = 3;
 

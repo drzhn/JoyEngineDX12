@@ -8,9 +8,6 @@
     "comparison": "less_equal",
     "blend": "default",
     "topology": "triangle",
-    "rtvFormats": [
-        "rgba8_unorm"
-    ],
     "shaderTypes": [
         "vertex",
         "pixel"

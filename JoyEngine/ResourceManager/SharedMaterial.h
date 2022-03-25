@@ -30,17 +30,14 @@ namespace JoyEngine
 		D3D12_CULL_MODE cullMode;
 		D3D12_COMPARISON_FUNC depthComparisonFunc;
 		CD3DX12_BLEND_DESC blendDesc;
-		std::vector<CD3DX12_ROOT_PARAMETER1> rootParams;
 		std::vector<DXGI_FORMAT> renderTargetsFormats;
 		DXGI_FORMAT depthFormat;
 		D3D12_PRIMITIVE_TOPOLOGY_TYPE topology;
-		std::map<uint32_t, EngineBindingType> engineBindings; // we ask render manager to bind some internal data
 	};
 
 	struct ComputePipelineArgs
 	{
 		GUID computeShaderGuid;
-		std::vector<CD3DX12_ROOT_PARAMETER1> rootParams;
 	};
 
 	class AbstractPipelineObject
@@ -56,9 +53,12 @@ namespace JoyEngine
 		ComPtr<ID3D12PipelineState> m_pipelineState;
 		ResourceHandle<Shader> m_shader;
 		std::map<std::string, uint32_t> m_rootIndices;
+		std::map<uint32_t, EngineBindingType> m_engineBindings;
 
 	protected:
-		void CreateRootSignature(const std::vector<CD3DX12_ROOT_PARAMETER1>& rootParams);
+		void CreateShaderAndRootSignature(GUID shaderGuid, ShaderTypeFlags shaderTypes);
+	private:
+		void CreateRootSignature(CD3DX12_ROOT_PARAMETER1* params, uint32_t paramsCount);
 	};
 
 	class ComputePipeline final : public Resource, public AbstractPipelineObject
@@ -100,8 +100,6 @@ namespace JoyEngine
 		bool m_depthWrite = false;
 		D3D12_COMPARISON_FUNC m_depthComparisonFunc;
 		D3D12_CULL_MODE m_cullMode;
-
-		std::map<uint32_t, EngineBindingType> m_engineBindings;
 
 	private:
 		void CreateGraphicsPipeline(const std::vector<DXGI_FORMAT>& renderTargetsFormats, CD3DX12_BLEND_DESC blendDesc, DXGI_FORMAT depthFormat, D3D12_PRIMITIVE_TOPOLOGY_TYPE topology);

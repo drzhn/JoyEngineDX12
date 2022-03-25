@@ -17,28 +17,14 @@
 #include <wrl.h>
 
 #include "Common/HashDefs.h"
+
 using Microsoft::WRL::ComPtr;
+
+#define DESCRIPTOR_ARRAY_SIZE 32
 
 namespace JoyEngine
 {
-	std::vector<D3D12_INPUT_ELEMENT_DESC> SharedMaterial::m_inputLayout = {
-		{
-			"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT,
-			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
-		},
-		{
-			"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT,
-			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
-		},
-		{
-			"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT,
-			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
-		},
-		{
-			"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT,
-			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
-		},
-	};
+	// =============================== ABSTRACT PIPELINE =================================
 
 	const ShaderInput& AbstractPipelineObject::GetShaderInputByName(const std::string& name) const
 	{
@@ -52,7 +38,75 @@ namespace JoyEngine
 		return m_rootIndices.find(name)->second;
 	}
 
-	void AbstractPipelineObject::CreateRootSignature(const std::vector<CD3DX12_ROOT_PARAMETER1>& rootParams)
+	void AbstractPipelineObject::CreateShaderAndRootSignature(GUID shaderGuid, ShaderTypeFlags shaderTypes)
+	{
+		CD3DX12_DESCRIPTOR_RANGE1 ranges[DESCRIPTOR_ARRAY_SIZE];
+		uint32_t rangesIndex = 0;
+
+		CD3DX12_ROOT_PARAMETER1 params[DESCRIPTOR_ARRAY_SIZE];
+		uint32_t paramsIndex = 0;
+		{
+			Shader* shaderPtr = JoyContext::Resource->LoadResource<Shader>(
+				shaderGuid,
+				shaderTypes
+			);
+			m_shader = shaderPtr;
+
+			for (const auto& pair : m_shader->GetInputMap())
+			{
+				const std::string& name = pair.first;
+				const ShaderInput& input = pair.second;
+
+				if (name == "mvp")
+				{
+					params[paramsIndex].InitAsConstants(
+						sizeof(MVP) / 4, input.BindPoint, input.Space, input.Visibility);
+					m_engineBindings.insert({static_cast<uint32_t>(paramsIndex), ModelViewProjection});
+					paramsIndex++;
+				}
+				else
+				{
+					D3D12_DESCRIPTOR_RANGE_TYPE type;
+					switch (input.Type)
+					{
+					case D3D_SIT_CBUFFER: type = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+						break;
+
+					case D3D_SIT_STRUCTURED: // i dunno, don't ask me
+					case D3D_SIT_TEXTURE: type = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+						break;
+					case D3D_SIT_SAMPLER: type = D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
+						break;
+
+					case D3D_SIT_UAV_RWTYPED:
+					case D3D_SIT_UAV_RWSTRUCTURED:
+					case D3D_SIT_UAV_RWBYTEADDRESS:
+					case D3D_SIT_UAV_APPEND_STRUCTURED:
+					case D3D_SIT_UAV_CONSUME_STRUCTURED:
+					case D3D_SIT_UAV_RWSTRUCTURED_WITH_COUNTER:
+					case D3D_SIT_UAV_FEEDBACKTEXTURE:
+						type = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
+						break;
+
+					case D3D_SIT_TBUFFER:
+					case D3D_SIT_BYTEADDRESS:
+					case D3D_SIT_RTACCELERATIONSTRUCTURE:
+					default:
+						ASSERT(false);
+					}
+					ranges[rangesIndex].Init(type, input.BindCount, input.BindPoint, input.Space, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
+					params[paramsIndex].InitAsDescriptorTable(input.BindCount, &ranges[rangesIndex], input.Visibility);
+					m_rootIndices.insert({name, paramsIndex});
+					rangesIndex++;
+					paramsIndex++;
+				}
+			}
+		}
+
+		CreateRootSignature(params, paramsIndex);
+	}
+
+	void AbstractPipelineObject::CreateRootSignature(CD3DX12_ROOT_PARAMETER1* params, uint32_t paramsCount)
 	{
 		D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = {};
 
@@ -70,8 +124,8 @@ namespace JoyEngine
 
 		CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
 		rootSignatureDesc.Init_1_1(
-			static_cast<uint32_t>(rootParams.size()),
-			rootParams.empty() ? nullptr : rootParams.data(),
+			paramsCount,
+			params,
 			0,
 			nullptr,
 			D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
@@ -92,12 +146,12 @@ namespace JoyEngine
 			IID_PPV_ARGS(&m_rootSignature)));
 	}
 
+	// =============================== COMPUTE PIPELINE =================================
+
 	ComputePipeline::ComputePipeline(GUID guid, ComputePipelineArgs args) :
 		Resource(guid)
 	{
-		Shader* shaderPtr = JoyContext::Resource->LoadResource<Shader>(args.computeShaderGuid, JoyShaderTypeCompute);
-		m_shader = shaderPtr;
-		CreateRootSignature(args.rootParams);
+		CreateShaderAndRootSignature(args.computeShaderGuid, JoyShaderTypeCompute);
 		CreateComputePipeline();
 	}
 
@@ -115,41 +169,30 @@ namespace JoyEngine
 
 	// =============================== SHARED MATERIAL =================================
 
+
+	std::vector<D3D12_INPUT_ELEMENT_DESC> SharedMaterial::m_inputLayout = {
+		{
+			"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT,
+			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
+		},
+		{
+			"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT,
+			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
+		},
+		{
+			"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT,
+			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
+		},
+		{
+			"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT,
+			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
+		},
+	};
+
 	SharedMaterial::SharedMaterial(GUID guid) :
 		Resource(guid)
 	{
 		rapidjson::Document json = JoyContext::Data->GetSerializedData(m_guid, sharedMaterial);
-
-		ShaderTypeFlags shaderTypeFlags = 0;
-		for (auto& type : json["shaderTypes"].GetArray())
-		{
-			std::string typeStr = type.GetString();
-			switch (strHash(typeStr.c_str()))
-			{
-			case strHash("vertex"): shaderTypeFlags |= JoyShaderTypeVertex;
-				break;
-			case strHash("hull"): shaderTypeFlags |= JoyShaderTypeHull;
-				break;
-			case strHash("domain"): shaderTypeFlags |= JoyShaderTypeDomain;
-				break;
-			case strHash("geometry"): shaderTypeFlags |= JoyShaderTypeGeometry;
-				break;
-			case strHash("pixel"): shaderTypeFlags |= JoyShaderTypePixel;
-				break;
-			case strHash("amplification"): shaderTypeFlags |= JoyShaderTypeAmplification;
-				break;
-			case strHash("mesh"): shaderTypeFlags |= JoyShaderTypeMesh;
-				break;
-			case strHash("compute"): shaderTypeFlags |= JoyShaderTypeCompute;
-				break;
-			default:
-				ASSERT(false)
-			}
-		}
-
-		Shader* shaderPtr = JoyContext::Resource->LoadResource<Shader>(
-			GUID::StringToGuid(json["shader"].GetString()), shaderTypeFlags);
-		m_shader = shaderPtr;
 
 		m_hasVertexInput = json["hasVertexInput"].GetBool();
 		m_depthTest = json["depthTest"].GetBool();
@@ -193,7 +236,7 @@ namespace JoyEngine
 		}
 
 		std::string topologyStr = json["topology"].GetString();
-		D3D12_PRIMITIVE_TOPOLOGY_TYPE topology;
+		D3D12_PRIMITIVE_TOPOLOGY_TYPE topology = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 		switch (strHash(topologyStr.c_str()))
 		{
 		case strHash("triangle"):
@@ -203,78 +246,45 @@ namespace JoyEngine
 			ASSERT(false)
 		}
 
-		std::vector<DXGI_FORMAT> renderTargetsFormats(json["rtvFormats"].GetArray().Size());
-		uint32_t i = 0;
-		for (auto& format : json["rtvFormats"].GetArray())
+		std::vector<DXGI_FORMAT> renderTargetsFormats
 		{
-			std::string formatStr = format.GetString();
-			switch (strHash(formatStr.c_str()))
+			JoyEngine::RenderManager::GetMainColorFormat() // materials created form GUIDs can only write to one main color rtv
+		};
+
+		// Shader creation
+		ShaderTypeFlags shaderTypeFlags = 0;
+		for (auto& type : json["shaderTypes"].GetArray())
+		{
+			std::string typeStr = type.GetString();
+			switch (strHash(typeStr.c_str()))
 			{
-			case strHash("rgba8_unorm"):
-				renderTargetsFormats[i] = DXGI_FORMAT_R8G8B8A8_UNORM;
+			case strHash("vertex"): shaderTypeFlags |= JoyShaderTypeVertex;
+				break;
+			case strHash("hull"): shaderTypeFlags |= JoyShaderTypeHull;
+				break;
+			case strHash("domain"): shaderTypeFlags |= JoyShaderTypeDomain;
+				break;
+			case strHash("geometry"): shaderTypeFlags |= JoyShaderTypeGeometry;
+				break;
+			case strHash("pixel"): shaderTypeFlags |= JoyShaderTypePixel;
+				break;
+			case strHash("amplification"): shaderTypeFlags |= JoyShaderTypeAmplification;
+				break;
+			case strHash("mesh"): shaderTypeFlags |= JoyShaderTypeMesh;
+				break;
+			case strHash("compute"): shaderTypeFlags |= JoyShaderTypeCompute;
 				break;
 			default:
 				ASSERT(false)
 			}
-			i++;
 		}
 
+		GUID shaderGuid = GUID::StringToGuid(json["shader"].GetString());
+		CreateShaderAndRootSignature(shaderGuid, shaderTypeFlags);
 
-		std::list<CD3DX12_DESCRIPTOR_RANGE1> ranges;
-		std::vector<CD3DX12_ROOT_PARAMETER1> params;
-		for (const auto& pair : m_shader->GetInputMap())
-		{
-			const std::string& name = pair.first;
-			const ShaderInput& input = pair.second;
-
-			if (name == "mvp")
-			{
-				params.emplace_back();
-				params[params.size() - 1].InitAsConstants(
-					sizeof(MVP) / 4, input.BindPoint, input.Space, input.Visibility);
-				m_engineBindings.insert({static_cast<uint32_t>(params.size() - 1), ModelViewProjection});
-			}
-			else
-			{
-				D3D12_DESCRIPTOR_RANGE_TYPE type;
-				switch (input.Type)
-				{
-				case D3D_SIT_CBUFFER: type = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
-					break;
-				case D3D_SIT_TEXTURE: type = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-					break;
-				case D3D_SIT_SAMPLER: type = D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
-					break;
-
-				case D3D_SIT_UAV_RWTYPED:
-				case D3D_SIT_STRUCTURED:
-				case D3D_SIT_UAV_RWSTRUCTURED:
-				case D3D_SIT_UAV_RWBYTEADDRESS:
-				case D3D_SIT_UAV_APPEND_STRUCTURED:
-				case D3D_SIT_UAV_CONSUME_STRUCTURED:
-				case D3D_SIT_UAV_RWSTRUCTURED_WITH_COUNTER:
-				case D3D_SIT_UAV_FEEDBACKTEXTURE:
-					type = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
-					break;
-
-				case D3D_SIT_TBUFFER:
-				case D3D_SIT_BYTEADDRESS:
-				case D3D_SIT_RTACCELERATIONSTRUCTURE:
-				default:
-					ASSERT(false);
-				}
-				ranges.emplace_back();
-				ranges.back().Init(type, input.BindCount, input.BindPoint, input.Space, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
-				params.emplace_back();
-				params[params.size() - 1].InitAsDescriptorTable(input.BindCount, &ranges.back(), input.Visibility);
-				m_rootIndices.insert({name, static_cast<uint32_t>(params.size() - 1)});
-			}
-		}
-
-		DXGI_FORMAT depthFormat = DXGI_FORMAT_D32_FLOAT;
-
-		CreateRootSignature(params);
+		DXGI_FORMAT depthFormat = RenderManager::GetDepthFormat();
 		CreateGraphicsPipeline(renderTargetsFormats, blendDesc, depthFormat, topology);
+
 		JoyContext::Render->RegisterSharedMaterial(this);
 	}
 
@@ -284,14 +294,11 @@ namespace JoyEngine
 		m_depthTest(args.depthTest),
 		m_depthWrite(args.depthWrite),
 		m_depthComparisonFunc(args.depthComparisonFunc),
-		m_cullMode(args.cullMode),
-		m_engineBindings(args.engineBindings)
+		m_cullMode(args.cullMode)
 	{
-		Shader* shaderPtr = JoyContext::Resource->LoadResource<Shader>(args.shader, args.shaderTypes);
-		m_shader = shaderPtr;
-
-		CreateRootSignature(args.rootParams);
+		CreateShaderAndRootSignature(args.shader, args.shaderTypes);
 		CreateGraphicsPipeline(args.renderTargetsFormats, args.blendDesc, args.depthFormat, args.topology);
+
 		JoyContext::Render->RegisterSharedMaterial(this);
 	}
 

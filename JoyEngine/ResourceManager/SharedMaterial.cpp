@@ -205,7 +205,7 @@ namespace JoyEngine
 			m_depthComparisonFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 			break;
 		default:
-			ASSERT(false)
+			ASSERT(false);
 		}
 
 		std::string cullModeStr = json["cull"].GetString();
@@ -221,7 +221,7 @@ namespace JoyEngine
 			m_cullMode = D3D12_CULL_MODE_NONE;
 			break;
 		default:
-			ASSERT(false)
+			ASSERT(false);
 		}
 
 		std::string blendStr = json["blend"].GetString();
@@ -232,7 +232,7 @@ namespace JoyEngine
 			blendDesc = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 			break;
 		default:
-			ASSERT(false)
+			ASSERT(false);
 		}
 
 		std::string topologyStr = json["topology"].GetString();
@@ -243,7 +243,7 @@ namespace JoyEngine
 			topology = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 			break;
 		default:
-			ASSERT(false)
+			ASSERT(false);
 		}
 
 		std::vector<DXGI_FORMAT> renderTargetsFormats
@@ -275,7 +275,7 @@ namespace JoyEngine
 			case strHash("compute"): shaderTypeFlags |= JoyShaderTypeCompute;
 				break;
 			default:
-				ASSERT(false)
+				ASSERT(false);
 			}
 		}
 

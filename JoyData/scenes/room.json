@@ -4,6 +4,7 @@
     "objects": [
         {
             "name": "camera",
+            "type": "obj_simple",
             "transform": {
                 "localPosition": [ 0.0, 5.0, -5.0 ],
                 "localRotation": [ 405.0, 0.0, 0.0 ],
@@ -24,6 +25,7 @@
         },
         {
             "name": "floor",
+            "type": "obj_simple",
             "transform": {
                 "localPosition": [ 0.0, -3.0, 0.0 ],
                 "localRotation": [ 0.0, 0.0, 0.0 ],
@@ -40,6 +42,7 @@
 
         {
             "name": "viking_room",
+            "type": "obj_simple",
             "transform": {
                 "localPosition": [ 0.0, -3.0, 3.0 ],
                 "localRotation": [ -90.0, 0.0, 0.0 ],
@@ -55,6 +58,7 @@
         },
         {
             "name": "head2",
+            "type": "obj_simple",
             "transform": {
                 "localPosition": [ 0.0, 0.0, 3.0 ],
                 "localRotation": [ 0.0, 0.0, 0.0 ],
@@ -75,6 +79,17 @@
                     }
                 }
             ]
+        },
+        {
+            "name": "sponza",
+            "type": "obj_complex",
+            "transform": {
+                "localPosition": [ 0.0, 0.0, 0.0 ],
+                "localRotation": [ 0.0, 0.0, 0.0 ],
+                "localScale": [ 1.0, 1.0, 1.0 ]
+            },
+            "model": "46bc949d-eacb-4cff-a7f8-07e738bbfb3e",
+            "material": "a254d10b-ba5a-444d-9ef0-4ef7777b918b"
         }
     ]
 }

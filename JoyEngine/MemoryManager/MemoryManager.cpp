@@ -86,7 +86,7 @@ namespace JoyEngine
 
 		m_queue->ResetForFrame();
 
-		const auto commandList = m_queue->GetCommandList();
+		const auto commandList = m_queue->GetCommandList(0);
 
 		UpdateSubresources(
 			commandList,
@@ -135,7 +135,7 @@ namespace JoyEngine
 		//}
 		ASSERT_SUCC(commandList->Close());
 
-		m_queue->Execute();
+		m_queue->Execute(0);
 
 		m_queue->WaitQueueIdle();
 	}
@@ -148,7 +148,7 @@ namespace JoyEngine
 	{
 		m_queue->ResetForFrame();
 
-		const auto commandList = m_queue->GetCommandList();
+		const auto commandList = m_queue->GetCommandList(0);
 
 
 		CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
@@ -160,7 +160,7 @@ namespace JoyEngine
 
 		ASSERT_SUCC(commandList->Close());
 
-		m_queue->Execute();
+		m_queue->Execute(0);
 
 		m_queue->WaitQueueIdle();
 	}
@@ -213,7 +213,7 @@ namespace JoyEngine
 
 		m_queue->ResetForFrame();
 
-		const auto commandList = m_queue->GetCommandList();
+		const auto commandList = m_queue->GetCommandList(0);
 
 		D3D12_RESOURCE_STATES state = gpuBuffer->GetCurrentResourceState();
 
@@ -242,7 +242,7 @@ namespace JoyEngine
 
 		ASSERT_SUCC(commandList->Close());
 
-		m_queue->Execute();
+		m_queue->Execute(0);
 
 		m_queue->WaitQueueIdle();
 	}

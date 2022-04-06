@@ -342,7 +342,7 @@ namespace JoyEngine
 	{
 		m_queue->ResetForFrame(m_currentFrameIndex);
 
-		const auto commandList = m_queue->GetCommandList();
+		const auto commandList = m_queue->GetCommandList(m_currentFrameIndex);
 
 		auto swapchainResource = m_swapchainRenderTargets[m_currentFrameIndex]->GetImage().Get();
 		//auto hdrRTVResource = m_hdrRenderTarget->GetImage().Get();
@@ -1063,7 +1063,7 @@ namespace JoyEngine
 
 		ASSERT_SUCC(commandList->Close());
 
-		m_queue->Execute();
+		m_queue->Execute(m_currentFrameIndex);
 
 		// Present the frame.
 		ASSERT_SUCC(m_swapChain->Present(0, 0));

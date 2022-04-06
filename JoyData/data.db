@@ -2,6 +2,10 @@
     "type": "database",
     "database": [
         {
+            "guid": "46bc949d-eacb-4cff-a7f8-07e738bbfb3e",
+            "path": "models/sponza.data"
+        },          
+        {
             "guid": "fc972e06-70d9-4271-8615-825003b43f74",
             "path": "models/viking_room.obj"
         },        
@@ -34,6 +38,10 @@
         {
             "guid": "cbab0eb5-74a0-400f-92c2-8aae39175ed7",
             "path": "materials/vikingMaterial.json"
+        },
+        {
+            "guid": "a254d10b-ba5a-444d-9ef0-4ef7777b918b",
+            "path": "materials/sponza.json"
         },
 		
 		

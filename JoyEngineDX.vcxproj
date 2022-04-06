@@ -170,6 +170,7 @@
     <ClCompile Include="JoyEngine\JoyEngine.cpp" />
     <ClCompile Include="JoyEngine\MemoryManager\MemoryManager.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\RenderManager.cpp" />
+    <ClCompile Include="JoyEngine\ResourceManager\MtlBinaryParser.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\ResourceView.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\Material.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\Mesh.cpp" />
@@ -216,6 +217,7 @@
     <ClInclude Include="JoyEngine\RenderManager\RenderManager.h" />
     <ClInclude Include="JoyEngine\RenderManager\JoyTypes.h" />
     <ClInclude Include="JoyEngine\ResourceManager\DDS.h" />
+    <ClInclude Include="JoyEngine\ResourceManager\MtlBinaryParser.h" />
     <ClInclude Include="JoyEngine\ResourceManager\ResourceView.h" />
     <ClInclude Include="JoyEngine\ResourceManager\Material.h" />
     <ClInclude Include="JoyEngine\ResourceManager\Mesh.h" />

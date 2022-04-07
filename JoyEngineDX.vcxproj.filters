@@ -301,5 +301,6 @@
     <None Include="JoyData\shaders\ssaoappend.hlsl" />
     <None Include="JoyData\shaders\ssaoblur.hlsl" />
     <None Include="JoyData\shaders\sslrpostprocess.hlsl" />
+    <None Include="JoyData\shaders\standardShader.hlsl" />
   </ItemGroup>
 </Project>

@@ -27,6 +27,12 @@ namespace JoyEngine
 		DXGI_FORMAT ssaoFormat = RenderManager::GetSSAOFormat();
 
 
+		// Standard shared material
+		{
+			const GUID standardSharedMaterialGuid = GUID::StringToGuid("b6316780-7043-4ca5-96da-c8bb84042b78"); 
+			m_standardSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial>(standardSharedMaterialGuid);
+		}
+
 		// Mip map generation
 		{
 			const GUID mipMapGenerationShaderGuid = GUID::StringToGuid("3fb4d89b-ceab-46c3-b34f-d41a49e072cf"); //shaders/generateMipMaps.hlsl
@@ -196,7 +202,6 @@ namespace JoyEngine
 						mainDSVFormat,
 						D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 					});
-
 			}
 
 			// Cubemap convolution 
@@ -217,7 +222,7 @@ namespace JoyEngine
 						CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 						{
 							mainRTVFormat
-						}, 
+						},
 						mainDSVFormat,
 						D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 					});
@@ -381,7 +386,6 @@ namespace JoyEngine
 						D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 					});
 			}
-
 		}
 
 		// Bloom

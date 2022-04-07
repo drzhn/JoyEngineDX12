@@ -1,0 +1,15 @@
+{
+    "type": "sharedMaterial",
+    "shader": "908a43e5-84b5-4d81-bf17-3bdcbdd4a224",
+    "hasVertexInput": true,
+    "depthTest": true,
+    "depthWrite": true,
+    "cull": "back",
+    "comparison": "less_equal",
+    "blend": "default",
+    "topology": "triangle",
+    "shaderTypes": [
+        "vertex",
+        "pixel"
+    ]
+}

@@ -60,6 +60,8 @@ namespace JoyEngine
 		std::vector<char> data = GetData(sharedMaterialGuid);
 		rapidjson::Document json;
 		json.Parse<rapidjson::kParseStopWhenDoneFlag>(data.data());
+
+#ifdef _DEBUG
 		std::string s;
 		switch (type)
 		{
@@ -81,10 +83,17 @@ namespace JoyEngine
 		case scene:
 			s = "scene";
 			break;
+		case mtl_material:
+			s = "mtl_material";
+			break;
 		default:
 			ASSERT(false);
 		}
-		ASSERT(json.HasMember("type") && json["type"].GetString() == std::string(s));
+
+		ASSERT(json.HasMember("type"));
+		ASSERT(json["type"].GetString() == std::string(s));
+#endif
+
 		return json;
 	}
 }

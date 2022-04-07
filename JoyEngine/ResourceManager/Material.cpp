@@ -12,7 +12,6 @@
 #include "RenderManager/RenderManager.h"
 
 #include "SharedMaterial.h"
-#include "ResourceManager/Buffer.h"
 #include "ResourceManager/Texture.h"
 
 namespace JoyEngine
@@ -22,10 +21,33 @@ namespace JoyEngine
 		rapidjson::Document json = JoyContext::Data->GetSerializedData(guid, material);
 		m_sharedMaterial = GUID::StringToGuid(json["sharedMaterial"].GetString());
 
+		std::map<std::string, std::string> bindings;
 		for (auto& bindingJson : json["bindings"].GetArray())
 		{
-			std::string name = bindingJson["name"].GetString();
-			std::string data = bindingJson["data"].GetString();
+			bindings.insert({
+				bindingJson["name"].GetString(),
+				bindingJson["data"].GetString()
+			});
+		}
+
+		InitMaterial(bindings);
+	}
+
+	Material::Material(
+		GUID guid,
+		SharedMaterial* sharedMaterial,
+		const std::map<std::string, std::string>& bindings)
+		: Resource(guid), m_sharedMaterial(sharedMaterial)
+	{
+		InitMaterial(bindings);
+	}
+
+	void Material::InitMaterial(const std::map<std::string, std::string>& bindings)
+	{
+		for (const auto& binding : bindings)
+		{
+			const std::string& name = binding.first;
+			const std::string& data = binding.second;
 
 			const ShaderInput& shaderInput = m_sharedMaterial->GetShaderInputByName(name);
 
@@ -37,11 +59,14 @@ namespace JoyEngine
 				}
 			case D3D_SIT_TEXTURE:
 				{
-					m_textures.emplace_back(GUID::StringToGuid(data));
-					m_rootParams.insert({
-						m_sharedMaterial->GetRootIndexByName(name),
-						m_textures.back()->GetResourceView()
-					});
+					if (!data.empty())
+					{
+						m_textures.emplace_back(GUID::StringToGuid(data));
+						m_rootParams.insert({
+							m_sharedMaterial->GetRootIndexByName(name),
+							m_textures.back()->GetResourceView()
+						});
+					}
 					break;
 				}
 			case D3D_SIT_SAMPLER:

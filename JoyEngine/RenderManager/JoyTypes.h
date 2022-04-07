@@ -26,6 +26,13 @@ namespace JoyEngine
 		glm::vec3(0.0, 1.0, 0.0)
 	};
 
+	struct MeshHeader
+	{
+		uint32_t vertexCount;
+		uint32_t indexCount;
+		uint32_t materialIndex;
+	};
+
 	enum LightType
 	{
 		Point = 0,

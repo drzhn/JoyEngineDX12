@@ -12,6 +12,7 @@
 #include "Components/Light.h"
 #include "Components/ParticleSystem.h"
 #include "DataManager/DataManager.h"
+#include "ResourceManager/MtlBinaryParser.h"
 
 namespace JoyEngine
 {
@@ -48,13 +49,6 @@ namespace JoyEngine
 						mr->SetMaterial(GUID::StringToGuid(component["material"].GetString()));
 						go->AddComponent(std::move(mr));
 					}
-					//else if (type == "mtl_renderer")
-					//{
-					//	std::unique_ptr<MeshRenderer> mr = std::make_unique<MeshRenderer>();
-					//	mr->SetMesh(GUID::StringToGuid(component["model"].GetString()));
-					//	mr->SetMaterial(GUID::StringToGuid(component["material"].GetString()));
-					//	go->AddComponent(std::move(mr));
-					//}
 					else if (type == "component")
 					{
 						ASSERT(component.HasMember("component"));
@@ -129,6 +123,8 @@ namespace JoyEngine
 				std::string nameStr = obj["name"].GetString();
 				GUID modelGuid = GUID::StringToGuid(obj["model"].GetString());
 				GUID materialGuid = GUID::StringToGuid(obj["material"].GetString());
+				std::unique_ptr<MtlBinaryParser> parser = std::make_unique<MtlBinaryParser>(modelGuid, materialGuid);
+				
 			}
 		}
 	}

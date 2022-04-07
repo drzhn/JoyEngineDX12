@@ -20,6 +20,7 @@ namespace JoyEngine
 
 			return m_sampleMaterials.find(materialName)->second->GetGuid();
 		}
+		[[nodiscard]] SharedMaterial* GetStandardSharedMaterial() const noexcept { return m_standardSharedMaterial; }
 
 		[[nodiscard]] ComputePipeline* GetMipsGenerationComputePipeline() const noexcept { return m_generateMipsComputePipeline; }
 		[[nodiscard]] SharedMaterial* GetGBufferSharedMaterial() const noexcept { return m_gbufferWriteSharedMaterial; }
@@ -48,6 +49,9 @@ namespace JoyEngine
 		[[nodiscard]] SharedMaterial* GetCubemapConvolutionSharedMaterial() const noexcept { return m_cubemapConvolutionSharedMaterial; }
 
 	private:
+		ResourceHandle<SharedMaterial> m_standardSharedMaterial;
+
+
 		//ResourceHandle<Texture> m_skyboxTextureHandle;
 
 		ResourceHandle<ComputePipeline> m_generateMipsComputePipeline;

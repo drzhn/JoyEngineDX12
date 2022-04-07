@@ -31,6 +31,10 @@
         },
 
         {
+            "guid": "b6316780-7043-4ca5-96da-c8bb84042b78",
+            "path": "shared_materials/standardSharedMaterial.json"
+        },       
+        {
             "guid": "74eac505-944d-45af-acdf-51bcb04fee30",
             "path": "shared_materials/vikingSharedMaterial.json"
         },
@@ -85,10 +89,14 @@
 		{
             "guid": "65c0d16a-9cf6-46e5-9a5e-a5026b350b8d",
             "path": "textures/ColorNoise.png"
-        },   		
-   
-		
-		
+        },
+
+
+
+        {
+            "guid": "908a43e5-84b5-4d81-bf17-3bdcbdd4a224",
+            "path": "shaders/standardShader.hlsl"
+        },          
         {
             "guid": "183d6cfe-ca85-4e0b-ab36-7b1ca0f99d34",
             "path": "shaders/vikingShader.hlsl"

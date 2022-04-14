@@ -14,39 +14,40 @@ namespace JoyEngine
 		~EngineMaterialProvider() = default;
 		void Init();
 
-		[[nodiscard]] GUID GetMaterialGuid(const std::string& materialName) const noexcept
+		[[nodiscard]] ResourceHandle<Material> GetSampleMaterialByName(const std::string& materialName) const noexcept
 		{
 			ASSERT(m_sampleMaterials.find(materialName) != m_sampleMaterials.end());
 
-			return m_sampleMaterials.find(materialName)->second->GetGuid();
+			return m_sampleMaterials.find(materialName)->second;
 		}
-		[[nodiscard]] SharedMaterial* GetStandardSharedMaterial() const noexcept { return m_standardSharedMaterial; }
 
-		[[nodiscard]] ComputePipeline* GetMipsGenerationComputePipeline() const noexcept { return m_generateMipsComputePipeline; }
-		[[nodiscard]] SharedMaterial* GetGBufferSharedMaterial() const noexcept { return m_gbufferWriteSharedMaterial; }
-		[[nodiscard]] SharedMaterial* GetLightProcessingSharedMaterial() const noexcept { return m_lightProcessingSharedMaterial; }
-		[[nodiscard]] SharedMaterial* GetDirectionLightProcessingSharedMaterial() const noexcept { return m_directionLightProcessingSharedMaterial; }
-		[[nodiscard]] SharedMaterial* GetShadowProcessingSharedMaterial() const noexcept { return m_shadowProcessingSharedMaterial; }
-		[[nodiscard]] SharedMaterial* GetShadowPointProcessingSharedMaterial() const noexcept { return m_shadowPointProcessingSharedMaterial; }
-		[[nodiscard]] ComputePipeline* GetParticleBufferGenerationComputePipeline() const noexcept { return m_particleBufferGenerationComputePipeline; }
-		[[nodiscard]] SharedMaterial* GetParticleSystemSharedMaterial() const noexcept { return m_particleSystemSharedMaterial; }
-		[[nodiscard]] SharedMaterial* GetFogPostProcessSharedMaterial() const noexcept { return m_fogPostProcessSharedMaterial; }
-		[[nodiscard]] SharedMaterial* GetSSLRPostProcessSharedMaterial() const noexcept { return m_sslrPostProcessSharedMaterial; }
+		[[nodiscard]] ResourceHandle<SharedMaterial> GetStandardSharedMaterial() const noexcept { return m_standardSharedMaterial; }
 
-		[[nodiscard]] ComputePipeline* GetHdrDownscaleFirstPassComputePipeline() const noexcept { return m_hdrDownscaleFirstPassComputePipeline; }
-		[[nodiscard]] ComputePipeline* GetHdrDownscaleSecondPassComputePipeline() const noexcept { return m_hdrDownscaleSecondPassComputePipeline; }
-		[[nodiscard]] SharedMaterial* GetHdrToLdrTransitionSharedMaterial() const noexcept { return m_hdrToLdrTransitionSharedMaterial; }
+		[[nodiscard]] ResourceHandle<ComputePipeline> GetMipsGenerationComputePipeline() const noexcept { return m_generateMipsComputePipeline; }
+		[[nodiscard]] ResourceHandle<SharedMaterial> GetGBufferSharedMaterial() const noexcept { return m_gbufferWriteSharedMaterial; }
+		[[nodiscard]] ResourceHandle<SharedMaterial> GetLightProcessingSharedMaterial() const noexcept { return m_lightProcessingSharedMaterial; }
+		[[nodiscard]] ResourceHandle<SharedMaterial> GetDirectionLightProcessingSharedMaterial() const noexcept { return m_directionLightProcessingSharedMaterial; }
+		[[nodiscard]] ResourceHandle<SharedMaterial> GetShadowProcessingSharedMaterial() const noexcept { return m_shadowProcessingSharedMaterial; }
+		[[nodiscard]] ResourceHandle<SharedMaterial> GetShadowPointProcessingSharedMaterial() const noexcept { return m_shadowPointProcessingSharedMaterial; }
+		[[nodiscard]] ResourceHandle<ComputePipeline> GetParticleBufferGenerationComputePipeline() const noexcept { return m_particleBufferGenerationComputePipeline; }
+		[[nodiscard]] ResourceHandle<SharedMaterial> GetParticleSystemSharedMaterial() const noexcept { return m_particleSystemSharedMaterial; }
+		[[nodiscard]] ResourceHandle<SharedMaterial> GetFogPostProcessSharedMaterial() const noexcept { return m_fogPostProcessSharedMaterial; }
+		[[nodiscard]] ResourceHandle<SharedMaterial> GetSSLRPostProcessSharedMaterial() const noexcept { return m_sslrPostProcessSharedMaterial; }
 
-		[[nodiscard]] ComputePipeline* GetBloomBrightPassComputePipeline() const noexcept { return m_bloomBrightPassComputePipeline; }
-		[[nodiscard]] ComputePipeline* GetBloomVerticalFilterComputePipeline() const noexcept { return m_bloomVerticalFilterComputePipeline; }
-		[[nodiscard]] ComputePipeline* GetBloomHorizontalFilterComputePipeline() const noexcept { return m_bloomHorizontalFilterComputePipeline; }
+		[[nodiscard]] ResourceHandle<ComputePipeline> GetHdrDownscaleFirstPassComputePipeline() const noexcept { return m_hdrDownscaleFirstPassComputePipeline; }
+		[[nodiscard]] ResourceHandle<ComputePipeline> GetHdrDownscaleSecondPassComputePipeline() const noexcept { return m_hdrDownscaleSecondPassComputePipeline; }
+		[[nodiscard]] ResourceHandle<SharedMaterial> GetHdrToLdrTransitionSharedMaterial() const noexcept { return m_hdrToLdrTransitionSharedMaterial; }
 
-		[[nodiscard]] SharedMaterial* GetSsaoPostProcessSharedMaterial() const noexcept { return m_ssaoPostProcessSharedMaterial; }
-		[[nodiscard]] SharedMaterial* GetSsaoBlurSharedMaterial() const noexcept { return m_ssaoBlurSharedMaterial; }
-		[[nodiscard]] SharedMaterial* GetSsaoAppendSharedMaterial() const noexcept { return m_ssaoAppendSharedMaterial; }
+		[[nodiscard]] ResourceHandle<ComputePipeline> GetBloomBrightPassComputePipeline() const noexcept { return m_bloomBrightPassComputePipeline; }
+		[[nodiscard]] ResourceHandle<ComputePipeline> GetBloomVerticalFilterComputePipeline() const noexcept { return m_bloomVerticalFilterComputePipeline; }
+		[[nodiscard]] ResourceHandle<ComputePipeline> GetBloomHorizontalFilterComputePipeline() const noexcept { return m_bloomHorizontalFilterComputePipeline; }
+
+		[[nodiscard]] ResourceHandle<SharedMaterial> GetSsaoPostProcessSharedMaterial() const noexcept { return m_ssaoPostProcessSharedMaterial; }
+		[[nodiscard]] ResourceHandle<SharedMaterial> GetSsaoBlurSharedMaterial() const noexcept { return m_ssaoBlurSharedMaterial; }
+		[[nodiscard]] ResourceHandle<SharedMaterial> GetSsaoAppendSharedMaterial() const noexcept { return m_ssaoAppendSharedMaterial; }
 
 
-		[[nodiscard]] SharedMaterial* GetCubemapConvolutionSharedMaterial() const noexcept { return m_cubemapConvolutionSharedMaterial; }
+		[[nodiscard]] ResourceHandle<SharedMaterial> GetCubemapConvolutionSharedMaterial() const noexcept { return m_cubemapConvolutionSharedMaterial; }
 
 	private:
 		ResourceHandle<SharedMaterial> m_standardSharedMaterial;

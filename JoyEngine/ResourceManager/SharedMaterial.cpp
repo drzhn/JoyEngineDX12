@@ -46,11 +46,10 @@ namespace JoyEngine
 		CD3DX12_ROOT_PARAMETER1 params[DESCRIPTOR_ARRAY_SIZE];
 		uint32_t paramsIndex = 0;
 		{
-			Shader* shaderPtr = JoyContext::Resource->LoadResource<Shader>(
+			m_shader = JoyContext::Resource->LoadResource<Shader>(
 				shaderGuid,
 				shaderTypes
 			);
-			m_shader = shaderPtr;
 
 			for (const auto& pair : m_shader->GetInputMap())
 			{

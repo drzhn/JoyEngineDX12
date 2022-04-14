@@ -16,8 +16,50 @@ namespace JoyEngine
 		ParseDatabase(m_pathDatabase, ReadFile(m_dataPath + m_databaseFilename).data());
 	}
 
-	DataManager::~DataManager()
+	std::vector<char> DataManager::GetData(GUID guid, bool shouldReadRawData, uint32_t offset) const
 	{
+		ASSERT(m_pathDatabase.find(guid) != m_pathDatabase.end());
+		std::string filename = m_dataPath + m_pathDatabase.find(guid)->second.string();
+		if (shouldReadRawData)
+		{
+			filename += ".data";
+		}
+		return ReadFile(filename, offset);
+	}
+
+	bool DataManager::HasRawData(GUID guid) const
+	{
+		ASSERT(m_pathDatabase.find(guid) != m_pathDatabase.end());
+		std::string filename = m_dataPath + m_pathDatabase.find(guid)->second.string();
+		filename += ".data";
+		return std::filesystem::exists(filename);
+	}
+
+	bool DataManager::HasRawData(const std::string& path) const
+	{
+		const std::string filename = m_dataPath + path + ".data";
+		return std::filesystem::exists(filename);
+	}
+
+	std::ifstream DataManager::GetFileStream(GUID guid, bool shouldReadRawData) const 
+	{
+		ASSERT(m_pathDatabase.find(guid) != m_pathDatabase.end());
+		std::string filename = m_dataPath + m_pathDatabase.find(guid)->second.string();
+		if (shouldReadRawData)
+		{
+			filename += ".data";
+		}
+		return GetStream(filename);
+	}
+
+	std::ifstream DataManager::GetFileStream(const std::string& path, bool shouldReadRawData) const
+	{
+		std::string filename = m_dataPath + path;
+		if (shouldReadRawData)
+		{
+			filename += ".data";
+		}
+		return GetStream(filename);
 	}
 
 	const std::filesystem::path& DataManager::GetPath(GUID guid)
@@ -29,14 +71,14 @@ namespace JoyEngine
 		return m_pathDatabase[guid];
 	}
 
-	std::filesystem::path DataManager::GetAbsolutePath(GUID guid)
+	std::filesystem::path DataManager::GetAbsolutePath(GUID guid) const
 	{
 		if (m_pathDatabase.find(guid) == m_pathDatabase.end())
 		{
 			ASSERT(false);
 		}
 		std::filesystem::path root = m_dataPath;
-		root += m_pathDatabase[guid];
+		root += m_pathDatabase.find(guid)->second;
 		return root;
 	}
 
@@ -55,7 +97,7 @@ namespace JoyEngine
 		}
 	}
 
-	rapidjson::Document DataManager::GetSerializedData(const GUID& sharedMaterialGuid, DataType type)
+	rapidjson::Document DataManager::GetSerializedData(const GUID& sharedMaterialGuid, DataType type) const
 	{
 		std::vector<char> data = GetData(sharedMaterialGuid);
 		rapidjson::Document json;

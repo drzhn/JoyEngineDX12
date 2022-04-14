@@ -9,7 +9,7 @@
 #include "Common/Resource.h"
 #include "ResourceManager/Buffer.h"
 
-#include "ResourceManager/ResourceHandle.h"
+#include "ResourceManager/ResourceManager.h"
 #include "Utils/GUID.h"
 
 #include <d3d12.h>
@@ -38,7 +38,11 @@ namespace JoyEngine
 	public :
 		Material() = delete;
 		explicit Material(GUID);
-		explicit Material(GUID guid, SharedMaterial* sharedMaterial, const std::map<std::string, std::string>& bindings);
+		explicit Material(
+			GUID guid, 
+			ResourceHandle<SharedMaterial> sharedMaterial,
+			const std::map<std::string, std::string>& bindings, 
+			bool bindingsArePaths);
 
 		~Material() override = default;
 
@@ -48,7 +52,7 @@ namespace JoyEngine
 		[[nodiscard]] const std::map<uint32_t, ResourceView*>& GetRootParams() { return m_rootParams; }
 
 	private:
-		void InitMaterial(const std::map<std::string, std::string>& bindings);
+		void InitMaterial(const std::map<std::string, std::string>& bindings, bool bindingsArePaths);
 
 	private :
 		ResourceHandle<SharedMaterial> m_sharedMaterial;

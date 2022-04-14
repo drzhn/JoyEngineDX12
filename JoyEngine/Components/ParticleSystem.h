@@ -1,7 +1,8 @@
 ﻿#ifndef PARTICLE_SYSTEM_H
 #define PARTICLE_SYSTEM_H
+#include <memory>
+
 #include "Component.h"
-#include "ResourceManager/ResourceHandle.h"
 
 namespace JoyEngine
 {

@@ -8,7 +8,6 @@
 #include "Common/SerializationUtils.h"
 #include "GraphicsManager/GraphicsManager.h"
 #include "DataManager/DataManager.h"
-#include "ResourceManager/ResourceManager.h"
 #include "RenderManager/RenderManager.h"
 
 #include "SharedMaterial.h"
@@ -19,7 +18,7 @@ namespace JoyEngine
 	Material::Material(GUID guid) : Resource(guid)
 	{
 		rapidjson::Document json = JoyContext::Data->GetSerializedData(guid, material);
-		m_sharedMaterial = GUID::StringToGuid(json["sharedMaterial"].GetString());
+		m_sharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial>(GUID::StringToGuid(json["sharedMaterial"].GetString()));
 
 		std::map<std::string, std::string> bindings;
 		for (auto& bindingJson : json["bindings"].GetArray())
@@ -30,19 +29,20 @@ namespace JoyEngine
 			});
 		}
 
-		InitMaterial(bindings);
+		InitMaterial(bindings, false);
 	}
 
 	Material::Material(
 		GUID guid,
-		SharedMaterial* sharedMaterial,
-		const std::map<std::string, std::string>& bindings)
+		ResourceHandle<SharedMaterial> sharedMaterial,
+		const std::map<std::string, std::string>& bindings,
+		bool bindingsArePaths = false)
 		: Resource(guid), m_sharedMaterial(sharedMaterial)
 	{
-		InitMaterial(bindings);
+		InitMaterial(bindings, bindingsArePaths);
 	}
 
-	void Material::InitMaterial(const std::map<std::string, std::string>& bindings)
+	void Material::InitMaterial(const std::map<std::string, std::string>& bindings, bool bindingsArePaths)
 	{
 		for (const auto& binding : bindings)
 		{
@@ -61,7 +61,15 @@ namespace JoyEngine
 				{
 					if (!data.empty())
 					{
-						m_textures.emplace_back(GUID::StringToGuid(data));
+						if (bindingsArePaths)
+						{
+							//Texture* t = JoyContext::Resource->LoadResource<Texture>(GUID::Random(), data);
+							m_textures.emplace_back(JoyContext::Resource->LoadResource<Texture>(GUID::Random(), data));
+						}
+						else
+						{
+							m_textures.emplace_back(JoyContext::Resource->LoadResource<Texture>(GUID::StringToGuid(data)));
+						}
 						m_rootParams.insert({
 							m_sharedMaterial->GetRootIndexByName(name),
 							m_textures.back()->GetResourceView()

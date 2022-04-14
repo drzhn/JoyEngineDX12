@@ -39,6 +39,7 @@ namespace JoyEngine
 		explicit Texture() = default;
 
 		explicit Texture(GUID);
+		explicit Texture(GUID guid, const std::string& file);
 
 		explicit Texture(
 			uint32_t width,
@@ -80,14 +81,15 @@ namespace JoyEngine
 		[[nodiscard]] bool IsLoaded() const noexcept override { return true; }
 
 	private:
+		void InitTextureFromFile(std::ifstream& textureStream);
 		void CreateImage(bool allowRenderTarget, bool isDepthTarget, bool allowUnorderedAccess, uint32_t arraySize, uint32_t mipLevels = 1);
 		void CreateImageView(bool allowRenderTarget, bool isDepthTarget, bool allowUnorderedAccess, uint32_t arraySize);
 
 	private:
 		uint32_t m_width = 0;
 		uint32_t m_height = 0;
-		DXGI_FORMAT m_format;
-		D3D12_RESOURCE_STATES m_usageFlags;
+		DXGI_FORMAT m_format = DXGI_FORMAT_UNKNOWN;
+		D3D12_RESOURCE_STATES m_usageFlags = D3D12_RESOURCE_STATE_COMMON;
 		CD3DX12_HEAP_PROPERTIES m_memoryPropertiesFlags;
 
 		ComPtr<ID3D12Resource> m_texture;

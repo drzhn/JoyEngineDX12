@@ -28,42 +28,15 @@ namespace JoyEngine
 	{
 	public:
 		DataManager();
+		~DataManager() = default;
 
-		~DataManager();
-
-		std::vector<char> GetData(GUID guid, bool shouldReadRawData = false, uint32_t offset = 0)
-		{
-			ASSERT(m_pathDatabase.find(guid) != m_pathDatabase.end());
-			std::string filename = m_dataPath + m_pathDatabase[guid].string();
-			if (shouldReadRawData)
-			{
-				filename += ".data";
-			}
-			return ReadFile(filename, offset);
-		}
-
-		bool HasRawData(GUID guid)
-		{
-			ASSERT(m_pathDatabase.find(guid) != m_pathDatabase.end());
-			std::string filename = m_dataPath + m_pathDatabase[guid].string();
-			filename += ".data";
-			return std::filesystem::exists(filename);
-		}
-
-		std::ifstream GetFileStream(GUID guid, bool shouldReadRawData = false)
-		{
-			ASSERT(m_pathDatabase.find(guid) != m_pathDatabase.end());
-			std::string filename = m_dataPath + m_pathDatabase[guid].string();
-			if (shouldReadRawData)
-			{
-				filename += ".data";
-			}
-			return GetStream(filename);
-		}
-
-		rapidjson::Document GetSerializedData(const GUID&, DataType);
-
-		std::filesystem::path GetAbsolutePath(GUID);
+		[[nodiscard]] std::vector<char> GetData(GUID guid, bool shouldReadRawData = false, uint32_t offset = 0) const;
+		[[nodiscard]] bool HasRawData(GUID guid) const;
+		[[nodiscard]] bool HasRawData(const std::string& path) const;
+		[[nodiscard]] std::ifstream GetFileStream(GUID guid, bool shouldReadRawData = false) const;
+		[[nodiscard]] std::ifstream GetFileStream(const std::string& path, bool shouldReadRawData = false) const;
+		[[nodiscard]] rapidjson::Document GetSerializedData(const GUID&, DataType) const;
+		[[nodiscard]] std::filesystem::path GetAbsolutePath(GUID) const;
 
 	private:
 		const std::string m_dataPath = R"(D:\CppProjects\JoyEngineDX\JoyData\)";
@@ -72,7 +45,6 @@ namespace JoyEngine
 
 	private:
 		const std::filesystem::path& GetPath(GUID);
-
 		void ParseDatabase(std::map<GUID, std::filesystem::path>& pathDatabase, const char* data);
 	};
 }

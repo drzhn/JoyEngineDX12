@@ -5,52 +5,60 @@
 #include "ResourceManager/Material.h"
 #include "ResourceManager/Mesh.h"
 
-#include "ResourceManager/ResourceManager.h"
-#include "Common/Resource.h"
 #include "EngineMaterialProvider/EngineMaterialProvider.h"
 
-namespace JoyEngine {
-    void MeshRenderer::Enable() {
-        //ASSERT(m_mesh != nullptr && m_material != nullptr);
-        m_material->GetSharedMaterial()->RegisterMeshRenderer(this);
-        m_enabled = true;
-    }
+namespace JoyEngine
+{
+	void MeshRenderer::Enable()
+	{
+		//ASSERT(m_mesh != nullptr && m_material != nullptr);
+		m_material->GetSharedMaterial()->RegisterMeshRenderer(this);
+		m_enabled = true;
+	}
 
-    void MeshRenderer::Disable() {
-        m_material->GetSharedMaterial()->UnregisterMeshRenderer(this);
-        m_enabled = false;
-    }
+	void MeshRenderer::Disable()
+	{
+		m_material->GetSharedMaterial()->UnregisterMeshRenderer(this);
+		m_enabled = false;
+	}
 
-    MeshRenderer::~MeshRenderer() {
-        if (m_enabled) {
-            Disable();
-        }
-        //JoyContext::Resource->UnloadResource(m_material->GetGuid());
-        //JoyContext::Resource->UnloadResource(m_mesh->GetGuid());
-    }
+	MeshRenderer::~MeshRenderer()
+	{
+		if (m_enabled)
+		{
+			Disable();
+		}
+		//JoyContext::Resource->UnloadResource(m_material->GetGuid());
+		//JoyContext::Resource->UnloadResource(m_mesh->GetGuid());
+	}
 
-    void MeshRenderer::SetMesh(GUID meshGuid) {
-        m_mesh = meshGuid;
-    }
+	void MeshRenderer::SetMesh(GUID meshGuid)
+	{
+		m_mesh = JoyContext::Resource->LoadResource<Mesh>(meshGuid);
+	}
 
-    void MeshRenderer::SetMaterial(const std::string& materialName) {
-        m_material = JoyContext::EngineMaterials->GetMaterialGuid(materialName);
-    }
+	void MeshRenderer::SetMaterial(const std::string& materialName)
+	{
+		m_material = JoyContext::EngineMaterials->GetSampleMaterialByName(materialName);
+	}
 
-    void MeshRenderer::SetMaterial(const GUID& materialGuid) {
-        m_material = JoyContext::Resource->LoadResource<Material>(materialGuid);
-    }
+	void MeshRenderer::SetMaterial(const GUID& materialGuid)
+	{
+		m_material = JoyContext::Resource->LoadResource<Material>(materialGuid);
+	}
 
-    Mesh *MeshRenderer::GetMesh() const noexcept {
-        return m_mesh;
-    }
+	Mesh* MeshRenderer::GetMesh() const noexcept
+	{
+		return m_mesh;
+	}
 
-    Material *MeshRenderer::GetMaterial() const noexcept {
-        return m_material;
-    }
+	Material* MeshRenderer::GetMaterial() const noexcept
+	{
+		return m_material;
+	}
 
-    bool MeshRenderer::IsReady() const noexcept
-    {
-        return m_mesh->IsLoaded();// && m_material->IsLoaded();
-    }
+	bool MeshRenderer::IsReady() const noexcept
+	{
+		return m_mesh->IsLoaded(); // && m_material->IsLoaded();
+	}
 }

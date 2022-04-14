@@ -21,12 +21,15 @@ namespace JoyEngine
 			std::map<std::string, std::string> bindings{
 				{"diffuse", mat["diffuse"].GetString()},
 				{"normal", mat["normal"].GetString()}
-			}; // TODO values is paths, not GUIDS!
-			Material* material = JoyContext::Resource->LoadResource<Material>(
-				GUID::Random(),  
-				JoyContext::EngineMaterials->GetStandardSharedMaterial(), 
-				bindings
-			);
+			}; 
+			//Material* m = JoyContext::Resource->LoadResource<Material>(
+			//	GUID::Random(),  
+			//	JoyContext::EngineMaterials->GetStandardSharedMaterial(), 
+			//	bindings,
+			//	true
+			//);
+			//ResourceHandle<Material> material(m);
+			//m_materials.emplace_back(material);
 		}
 
 		//m_modelStream.seekg(0);

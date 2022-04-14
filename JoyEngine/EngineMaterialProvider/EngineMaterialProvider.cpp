@@ -11,7 +11,6 @@ using Microsoft::WRL::ComPtr;
 #include "JoyContext.h"
 
 #include "ResourceManager/ResourceManager.h"
-#include "ResourceManager/ResourceHandle.h"
 #include "ResourceManager/SharedMaterial.h"
 #include "Utils/Assert.h"
 

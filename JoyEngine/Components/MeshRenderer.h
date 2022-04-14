@@ -4,7 +4,7 @@
 #include <optional>
 
 #include "Component.h"
-#include "ResourceManager/ResourceHandle.h"
+#include "ResourceManager/ResourceManager.h"
 #include "Utils/GUID.h"
 #include "Utils/Assert.h"
 //#include "ResourceManager/Material.h"
@@ -25,7 +25,7 @@ namespace JoyEngine
 
 		void Update() final
 		{
-		};
+		}
 
 		~MeshRenderer() override;
 

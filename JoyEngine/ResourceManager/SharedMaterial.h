@@ -5,7 +5,7 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "Utils/GUID.h"
-#include "ResourceManager/ResourceHandle.h"
+#include "ResourceManager/ResourceManager.h"
 
 namespace JoyEngine
 {

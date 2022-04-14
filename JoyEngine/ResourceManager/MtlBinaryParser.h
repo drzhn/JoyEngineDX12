@@ -4,7 +4,7 @@
 #include <fstream>
 #include <vector>
 
-#include "ResourceHandle.h"
+#include "ResourceManager/ResourceManager.h"
 #include "Utils/GUID.h"
 
 namespace JoyEngine

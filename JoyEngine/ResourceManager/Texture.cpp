@@ -154,40 +154,58 @@ namespace JoyEngine
 		}
 		else
 		{
-			uint32_t width, height;
-			TextureType type;
-
-			textureStream.seekg(0);
-			textureStream.read(reinterpret_cast<char*>(&width), sizeof(uint32_t));
-			textureStream.read(reinterpret_cast<char*>(&height), sizeof(uint32_t));
-			textureStream.read(reinterpret_cast<char*>(&type), sizeof(uint32_t));
-
-			m_width = width;
-			m_height = height;
-			switch (type)
-			{
-			case RGBA_UNORM:
-				m_format = DXGI_FORMAT_R8G8B8A8_UNORM;
-				break;
-			case RGB_FLOAT:
-				m_format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-				break;
-			default:
-				ASSERT(false);
-			}
-
-			CreateImage(false, false, true, 1, 5);
-			CreateImageView(false, false, false, 1);
-			JoyContext::Memory->LoadDataToImage(
-				textureStream,
-				sizeof(uint32_t) + sizeof(uint32_t),
-				m_width * 4,
-				m_width * m_height * 4,
-				m_width,
-				m_height,
-				this,
-				1);
+			InitTextureFromFile(textureStream);
 		}
+	}
+
+	Texture::Texture(
+		GUID guid,
+		const std::string& file) :
+		Resource(guid),
+		m_usageFlags(D3D12_RESOURCE_STATE_COPY_DEST),
+		m_memoryPropertiesFlags(D3D12_HEAP_TYPE_DEFAULT)
+	{
+		const bool hasRawData = JoyContext::Data->HasRawData(file);
+		auto textureStream = JoyContext::Data->GetFileStream(file, hasRawData);
+
+		InitTextureFromFile(textureStream);
+	}
+
+	void Texture::InitTextureFromFile(std::ifstream& textureStream) // TODO make this DDS compatible
+	{
+		uint32_t width, height;
+		TextureType type;
+
+		textureStream.seekg(0);
+		textureStream.read(reinterpret_cast<char*>(&width), sizeof(uint32_t));
+		textureStream.read(reinterpret_cast<char*>(&height), sizeof(uint32_t));
+		textureStream.read(reinterpret_cast<char*>(&type), sizeof(uint32_t));
+
+		m_width = width;
+		m_height = height;
+		switch (type)
+		{
+		case RGBA_UNORM:
+			m_format = DXGI_FORMAT_R8G8B8A8_UNORM;
+			break;
+		case RGB_FLOAT:
+			m_format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+			break;
+		default:
+			ASSERT(false);
+		}
+
+		CreateImage(false, false, true, 1, 5);
+		CreateImageView(false, false, false, 1);
+		JoyContext::Memory->LoadDataToImage(
+			textureStream,
+			sizeof(uint32_t) + sizeof(uint32_t),
+			m_width * 4,
+			m_width * m_height * 4,
+			m_width,
+			m_height,
+			this,
+			1);
 	}
 
 	Texture::Texture(
@@ -304,7 +322,7 @@ namespace JoyEngine
 				}
 
 				desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2DARRAY;
-				desc.Texture2DArray.ArraySize = arraySize; 
+				desc.Texture2DArray.ArraySize = arraySize;
 				desc.Texture2DArray.FirstArraySlice = 0;
 				desc.Texture2DArray.MipSlice = 0;
 				desc.Texture2DArray.PlaneSlice = 0;

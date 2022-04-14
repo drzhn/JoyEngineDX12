@@ -8,67 +8,231 @@
 
 #include "Common/Resource.h"
 
-namespace JoyEngine {
+namespace JoyEngine
+{
+	class ResourceManager;
 
-    class ResourceManager {
-    public:
+	class IResourceManager
+	{
+	public:
+		virtual void IncreaseRefCounter(GUID guid) = 0;
+		virtual void UnloadResource(GUID guid) = 0;
+	};
 
-        ResourceManager() = default;
+	template <typename T>
+	class ResourceHandle
+	{
+	public:
+		ResourceHandle() = default;
 
-        void Init() {}
+		// copy
+		ResourceHandle(const ResourceHandle<T>& other)
+		{
+			Copy(other);
+		}
 
-        void Start() {}
+		//// move
+		//ResourceHandle(ResourceHandle<T>&& other) noexcept
+		//{
+		//	Move(other);
+		//}
 
-        void Stop() {}
+		// copy assignment
+		ResourceHandle<T>& operator=(const ResourceHandle<T>& other) noexcept
+		{
+			Copy(other);
+			return *this;
+		}
 
-        bool IsResourceLoaded(GUID guid) {
-            return m_isResourceInUse.find(guid) != m_isResourceInUse.end();
-        }
+		//// move assignment
+		//ResourceHandle<T>& operator=( ResourceHandle<T>&& other) noexcept
+		//{
+		//	Move(other);
+		//	return *this;
+		//}
 
-        template<class T>
-        T* LoadResource(GUID guid) {
-            if (!IsResourceLoaded(guid)) {
-                m_isResourceInUse.insert({ guid, std::make_unique<T>(guid) });
-            }
-            m_isResourceInUse[guid]->IncreaseRefCount();
-            return GetResource<T>(guid);
-        }
+		//explicit ResourceHandle(GUID guid): m_guid(guid)
+		//{
+		//	m_ptr = JoyContext::Resource->LoadResource<T>(m_guid);
+		//}
 
-        template<class T, typename... Args>
-        T* LoadResource(GUID guid, Args... args) {
-            if (!IsResourceLoaded(guid)) {
-                m_isResourceInUse.insert({ guid, std::make_unique<T>(guid, args...) });
-            }
-            m_isResourceInUse[guid]->IncreaseRefCount();
-            return GetResource<T>(guid);
-        }
+		~ResourceHandle()
+		{
+			Release();
+		}
 
-        void UnloadResource(GUID guid) {
-            if (IsResourceLoaded(guid)) {
-                m_isResourceInUse[guid]->DecreaseRefCount();
-            } else {
-                ASSERT(false);
-            }
-            if (m_isResourceInUse[guid]->GetRefCount() == 0) {
-                m_isResourceInUse.erase(guid);
-            }
-        }
+		//ResourceHandle<T>& operator=(GUID guid)
+		//{
+		//	Release();
+		//	m_guid = guid;
+		//	m_ptr = JoyContext::Resource->LoadResource<T>(m_guid);
+		//	return *this;
+		//}
 
-        template<class T>
-        T *GetResource(GUID guid) {
-            ASSERT(IsResourceLoaded(guid));
+		//ResourceHandle<T>& operator=(T* ptr)
+		//{
+		//	Release();
+
+		//	if (ptr != nullptr)
+		//	{
+		//		Resource* resource = dynamic_cast<Resource*>(ptr);
+		//		ASSERT(resource != nullptr);
+		//		m_ptr = ptr;
+		//		m_guid = resource->GetGuid();
+		//	}
+		//	return *this;
+		//}
+
+		bool operator ==(const ResourceHandle<T>& other)
+		{
+			return m_ptr == other.m_ptr;
+		}
+
+		operator T*() const
+		{
+			return m_ptr;
+		}
+
+		T* operator ->() const
+		{
+			return m_ptr;
+		}
+
+		[[nodiscard]] bool Empty() const { return m_ptr == nullptr; }
+
+	private:
+		GUID m_guid;
+		T* m_ptr = nullptr;
+		IResourceManager* m_manager = nullptr;
+
+	private:
+		explicit ResourceHandle(T* ptr, IResourceManager* manager)
+		{
+			Resource* resource = dynamic_cast<Resource*>(ptr);
+			ASSERT(resource != nullptr);
+			m_ptr = ptr;
+			m_guid = resource->GetGuid();
+			m_manager = manager;
+		}
+
+
+		void Copy(const ResourceHandle<T>& other)
+		{
+			m_guid = other.m_guid;
+			m_ptr = other.m_ptr;
+			m_manager = other.m_manager;
+
+			m_manager->IncreaseRefCounter(m_guid);
+		}
+
+		//void Move(const ResourceHandle<T>& other)
+		//{
+		//	Copy(other);
+
+		//	other.Release();
+		//}
+
+		void Release()
+		{
+			if (m_ptr != nullptr)
+			{
+				m_manager->UnloadResource(m_guid);
+				m_ptr = nullptr;
+				m_guid = GUID();
+			}
+		}
+		
+		friend class ResourceManager;
+	};
+
+	class ResourceManager : IResourceManager
+	{
+	public:
+		ResourceManager() = default;
+
+		void Init()
+		{
+		}
+
+		void Start()
+		{
+		}
+
+		void Stop()
+		{
+		}
+
+		bool IsResourceLoaded(GUID guid)
+		{
+			return m_isResourceInUse.find(guid) != m_isResourceInUse.end();
+		}
+
+		template <class T>
+		ResourceHandle<T> LoadResource(GUID guid)
+		{
+			if (!IsResourceLoaded(guid))
+			{
+				m_isResourceInUse.insert({guid, std::make_unique<T>(guid)});
+			}
+			m_isResourceInUse[guid]->IncreaseRefCount();
+			return ResourceHandle<T>(GetResource<T>(guid), this);
+		}
+
+		template <class T, typename... Args>
+		ResourceHandle<T> LoadResource(GUID guid, Args ... args)
+		{
+			if (!IsResourceLoaded(guid))
+			{
+				m_isResourceInUse.insert({guid, std::make_unique<T>(guid, args...)});
+			}
+			m_isResourceInUse[guid]->IncreaseRefCount();
+			return ResourceHandle<T>(GetResource<T>(guid), this);
+		}
+
+	private:
+		template <class T>
+		T* GetResource(GUID guid)
+		{
+			ASSERT(IsResourceLoaded(guid));
 #ifdef _DEBUG
-            T *ptr = dynamic_cast<T *>(m_isResourceInUse[guid].get());
-            ASSERT(ptr != nullptr);
+			T* ptr = dynamic_cast<T*>(m_isResourceInUse[guid].get());
+			ASSERT(ptr != nullptr);
 #else
             T *ptr = reinterpret_cast<T *>(m_isResourceInUse[guid].get());
 #endif //DEBUG
-            return ptr;
-        }
+			return ptr;
+		}
 
-    private:
-        std::map<GUID, std::unique_ptr<Resource>> m_isResourceInUse;
-    };
+		void IncreaseRefCounter(GUID guid) override
+		{
+			if (IsResourceLoaded(guid))
+			{
+				m_isResourceInUse[guid]->IncreaseRefCount();
+			}
+			else
+			{
+				ASSERT(false);
+			}
+		}
+
+		void UnloadResource(GUID guid) override
+		{
+			if (IsResourceLoaded(guid))
+			{
+				m_isResourceInUse[guid]->DecreaseRefCount();
+			}
+			else
+			{
+				ASSERT(false);
+			}
+			if (m_isResourceInUse[guid]->GetRefCount() == 0)
+			{
+				m_isResourceInUse.erase(guid);
+			}
+		}
+
+		std::map<GUID, std::unique_ptr<Resource>> m_isResourceInUse;
+	};
 }
 
 #endif //RESOURCE_MANAGER_H

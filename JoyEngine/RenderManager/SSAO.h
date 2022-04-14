@@ -7,7 +7,7 @@
 #include <dxgi1_6.h>
 #include <wrl.h>
 
-#include "ResourceManager/ResourceHandle.h"
+#include "ResourceManager/ResourceManager.h"
 #include "ResourceManager/Texture.h"
 
 using Microsoft::WRL::ComPtr;

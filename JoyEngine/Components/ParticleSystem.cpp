@@ -1,5 +1,7 @@
 ﻿#include "ParticleSystem.h"
 
+#include "JoyContext.h"
+
 #include "RenderManager/JoyTypes.h"
 #include "RenderManager/RenderManager.h"
 #include "ResourceManager/Buffer.h"

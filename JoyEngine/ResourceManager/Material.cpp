@@ -49,9 +49,11 @@ namespace JoyEngine
 			const std::string& name = binding.first;
 			const std::string& data = binding.second;
 
-			const ShaderInput& shaderInput = m_sharedMaterial->GetShaderInputByName(name);
+			ShaderInput const* shaderInput = m_sharedMaterial->GetShaderInputByName(name);
 
-			switch (shaderInput.Type)
+			if (shaderInput == nullptr) continue;
+
+			switch (shaderInput->Type)
 			{
 			case D3D_SIT_CBUFFER:
 				{

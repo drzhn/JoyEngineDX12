@@ -151,7 +151,7 @@ namespace JoyEngine
 		}
 
 		template <class T, typename... Args>
-		ResourceHandle<T> LoadResource(GUID guid, Args ... args)
+		ResourceHandle<T> LoadResource(GUID guid, Args&& ... args)
 		{
 			if (!IsResourceLoaded(guid))
 			{

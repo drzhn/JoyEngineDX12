@@ -16,6 +16,17 @@
 
 namespace JoyEngine
 {
+	inline void ParseTransform(const std::unique_ptr<GameObject>& go, const rapidjson::Value& transformValue)
+	{
+		glm::vec3 vec;
+		SerializationUtils::DeserializeToPtr(strHash("vec3"), transformValue["localPosition"], &vec, 1);
+		go->GetTransform()->SetPosition(vec);
+		SerializationUtils::DeserializeToPtr(strHash("vec3"), transformValue["localRotation"], &vec, 1);
+		go->GetTransform()->SetRotation(vec);
+		SerializationUtils::DeserializeToPtr(strHash("vec3"), transformValue["localScale"], &vec, 1);
+		go->GetTransform()->SetScale(vec);
+	}
+
 	Scene::Scene(const GUID& guid)
 	{
 		rapidjson::Document json = JoyContext::Data->GetSerializedData(guid, scene);
@@ -31,13 +42,7 @@ namespace JoyEngine
 				std::unique_ptr<GameObject> go = std::make_unique<GameObject>(obj["name"].GetString());
 
 				rapidjson::Value& transformValue = obj["transform"];
-				glm::vec3 vec;
-				SerializationUtils::DeserializeToPtr(strHash("vec3"), transformValue["localPosition"], &vec, 1);
-				go->GetTransform()->SetPosition(vec);
-				SerializationUtils::DeserializeToPtr(strHash("vec3"), transformValue["localRotation"], &vec, 1);
-				go->GetTransform()->SetRotation(vec);
-				SerializationUtils::DeserializeToPtr(strHash("vec3"), transformValue["localScale"], &vec, 1);
-				go->GetTransform()->SetScale(vec);
+				ParseTransform(go, transformValue);
 
 				for (auto& component : obj["components"].GetArray())
 				{
@@ -124,16 +129,39 @@ namespace JoyEngine
 				GUID modelGuid = GUID::StringToGuid(obj["model"].GetString());
 				GUID materialGuid = GUID::StringToGuid(obj["material"].GetString());
 				std::unique_ptr<MtlBinaryParser> parser = std::make_unique<MtlBinaryParser>(modelGuid, materialGuid);
-				
+				MtlMeshStreamData* data = parser->Next();
+				int objectIndex = 0;
+				while (data != nullptr)
+				{
+					std::unique_ptr<GameObject> go = std::make_unique<GameObject>(obj["name"].GetString() + objectIndex);
+
+					rapidjson::Value& transformValue = obj["transform"];
+					ParseTransform(go, transformValue);
+
+					std::unique_ptr<MeshRenderer> mr = std::make_unique<MeshRenderer>();
+					mr->SetMesh(GUID::Random(),
+					            data->vertexDataSize,
+					            data->indexDataSize,
+					            parser->GetModelStream(),
+					            data->vertexStreamOffset,
+					            data->indexStreamOffset);
+					mr->SetMaterial(parser->GetMaterialByIndex(data->materialIndex));
+					go->AddComponent(std::move(mr));
+
+					m_objects.push_back(std::move(go));
+
+					data = parser->Next();
+					objectIndex++;
+				}
 			}
 		}
 	}
 
 	void Scene::Update()
 	{
-		for (const auto& o : m_objects)
+		for (const auto& object : m_objects)
 		{
-			o->Update();
+			object->Update();
 		}
 	}
 }

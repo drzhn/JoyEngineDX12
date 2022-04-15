@@ -25,6 +25,7 @@ namespace JoyEngine
 			sizeof(uint32_t) + sizeof(uint32_t),
 			sizeof(uint32_t) + sizeof(uint32_t) + vertexDataSize
 		);
+		modelStream.close();
 	}
 
 	Mesh::Mesh(GUID guid,
@@ -76,13 +77,5 @@ namespace JoyEngine
 			indexDataSize,
 			DXGI_FORMAT_R32_UINT,
 		};
-
-		modelStream.close();
-	}
-
-	Mesh::~Mesh()
-	{
-		//JoyContext::Memory->DestroyBuffer(m_vertexBuffer, m_vertexBufferMemory);
-		//JoyContext::Memory->DestroyBuffer(m_indexBuffer, m_indexBufferMemory);
 	}
 }

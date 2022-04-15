@@ -45,7 +45,7 @@ namespace JoyEngine
 	public:
 		[[nodiscard]] ComPtr<ID3D12RootSignature> GetRootSignature() const noexcept { return m_rootSignature; }
 		[[nodiscard]] ComPtr<ID3D12PipelineState> GetPipelineObject() const noexcept { return m_pipelineState; };
-		[[nodiscard]] const ShaderInput& GetShaderInputByName(const std::string&) const;
+		[[nodiscard]] ShaderInput const* GetShaderInputByName(const std::string&) const;
 		[[nodiscard]] uint32_t GetRootIndexByName(const std::string&) const;
 
 	protected:

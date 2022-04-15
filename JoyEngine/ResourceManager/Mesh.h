@@ -18,7 +18,7 @@ namespace JoyEngine
 		explicit Mesh(GUID);
 		explicit Mesh(GUID, uint32_t, uint32_t, std::ifstream&, uint32_t, uint32_t);
 
-		~Mesh() final;
+		~Mesh() override = default;
 
 		[[nodiscard]] uint32_t GetIndexSize() const noexcept { return m_indexCount; }
 

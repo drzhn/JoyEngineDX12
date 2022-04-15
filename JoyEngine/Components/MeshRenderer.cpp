@@ -28,8 +28,6 @@ namespace JoyEngine
 		{
 			Disable();
 		}
-		//JoyContext::Resource->UnloadResource(m_material->GetGuid());
-		//JoyContext::Resource->UnloadResource(m_mesh->GetGuid());
 	}
 
 	void MeshRenderer::SetMesh(GUID meshGuid)
@@ -37,14 +35,43 @@ namespace JoyEngine
 		m_mesh = JoyContext::Resource->LoadResource<Mesh>(meshGuid);
 	}
 
+
+	void InitMesh(std::ifstream& modelStream)
+	{
+	}
+
+	void MeshRenderer::SetMesh(
+		GUID meshGuid,
+		uint32_t vertexDataSize,
+		uint32_t indexDataSize,
+		std::ifstream& modelStream,
+		uint32_t vertexDataStreamOffset,
+		uint32_t indexDataStreamOffset)
+	{
+		InitMesh(modelStream);
+		m_mesh = JoyContext::Resource->LoadResource<Mesh>(
+			meshGuid,
+			vertexDataSize,
+			indexDataSize,
+			modelStream,
+			vertexDataStreamOffset,
+			indexDataStreamOffset
+		);
+	}
+
 	void MeshRenderer::SetMaterial(const std::string& materialName)
 	{
-		m_material = JoyContext::EngineMaterials->GetSampleMaterialByName(materialName);
+		m_material = JoyContext::EngineMaterials->GetSampleMaterialByName(materialName); //for debug purposes 
 	}
 
 	void MeshRenderer::SetMaterial(const GUID& materialGuid)
 	{
 		m_material = JoyContext::Resource->LoadResource<Material>(materialGuid);
+	}
+
+	void MeshRenderer::SetMaterial(const ResourceHandle<Material>& mat)
+	{
+		m_material = mat;
 	}
 
 	Mesh* MeshRenderer::GetMesh() const noexcept

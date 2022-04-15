@@ -76,6 +76,8 @@ namespace JoyEngine
 		Buffer stagingBuffer = Buffer(imageSize, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD);
 
 		std::unique_ptr<BufferMappedPtr> ptr = stagingBuffer.GetMappedPtr(0, imageSize);
+		stream.clear();
+
 		stream.seekg(offset);
 		stream.read(static_cast<char*>(ptr->GetMappedPtr()), imageSize);
 
@@ -203,6 +205,7 @@ namespace JoyEngine
 		Buffer stagingBuffer = Buffer(bufferSize, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD);
 
 		std::unique_ptr<BufferMappedPtr> ptr = stagingBuffer.GetMappedPtr(0, bufferSize);
+		stream.clear();
 		stream.seekg(offset);
 		stream.read(static_cast<char*>(ptr->GetMappedPtr()), bufferSize);
 

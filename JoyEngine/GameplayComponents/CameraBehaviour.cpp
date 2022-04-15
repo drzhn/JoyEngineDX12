@@ -37,8 +37,11 @@ namespace JoyEngine
 		float deltaY = (JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_K) ? Time::GetDeltaTime() : 0) -
 			(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_M) ? Time::GetDeltaTime() : 0);
 
-		float deltaAngle = (JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_E) ? Time::GetDeltaTime() : 0) -
+		float deltaYRotation = (JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_E) ? Time::GetDeltaTime() : 0) -
 			(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_Q) ? Time::GetDeltaTime() : 0);
+
+		float deltaXRotation = (JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_N) ? Time::GetDeltaTime() : 0) -
+			(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_J) ? Time::GetDeltaTime() : 0);
 
 
 		glm::vec3 vec = glm::vec3(deltaX, deltaY, deltaZ);
@@ -49,7 +52,8 @@ namespace JoyEngine
 			m_transform->GetPosition() + vecWorld * m_speed
 		);
 		m_transform->SetRotation(
-			glm::angleAxis(deltaAngle, glm::vec3(0, 1, 0)) *
+			glm::angleAxis(deltaYRotation, glm::vec3(0, 1, 0)) *
+			glm::angleAxis(deltaXRotation, m_transform->GetRight()) *
 			m_transform->GetRotation()
 		);
 	}

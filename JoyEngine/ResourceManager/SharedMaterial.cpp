@@ -26,10 +26,13 @@ namespace JoyEngine
 {
 	// =============================== ABSTRACT PIPELINE =================================
 
-	const ShaderInput& AbstractPipelineObject::GetShaderInputByName(const std::string& name) const
+	ShaderInput const* AbstractPipelineObject::GetShaderInputByName(const std::string& name) const
 	{
-		ASSERT(m_shader->GetInputMap().find(name) != m_shader->GetInputMap().end());
-		return m_shader->GetInputMap().find(name)->second;
+		if (m_shader->GetInputMap().find(name) != m_shader->GetInputMap().end())
+		{
+			return &m_shader->GetInputMap().find(name)->second;
+		}
+		return nullptr;
 	}
 
 	uint32_t AbstractPipelineObject::GetRootIndexByName(const std::string& name) const

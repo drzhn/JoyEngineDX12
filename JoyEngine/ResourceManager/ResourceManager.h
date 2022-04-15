@@ -31,11 +31,11 @@ namespace JoyEngine
 			Copy(other);
 		}
 
-		//// move
-		//ResourceHandle(ResourceHandle<T>&& other) noexcept
-		//{
-		//	Move(other);
-		//}
+		// move
+		ResourceHandle(ResourceHandle<T>&& other) noexcept
+		{
+			Move(other);
+		}
 
 		// copy assignment
 		ResourceHandle<T>& operator=(const ResourceHandle<T>& other) noexcept
@@ -44,45 +44,18 @@ namespace JoyEngine
 			return *this;
 		}
 
-		//// move assignment
-		//ResourceHandle<T>& operator=( ResourceHandle<T>&& other) noexcept
-		//{
-		//	Move(other);
-		//	return *this;
-		//}
-
-		//explicit ResourceHandle(GUID guid): m_guid(guid)
-		//{
-		//	m_ptr = JoyContext::Resource->LoadResource<T>(m_guid);
-		//}
+		// move assignment
+		ResourceHandle<T>& operator=( ResourceHandle<T>&& other) noexcept
+		{
+			Move(other);
+			return *this;
+		}
 
 		~ResourceHandle()
 		{
 			Release();
 		}
-
-		//ResourceHandle<T>& operator=(GUID guid)
-		//{
-		//	Release();
-		//	m_guid = guid;
-		//	m_ptr = JoyContext::Resource->LoadResource<T>(m_guid);
-		//	return *this;
-		//}
-
-		//ResourceHandle<T>& operator=(T* ptr)
-		//{
-		//	Release();
-
-		//	if (ptr != nullptr)
-		//	{
-		//		Resource* resource = dynamic_cast<Resource*>(ptr);
-		//		ASSERT(resource != nullptr);
-		//		m_ptr = ptr;
-		//		m_guid = resource->GetGuid();
-		//	}
-		//	return *this;
-		//}
-
+		
 		bool operator ==(const ResourceHandle<T>& other)
 		{
 			return m_ptr == other.m_ptr;
@@ -125,12 +98,12 @@ namespace JoyEngine
 			m_manager->IncreaseRefCounter(m_guid);
 		}
 
-		//void Move(const ResourceHandle<T>& other)
-		//{
-		//	Copy(other);
+		void Move(ResourceHandle<T>& other)
+		{
+			Copy(other);
 
-		//	other.Release();
-		//}
+			other.Release();
+		}
 
 		void Release()
 		{
@@ -138,7 +111,6 @@ namespace JoyEngine
 			{
 				m_manager->UnloadResource(m_guid);
 				m_ptr = nullptr;
-				m_guid = GUID();
 			}
 		}
 		

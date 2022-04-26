@@ -44,6 +44,7 @@ namespace JoyEngine
 		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 		swapChainDesc.SampleDesc.Count = 1;
+		swapChainDesc.Flags = JoyContext::Graphics->GetTearingSupport() ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
 		//swapChainDesc.SampleDesc.Quality = 0;
 
 		ComPtr<IDXGISwapChain1> swapChain;
@@ -1065,8 +1066,10 @@ namespace JoyEngine
 
 		m_queue->Execute(m_currentFrameIndex);
 
+		UINT presentFlags = JoyContext::Graphics->GetTearingSupport() ? DXGI_PRESENT_ALLOW_TEARING : 0;
+
 		// Present the frame.
-		ASSERT_SUCC(m_swapChain->Present(0, 0));
+		ASSERT_SUCC(m_swapChain->Present(0, presentFlags));
 
 		// Update the frame index.
 		m_currentFrameIndex = m_swapChain->GetCurrentBackBufferIndex();

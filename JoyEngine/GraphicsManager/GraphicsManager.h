@@ -30,6 +30,7 @@ namespace JoyEngine
 		[[nodiscard]] IDXGIFactory4* GetFactory() const noexcept { return m_dxgiFactory.Get(); }
 		[[nodiscard]] uint32_t GetWidth() const noexcept { return m_width; }
 		[[nodiscard]] uint32_t GetHeight() const noexcept { return m_height; }
+		[[nodiscard]] bool GetTearingSupport() const noexcept { return m_allowTearing; }
 	private:
 		uint32_t m_width;
 		uint32_t m_height;
@@ -37,13 +38,14 @@ namespace JoyEngine
 		HINSTANCE m_windowInstance;
 		HWND m_windowHandle;
 
-		ComPtr<IDXGIFactory4> m_dxgiFactory = nullptr;
+		ComPtr<IDXGIFactory5> m_dxgiFactory = nullptr;
 		ComPtr<IDXGIAdapter4> m_physicalDevice = nullptr;
 		ComPtr<ID3D12Device2> m_logicalDevice = nullptr;
 #if defined(_DEBUG)
 		ComPtr<ID3D12Debug> debugController;
-		uint32_t m_m4xMsaaQuality;
 #endif
+		uint32_t m_m4xMsaaQuality;
+		bool m_allowTearing;
 	};
 }
 

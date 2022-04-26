@@ -19,6 +19,12 @@ namespace JoyEngine
 
 		ASSERT_SUCC(CreateDXGIFactory2(createFactoryFlags, IID_PPV_ARGS(&m_dxgiFactory)));
 
+
+		ASSERT_SUCC(m_dxgiFactory->CheckFeatureSupport(
+			DXGI_FEATURE_PRESENT_ALLOW_TEARING,
+			&m_allowTearing,
+			sizeof(uint32_t)));
+
 		ComPtr<IDXGIAdapter1> dxgiAdapter1;
 		SIZE_T maxDedicatedVideoMemory = 0;
 		for (UINT i = 0; m_dxgiFactory->EnumAdapters1(i, &dxgiAdapter1) != DXGI_ERROR_NOT_FOUND; ++i)

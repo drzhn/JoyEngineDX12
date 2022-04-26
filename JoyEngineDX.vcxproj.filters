@@ -129,6 +129,9 @@
     <ClCompile Include="JoyEngine\ResourceManager\MtlBinaryParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="JoyEngine\MemoryManager\DeviceLinearAllocator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="JoyEngine\JoyContext.h">
@@ -273,6 +276,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JoyEngine\ResourceManager\MtlBinaryParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JoyEngine\MemoryManager\DeviceLinearAllocator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

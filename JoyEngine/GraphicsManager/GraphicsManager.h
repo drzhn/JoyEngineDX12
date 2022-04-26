@@ -46,6 +46,7 @@ namespace JoyEngine
 #endif
 		uint32_t m_m4xMsaaQuality;
 		bool m_allowTearing;
+		D3D12_FEATURE_DATA_D3D12_OPTIONS m_featureSupport;
 	};
 }
 

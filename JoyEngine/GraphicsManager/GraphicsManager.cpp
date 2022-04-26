@@ -25,6 +25,7 @@ namespace JoyEngine
 			&m_allowTearing,
 			sizeof(uint32_t)));
 
+
 		ComPtr<IDXGIAdapter1> dxgiAdapter1;
 		SIZE_T maxDedicatedVideoMemory = 0;
 		for (UINT i = 0; m_dxgiFactory->EnumAdapters1(i, &dxgiAdapter1) != DXGI_ERROR_NOT_FOUND; ++i)
@@ -55,6 +56,9 @@ namespace JoyEngine
 		m_physicalDevice->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_NON_LOCAL, &non_local_info);
 
 		ASSERT_SUCC(D3D12CreateDevice(m_physicalDevice.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&m_logicalDevice)));
+
+		ASSERT_SUCC(m_logicalDevice->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS, &m_featureSupport, sizeof(m_featureSupport)));
+
 		// Enable debug messages in debug mode.
 #if defined(_DEBUG)
 		ComPtr<ID3D12InfoQueue> pInfoQueue;

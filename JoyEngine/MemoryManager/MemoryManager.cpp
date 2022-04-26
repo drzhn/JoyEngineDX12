@@ -2,25 +2,28 @@
 
 #include <string>
 #include <iostream>
-#include <stdexcept>
 #include <fstream>
+
+#include "d3dx12.h"
+
 
 #include "JoyContext.h"
 
 
 #include "GraphicsManager/GraphicsManager.h"
-//#include "ResourceManager/Buffer.h"
-//#include "GPUMemoryManager.h"
-//#include "Common/Resource.h"
-#include <glm/vec2.hpp>
+#include "EngineMaterialProvider/EngineMaterialProvider.h"
 
-#include "d3dx12.h"
 #include "ResourceManager/Buffer.h"
 #include "ResourceManager/ResourceView.h"
 #include "ResourceManager/Texture.h"
 #include "Utils/Assert.h"
-#include "EngineMaterialProvider/EngineMaterialProvider.h"
-//#include "Utils/FileUtils.h"
+
+#define GPU_BUFFER_ALLOCATION_SIZE 128*1024*1024 // 128 MB
+#define GPU_TEXTURE_ALLOCATION_SIZE 256*1024*1024 // 256 MB
+#define GPU_RT_DS_ALLOCATION_SIZE 128*1024*1024 // 128 MB
+
+#define CPU_BUFFER_ALLOCATION_SIZE 64*1024*1024 // 64 MB
+
 
 namespace JoyEngine
 {
@@ -59,6 +62,52 @@ namespace JoyEngine
 	void MemoryManager::Init()
 	{
 		m_queue = std::make_unique<CommandQueue>(D3D12_COMMAND_LIST_TYPE_DIRECT, JoyContext::Graphics->GetDevice());
+
+		D3D12_HEAP_FLAGS flagBuffer =
+			D3D12_HEAP_FLAG_DENY_RT_DS_TEXTURES |
+			D3D12_HEAP_FLAG_DENY_NON_RT_DS_TEXTURES;
+		D3D12_HEAP_FLAGS flagTexture =
+			D3D12_HEAP_FLAG_DENY_BUFFERS |
+			D3D12_HEAP_FLAG_DENY_RT_DS_TEXTURES;
+		D3D12_HEAP_FLAGS flagRT_DS =
+			D3D12_HEAP_FLAG_DENY_BUFFERS |
+			D3D12_HEAP_FLAG_DENY_NON_RT_DS_TEXTURES;
+
+		m_gpuHeapAllocators.insert(
+			{
+				flagBuffer,
+				std::make_unique<DeviceLinearAllocator>(
+					D3D12_HEAP_TYPE_DEFAULT,
+					flagBuffer,
+					GPU_BUFFER_ALLOCATION_SIZE,
+					JoyContext::Graphics->GetDevice())
+			});
+		m_gpuHeapAllocators.insert({
+			flagTexture,
+			std::make_unique<DeviceLinearAllocator>(
+				D3D12_HEAP_TYPE_DEFAULT,
+				flagTexture,
+				GPU_TEXTURE_ALLOCATION_SIZE,
+				JoyContext::Graphics->GetDevice())
+		});
+		m_gpuHeapAllocators.insert({
+			flagRT_DS,
+			std::make_unique<DeviceLinearAllocator>(
+				D3D12_HEAP_TYPE_DEFAULT,
+				flagRT_DS,
+				GPU_RT_DS_ALLOCATION_SIZE,
+				JoyContext::Graphics->GetDevice())
+		});
+
+
+		m_cpuHeapAllocators.insert({
+			flagBuffer,
+			std::make_unique<DeviceLinearAllocator>(
+				D3D12_HEAP_TYPE_UPLOAD,
+				flagBuffer,
+				CPU_BUFFER_ALLOCATION_SIZE,
+				JoyContext::Graphics->GetDevice())
+		});
 	}
 
 	void MemoryManager::LoadDataToImage(
@@ -142,6 +191,10 @@ namespace JoyEngine
 		m_queue->WaitQueueIdle();
 	}
 
+	//ComPtr<ID3D12Resource> MemoryManager::CreateResource(D3D12_HEAP_TYPE heapType, const D3D12_RESOURCE_DESC* resourceDesc, D3D12_RESOURCE_STATES initialResourceState, const D3D12_CLEAR_VALUE* clearValue)
+	//{
+	//}
+
 	void MemoryManager::ChangeResourceState(
 		ID3D12Resource* resource,
 		D3D12_RESOURCE_STATES stateBefore,
@@ -168,39 +221,11 @@ namespace JoyEngine
 	}
 
 
-	//void MemoryManager::LoadDataToImage(
-	//	const unsigned char* data,
-	//	uint32_t width,
-	//	uint32_t height,
-	//	ComPtr<ID3D12Resource> gpuImage)
-	//{
-	//	//VkDeviceSize imageSize = width * height * 4;
-	//	//Buffer stagingBuffer = Buffer(
-	//	//	imageSize,
-	//	//	VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-	//	//	VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-	//	//std::unique_ptr<BufferMappedPtr> ptr = stagingBuffer.GetMappedPtr(0, imageSize);
-	//	//memcpy(ptr->GetMappedPtr(), data, imageSize);
-	//	//TransitionImageLayout(
-	//	//	gpuImage,
-	//	//	VK_FORMAT_R8G8B8A8_SRGB,
-	//	//	VK_IMAGE_LAYOUT_UNDEFINED,
-	//	//	VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
-	//	//);
-	//	//CopyBufferToImage(stagingBuffer.GetBuffer(), gpuImage, width, height);
-	//	//TransitionImageLayout(
-	//	//	gpuImage,
-	//	//	VK_FORMAT_R8G8B8A8_SRGB,
-	//	//	VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-	//	//	VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-	//	//);
-	//}
-
 	void MemoryManager::LoadDataToBuffer(
 		std::ifstream& stream,
 		uint64_t offset,
 		uint64_t bufferSize,
-		Buffer* gpuBuffer)
+		Buffer* gpuBuffer) const
 	{
 		Buffer stagingBuffer = Buffer(bufferSize, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD);
 
@@ -227,14 +252,12 @@ namespace JoyEngine
 
 		commandList->ResourceBarrier(1, &barrierBefore);
 
-		UpdateSubresources(
-			commandList,
+		commandList->CopyBufferRegion(
 			gpuBuffer->GetBuffer().Get(),
+			0,
 			stagingBuffer.GetBuffer().Get(),
 			0,
-			0,
-			1,
-			&bufferData);
+			bufferSize);
 
 		const D3D12_RESOURCE_BARRIER barrierAfter = Transition(
 			gpuBuffer->GetBuffer().Get(),

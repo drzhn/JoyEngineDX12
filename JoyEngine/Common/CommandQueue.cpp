@@ -15,14 +15,13 @@ namespace JoyEngine
 		};
 		ASSERT_SUCC(device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&m_commandQueue)));
 
-		// Create a RTV and a command allocator for each frame.
 		m_queueEntries.resize(frameCount);
 
 		for (uint32_t i = 0; i < frameCount; i++)
 		{
 			ASSERT_SUCC(device->CreateCommandAllocator( type, IID_PPV_ARGS(&m_queueEntries[i].allocator)));
 			m_queueEntries[i].fenceValue = 0;
-			// Create the command list.
+
 			ASSERT_SUCC(device->CreateCommandList(
 				0,
 				type,
@@ -30,8 +29,6 @@ namespace JoyEngine
 				nullptr,
 				IID_PPV_ARGS(&m_queueEntries[i].commandList)));
 
-			// Command lists are created in the recording state, but there is nothing
-			// to record yet. The main loop expects it to be closed, so close it now.
 			ASSERT_SUCC(m_queueEntries[i].commandList->Close());
 		}
 

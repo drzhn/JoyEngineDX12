@@ -5,14 +5,22 @@
 
 HWND WindowHandler::m_hwnd = nullptr;
 bool WindowHandler::m_windowDestroyed = false;
-JoyEngine::IWindowHandler *WindowHandler::m_messageHandler = nullptr;
+JoyEngine::IWindowHandler* WindowHandler::m_messageHandler = nullptr;
 
 void WindowHandler::RegisterMessageHandler(JoyEngine::IWindowHandler* messageHandler, HWND hwnd)
 {
 	m_messageHandler = messageHandler;
 	m_messageHandler->SetDeltaTimeHandler([hwnd](float deltaTime)
 	{
-			SetWindowTextA(hwnd, (std::to_string(static_cast<int>(1 / deltaTime)) + " FPS").c_str());
+		SetWindowTextA(hwnd, (
+#ifdef _DEBUG
+			               "JoyEngine DEBUG   " +
+#else
+						   "JoyEngine RELEASE   " +
+#endif
+			               std::to_string(static_cast<int>(1 / deltaTime)) +
+			               " FPS"
+		               ).c_str());
 	});
 	m_hwnd = hwnd;
 }

@@ -277,14 +277,11 @@ namespace JoyEngine
 		textureDesc.SampleDesc.Quality = 0;
 		textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 
-		ASSERT_SUCC(JoyContext::Graphics->GetDevice()->CreateCommittedResource(
-				&m_memoryPropertiesFlags,
-				D3D12_HEAP_FLAG_NONE,
-				&textureDesc,
-				m_usageFlags,
-				isDepthTarget ? &optimizedClearValue : nullptr,
-				IID_PPV_ARGS(&m_texture))
-		);
+		m_texture = JoyContext::Memory->CreateResource(
+			m_memoryPropertiesFlags.Type,
+			&textureDesc,
+			m_usageFlags,
+			isDepthTarget ? &optimizedClearValue : nullptr);
 	}
 
 	void Texture::CreateImageView(bool allowRenderTarget, bool isDepthTarget, bool allowUnorderedAccess, uint32_t arraySize)

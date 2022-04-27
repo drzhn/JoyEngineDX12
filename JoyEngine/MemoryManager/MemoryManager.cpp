@@ -133,7 +133,7 @@ namespace JoyEngine
 		);
 		commandList->ResourceBarrier(1, &barrier);
 
-		std::vector<ResourceView> mipViews;
+		//std::vector<ResourceView> mipViews;
 
 		//if (mipMapsCount > 1)
 		//{

@@ -18,7 +18,7 @@
 #include "ResourceManager/Texture.h"
 #include "Utils/Assert.h"
 
-#define GPU_BUFFER_ALLOCATION_SIZE 128*1024*1024 // 128 MB
+#define GPU_BUFFER_ALLOCATION_SIZE 256*1024*1024 // 256 MB
 #define GPU_TEXTURE_ALLOCATION_SIZE 256*1024*1024 // 256 MB
 #define GPU_RT_DS_ALLOCATION_SIZE 128*1024*1024 // 128 MB
 
@@ -63,51 +63,29 @@ namespace JoyEngine
 	{
 		m_queue = std::make_unique<CommandQueue>(D3D12_COMMAND_LIST_TYPE_DIRECT, JoyContext::Graphics->GetDevice());
 
-		D3D12_HEAP_FLAGS flagBuffer =
-			D3D12_HEAP_FLAG_DENY_RT_DS_TEXTURES |
-			D3D12_HEAP_FLAG_DENY_NON_RT_DS_TEXTURES;
-		D3D12_HEAP_FLAGS flagTexture =
-			D3D12_HEAP_FLAG_DENY_BUFFERS |
-			D3D12_HEAP_FLAG_DENY_RT_DS_TEXTURES;
-		D3D12_HEAP_FLAGS flagRT_DS =
-			D3D12_HEAP_FLAG_DENY_BUFFERS |
-			D3D12_HEAP_FLAG_DENY_NON_RT_DS_TEXTURES;
+		m_gpuHeapAllocators[DeviceAllocatorTypeBuffer] = std::make_unique<DeviceLinearAllocator>(
+			D3D12_HEAP_TYPE_DEFAULT,
+			DeviceAllocatorTypeBuffer,
+			GPU_BUFFER_ALLOCATION_SIZE,
+			JoyContext::Graphics->GetDevice());
 
-		m_gpuHeapAllocators.insert(
-			{
-				flagBuffer,
-				std::make_unique<DeviceLinearAllocator>(
-					D3D12_HEAP_TYPE_DEFAULT,
-					flagBuffer,
-					GPU_BUFFER_ALLOCATION_SIZE,
-					JoyContext::Graphics->GetDevice())
-			});
-		m_gpuHeapAllocators.insert({
-			flagTexture,
-			std::make_unique<DeviceLinearAllocator>(
-				D3D12_HEAP_TYPE_DEFAULT,
-				flagTexture,
-				GPU_TEXTURE_ALLOCATION_SIZE,
-				JoyContext::Graphics->GetDevice())
-		});
-		m_gpuHeapAllocators.insert({
-			flagRT_DS,
-			std::make_unique<DeviceLinearAllocator>(
-				D3D12_HEAP_TYPE_DEFAULT,
-				flagRT_DS,
-				GPU_RT_DS_ALLOCATION_SIZE,
-				JoyContext::Graphics->GetDevice())
-		});
+		m_gpuHeapAllocators[DeviceAllocatorTypeTextures] = std::make_unique<DeviceLinearAllocator>(
+			D3D12_HEAP_TYPE_DEFAULT,
+			DeviceAllocatorTypeTextures,
+			GPU_TEXTURE_ALLOCATION_SIZE,
+			JoyContext::Graphics->GetDevice());
 
+		m_gpuHeapAllocators[DeviceAllocatorTypeRtDsTextures] = std::make_unique<DeviceLinearAllocator>(
+			D3D12_HEAP_TYPE_DEFAULT,
+			DeviceAllocatorTypeRtDsTextures,
+			GPU_RT_DS_ALLOCATION_SIZE,
+			JoyContext::Graphics->GetDevice());
 
-		m_cpuHeapAllocators.insert({
-			flagBuffer,
-			std::make_unique<DeviceLinearAllocator>(
-				D3D12_HEAP_TYPE_UPLOAD,
-				flagBuffer,
-				CPU_BUFFER_ALLOCATION_SIZE,
-				JoyContext::Graphics->GetDevice())
-		});
+		m_cpuHeapAllocators[DeviceAllocatorTypeBuffer] = std::make_unique<DeviceLinearAllocator>(
+			D3D12_HEAP_TYPE_UPLOAD,
+			DeviceAllocatorTypeBuffer,
+			GPU_BUFFER_ALLOCATION_SIZE,
+			JoyContext::Graphics->GetDevice());
 	}
 
 	void MemoryManager::LoadDataToImage(
@@ -191,9 +169,67 @@ namespace JoyEngine
 		m_queue->WaitQueueIdle();
 	}
 
-	//ComPtr<ID3D12Resource> MemoryManager::CreateResource(D3D12_HEAP_TYPE heapType, const D3D12_RESOURCE_DESC* resourceDesc, D3D12_RESOURCE_STATES initialResourceState, const D3D12_CLEAR_VALUE* clearValue)
-	//{
-	//}
+	ComPtr<ID3D12Resource> MemoryManager::CreateResource(
+		D3D12_HEAP_TYPE heapType, 
+		const D3D12_RESOURCE_DESC* resourceDesc, 
+		D3D12_RESOURCE_STATES initialResourceState, 
+		const D3D12_CLEAR_VALUE* clearValue)
+	{
+		ComPtr<ID3D12Resource> resource;
+		uint64_t resourceSize = 0;
+		JoyContext::Graphics->GetDevice()->GetCopyableFootprints(
+			resourceDesc,
+			0,
+			resourceDesc->MipLevels,
+			0,
+			nullptr,
+			nullptr,
+			nullptr,
+			&resourceSize);
+
+		ASSERT(resourceSize != 0);
+
+		DeviceLinearAllocator* allocator = nullptr;
+
+		if (heapType == D3D12_HEAP_TYPE_DEFAULT)
+		{
+			if (resourceDesc->Dimension == D3D12_RESOURCE_DIMENSION_BUFFER)
+			{
+				allocator = m_gpuHeapAllocators[DeviceAllocatorTypeBuffer].get();
+			}
+			else
+			{
+				if (resourceDesc->Flags & D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL || 
+					resourceDesc->Flags & D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET)
+				{
+					allocator = m_gpuHeapAllocators[DeviceAllocatorTypeRtDsTextures].get();
+				}
+				else
+				{
+					allocator = m_gpuHeapAllocators[DeviceAllocatorTypeTextures].get();
+				}
+			}
+		}
+		else if (heapType == D3D12_HEAP_TYPE_UPLOAD)
+		{
+			allocator = m_cpuHeapAllocators[DeviceAllocatorTypeBuffer].get();
+		}
+		else
+		{
+			ASSERT(false);
+		}
+
+		ASSERT_SUCC(JoyContext::Graphics->GetDevice()->CreatePlacedResource(
+			allocator->GetHeap(),
+			allocator->Allocate(resourceSize),
+			resourceDesc,
+			initialResourceState,
+			clearValue,
+			IID_PPV_ARGS(&resource)
+		));
+
+		return resource;
+	}
 
 	void MemoryManager::ChangeResourceState(
 		ID3D12Resource* resource,

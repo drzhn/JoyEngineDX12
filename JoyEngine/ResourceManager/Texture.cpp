@@ -255,19 +255,15 @@ namespace JoyEngine
 		{
 			flags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
 		}
-
-		if (isDepthTarget)
+		else if (isDepthTarget)
 		{
 			flags |= D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
 			optimizedClearValue.Format = DXGI_FORMAT_D32_FLOAT;
 			optimizedClearValue.DepthStencil = {1.0f, 0};
 		}
-		else
+		else if (allowRenderTarget)
 		{
-			if (allowRenderTarget)
-			{
-				flags |= D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
-			}
+			flags |= D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
 		}
 
 		D3D12_RESOURCE_DESC textureDesc = {};

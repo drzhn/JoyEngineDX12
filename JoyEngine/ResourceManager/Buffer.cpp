@@ -35,13 +35,18 @@ namespace JoyEngine
 	{
 		const CD3DX12_RESOURCE_DESC bufferResourceDesc = CD3DX12_RESOURCE_DESC::Buffer(m_size, flags);
 
-		ASSERT_SUCC(JoyContext::Graphics->GetDevice()->CreateCommittedResource(
-			&m_properties,
-			D3D12_HEAP_FLAG_NONE,
+		m_buffer = JoyContext::Memory->CreateResource(
+			properties,
 			&bufferResourceDesc,
-			m_currentResourceState,
-			nullptr,
-			IID_PPV_ARGS(&m_buffer)));
+			m_currentResourceState);
+
+		//ASSERT_SUCC(JoyContext::Graphics->GetDevice()->CreateCommittedResource(
+		//	&m_properties,
+		//	D3D12_HEAP_FLAG_NONE,
+		//	&bufferResourceDesc,
+		//	m_currentResourceState,
+		//	nullptr,
+		//	IID_PPV_ARGS(&m_buffer)));
 	}
 
 	std::unique_ptr<BufferMappedPtr> Buffer::GetMappedPtr(uint64_t offset, uint64_t size) const

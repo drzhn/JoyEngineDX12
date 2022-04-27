@@ -8,6 +8,7 @@
 
 
 #include "JoyContext.h"
+#include "DescriptorManager/DescriptorManager.h"
 
 
 #include "GraphicsManager/GraphicsManager.h"
@@ -50,13 +51,8 @@ namespace JoyEngine
 		const ResourceView* view
 	)
 	{
-		//ID3D12DescriptorHeap* heaps1[1] = {view->GetHeap()};
-		//commandList->SetDescriptorHeaps(
-		//	1,
-		//	heaps1);
-		//D3D12_GPU_DESCRIPTOR_HANDLE null = {0};
-		//commandList->SetComputeRootDescriptorTable(
-		//	rootParameterIndex, view->GetGPUHandle());
+		commandList->SetComputeRootDescriptorTable(
+			rootParameterIndex, view->GetGPUHandle());
 	}
 
 	void MemoryManager::Init()
@@ -133,14 +129,22 @@ namespace JoyEngine
 		);
 		commandList->ResourceBarrier(1, &barrier);
 
-		//std::vector<ResourceView> mipViews;
+		//ID3D12DescriptorHeap* heaps[2]
+		//{
+		//	JoyContext::Descriptors->GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV),
+		//	JoyContext::Descriptors->GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER)
+		//};
+		//commandList->SetDescriptorHeaps(2, heaps);
+
 
 		//if (mipMapsCount > 1)
 		//{
+		//	std::vector<ResourceView> mipViews(mipMapsCount);
+
 		//	commandList->SetComputeRootSignature(JoyContext::EngineMaterials->GetMipsGenerationComputePipeline()->GetRootSignature().Get());
 		//	commandList->SetPipelineState(JoyContext::EngineMaterials->GetMipsGenerationComputePipeline()->GetPipelineObject().Get());
 
-		//	for (uint32_t i = 0; i < 4; i++)
+		//	for (uint32_t i = 0; i < mipMapsCount; i++)
 		//	{
 		//		D3D12_UNORDERED_ACCESS_VIEW_DESC desc;
 		//		desc.Format = gpuImage->GetFormat();
@@ -154,8 +158,8 @@ namespace JoyEngine
 		//		AttachView(commandList, i, &mipViews[i]);
 		//	}
 
-		//	AttachView(commandList, 4, gpuImage->GetResourceView());
-		//	AttachView(commandList, 5, Texture::GetPointSampler());
+		//	AttachView(commandList, 4, gpuImage->GetSRV());
+		//	AttachView(commandList, 5, EngineSamplersProvider::GetPointSampler());
 
 
 		//	commandList->SetComputeRoot32BitConstant(6, width >> 1, 0);

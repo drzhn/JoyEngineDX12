@@ -22,7 +22,7 @@ namespace JoyEngine
 		RGB_FLOAT = 1
 	};
 
-	class Texture : public Resource
+	class EngineSamplersProvider
 	{
 	public:
 		static void InitSamplers();
@@ -35,6 +35,60 @@ namespace JoyEngine
 		static std::unique_ptr<ResourceView> m_depthPCFSampler;
 		static std::unique_ptr<ResourceView> m_depthSampler;
 		static std::unique_ptr<ResourceView> m_pointSampler;
+	};
+
+	class AbstractTextureResource
+	{
+	public :
+		[[nodiscard]] ComPtr<ID3D12Resource> GetImage() const noexcept { return m_texture; }
+
+		[[nodiscard]] uint32_t GetWidth() const noexcept { return m_width; }
+
+		[[nodiscard]] uint32_t GetHeight() const noexcept { return m_height; }
+
+		[[nodiscard]] DXGI_FORMAT GetFormat() const noexcept { return m_format; }
+	protected:
+		void CreateImage(bool allowRenderTarget, bool isDepthTarget, bool allowUnorderedAccess, uint32_t arraySize, uint32_t mipLevels = 1);
+
+	protected:
+		uint32_t m_width = 0;
+		uint32_t m_height = 0;
+		DXGI_FORMAT m_format = DXGI_FORMAT_UNKNOWN;
+		D3D12_RESOURCE_STATES m_usageFlags = D3D12_RESOURCE_STATE_COMMON;
+		CD3DX12_HEAP_PROPERTIES m_memoryPropertiesFlags;
+
+		ComPtr<ID3D12Resource> m_texture;
+	};
+
+	class AbstractSingleTexture : public AbstractTextureResource
+	{
+	public:
+		[[nodiscard]] ResourceView* GetSRV() const noexcept { return m_resourceView.get(); }
+
+	protected:
+		virtual void CreateImageViews() = 0;
+
+	protected:
+		std::unique_ptr<ResourceView> m_resourceView;
+	};
+
+	class AbstractArrayTexture : public AbstractTextureResource
+	{
+	public:
+		[[nodiscard]] std::vector<std::unique_ptr<ResourceView>>& GetResourceViewArray() 
+		{
+			return m_resourceViewArray;
+		}
+
+	protected:
+		virtual void CreateImageViews() = 0;
+
+	private:
+		std::vector<std::unique_ptr<ResourceView>> m_resourceViewArray;
+	};
+
+	class Texture : public Resource, public AbstractSingleTexture
+	{
 	public:
 		explicit Texture() = default;
 
@@ -46,59 +100,22 @@ namespace JoyEngine
 			uint32_t height,
 			DXGI_FORMAT format,
 			D3D12_RESOURCE_STATES usage,
-			D3D12_HEAP_TYPE properties,
-			bool allowRenderTarget = false,
-			bool isDepthTarget = false,
-			bool allowUnorderedAccess = false,
-			uint32_t arraySize = 1
-		);
-
-		explicit Texture(
-			ComPtr<ID3D12Resource> externalResource,
-			uint32_t width,
-			uint32_t height,
-			DXGI_FORMAT format,
-			D3D12_RESOURCE_STATES usage,
-			D3D12_HEAP_TYPE properties
+			D3D12_HEAP_TYPE heapType
 		);
 
 		~Texture() override = default;
-
-		[[nodiscard]] ComPtr<ID3D12Resource> GetImage() const noexcept { return m_texture; }
-
-		[[nodiscard]] uint32_t GetWidth() const noexcept { return m_width; }
-
-		[[nodiscard]] uint32_t GetHeight() const noexcept { return m_height; }
-
-		[[nodiscard]] DXGI_FORMAT GetFormat() const noexcept { return m_format; }
-
-		[[nodiscard]] ResourceView* GetResourceView() const noexcept { return m_resourceView.get(); }
-		[[nodiscard]] std::array<std::unique_ptr<ResourceView>, 6>& GetResourceViewArray()
-		{
-			return m_resourceViewArray;
-		}
 
 		[[nodiscard]] bool IsLoaded() const noexcept override { return true; }
 
 	private:
 		void InitTextureFromFile(std::ifstream& textureStream);
-		void CreateImage(bool allowRenderTarget, bool isDepthTarget, bool allowUnorderedAccess, uint32_t arraySize, uint32_t mipLevels = 1);
-		void CreateImageView(bool allowRenderTarget, bool isDepthTarget, bool allowUnorderedAccess, uint32_t arraySize);
+		void CreateImageViews() override;
 
 	private:
-		uint32_t m_width = 0;
-		uint32_t m_height = 0;
-		DXGI_FORMAT m_format = DXGI_FORMAT_UNKNOWN;
-		D3D12_RESOURCE_STATES m_usageFlags = D3D12_RESOURCE_STATE_COMMON;
-		CD3DX12_HEAP_PROPERTIES m_memoryPropertiesFlags;
-
-		ComPtr<ID3D12Resource> m_texture;
-		// TODO make 2 separate classes: texture and texture+view class
-		std::unique_ptr<ResourceView> m_resourceView; // for single textures
-		std::array<std::unique_ptr<ResourceView>, 6> m_resourceViewArray; // for cubemap rtvs
+		uint32_t m_mipLevels = 1;
 	};
 
-	class RenderTexture final : public Texture
+	class RenderTexture final : public AbstractSingleTexture
 	{
 	public:
 		explicit RenderTexture(
@@ -106,17 +123,27 @@ namespace JoyEngine
 			uint32_t height,
 			DXGI_FORMAT format,
 			D3D12_RESOURCE_STATES usage,
-			D3D12_HEAP_TYPE properties,
-			uint32_t arraySize = 1
+			D3D12_HEAP_TYPE heapType
 		);
 
-		[[nodiscard]] ResourceView* GetSrv() const noexcept { return m_inputAttachmentView.get(); }
+		// I use this only for creating texture from system back buffer
+		explicit RenderTexture(
+			ComPtr<ID3D12Resource> externalResource,
+			uint32_t width,
+			uint32_t height,
+			DXGI_FORMAT format,
+			D3D12_RESOURCE_STATES usage,
+			D3D12_HEAP_TYPE heapType
+		);
 
+		[[nodiscard]] ResourceView* GetRTV() const noexcept { return m_renderTargetView.get(); }
+	protected:
+		void CreateImageViews() override;
 	private:
-		std::unique_ptr<ResourceView> m_inputAttachmentView; // additional view for using this texture as input attachment
+		std::unique_ptr<ResourceView> m_renderTargetView;
 	};
 
-	class DepthTexture final : public Texture
+	class DepthTexture final : public AbstractSingleTexture
 	{
 	public:
 		explicit DepthTexture(
@@ -124,33 +151,35 @@ namespace JoyEngine
 			uint32_t height,
 			DXGI_FORMAT format,
 			D3D12_RESOURCE_STATES usage,
-			D3D12_HEAP_TYPE properties,
+			D3D12_HEAP_TYPE heapType,
 			uint32_t arraySize = 1
 		);
 
-		[[nodiscard]] ResourceView* GetSrv() const noexcept { return m_inputAttachmentView.get(); }
-
+		[[nodiscard]] ResourceView* GetDSV() const noexcept { return m_depthStencilView.get(); }
+	protected:
+		void CreateImageViews() override;
 	private:
-		std::unique_ptr<ResourceView> m_inputAttachmentView; // additional view for using this texture as input attachment
+		uint32_t m_arraySize; // we will use depth array texture as single view for rendering
+		std::unique_ptr<ResourceView> m_depthStencilView;
 	};
 
-	class UAVTexture final : public Texture
-	{
-	public:
-		explicit UAVTexture(
-			uint32_t width,
-			uint32_t height,
-			DXGI_FORMAT format,
-			D3D12_RESOURCE_STATES usage,
-			D3D12_HEAP_TYPE properties,
-			uint32_t arraySize = 1
-		);
+	//class UAVTexture final : public Texture
+	//{
+	//public:
+	//	explicit UAVTexture(
+	//		uint32_t width,
+	//		uint32_t height,
+	//		DXGI_FORMAT format,
+	//		D3D12_RESOURCE_STATES usage,
+	//		D3D12_HEAP_TYPE properties,
+	//		uint32_t arraySize = 1
+	//	);
 
-		[[nodiscard]] ResourceView* GetSrv() const noexcept { return m_inputAttachmentView.get(); }
+	//	[[nodiscard]] ResourceView* GetSrv() const noexcept { return m_inputAttachmentView.get(); }
 
-	private:
-		std::unique_ptr<ResourceView> m_inputAttachmentView; // additional view for using this texture as input attachment
-	};
+	//private:
+	//	std::unique_ptr<ResourceView> m_inputAttachmentView; // additional view for using this texture as input attachment
+	//};
 }
 
 #endif

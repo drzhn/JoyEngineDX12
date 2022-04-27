@@ -28,13 +28,13 @@ namespace JoyEngine
 		void SetDirection(bool isHorizontal) const;
 
 		[[nodiscard]] ID3D12Resource* GetRenderResource() const { return m_ssaoRenderTarget->GetImage().Get(); }
-		[[nodiscard]] D3D12_CPU_DESCRIPTOR_HANDLE GetRenderHandle() const { return m_ssaoRenderTarget->GetResourceView()->GetCPUHandle(); }
+		[[nodiscard]] D3D12_CPU_DESCRIPTOR_HANDLE GetRenderHandle() const { return m_ssaoRenderTarget->GetSRV()->GetCPUHandle(); }
 		[[nodiscard]] ID3D12Resource* GetCopyResource() const { return m_ssaoCopyResource->GetImage().Get(); }
 
 		[[nodiscard]] ResourceView* GetSSAODataBufferView() const { return m_ssaoDataBufferView.get(); }
-		[[nodiscard]] ResourceView* GetRandomNoiseTextureView() const { return m_randomColorTexture->GetResourceView(); }
-		[[nodiscard]] ResourceView* GetSSAOTextureView() const { return m_ssaoRenderTarget->GetSrv(); }
-		[[nodiscard]] ResourceView* GetCopyResourceTextureView() const { return m_ssaoCopyResource->GetResourceView(); }
+		[[nodiscard]] ResourceView* GetRandomNoiseTextureView() const { return m_randomColorTexture->GetSRV(); }
+		[[nodiscard]] ResourceView* GetSSAOTextureView() const { return m_ssaoRenderTarget->GetRTV(); }
+		[[nodiscard]] ResourceView* GetCopyResourceTextureView() const { return m_ssaoCopyResource->GetSRV(); }
 
 		[[nodiscard]] uint32_t GetWidth() const noexcept { return m_width; }
 		[[nodiscard]] uint32_t GetHeight() const noexcept { return m_height; }

@@ -10,33 +10,33 @@ namespace JoyEngine
 {
 	CubemapRenderer::CubemapRenderer()
 	{
-		m_cubemap = std::make_unique<RenderTexture>(
-			m_textureSize,
-			m_textureSize,
-			RenderManager::GetHdrRTVFormat(),
-			D3D12_RESOURCE_STATE_GENERIC_READ,
-			D3D12_HEAP_TYPE_DEFAULT,
-			6
-		);
+		//m_cubemap = std::make_unique<RenderTexture>(
+		//	m_textureSize,
+		//	m_textureSize,
+		//	RenderManager::GetHdrRTVFormat(),
+		//	D3D12_RESOURCE_STATE_GENERIC_READ,
+		//	D3D12_HEAP_TYPE_DEFAULT,
+		//	6
+		//);
 
-		m_cubemapConvoluted = std::make_unique<RenderTexture>(
-			m_convolutedTextureSize,
-			m_convolutedTextureSize,
-			RenderManager::GetHdrRTVFormat(),
-			D3D12_RESOURCE_STATE_GENERIC_READ,
-			D3D12_HEAP_TYPE_DEFAULT,
-			6
-		);
+		//m_cubemapConvoluted = std::make_unique<RenderTexture>(
+		//	m_convolutedTextureSize,
+		//	m_convolutedTextureSize,
+		//	RenderManager::GetHdrRTVFormat(),
+		//	D3D12_RESOURCE_STATE_GENERIC_READ,
+		//	D3D12_HEAP_TYPE_DEFAULT,
+		//	6
+		//);
 
-		m_depthTexture = std::make_unique<Texture>(
-			m_textureSize,
-			m_textureSize,
-			RenderManager::GetDepthFormat(),
-			D3D12_RESOURCE_STATE_DEPTH_WRITE,
-			D3D12_HEAP_TYPE_DEFAULT,
-			false,
-			true,
-			false);
+		//m_depthTexture = std::make_unique<Texture>(
+		//	m_textureSize,
+		//	m_textureSize,
+		//	RenderManager::GetDepthFormat(),
+		//	D3D12_RESOURCE_STATE_DEPTH_WRITE,
+		//	D3D12_HEAP_TYPE_DEFAULT,
+		//	false,
+		//	true,
+		//	false);
 
 		m_cameraUnit = CameraUnit(
 			1,

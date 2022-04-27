@@ -74,7 +74,7 @@ namespace JoyEngine
 						}
 						m_rootParams.insert({
 							m_sharedMaterial->GetRootIndexByName(name),
-							m_textures.back()->GetResourceView()
+							m_textures.back()->GetSRV()
 						});
 					}
 					break;
@@ -85,7 +85,7 @@ namespace JoyEngine
 					switch (strHash(data.c_str()))
 					{
 					case strHash("texture"):
-						samplerView = Texture::GetTextureSampler();
+						samplerView = EngineSamplersProvider::GetTextureSampler();
 						break;
 					default:
 						ASSERT(false);

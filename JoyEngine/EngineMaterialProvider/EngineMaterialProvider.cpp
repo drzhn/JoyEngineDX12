@@ -18,7 +18,7 @@ namespace JoyEngine
 {
 	void EngineMaterialProvider::Init()
 	{
-		Texture::InitSamplers();
+		EngineSamplersProvider::InitSamplers();
 		DXGI_FORMAT mainRTVFormat = RenderManager::GetHdrRTVFormat();
 		DXGI_FORMAT swapchainLdrFormat = RenderManager::GetLdrRTVFormat();
 		DXGI_FORMAT mainGBufferFormat = RenderManager::GetGBufferFormat();

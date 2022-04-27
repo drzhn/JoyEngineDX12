@@ -117,7 +117,7 @@ namespace JoyEngine
 
 		ComPtr<IDXGISwapChain3> m_swapChain;
 
-		std::array<std::unique_ptr<Texture>, FrameCount> m_swapchainRenderTargets;
+		std::array<std::unique_ptr<RenderTexture>, FrameCount> m_swapchainRenderTargets;
 
 		std::unique_ptr<DepthTexture> m_depthAttachment;
 		//std::unique_ptr<RenderTexture> m_hdrRenderTarget;

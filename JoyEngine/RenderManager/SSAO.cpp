@@ -17,27 +17,27 @@ namespace JoyEngine
 		m_width(width),
 		m_height(height)
 	{
-		m_randomColorTexture = JoyContext::Resource->LoadResource<Texture>(
-			GUID::StringToGuid("65c0d16a-9cf6-46e5-9a5e-a5026b350b8d")
-		); // textures/ColorNoise.png
-		m_ssaoRenderTarget = std::make_unique<RenderTexture>(
-			m_width,
-			m_height,
-			format,
-			D3D12_RESOURCE_STATE_RENDER_TARGET,
-			D3D12_HEAP_TYPE_DEFAULT);
+		//m_randomColorTexture = JoyContext::Resource->LoadResource<Texture>(
+		//	GUID::StringToGuid("65c0d16a-9cf6-46e5-9a5e-a5026b350b8d")
+		//); // textures/ColorNoise.png
+		//m_ssaoRenderTarget = std::make_unique<RenderTexture>(
+		//	m_width,
+		//	m_height,
+		//	format,
+		//	D3D12_RESOURCE_STATE_RENDER_TARGET,
+		//	D3D12_HEAP_TYPE_DEFAULT);
 
-		m_ssaoCopyResource = std::make_unique<Texture>(
-			m_width,
-			m_height,
-			format,
-			D3D12_RESOURCE_STATE_COPY_DEST,
-			D3D12_HEAP_TYPE_DEFAULT,
-			false,
-			false,
-			false,
-			1
-		);
+		//m_ssaoCopyResource = std::make_unique<Texture>(
+		//	m_width,
+		//	m_height,
+		//	format,
+		//	D3D12_RESOURCE_STATE_COPY_DEST,
+		//	D3D12_HEAP_TYPE_DEFAULT,
+		//	false,
+		//	false,
+		//	false,
+		//	1
+		//);
 
 		uint32_t bufferSize = ((sizeof(SSAOData) - 1) / 256 + 1) * 256; // Device requirement. TODO check this 
 		m_ssaoDataBuffer = std::make_unique<Buffer>(

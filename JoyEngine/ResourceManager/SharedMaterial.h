@@ -47,12 +47,13 @@ namespace JoyEngine
 		[[nodiscard]] ComPtr<ID3D12PipelineState> GetPipelineObject() const noexcept { return m_pipelineState; };
 		[[nodiscard]] ShaderInput const* GetShaderInputByName(const std::string&) const;
 		[[nodiscard]] uint32_t GetRootIndexByName(const std::string&) const;
+		[[nodiscard]] uint32_t GetRootIndexByHash(const uint32_t hash) const;
 
 	protected:
 		ComPtr<ID3D12RootSignature> m_rootSignature;
 		ComPtr<ID3D12PipelineState> m_pipelineState;
 		ResourceHandle<Shader> m_shader;
-		std::map<std::string, uint32_t> m_rootIndices;
+		std::map<uint32_t, uint32_t> m_rootIndices;
 		std::map<uint32_t, EngineBindingType> m_engineBindings;
 
 	protected:

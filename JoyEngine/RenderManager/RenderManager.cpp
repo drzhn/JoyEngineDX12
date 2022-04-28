@@ -478,7 +478,7 @@ namespace JoyEngine
 		//		commandList->ClearRenderTargetView(cubemapConvoluted, clearColor, 0, nullptr);
 		//		AttachViewToGraphics(commandList, 0, m_cubemap->GetConvolutionConstantsBufferView());
 		//		AttachViewToGraphics(commandList, 1, m_cubemap->GetCubemapTexture()->GetRTV());
-		//		AttachViewToGraphics(commandList, 2, Texture::GetTextureSampler());
+		//		AttachViewToGraphics(commandList, 2, Texture::GetLinearWrapSampler());
 
 		//		commandList->DrawIndexedInstanced(
 		//			m_cubeMesh->GetIndexSize(),
@@ -733,8 +733,8 @@ namespace JoyEngine
 		//	//	AttachViewToGraphics(commandList, 2, m_worldNormalAttachment->GetRTV());
 		//	//	AttachViewToGraphics(commandList, 3, m_positionAttachment->GetRTV());
 		//	//	AttachViewToGraphics(commandList, 4, m_renderTargetCopyAttachment->GetSRV());
-		//	//	AttachViewToGraphics(commandList, 5, Texture::GetPointSampler());
-		//	//	AttachViewToGraphics(commandList, 6, Texture::GetTextureSampler());
+		//	//	AttachViewToGraphics(commandList, 5, Texture::GetPointClampSampler());
+		//	//	AttachViewToGraphics(commandList, 6, Texture::GetLinearWrapSampler());
 		//	//	AttachViewToGraphics(commandList, 7, m_engineDataBufferView.get());
 
 		//	//	commandList->DrawInstanced(
@@ -791,9 +791,9 @@ namespace JoyEngine
 		//			AttachViewToGraphics(commandList, 4, m_viewNormalAttachment->GetRTV());
 		//			AttachViewToGraphics(commandList, 5, m_ssaoEffect->GetRandomNoiseTextureView());
 
-		//			AttachViewToGraphics(commandList, 6, Texture::GetDepthSampler());
-		//			AttachViewToGraphics(commandList, 7, Texture::GetTextureSampler());
-		//			AttachViewToGraphics(commandList, 8, Texture::GetPointSampler());
+		//			AttachViewToGraphics(commandList, 6, Texture::GetLinearBorderWhiteSampler());
+		//			AttachViewToGraphics(commandList, 7, Texture::GetLinearWrapSampler());
+		//			AttachViewToGraphics(commandList, 8, Texture::GetPointClampSampler());
 
 		//			commandList->DrawInstanced(
 		//				6,
@@ -818,9 +818,9 @@ namespace JoyEngine
 		//			AttachViewToGraphics(commandList, 4, m_viewNormalAttachment->GetRTV());
 
 
-		//			AttachViewToGraphics(commandList, 6, Texture::GetDepthSampler());
-		//			AttachViewToGraphics(commandList, 7, Texture::GetTextureSampler());
-		//			AttachViewToGraphics(commandList, 8, Texture::GetPointSampler());
+		//			AttachViewToGraphics(commandList, 6, Texture::GetLinearBorderWhiteSampler());
+		//			AttachViewToGraphics(commandList, 7, Texture::GetLinearWrapSampler());
+		//			AttachViewToGraphics(commandList, 8, Texture::GetPointClampSampler());
 
 		//			for (uint32_t i = 0; i < 4; i++)
 		//			{
@@ -1025,7 +1025,7 @@ namespace JoyEngine
 		//		AttachViewToGraphics(commandList, 0, m_hdrRenderTarget->GetRTV());
 		//		AttachViewToGraphics(commandList, 1, m_hdrLuminationBufferSRVView.get());
 		//		AttachViewToGraphics(commandList, 2, m_bloomFirstTexture->GetRTV());
-		//		AttachViewToGraphics(commandList, 3, Texture::GetTextureSampler());
+		//		AttachViewToGraphics(commandList, 3, Texture::GetLinearWrapSampler());
 
 		//		commandList->DrawInstanced(
 		//			3,

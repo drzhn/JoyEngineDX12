@@ -109,6 +109,13 @@ namespace JoyEngine
 		uint32_t _dummy;
 		glm::vec4 blurWeights[3];
 	};
+
+	struct MipMapGenerationData
+	{
+		glm::uvec2 TexelSize;
+		uint32_t SrcMipLevel;	// Texture level of source mip
+		uint32_t NumMipLevels;	// Number of OutMips to write: [1, 4]
+	};
 }
 
 #endif //JOY_TYPES_H

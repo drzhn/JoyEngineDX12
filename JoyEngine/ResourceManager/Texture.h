@@ -26,15 +26,17 @@ namespace JoyEngine
 	{
 	public:
 		static void InitSamplers();
-		static ResourceView* GetTextureSampler();
+		static ResourceView* GetLinearWrapSampler();
+		static ResourceView* GetLinearClampSampler();
 		static ResourceView* GetDepthPCFSampler();
-		static ResourceView* GetDepthSampler();
-		static ResourceView* GetPointSampler();
+		static ResourceView* GetLinearBorderWhiteSampler();
+		static ResourceView* GetPointClampSampler();
 	private:
-		static std::unique_ptr<ResourceView> m_textureSampler;
+		static std::unique_ptr<ResourceView> m_linearWrapSampler;
+		static std::unique_ptr<ResourceView> m_linearClampSampler;
 		static std::unique_ptr<ResourceView> m_depthPCFSampler;
-		static std::unique_ptr<ResourceView> m_depthSampler;
-		static std::unique_ptr<ResourceView> m_pointSampler;
+		static std::unique_ptr<ResourceView> m_linearBorderWhiteSampler;
+		static std::unique_ptr<ResourceView> m_pointClampSampler;
 	};
 
 	class AbstractTextureResource
@@ -112,7 +114,7 @@ namespace JoyEngine
 		void CreateImageViews() override;
 
 	private:
-		uint32_t m_mipLevels = 1;
+		uint32_t m_mipLevels = 0;
 	};
 
 	class RenderTexture final : public AbstractSingleTexture

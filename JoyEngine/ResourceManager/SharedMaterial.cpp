@@ -37,8 +37,14 @@ namespace JoyEngine
 
 	uint32_t AbstractPipelineObject::GetRootIndexByName(const std::string& name) const
 	{
-		ASSERT(m_rootIndices.find(name) != m_rootIndices.end());
-		return m_rootIndices.find(name)->second;
+		ASSERT(m_rootIndices.find(strHash(name.c_str())) != m_rootIndices.end());
+		return m_rootIndices.find(strHash(name.c_str()))->second;
+	}
+
+	uint32_t AbstractPipelineObject::GetRootIndexByHash(const uint32_t hash) const
+	{
+		ASSERT(m_rootIndices.find(hash) != m_rootIndices.end());
+		return m_rootIndices.find(hash)->second;
 	}
 
 	void AbstractPipelineObject::CreateShaderAndRootSignature(GUID shaderGuid, ShaderTypeFlags shaderTypes)
@@ -64,6 +70,14 @@ namespace JoyEngine
 					params[paramsIndex].InitAsConstants(
 						sizeof(MVP) / 4, input.BindPoint, input.Space, input.Visibility);
 					m_engineBindings.insert({static_cast<uint32_t>(paramsIndex), ModelViewProjection});
+					paramsIndex++;
+				}
+				else if (name == "MipMapGenerationData")
+				{
+					params[paramsIndex].InitAsConstants(
+						sizeof(MipMapGenerationData) / 4, input.BindPoint, input.Space, input.Visibility);
+					//m_engineBindings.insert({ static_cast<uint32_t>(paramsIndex), ModelViewProjection });
+					m_rootIndices.insert({ strHash(name.c_str()), paramsIndex });
 					paramsIndex++;
 				}
 				else
@@ -98,7 +112,7 @@ namespace JoyEngine
 					}
 					ranges[rangesIndex].Init(type, input.BindCount, input.BindPoint, input.Space, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
 					params[paramsIndex].InitAsDescriptorTable(input.BindCount, &ranges[rangesIndex], input.Visibility);
-					m_rootIndices.insert({name, paramsIndex});
+					m_rootIndices.insert({strHash(name.c_str()), paramsIndex});
 					rangesIndex++;
 					paramsIndex++;
 				}

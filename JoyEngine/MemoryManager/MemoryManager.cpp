@@ -8,6 +8,7 @@
 
 
 #include "JoyContext.h"
+#include "Common/HashDefs.h"
 #include "DescriptorManager/DescriptorManager.h"
 
 
@@ -129,43 +130,73 @@ namespace JoyEngine
 		);
 		commandList->ResourceBarrier(1, &barrier);
 
-		//ID3D12DescriptorHeap* heaps[2]
-		//{
-		//	JoyContext::Descriptors->GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV),
-		//	JoyContext::Descriptors->GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER)
-		//};
-		//commandList->SetDescriptorHeaps(2, heaps);
+		ID3D12DescriptorHeap* heaps[2]
+		{
+			JoyContext::Descriptors->GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV),
+			JoyContext::Descriptors->GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER)
+		};
+		commandList->SetDescriptorHeaps(2, heaps);
 
 
-		//if (mipMapsCount > 1)
-		//{
-		//	std::vector<ResourceView> mipViews(mipMapsCount);
+		if (mipMapsCount > 1)
+		{
+			std::vector<ResourceView> mipViews(4);
 
-		//	commandList->SetComputeRootSignature(JoyContext::EngineMaterials->GetMipsGenerationComputePipeline()->GetRootSignature().Get());
-		//	commandList->SetPipelineState(JoyContext::EngineMaterials->GetMipsGenerationComputePipeline()->GetPipelineObject().Get());
+			ResourceHandle<ComputePipeline> mipMapGenerationPipeline = JoyContext::EngineMaterials->GetMipsGenerationComputePipeline();
 
-		//	for (uint32_t i = 0; i < mipMapsCount; i++)
-		//	{
-		//		D3D12_UNORDERED_ACCESS_VIEW_DESC desc;
-		//		desc.Format = gpuImage->GetFormat();
-		//		desc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
-		//		desc.Texture2D = {
-		//			i + 1,
-		//			0
-		//		};
-		//		mipViews.emplace_back(desc, gpuImage->GetImage().Get());
-
-		//		AttachView(commandList, i, &mipViews[i]);
-		//	}
-
-		//	AttachView(commandList, 4, gpuImage->GetSRV());
-		//	AttachView(commandList, 5, EngineSamplersProvider::GetPointSampler());
+			commandList->SetComputeRootSignature(mipMapGenerationPipeline->GetRootSignature().Get());
+			commandList->SetPipelineState(mipMapGenerationPipeline->GetPipelineObject().Get());
 
 
-		//	commandList->SetComputeRoot32BitConstant(6, width >> 1, 0);
-		//	commandList->SetComputeRoot32BitConstant(6, height >> 1, 1);
-		//	commandList->Dispatch((width >> 1) / 8, (height >> 1) / 8, 1);
-		//}
+			AttachView(
+				commandList,
+				mipMapGenerationPipeline->GetRootIndexByHash(strHash("SrcMip")),
+				gpuImage->GetSRV());
+
+			uint32_t dispatchCount = ((mipMapsCount - 1) + 3) / 4;
+
+			for (uint32_t dispatchIndex = 0; dispatchIndex < dispatchCount; dispatchIndex++)
+			{
+				uint32_t mipLevelsToGenerate = (mipMapsCount - 1) - dispatchIndex * 4;
+				if (mipLevelsToGenerate > 4) mipLevelsToGenerate = 4;
+
+				for (uint32_t i = 0; i < mipLevelsToGenerate; i++)
+				{
+					uint32_t mipIndex = dispatchIndex * 4 + i + 1;
+					D3D12_UNORDERED_ACCESS_VIEW_DESC desc;
+					desc.Format = gpuImage->GetFormat();
+					desc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
+					desc.Texture2D = {
+						mipIndex,
+						0
+					};
+					mipViews.emplace(mipViews.begin() + i, desc, gpuImage->GetImage().Get());
+
+					AttachView(
+						commandList,
+						mipMapGenerationPipeline->GetRootIndexByName("OutMip" + std::to_string(i + 1)), // I do not sorry
+						&mipViews[i]);
+				}
+
+
+				MipMapGenerationData generationData{
+					{width >> (1 + (dispatchIndex * 4)), height >> (1 + (dispatchIndex * 4))},
+					dispatchIndex * 4,
+					mipLevelsToGenerate
+				};
+
+				commandList->SetComputeRoot32BitConstants(
+					mipMapGenerationPipeline->GetRootIndexByHash(strHash("MipMapGenerationData")),
+					sizeof(MipMapGenerationData) / 4,
+					&generationData,
+					0);
+
+				commandList->Dispatch(
+					(width >> (1 + (dispatchIndex * 4))) / 8,
+					(height >> (1 + (dispatchIndex * 4))) / 8,
+					1);
+			}
+		}
 		ASSERT_SUCC(commandList->Close());
 
 		m_queue->Execute(0);
@@ -174,10 +205,10 @@ namespace JoyEngine
 	}
 
 	ComPtr<ID3D12Resource> MemoryManager::CreateResource(
-		D3D12_HEAP_TYPE heapType, 
-		const D3D12_RESOURCE_DESC* resourceDesc, 
-		D3D12_RESOURCE_STATES initialResourceState, 
-		const D3D12_CLEAR_VALUE* clearValue)
+		D3D12_HEAP_TYPE heapType,
+		const D3D12_RESOURCE_DESC* resourceDesc,
+		D3D12_RESOURCE_STATES initialResourceState,
+		const D3D12_CLEAR_VALUE* clearValue) const
 	{
 		ComPtr<ID3D12Resource> resource;
 		uint64_t resourceSize = 0;
@@ -203,7 +234,7 @@ namespace JoyEngine
 			}
 			else
 			{
-				if (resourceDesc->Flags & D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL || 
+				if (resourceDesc->Flags & D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL ||
 					resourceDesc->Flags & D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET)
 				{
 					allocator = m_gpuHeapAllocators[DeviceAllocatorTypeRtDsTextures].get();

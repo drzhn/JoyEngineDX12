@@ -43,7 +43,7 @@ namespace JoyEngine
 			D3D12_HEAP_TYPE heapType,
 			const D3D12_RESOURCE_DESC* resourceDesc,
 			D3D12_RESOURCE_STATES initialResourceState,
-			const D3D12_CLEAR_VALUE* clearValue = nullptr);
+			const D3D12_CLEAR_VALUE* clearValue = nullptr) const;
 
 		void ChangeResourceState(ID3D12Resource* resource, D3D12_RESOURCE_STATES stateBefore, D3D12_RESOURCE_STATES stateAfter);
 

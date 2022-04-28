@@ -16,24 +16,37 @@ using namespace DirectX;
 
 namespace JoyEngine
 {
-	std::unique_ptr<ResourceView> EngineSamplersProvider::m_textureSampler = nullptr;
+	std::unique_ptr<ResourceView> EngineSamplersProvider::m_linearWrapSampler = nullptr;
+	std::unique_ptr<ResourceView> EngineSamplersProvider::m_linearClampSampler = nullptr;
 	std::unique_ptr<ResourceView> EngineSamplersProvider::m_depthPCFSampler = nullptr;
-	std::unique_ptr<ResourceView> EngineSamplersProvider::m_depthSampler = nullptr;
-	std::unique_ptr<ResourceView> EngineSamplersProvider::m_pointSampler = nullptr;
+	std::unique_ptr<ResourceView> EngineSamplersProvider::m_linearBorderWhiteSampler = nullptr;
+	std::unique_ptr<ResourceView> EngineSamplersProvider::m_pointClampSampler = nullptr;
 
 	void EngineSamplersProvider::InitSamplers()
 	{
-		D3D12_SAMPLER_DESC textureSamplerDesc = {};
-		textureSamplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
-		textureSamplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-		textureSamplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-		textureSamplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-		textureSamplerDesc.MinLOD = 0;
-		textureSamplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
-		textureSamplerDesc.MipLODBias = 0.0f;
-		textureSamplerDesc.MaxAnisotropy = 1;
-		textureSamplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
-		m_textureSampler = std::make_unique<ResourceView>(textureSamplerDesc);
+		D3D12_SAMPLER_DESC linearWrapSamplerDesc = {};
+		linearWrapSamplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+		linearWrapSamplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+		linearWrapSamplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+		linearWrapSamplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+		linearWrapSamplerDesc.MinLOD = 0;
+		linearWrapSamplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
+		linearWrapSamplerDesc.MipLODBias = 0.0f;
+		linearWrapSamplerDesc.MaxAnisotropy = 1;
+		linearWrapSamplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+		m_linearWrapSampler = std::make_unique<ResourceView>(linearWrapSamplerDesc);
+
+		D3D12_SAMPLER_DESC linearClampSamplerDesc = {};
+		linearClampSamplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+		linearClampSamplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+		linearClampSamplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+		linearClampSamplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+		linearClampSamplerDesc.MinLOD = 0;
+		linearClampSamplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
+		linearClampSamplerDesc.MipLODBias = 0.0f;
+		linearClampSamplerDesc.MaxAnisotropy = 1;
+		linearClampSamplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+		m_linearClampSampler = std::make_unique<ResourceView>(linearClampSamplerDesc);
 
 		D3D12_SAMPLER_DESC depthPCFSamplerDesc = {};
 		depthPCFSamplerDesc.Filter = D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
@@ -51,43 +64,49 @@ namespace JoyEngine
 		depthPCFSamplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_LESS;
 		m_depthPCFSampler = std::make_unique<ResourceView>(depthPCFSamplerDesc);
 
-		D3D12_SAMPLER_DESC depthSamplerDesc = {};
-		depthSamplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
-		depthSamplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
-		depthSamplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
-		depthSamplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
-		depthSamplerDesc.BorderColor[0] = 1.0f;
-		depthSamplerDesc.BorderColor[1] = 1.0f;
-		depthSamplerDesc.BorderColor[2] = 1.0f;
-		depthSamplerDesc.BorderColor[3] = 1.0f;
-		depthSamplerDesc.MinLOD = 0;
-		depthSamplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
-		depthSamplerDesc.MipLODBias = 0.0f;
-		depthSamplerDesc.MaxAnisotropy = 1;
-		depthSamplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
-		m_depthSampler = std::make_unique<ResourceView>(depthSamplerDesc);
+		D3D12_SAMPLER_DESC linearBorderWhiteSamplerDesc = {};
+		linearBorderWhiteSamplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+		linearBorderWhiteSamplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+		linearBorderWhiteSamplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+		linearBorderWhiteSamplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+		linearBorderWhiteSamplerDesc.BorderColor[0] = 1.0f;
+		linearBorderWhiteSamplerDesc.BorderColor[1] = 1.0f;
+		linearBorderWhiteSamplerDesc.BorderColor[2] = 1.0f;
+		linearBorderWhiteSamplerDesc.BorderColor[3] = 1.0f;
+		linearBorderWhiteSamplerDesc.MinLOD = 0;
+		linearBorderWhiteSamplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
+		linearBorderWhiteSamplerDesc.MipLODBias = 0.0f;
+		linearBorderWhiteSamplerDesc.MaxAnisotropy = 1;
+		linearBorderWhiteSamplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+		m_linearBorderWhiteSampler = std::make_unique<ResourceView>(linearBorderWhiteSamplerDesc);
 
-		D3D12_SAMPLER_DESC pointSamplerDesc = {};
-		pointSamplerDesc.Filter = D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT;
-		pointSamplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-		pointSamplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-		pointSamplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-		pointSamplerDesc.BorderColor[0] = 1.0f;
-		pointSamplerDesc.BorderColor[1] = 1.0f;
-		pointSamplerDesc.BorderColor[2] = 1.0f;
-		pointSamplerDesc.BorderColor[3] = 1.0f;
-		pointSamplerDesc.MinLOD = 0;
-		pointSamplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
-		pointSamplerDesc.MipLODBias = 0.0f;
-		pointSamplerDesc.MaxAnisotropy = 1;
-		pointSamplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
-		m_pointSampler = std::make_unique<ResourceView>(pointSamplerDesc);
+		D3D12_SAMPLER_DESC pointClampDesc = {};
+		pointClampDesc.Filter = D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT;
+		pointClampDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+		pointClampDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+		pointClampDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+		pointClampDesc.BorderColor[0] = 1.0f;
+		pointClampDesc.BorderColor[1] = 1.0f;
+		pointClampDesc.BorderColor[2] = 1.0f;
+		pointClampDesc.BorderColor[3] = 1.0f;
+		pointClampDesc.MinLOD = 0;
+		pointClampDesc.MaxLOD = D3D12_FLOAT32_MAX;
+		pointClampDesc.MipLODBias = 0.0f;
+		pointClampDesc.MaxAnisotropy = 1;
+		pointClampDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
+		m_pointClampSampler = std::make_unique<ResourceView>(pointClampDesc);
 	}
 
-	ResourceView* EngineSamplersProvider::GetTextureSampler()
+	ResourceView* EngineSamplersProvider::GetLinearWrapSampler()
 	{
-		ASSERT(m_textureSampler != nullptr);
-		return m_textureSampler.get();
+		ASSERT(m_linearWrapSampler != nullptr);
+		return m_linearWrapSampler.get();
+	}
+
+	ResourceView* EngineSamplersProvider::GetLinearClampSampler()
+	{
+		ASSERT(m_linearClampSampler != nullptr);
+		return m_linearClampSampler.get();
 	}
 
 	ResourceView* EngineSamplersProvider::GetDepthPCFSampler()
@@ -96,16 +115,16 @@ namespace JoyEngine
 		return m_depthPCFSampler.get();
 	}
 
-	ResourceView* EngineSamplersProvider::GetDepthSampler()
+	ResourceView* EngineSamplersProvider::GetLinearBorderWhiteSampler()
 	{
-		ASSERT(m_depthSampler != nullptr);
-		return m_depthSampler.get();
+		ASSERT(m_linearBorderWhiteSampler != nullptr);
+		return m_linearBorderWhiteSampler.get();
 	}
 
-	ResourceView* EngineSamplersProvider::GetPointSampler()
+	ResourceView* EngineSamplersProvider::GetPointClampSampler()
 	{
-		ASSERT(m_pointSampler != nullptr);
-		return m_pointSampler.get();
+		ASSERT(m_pointClampSampler != nullptr);
+		return m_pointClampSampler.get();
 	}
 
 
@@ -222,18 +241,29 @@ namespace JoyEngine
 
 	void Texture::InitTextureFromFile(std::ifstream& textureStream) // TODO make this DDS compatible
 	{
-		uint32_t width, height;
 		TextureType type;
 
 		textureStream.seekg(0);
-		textureStream.read(reinterpret_cast<char*>(&width), sizeof(uint32_t));
-		textureStream.read(reinterpret_cast<char*>(&height), sizeof(uint32_t));
+		textureStream.read(reinterpret_cast<char*>(&m_width), sizeof(uint32_t));
+		textureStream.read(reinterpret_cast<char*>(&m_height), sizeof(uint32_t));
 		textureStream.read(reinterpret_cast<char*>(&type), sizeof(uint32_t));
 
-		m_width = width;
-		m_height = height;
+		uint32_t mipWidth = m_width, mipHeight = m_height;
 
-		// TODO calculate mipmap levels
+		if ((mipWidth - 1 & mipWidth) == 0 || (mipHeight - 1 & mipHeight) == 0)
+		{
+			while (mipWidth > 1 && mipHeight > 1)
+			{
+				m_mipLevels++;
+				mipHeight >>= 1;
+				mipWidth >>= 1;
+			}
+			m_mipLevels -= 2; // our mips will be up to 8x8
+		}
+		else
+		{
+			m_mipLevels = 1;
+		}
 
 		switch (type)
 		{
@@ -286,11 +316,11 @@ namespace JoyEngine
 		desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 		desc.Texture2D = {
 			0,
-			1,
+			m_mipLevels,
 			0,
 			0
 		};
-		m_resourceView = std::make_unique<ResourceView>(desc, m_texture.Get()); // TODO cube or 2dArray?
+		m_resourceView = std::make_unique<ResourceView>(desc, m_texture.Get());
 	}
 
 	//void Texture::CreateImageViews(bool allowRenderTarget, bool isDepthTarget, bool allowUnorderedAccess, uint32_t arraySize)
@@ -412,10 +442,10 @@ namespace JoyEngine
 
 	RenderTexture::RenderTexture(
 		ComPtr<ID3D12Resource> externalResource,
-		uint32_t width, 
-		uint32_t height, 
-		DXGI_FORMAT format, 
-		D3D12_RESOURCE_STATES usage, 
+		uint32_t width,
+		uint32_t height,
+		DXGI_FORMAT format,
+		D3D12_RESOURCE_STATES usage,
 		D3D12_HEAP_TYPE heapType)
 	{
 		m_width = width;

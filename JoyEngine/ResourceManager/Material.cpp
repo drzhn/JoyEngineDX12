@@ -85,7 +85,7 @@ namespace JoyEngine
 					switch (strHash(data.c_str()))
 					{
 					case strHash("texture"):
-						samplerView = EngineSamplersProvider::GetTextureSampler();
+						samplerView = EngineSamplersProvider::GetLinearWrapSampler();
 						break;
 					default:
 						ASSERT(false);

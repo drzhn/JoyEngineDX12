@@ -29,6 +29,29 @@
 
 namespace JoyEngine
 {
+	uint64_t g_maxResourceSizeAllocated = 0;
+
+	std::string ParseByteNumber(uint64_t bytes)
+	{
+		uint64_t gb = bytes / (1 << 30);
+		uint64_t mb = bytes % (1 << 30) / (1 << 20);
+		uint64_t kb = bytes % (1 << 20) / (1 << 10);
+		uint64_t b = bytes % (1 << 10);
+		return
+			(gb > 0 ? std::to_string(gb) + " gb " : "") +
+			(mb > 0 ? std::to_string(mb) + " mb " : "") +
+			(kb > 0 ? std::to_string(kb) + " kb " : "") +
+			(b > 0 ? std::to_string(b) + " b" : "");
+	}
+
+	std::string ParseAllocatorStats(const DeviceLinearAllocator* allocator)
+	{
+		uint64_t unaligned = allocator->GetUnalignedBytesAllocated();
+		uint64_t aligned = allocator->GetAlignedBytesAllocated();
+		return "Requested " + ParseByteNumber(unaligned) + ", allocated with align " + ParseByteNumber(aligned) +
+			", ratio " + std::to_string(static_cast<float>(unaligned) / static_cast<float>(aligned) * 100) + "%\n";
+	}
+
 	inline D3D12_RESOURCE_BARRIER Transition(
 		_In_ ID3D12Resource* pResource,
 		D3D12_RESOURCE_STATES stateBefore,
@@ -83,6 +106,17 @@ namespace JoyEngine
 			DeviceAllocatorTypeBuffer,
 			GPU_BUFFER_ALLOCATION_SIZE,
 			JoyContext::Graphics->GetDevice());
+
+		m_stagingBuffer = std::make_unique<Buffer>(32 * 1024 * 1024, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD);
+	}
+
+	void MemoryManager::Start()
+	{
+		OutputDebugStringA(("Biggest resource allocated: " + ParseByteNumber(g_maxResourceSizeAllocated) + "\n").c_str());
+		OutputDebugStringA(("GPU buffer allocator: " + ParseAllocatorStats(m_gpuHeapAllocators[DeviceAllocatorTypeBuffer].get())).c_str());
+		OutputDebugStringA(("GPU textures allocator: " + ParseAllocatorStats(m_gpuHeapAllocators[DeviceAllocatorTypeTextures].get())).c_str());
+		OutputDebugStringA(("GPU RT DS textures allocator: " + ParseAllocatorStats(m_gpuHeapAllocators[DeviceAllocatorTypeRtDsTextures].get())).c_str());
+		OutputDebugStringA(("CPU buffer allocator: " + ParseAllocatorStats(m_cpuHeapAllocators[DeviceAllocatorTypeBuffer].get())).c_str());
 	}
 
 	void MemoryManager::LoadDataToImage(
@@ -97,9 +131,14 @@ namespace JoyEngine
 	{
 		const uint64_t imageSize = GetRequiredIntermediateSize(gpuImage->GetImage().Get(), 0, 1);
 
-		Buffer stagingBuffer = Buffer(imageSize, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD);
 
-		std::unique_ptr<BufferMappedPtr> ptr = stagingBuffer.GetMappedPtr(0, imageSize);
+		if (imageSize > g_maxResourceSizeAllocated)
+		{
+			g_maxResourceSizeAllocated = imageSize;
+		}
+
+
+		std::unique_ptr<BufferMappedPtr> ptr = m_stagingBuffer->GetMappedPtr(0, imageSize);
 		stream.clear();
 
 		stream.seekg(offset);
@@ -117,7 +156,7 @@ namespace JoyEngine
 		UpdateSubresources(
 			commandList,
 			gpuImage->GetImage().Get(),
-			stagingBuffer.GetBuffer().Get(),
+			m_stagingBuffer->GetBuffer().Get(),
 			0,
 			0,
 			1,
@@ -306,9 +345,12 @@ namespace JoyEngine
 		uint64_t bufferSize,
 		Buffer* gpuBuffer) const
 	{
-		Buffer stagingBuffer = Buffer(bufferSize, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD);
+		if (bufferSize > g_maxResourceSizeAllocated)
+		{
+			g_maxResourceSizeAllocated = bufferSize;
+		}
 
-		std::unique_ptr<BufferMappedPtr> ptr = stagingBuffer.GetMappedPtr(0, bufferSize);
+		std::unique_ptr<BufferMappedPtr> ptr = m_stagingBuffer->GetMappedPtr(0, bufferSize);
 		stream.clear();
 		stream.seekg(offset);
 		stream.read(static_cast<char*>(ptr->GetMappedPtr()), bufferSize);
@@ -334,7 +376,7 @@ namespace JoyEngine
 		commandList->CopyBufferRegion(
 			gpuBuffer->GetBuffer().Get(),
 			0,
-			stagingBuffer.GetBuffer().Get(),
+			m_stagingBuffer->GetBuffer().Get(),
 			0,
 			bufferSize);
 

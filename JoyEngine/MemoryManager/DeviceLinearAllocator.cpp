@@ -48,6 +48,8 @@ namespace JoyEngine
 	uint64_t DeviceLinearAllocator::Allocate(uint64_t size)
 	{
 		ASSERT(m_currentOffset + size < m_size);
+		m_unalignedBytesAllocated += size;
+
 		const uint64_t oldOffset = m_currentOffset;
 		m_currentOffset += (((size - 1) / D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT) + 1) * D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT;
 		return oldOffset;

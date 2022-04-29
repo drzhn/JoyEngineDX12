@@ -75,6 +75,7 @@ namespace JoyEngine
 
 	void JoyEngine::Start() const noexcept
 	{
+		m_memoryManager->Start();
 		m_renderManager->Start();
 	}
 

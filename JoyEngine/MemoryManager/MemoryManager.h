@@ -21,6 +21,8 @@ namespace JoyEngine
 
 		void Init();
 
+		void Start();
+
 		void Update();
 
 		void LoadDataToBuffer(
@@ -51,6 +53,7 @@ namespace JoyEngine
 		std::unique_ptr<CommandQueue> m_queue;
 		std::array<std::unique_ptr<DeviceLinearAllocator>, 3> m_gpuHeapAllocators;
 		std::array<std::unique_ptr<DeviceLinearAllocator>, 1> m_cpuHeapAllocators;
+		std::unique_ptr<Buffer> m_stagingBuffer;
 
 	};
 }

@@ -153,6 +153,11 @@ namespace JoyEngine
 				mipMapGenerationPipeline->GetRootIndexByHash(strHash("SrcMip")),
 				gpuImage->GetSRV());
 
+			AttachView(
+				commandList,
+				mipMapGenerationPipeline->GetRootIndexByHash(strHash("BilinearClamp")),
+				EngineSamplersProvider::GetLinearClampSampler());
+
 			uint32_t dispatchCount = ((mipMapsCount - 1) + 3) / 4;
 
 			for (uint32_t dispatchIndex = 0; dispatchIndex < dispatchCount; dispatchIndex++)
@@ -195,6 +200,9 @@ namespace JoyEngine
 					(width >> (1 + (dispatchIndex * 4))) / 8,
 					(height >> (1 + (dispatchIndex * 4))) / 8,
 					1);
+
+				barrier = CD3DX12_RESOURCE_BARRIER::UAV(gpuImage->GetImage().Get());
+				commandList->ResourceBarrier(1, &barrier);
 			}
 		}
 		ASSERT_SUCC(commandList->Close());

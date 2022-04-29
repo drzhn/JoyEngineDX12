@@ -4,6 +4,8 @@ RWTexture2D<float4> OutMip3 : register(u2);
 RWTexture2D<float4> OutMip4 : register(u3);
 Texture2D<float4> SrcMip : register(t0);
 
+SamplerState BilinearClamp : register(s0);
+
 cbuffer MipMapGenerationData : register(b0)
 {
 uint2 TexelSize;
@@ -54,13 +56,18 @@ float4 PackColor(float4 Linear)
 [numthreads( 8, 8, 1 )]
 void CSMain(uint GI : SV_GroupIndex, uint3 DTid : SV_DispatchThreadID)
 {
-	float4 Src1 =
-		SrcMip.Load(int3(DTid.x * 2 + 0, DTid.y * 2 + 0, 0)) +
-		SrcMip.Load(int3(DTid.x * 2 + 0, DTid.y * 2 + 1, 0)) +
-		SrcMip.Load(int3(DTid.x * 2 + 1, DTid.y * 2 + 0, 0)) +
-		SrcMip.Load(int3(DTid.x * 2 + 1, DTid.y * 2 + 1, 0));
+	//float4 Src1 =
+	//	SrcMip.Load(int3(DTid.x * 2 + 0, DTid.y * 2 + 0, 0)) +
+	//	SrcMip.Load(int3(DTid.x * 2 + 0, DTid.y * 2 + 1, 0)) +
+	//	SrcMip.Load(int3(DTid.x * 2 + 1, DTid.y * 2 + 0, 0)) +
+	//	SrcMip.Load(int3(DTid.x * 2 + 1, DTid.y * 2 + 1, 0));
 
-	Src1 /= 4;
+	//Src1 /= 4;
+
+	float2 invTexelSize = float2(1.0f / TexelSize.x, 1.0f / TexelSize.y);
+	float2 UV = invTexelSize * (DTid.xy + 0.5);
+	float4 Src1 = SrcMip.SampleLevel(BilinearClamp, UV, SrcMipLevel);
+
 
 	OutMip1[DTid.xy] = PackColor(Src1);
 

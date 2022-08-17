@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "Common/Resource.h"
+#include "Common/Singleton.h"
 
 namespace JoyEngine
 {
@@ -45,7 +46,7 @@ namespace JoyEngine
 		}
 
 		// move assignment
-		ResourceHandle<T>& operator=( ResourceHandle<T>&& other) noexcept
+		ResourceHandle<T>& operator=(ResourceHandle<T>&& other) noexcept
 		{
 			Move(other);
 			return *this;
@@ -55,7 +56,7 @@ namespace JoyEngine
 		{
 			Release();
 		}
-		
+
 		bool operator ==(const ResourceHandle<T>& other)
 		{
 			return m_ptr == other.m_ptr;
@@ -113,11 +114,11 @@ namespace JoyEngine
 				m_ptr = nullptr;
 			}
 		}
-		
+
 		friend class ResourceManager;
 	};
 
-	class ResourceManager : IResourceManager
+	class ResourceManager : IResourceManager, public Singleton<ResourceManager>
 	{
 	public:
 		ResourceManager() = default;

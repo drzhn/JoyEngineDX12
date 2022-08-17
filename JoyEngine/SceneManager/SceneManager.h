@@ -6,27 +6,29 @@
 
 
 #include "Scene.h"
+#include "Common/Singleton.h"
 #include "Utils/GUID.h"
 
-namespace JoyEngine {
+namespace JoyEngine
+{
+	class SceneManager : public Singleton<SceneManager>
+	{
+	public:
+		SceneManager() = default;
 
-    class SceneManager {
-    public:
-        SceneManager() = default;
+		void Init();
 
-        void Init();
+		void Start();
 
-        void Start();
+		void Stop();
 
-        void Stop();
+		void Update();
 
-        void Update();
+		~SceneManager();
 
-        ~SceneManager();
-
-    private:
-        std::unique_ptr<Scene> m_scene = nullptr;
-    };
+	private:
+		std::unique_ptr<Scene> m_scene = nullptr;
+	};
 }
 
 #endif //SCENE_MANAGER_H

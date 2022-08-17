@@ -1,6 +1,6 @@
 #include "Buffer.h"
 
-#include "JoyContext.h"
+
 #include "GraphicsManager/GraphicsManager.h"
 #include "MemoryManager/MemoryManager.h"
 #include "Utils/Assert.h"
@@ -35,7 +35,7 @@ namespace JoyEngine
 	{
 		const CD3DX12_RESOURCE_DESC bufferResourceDesc = CD3DX12_RESOURCE_DESC::Buffer(m_size, flags);
 
-		m_buffer = JoyContext::Memory->CreateResource(
+		m_buffer = MemoryManager::Get()->CreateResource(
 			properties,
 			&bufferResourceDesc,
 			m_currentResourceState);
@@ -65,6 +65,6 @@ namespace JoyEngine
 	void Buffer::LoadData(std::ifstream& stream, uint32_t offset) 
 	{
 		ASSERT(!m_properties.IsCPUAccessible());
-		JoyContext::Memory->LoadDataToBuffer(stream, offset, m_size, this);
+		MemoryManager::Get()->LoadDataToBuffer(stream, offset, m_size, this);
 	}
 }

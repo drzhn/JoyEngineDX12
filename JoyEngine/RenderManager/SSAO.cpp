@@ -4,7 +4,7 @@
 
 #include <glm/geometric.hpp>
 
-#include "JoyContext.h"
+
 #include "ResourceManager/Buffer.h"
 #include "ResourceManager/ResourceView.h"
 #include "ResourceManager/Texture.h"
@@ -17,7 +17,7 @@ namespace JoyEngine
 		m_width(width),
 		m_height(height)
 	{
-		//m_randomColorTexture = JoyContext::Resource->LoadResource<Texture>(
+		//m_randomColorTexture = ResourceManager::Get()->LoadResource<Texture>(
 		//	GUID::StringToGuid("65c0d16a-9cf6-46e5-9a5e-a5026b350b8d")
 		//); // textures/ColorNoise.png
 		//m_ssaoRenderTarget = std::make_unique<RenderTexture>(

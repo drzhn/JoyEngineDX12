@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "JoyContext.h"
+
 
 #include "SceneManager/SceneManager.h"
 #include "RenderManager/RenderManager.h"
@@ -41,18 +41,6 @@ namespace JoyEngine
 		ASSERT(m_sceneManager != nullptr);
 		ASSERT(m_renderManager != nullptr);
 		ASSERT(m_engineMaterials != nullptr);
-
-		JoyContext::Init(
-			m_inputManager.get(),
-			m_graphicsContext.get(),
-			m_memoryManager.get(),
-			m_dataManager.get(),
-			m_descriptorSetManager.get(),
-			m_resourceManager.get(),
-			m_sceneManager.get(),
-			m_renderManager.get(),
-			m_engineMaterials.get()
-		);
 
 		OutputDebugStringA("Context created\n");
 	}
@@ -99,7 +87,7 @@ namespace JoyEngine
 		// will destroy managers in certain order
 		m_inputManager = nullptr;
 		m_sceneManager = nullptr; // unregister mesh renderers, remove descriptor set, pipelines, pipeline layouts
-		m_engineMaterials = nullptr; //delete swapchain, synchronisation, framebuffers
+		m_engineMaterials = nullptr; //delete all internal engine resources
 		m_renderManager = nullptr; //delete swapchain, synchronisation, framebuffers
 		m_resourceManager = nullptr; //delete all scene render data (buffers, textures)
 		m_descriptorSetManager = nullptr;

@@ -4,6 +4,8 @@
 
 namespace JoyEngine
 {
+	IMPLEMENT_SINGLETON(GraphicsManager)
+
 	GraphicsManager::GraphicsManager(HINSTANCE instance, HWND windowHandle, uint32_t width, uint32_t height) :
 		m_width(width),
 		m_height(height),
@@ -38,7 +40,7 @@ namespace JoyEngine
 			// is favored.
 			if ((dxgiAdapterDesc1.Flags & DXGI_ADAPTER_FLAG_SOFTWARE) == 0 &&
 				SUCCEEDED(D3D12CreateDevice(dxgiAdapter1.Get(),
-					D3D_FEATURE_LEVEL_11_0,
+					D3D_FEATURE_LEVEL_12_1,
 					__uuidof(ID3D12Device),
 					nullptr)) &&
 				dxgiAdapterDesc1.DedicatedVideoMemory > maxDedicatedVideoMemory)
@@ -55,7 +57,7 @@ namespace JoyEngine
 		DXGI_QUERY_VIDEO_MEMORY_INFO non_local_info;
 		m_physicalDevice->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_NON_LOCAL, &non_local_info);
 
-		ASSERT_SUCC(D3D12CreateDevice(m_physicalDevice.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&m_logicalDevice)));
+		ASSERT_SUCC(D3D12CreateDevice(m_physicalDevice.Get(), D3D_FEATURE_LEVEL_12_1, IID_PPV_ARGS(&m_logicalDevice)));
 
 		ASSERT_SUCC(m_logicalDevice->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS, &m_featureSupport, sizeof(m_featureSupport)));
 

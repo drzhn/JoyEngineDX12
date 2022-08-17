@@ -17,7 +17,7 @@
 #endif
 
 #include "WindowHandler.h"
-#include "JoyContext.h"
+
 
 #include <iostream>
 #include <cstdlib>

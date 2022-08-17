@@ -4,7 +4,7 @@
 
 #include <rapidjson/document.h>
 
-#include "JoyContext.h"
+
 #include "Common/SerializationUtils.h"
 #include "DataManager/DataManager.h"
 #include "GraphicsManager/GraphicsManager.h"
@@ -55,7 +55,7 @@ namespace JoyEngine
 		CD3DX12_ROOT_PARAMETER1 params[DESCRIPTOR_ARRAY_SIZE];
 		uint32_t paramsIndex = 0;
 		{
-			m_shader = JoyContext::Resource->LoadResource<Shader>(
+			m_shader = ResourceManager::Get()->LoadResource<Shader>(
 				shaderGuid,
 				shaderTypes
 			);
@@ -129,7 +129,7 @@ namespace JoyEngine
 		// This is the highest version the sample supports. If CheckFeatureSupport succeeds, the HighestVersion returned will not be greater than this.
 		featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
 
-		if (FAILED(JoyContext::Graphics->GetDevice()->CheckFeatureSupport(
+		if (FAILED(GraphicsManager::Get()->GetDevice()->CheckFeatureSupport(
 			D3D12_FEATURE_ROOT_SIGNATURE,
 			&featureData,
 			sizeof(featureData))))
@@ -155,7 +155,7 @@ namespace JoyEngine
 			OutputDebugStringA(errorMsg);
 			ASSERT(false);
 		}
-		ASSERT_SUCC(JoyContext::Graphics->GetDevice()->CreateRootSignature(
+		ASSERT_SUCC(GraphicsManager::Get()->GetDevice()->CreateRootSignature(
 			0,
 			signature->GetBufferPointer(),
 			signature->GetBufferSize(),
@@ -180,7 +180,7 @@ namespace JoyEngine
 			{},
 			D3D12_PIPELINE_STATE_FLAG_NONE
 		};
-		ASSERT_SUCC(JoyContext::Graphics->GetDevice()->CreateComputePipelineState(&computePipelineStateDesc, IID_PPV_ARGS(&m_pipelineState)));
+		ASSERT_SUCC(GraphicsManager::Get()->GetDevice()->CreateComputePipelineState(&computePipelineStateDesc, IID_PPV_ARGS(&m_pipelineState)));
 	}
 
 	// =============================== SHARED MATERIAL =================================
@@ -208,7 +208,7 @@ namespace JoyEngine
 	SharedMaterial::SharedMaterial(GUID guid) :
 		Resource(guid)
 	{
-		rapidjson::Document json = JoyContext::Data->GetSerializedData(m_guid, sharedMaterial);
+		rapidjson::Document json = DataManager::Get()->GetSerializedData(m_guid, sharedMaterial);
 
 		m_hasVertexInput = json["hasVertexInput"].GetBool();
 		m_depthTest = json["depthTest"].GetBool();
@@ -301,7 +301,7 @@ namespace JoyEngine
 		DXGI_FORMAT depthFormat = RenderManager::GetDepthFormat();
 		CreateGraphicsPipeline(renderTargetsFormats, blendDesc, depthFormat, topology);
 
-		JoyContext::Render->RegisterSharedMaterial(this);
+		RenderManager::Get()->RegisterSharedMaterial(this);
 	}
 
 	SharedMaterial::SharedMaterial(const GUID guid, const SharedMaterialArgs args) :
@@ -315,7 +315,7 @@ namespace JoyEngine
 		CreateShaderAndRootSignature(args.shader, args.shaderTypes);
 		CreateGraphicsPipeline(args.renderTargetsFormats, args.blendDesc, args.depthFormat, args.topology);
 
-		JoyContext::Render->RegisterSharedMaterial(this);
+		RenderManager::Get()->RegisterSharedMaterial(this);
 	}
 
 	void SharedMaterial::CreateGraphicsPipeline(
@@ -377,13 +377,13 @@ namespace JoyEngine
 			D3D12_PIPELINE_STATE_FLAG_NONE
 		};
 
-		ASSERT_SUCC(JoyContext::Graphics->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&m_pipelineState)));
+		ASSERT_SUCC(GraphicsManager::Get()->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&m_pipelineState)));
 	}
 
 
 	SharedMaterial::~SharedMaterial()
 	{
-		JoyContext::Render->UnregisterSharedMaterial(this);
+		RenderManager::Get()->UnregisterSharedMaterial(this);
 	}
 
 

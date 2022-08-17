@@ -2,7 +2,7 @@
 
 #include "rapidjson/document.h"
 
-#include "JoyContext.h"
+
 #include "Common/Serialization.h"
 #include "Common/SerializationUtils.h"
 #include "Components/Component.h"
@@ -29,7 +29,7 @@ namespace JoyEngine
 
 	Scene::Scene(const GUID& guid)
 	{
-		rapidjson::Document json = JoyContext::Data->GetSerializedData(guid, scene);
+		rapidjson::Document json = DataManager::Get()->GetSerializedData(guid, scene);
 		m_name = json["name"].GetString();
 
 		rapidjson::Value& val = json["objects"];

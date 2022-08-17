@@ -1,6 +1,6 @@
 ﻿#include "ParticleSystem.h"
 
-#include "JoyContext.h"
+
 
 #include "RenderManager/JoyTypes.h"
 #include "RenderManager/RenderManager.h"
@@ -12,7 +12,7 @@ namespace JoyEngine
 {
 	void ParticleSystem::Enable()
 	{
-		JoyContext::Render->RegisterParticleSystem(this);
+		RenderManager::Get()->RegisterParticleSystem(this);
 
 		m_buffer = std::make_unique<Buffer>(
 			m_size * m_size * m_size * sizeof(glm::vec3), 
@@ -33,7 +33,7 @@ namespace JoyEngine
 
 	void ParticleSystem::Disable()
 	{
-		JoyContext::Render->UnregisterParticleSystem(this);
+		RenderManager::Get()->UnregisterParticleSystem(this);
 	}
 
 	void ParticleSystem::Update()

@@ -1,6 +1,6 @@
 ﻿#include "Light.h"
 
-#include "JoyContext.h"
+
 #include "ResourceManager/Texture.h"
 #include "RenderManager/RenderManager.h"
 #include "glm/gtc/type_ptr.hpp"
@@ -70,11 +70,11 @@ namespace JoyEngine
 	{
 		if (m_lightType == Direction)
 		{
-			JoyContext::Render->RegisterDirectionLight(this);
+			RenderManager::Get()->RegisterDirectionLight(this);
 		}
 		else
 		{
-			JoyContext::Render->RegisterLight(this);
+			RenderManager::Get()->RegisterLight(this);
 		}
 	}
 
@@ -82,11 +82,11 @@ namespace JoyEngine
 	{
 		if (m_lightType == Direction)
 		{
-			JoyContext::Render->UnregisterDirectionLight(this);
+			RenderManager::Get()->UnregisterDirectionLight(this);
 		}
 		else
 		{
-			JoyContext::Render->UnregisterLight(this);
+			RenderManager::Get()->UnregisterLight(this);
 		}
 	}
 

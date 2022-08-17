@@ -8,7 +8,7 @@
 
 using Microsoft::WRL::ComPtr;
 
-#include "JoyContext.h"
+
 
 #include "ResourceManager/ResourceManager.h"
 #include "ResourceManager/SharedMaterial.h"
@@ -16,6 +16,8 @@ using Microsoft::WRL::ComPtr;
 
 namespace JoyEngine
 {
+	IMPLEMENT_SINGLETON(EngineMaterialProvider)
+
 	void EngineMaterialProvider::Init()
 	{
 		EngineSamplersProvider::InitSamplers();
@@ -29,7 +31,7 @@ namespace JoyEngine
 		// Standard shared material
 		{
 			const GUID standardSharedMaterialGuid = GUID::StringToGuid("b6316780-7043-4ca5-96da-c8bb84042b78"); 
-			m_standardSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial>(standardSharedMaterialGuid);
+			m_standardSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial>(standardSharedMaterialGuid);
 		}
 
 		// Mip map generation
@@ -37,7 +39,7 @@ namespace JoyEngine
 			const GUID mipMapGenerationShaderGuid = GUID::StringToGuid("3fb4d89b-ceab-46c3-b34f-d41a49e072cf"); //shaders/generateMipMaps.hlsl
 			const GUID mipMapGenerationPipelineGuid = GUID::Random();
 
-			m_generateMipsComputePipeline = JoyContext::Resource->LoadResource<ComputePipeline, ComputePipelineArgs>(
+			m_generateMipsComputePipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
 				mipMapGenerationPipelineGuid,
 				{
 					mipMapGenerationShaderGuid,
@@ -49,7 +51,7 @@ namespace JoyEngine
 			const GUID gbufferWriteShaderGuid = GUID::StringToGuid("48ffacc9-5c00-4058-b359-cf72189896ac"); //shaders/gbufferwrite.hlsl
 			const GUID gbufferWriteSharedMaterialGuid = GUID::Random();
 
-			m_gbufferWriteSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
+			m_gbufferWriteSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, SharedMaterialArgs>(
 				gbufferWriteSharedMaterialGuid,
 				{
 					gbufferWriteShaderGuid,
@@ -76,7 +78,7 @@ namespace JoyEngine
 			const GUID shadowProcessingShaderGuid = GUID::StringToGuid("9ee0a40a-c055-4b2c-93db-bc19def8e8cc"); //shaders/shadowprocessing.hlsl
 			const GUID shadowProcessingSharedMaterialGuid = GUID::Random();
 
-			m_shadowProcessingSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
+			m_shadowProcessingSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, SharedMaterialArgs>(
 				shadowProcessingSharedMaterialGuid,
 				{
 					shadowProcessingShaderGuid,
@@ -98,7 +100,7 @@ namespace JoyEngine
 			const GUID shadowPointProcessingShaderGuid = GUID::StringToGuid("9d678808-8c11-4ff3-9ee1-dd1b7fc5f691"); //shaders/shadowpointprocessing.hlsl
 			const GUID shadowPointProcessingSharedMaterialGuid = GUID::Random();
 
-			m_shadowPointProcessingSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
+			m_shadowPointProcessingSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, SharedMaterialArgs>(
 				shadowPointProcessingSharedMaterialGuid,
 				{
 					shadowPointProcessingShaderGuid,
@@ -120,7 +122,7 @@ namespace JoyEngine
 			const GUID directionLightProcessingShaderGuid = GUID::StringToGuid("1c6cb88f-f3ef-4797-9d65-44682ca7baba"); //shaders/directionlightprocessing.hlsl
 			const GUID directionLightProcessingSharedMaterialGuid = GUID::Random();
 
-			m_directionLightProcessingSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
+			m_directionLightProcessingSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, SharedMaterialArgs>(
 				directionLightProcessingSharedMaterialGuid,
 				{
 					directionLightProcessingShaderGuid,
@@ -158,7 +160,7 @@ namespace JoyEngine
 				desc = defaultRenderTargetBlendDesc;
 			}
 
-			m_lightProcessingSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
+			m_lightProcessingSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, SharedMaterialArgs>(
 				lightProcessingSharedMaterialGuid,
 				{
 					lightProcessingShaderGuid,
@@ -184,7 +186,7 @@ namespace JoyEngine
 				const GUID dynamicCubemapShaderGUID = GUID::StringToGuid("4a8ea369-904f-4d9a-9061-b4eedacc3918"); // shaders/dynamiccubemapreflections.hlsl
 				const GUID sharedMaterialGuid = GUID::Random();
 
-				m_dynamicCubemapReflectionsSharedMaterialHandle = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
+				m_dynamicCubemapReflectionsSharedMaterialHandle = ResourceManager::Get()->LoadResource<SharedMaterial, SharedMaterialArgs>(
 					sharedMaterialGuid,
 					{
 						dynamicCubemapShaderGUID,
@@ -208,7 +210,7 @@ namespace JoyEngine
 				const GUID cubemapConvolutionShaderGuid = GUID::StringToGuid("613710d9-304e-453b-a655-b1c842904f4c"); //shaders/dynamiccubemapconvolition.hlsl
 				const GUID cubemapConvolutionSharedMaterialGuid = GUID::Random();
 
-				m_cubemapConvolutionSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
+				m_cubemapConvolutionSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, SharedMaterialArgs>(
 					cubemapConvolutionSharedMaterialGuid,
 					{
 						cubemapConvolutionShaderGuid,
@@ -233,7 +235,7 @@ namespace JoyEngine
 			const GUID shaderGuid = GUID::StringToGuid("a36fff56-b183-418a-9bd1-31cffd247e37"); // shaders/particles.hlsl
 			const GUID sharedMaterialGuid = GUID::Random();
 
-			m_particleSystemSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
+			m_particleSystemSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, SharedMaterialArgs>(
 				sharedMaterialGuid,
 				{
 					shaderGuid,
@@ -257,7 +259,7 @@ namespace JoyEngine
 			const GUID bufferGenerationShaderGuid = GUID::StringToGuid("38d4f011-405a-4602-8f8e-79b4888d26b6"); //shaders/particlesbuffergeneration.hlsl
 			const GUID bufferGenerationPipelineGuid = GUID::Random();
 
-			m_particleBufferGenerationComputePipeline = JoyContext::Resource->LoadResource<ComputePipeline, ComputePipelineArgs>(
+			m_particleBufferGenerationComputePipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
 				bufferGenerationPipelineGuid,
 				{
 					bufferGenerationShaderGuid,
@@ -269,7 +271,7 @@ namespace JoyEngine
 			const GUID fogPostEffectShaderGuid = GUID::StringToGuid("5e897d4b-2ed5-4176-890b-2f17e52cb836"); //shaders/fogpostprocess.hlsl
 			const GUID fogPostEffectSharedMaterialGuid = GUID::Random();
 
-			m_fogPostProcessSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
+			m_fogPostProcessSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, SharedMaterialArgs>(
 				fogPostEffectSharedMaterialGuid,
 				{
 					fogPostEffectShaderGuid,
@@ -293,7 +295,7 @@ namespace JoyEngine
 			const GUID sslrPostEffectShaderGuid = GUID::StringToGuid("70d5a60a-615a-4344-977f-d2ad9d37b0cf"); //shaders/sslrpostprocess.hlsl
 			const GUID sslrPostEffectSharedMaterialGuid = GUID::Random();
 
-			m_sslrPostProcessSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
+			m_sslrPostProcessSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, SharedMaterialArgs>(
 				sslrPostEffectSharedMaterialGuid,
 				{
 					sslrPostEffectShaderGuid,
@@ -319,7 +321,7 @@ namespace JoyEngine
 				const GUID ssaoPostEffectShaderGuid = GUID::StringToGuid("3cf96278-de88-4614-bb23-5cfa2b54e41a"); //shaders/ssaopostprocess.hlsl
 				const GUID ssaoPostEffectSharedMaterialGuid = GUID::Random();
 
-				m_ssaoPostProcessSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
+				m_ssaoPostProcessSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, SharedMaterialArgs>(
 					ssaoPostEffectSharedMaterialGuid,
 					{
 						ssaoPostEffectShaderGuid,
@@ -343,7 +345,7 @@ namespace JoyEngine
 				const GUID ssaoBlurShaderGuid = GUID::StringToGuid("81312dae-c920-4cd6-bd08-87d1a2a3b6f4"); //shaders/ssaoblur.hlsl
 				const GUID ssaoBlurSharedMaterialGuid = GUID::Random();
 
-				m_ssaoBlurSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
+				m_ssaoBlurSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, SharedMaterialArgs>(
 					ssaoBlurSharedMaterialGuid,
 					{
 						ssaoBlurShaderGuid,
@@ -367,7 +369,7 @@ namespace JoyEngine
 				const GUID ssaoAppendShaderGuid = GUID::StringToGuid("c7986e89-5d7e-4348-903e-761f007c3f12"); //shaders/ssaoappend.hlsl
 				const GUID ssaoAppendSharedMaterialGuid = GUID::Random();
 
-				m_ssaoAppendSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
+				m_ssaoAppendSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, SharedMaterialArgs>(
 					ssaoAppendSharedMaterialGuid,
 					{
 						ssaoAppendShaderGuid,
@@ -394,7 +396,7 @@ namespace JoyEngine
 				const GUID bloomBrightPassShaderGuid = GUID::StringToGuid("110f9d5d-008a-4f07-8a7c-e0a208353bf1"); //shaders/bloomBrightPass.hlsl
 				const GUID bloomBrightPassPipelineGuid = GUID::Random();
 
-				m_bloomBrightPassComputePipeline = JoyContext::Resource->LoadResource<ComputePipeline, ComputePipelineArgs>(
+				m_bloomBrightPassComputePipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
 					bloomBrightPassPipelineGuid,
 					{
 						bloomBrightPassShaderGuid,
@@ -405,7 +407,7 @@ namespace JoyEngine
 				const GUID verticalFilterShaderGuid = GUID::StringToGuid("79791a5c-5374-4e44-9ad0-f2cf57e7c8e6"); //shaders/bloomVerticalFilter.hlsl
 				const GUID verticalFilterPipelineGuid = GUID::Random();
 
-				m_bloomVerticalFilterComputePipeline = JoyContext::Resource->LoadResource<ComputePipeline, ComputePipelineArgs>(
+				m_bloomVerticalFilterComputePipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
 					verticalFilterPipelineGuid,
 					{
 						verticalFilterShaderGuid,
@@ -416,7 +418,7 @@ namespace JoyEngine
 				const GUID horizontalFilterShaderGuid = GUID::StringToGuid("fcdfbb5b-72ea-4b7b-b432-3f807ffc576d"); //shaders/bloomHorizontalFilter.hlsl
 				const GUID horizontalFilterPipelineGuid = GUID::Random();
 
-				m_bloomHorizontalFilterComputePipeline = JoyContext::Resource->LoadResource<ComputePipeline, ComputePipelineArgs>(
+				m_bloomHorizontalFilterComputePipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
 					horizontalFilterPipelineGuid,
 					{
 						horizontalFilterShaderGuid,
@@ -431,7 +433,7 @@ namespace JoyEngine
 				const GUID hdrDownscaleFirstPassShaderGuid = GUID::StringToGuid("e3e039f4-4f96-4e5b-b90b-1f46d460b724"); //shaders/hdrDownscaleFirstPass.hlsl
 				const GUID hdrDownscaleFirstPassPipelineGuid = GUID::Random();
 
-				m_hdrDownscaleFirstPassComputePipeline = JoyContext::Resource->LoadResource<ComputePipeline, ComputePipelineArgs>(
+				m_hdrDownscaleFirstPassComputePipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
 					hdrDownscaleFirstPassPipelineGuid,
 					{
 						hdrDownscaleFirstPassShaderGuid,
@@ -443,7 +445,7 @@ namespace JoyEngine
 				const GUID hdrDownscaleSecondPassShaderGuid = GUID::StringToGuid("c3a1592f-f12d-4c25-bcbb-1e6ace76b0fb"); //shaders/hdrDownscaleSecondPass.hlsl
 				const GUID hdrDownscaleSecondPassPipelineGuid = GUID::Random();
 
-				m_hdrDownscaleSecondPassComputePipeline = JoyContext::Resource->LoadResource<ComputePipeline, ComputePipelineArgs>(
+				m_hdrDownscaleSecondPassComputePipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
 					hdrDownscaleSecondPassPipelineGuid,
 					{
 						hdrDownscaleSecondPassShaderGuid,
@@ -455,7 +457,7 @@ namespace JoyEngine
 				const GUID hdrToLdrTransitionShaderGuid = GUID::StringToGuid("aa366fc9-b8a7-4cca-b5d3-670216174566"); //shaders/hdrToLdrTransition.hlsl
 				const GUID hdrToLdrTransitionSharedMaterialGuid = GUID::Random();
 
-				m_hdrToLdrTransitionSharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial, SharedMaterialArgs>(
+				m_hdrToLdrTransitionSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, SharedMaterialArgs>(
 					hdrToLdrTransitionSharedMaterialGuid,
 					{
 						hdrToLdrTransitionShaderGuid,

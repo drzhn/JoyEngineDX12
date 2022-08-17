@@ -1,13 +1,14 @@
 ﻿#ifndef DUMMY_MATERIAL_PROVIDER_H
 #define DUMMY_MATERIAL_PROVIDER_H
 
+#include "Common/Singleton.h"
 #include "ResourceManager/Material.h"
 #include "ResourceManager/SharedMaterial.h"
 #include "Utils/GUID.h"
 
 namespace JoyEngine
 {
-	class EngineMaterialProvider
+	class EngineMaterialProvider : public Singleton<EngineMaterialProvider>
 	{
 	public:
 		EngineMaterialProvider() = default;

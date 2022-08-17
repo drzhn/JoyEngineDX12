@@ -1,6 +1,6 @@
 #include "MeshRenderer.h"
 
-#include "JoyContext.h"
+
 
 #include "ResourceManager/Material.h"
 #include "ResourceManager/Mesh.h"
@@ -32,7 +32,7 @@ namespace JoyEngine
 
 	void MeshRenderer::SetMesh(GUID meshGuid)
 	{
-		m_mesh = JoyContext::Resource->LoadResource<Mesh>(meshGuid);
+		m_mesh = ResourceManager::Get()->LoadResource<Mesh>(meshGuid);
 	}
 
 
@@ -49,7 +49,7 @@ namespace JoyEngine
 		uint32_t indexDataStreamOffset)
 	{
 		InitMesh(modelStream);
-		m_mesh = JoyContext::Resource->LoadResource<Mesh>(
+		m_mesh = ResourceManager::Get()->LoadResource<Mesh>(
 			meshGuid,
 			vertexDataSize,
 			indexDataSize,
@@ -61,12 +61,12 @@ namespace JoyEngine
 
 	void MeshRenderer::SetMaterial(const std::string& materialName)
 	{
-		m_material = JoyContext::EngineMaterials->GetSampleMaterialByName(materialName); //for debug purposes 
+		m_material = EngineMaterialProvider::Get()->GetSampleMaterialByName(materialName); //for debug purposes 
 	}
 
 	void MeshRenderer::SetMaterial(const GUID& materialGuid)
 	{
-		m_material = JoyContext::Resource->LoadResource<Material>(materialGuid);
+		m_material = ResourceManager::Get()->LoadResource<Material>(materialGuid);
 	}
 
 	void MeshRenderer::SetMaterial(const ResourceHandle<Material>& mat)

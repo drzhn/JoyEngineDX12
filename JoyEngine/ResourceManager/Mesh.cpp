@@ -1,6 +1,6 @@
 #include "Mesh.h"
 
-#include "JoyContext.h"
+
 
 #include <vector>
 #include "RenderManager/JoyTypes.h"
@@ -11,7 +11,7 @@ namespace JoyEngine
 {
 	Mesh::Mesh(GUID guid) : Resource(guid)
 	{
-		std::ifstream modelStream = JoyContext::Data->GetFileStream(guid, true);
+		std::ifstream modelStream = DataManager::Get()->GetFileStream(guid, true);
 
 		uint32_t vertexDataSize;
 		uint32_t indexDataSize;

@@ -7,7 +7,7 @@
 #include "d3dx12.h"
 
 
-#include "JoyContext.h"
+
 #include "Common/HashDefs.h"
 #include "DescriptorManager/DescriptorManager.h"
 
@@ -79,33 +79,35 @@ namespace JoyEngine
 			rootParameterIndex, view->GetGPUHandle());
 	}
 
+	IMPLEMENT_SINGLETON(MemoryManager)
+
 	void MemoryManager::Init()
 	{
-		m_queue = std::make_unique<CommandQueue>(D3D12_COMMAND_LIST_TYPE_DIRECT, JoyContext::Graphics->GetDevice());
+		m_queue = std::make_unique<CommandQueue>(D3D12_COMMAND_LIST_TYPE_DIRECT, GraphicsManager::Get()->GetDevice());
 
 		m_gpuHeapAllocators[DeviceAllocatorTypeBuffer] = std::make_unique<DeviceLinearAllocator>(
 			D3D12_HEAP_TYPE_DEFAULT,
 			DeviceAllocatorTypeBuffer,
 			GPU_BUFFER_ALLOCATION_SIZE,
-			JoyContext::Graphics->GetDevice());
+			GraphicsManager::Get()->GetDevice());
 
 		m_gpuHeapAllocators[DeviceAllocatorTypeTextures] = std::make_unique<DeviceLinearAllocator>(
 			D3D12_HEAP_TYPE_DEFAULT,
 			DeviceAllocatorTypeTextures,
 			GPU_TEXTURE_ALLOCATION_SIZE,
-			JoyContext::Graphics->GetDevice());
+			GraphicsManager::Get()->GetDevice());
 
 		m_gpuHeapAllocators[DeviceAllocatorTypeRtDsTextures] = std::make_unique<DeviceLinearAllocator>(
 			D3D12_HEAP_TYPE_DEFAULT,
 			DeviceAllocatorTypeRtDsTextures,
 			GPU_RT_DS_ALLOCATION_SIZE,
-			JoyContext::Graphics->GetDevice());
+			GraphicsManager::Get()->GetDevice());
 
 		m_cpuHeapAllocators[DeviceAllocatorTypeBuffer] = std::make_unique<DeviceLinearAllocator>(
 			D3D12_HEAP_TYPE_UPLOAD,
 			DeviceAllocatorTypeBuffer,
 			GPU_BUFFER_ALLOCATION_SIZE,
-			JoyContext::Graphics->GetDevice());
+			GraphicsManager::Get()->GetDevice());
 
 		m_stagingBuffer = std::make_unique<Buffer>(32 * 1024 * 1024, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD);
 	}
@@ -171,8 +173,8 @@ namespace JoyEngine
 
 		ID3D12DescriptorHeap* heaps[2]
 		{
-			JoyContext::Descriptors->GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV),
-			JoyContext::Descriptors->GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER)
+			DescriptorManager::Get()->GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV),
+			DescriptorManager::Get()->GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER)
 		};
 		commandList->SetDescriptorHeaps(2, heaps);
 
@@ -181,7 +183,7 @@ namespace JoyEngine
 		{
 			std::vector<ResourceView> mipViews(4);
 
-			ResourceHandle<ComputePipeline> mipMapGenerationPipeline = JoyContext::EngineMaterials->GetMipsGenerationComputePipeline();
+			ResourceHandle<ComputePipeline> mipMapGenerationPipeline = EngineMaterialProvider::Get()->GetMipsGenerationComputePipeline();
 
 			commandList->SetComputeRootSignature(mipMapGenerationPipeline->GetRootSignature().Get());
 			commandList->SetPipelineState(mipMapGenerationPipeline->GetPipelineObject().Get());
@@ -259,7 +261,7 @@ namespace JoyEngine
 	{
 		ComPtr<ID3D12Resource> resource;
 		uint64_t resourceSize = 0;
-		JoyContext::Graphics->GetDevice()->GetCopyableFootprints(
+		GraphicsManager::Get()->GetDevice()->GetCopyableFootprints(
 			resourceDesc,
 			0,
 			resourceDesc->MipLevels,
@@ -301,7 +303,7 @@ namespace JoyEngine
 			ASSERT(false);
 		}
 
-		ASSERT_SUCC(JoyContext::Graphics->GetDevice()->CreatePlacedResource(
+		ASSERT_SUCC(GraphicsManager::Get()->GetDevice()->CreatePlacedResource(
 			allocator->GetHeap(),
 			allocator->Allocate(resourceSize),
 			resourceDesc,

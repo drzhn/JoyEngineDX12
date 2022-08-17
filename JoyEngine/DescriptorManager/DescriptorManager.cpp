@@ -1,12 +1,14 @@
 #include "DescriptorManager.h"
 
-#include "JoyContext.h"
+
 #include "GraphicsManager/GraphicsManager.h"
 #include "Utils/Assert.h"
 
 
 namespace JoyEngine
 {
+	IMPLEMENT_SINGLETON(DescriptorManager)
+
 	void DescriptorManager::Init()
 	{
 		for (const auto pair : m_descriptorStorage)
@@ -22,11 +24,11 @@ namespace JoyEngine
 					: D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
 				0
 			};
-			ASSERT_SUCC(JoyContext::Graphics->GetDevice()->
+			ASSERT_SUCC(GraphicsManager::Get()->GetDevice()->
 				CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&entry.heap)));
 
 			entry.descriptorSize =
-				JoyContext::Graphics->GetDevice()->GetDescriptorHandleIncrementSize(type);
+				GraphicsManager::Get()->GetDevice()->GetDescriptorHandleIncrementSize(type);
 			entry.cpuHeapStart = entry.heap->GetCPUDescriptorHandleForHeapStart();
 			entry.gpuHeapStart = entry.heap->GetGPUDescriptorHandleForHeapStart();
 		}

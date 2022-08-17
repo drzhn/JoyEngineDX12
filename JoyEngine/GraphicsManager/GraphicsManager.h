@@ -10,11 +10,13 @@
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <wrl.h>
+
+#include "Common/Singleton.h"
 using Microsoft::WRL::ComPtr;
 
 namespace JoyEngine
 {
-	class GraphicsManager
+	class GraphicsManager: public Singleton<GraphicsManager>
 	{
 	public:
 		GraphicsManager() = delete;

@@ -18,9 +18,6 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JoyEngine\JoyContext.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="JoyEngine\JoyEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -134,9 +131,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="JoyEngine\JoyContext.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="JoyEngine\JoyEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -279,6 +273,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JoyEngine\MemoryManager\DeviceLinearAllocator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JoyEngine\Common\Singleton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

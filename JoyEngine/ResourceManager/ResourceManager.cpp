@@ -1,5 +1,6 @@
 #include "ResourceManager.h"
 
-namespace JoyEngine {
-
+namespace JoyEngine
+{
+	IMPLEMENT_SINGLETON(ResourceManager)
 }

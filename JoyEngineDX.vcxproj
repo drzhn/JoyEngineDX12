@@ -167,7 +167,6 @@
     <ClCompile Include="JoyEngine\Common\Time.cpp" />
     <ClCompile Include="JoyEngine\GraphicsManager\GraphicsManager.cpp" />
     <ClCompile Include="JoyEngine\InputManager\InputManager.cpp" />
-    <ClCompile Include="JoyEngine\JoyContext.cpp" />
     <ClCompile Include="JoyEngine\JoyEngine.cpp" />
     <ClCompile Include="JoyEngine\MemoryManager\MemoryManager.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\RenderManager.cpp" />
@@ -189,6 +188,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="JoyEngine\Common\CameraUnit.h" />
+    <ClInclude Include="JoyEngine\Common\Singleton.h" />
     <ClInclude Include="JoyEngine\Components\CubemapRenderer.h" />
     <ClInclude Include="JoyEngine\Components\Camera.h" />
     <ClInclude Include="JoyEngine\Components\Component.h" />
@@ -213,7 +213,6 @@
     <ClInclude Include="JoyEngine\Common\Time.h" />
     <ClInclude Include="JoyEngine\GraphicsManager\GraphicsManager.h" />
     <ClInclude Include="JoyEngine\InputManager\InputManager.h" />
-    <ClInclude Include="JoyEngine\JoyContext.h" />
     <ClInclude Include="JoyEngine\JoyEngine.h" />
     <ClInclude Include="JoyEngine\MemoryManager\MemoryManager.h" />
     <ClInclude Include="JoyEngine\RenderManager\RenderManager.h" />

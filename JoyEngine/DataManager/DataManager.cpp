@@ -9,6 +9,8 @@
 
 namespace JoyEngine
 {
+	IMPLEMENT_SINGLETON(DataManager)
+
 	DataManager::DataManager() :
 		//m_databaseFilename(R"(data_old.db)")
 		m_databaseFilename(R"(data.db)")

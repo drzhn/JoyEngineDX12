@@ -1,6 +1,6 @@
 ﻿#include "CubemapRenderer.h"
 
-#include "JoyContext.h"
+
 #include "Common/CameraUnit.h"
 #include "RenderManager/RenderManager.h"
 #include "ResourceManager/Buffer.h"
@@ -59,12 +59,12 @@ namespace JoyEngine
 
 	void CubemapRenderer::Enable()
 	{
-		JoyContext::Render->RegisterCubemapRenderer(this);
+		RenderManager::Get()->RegisterCubemapRenderer(this);
 	}
 
 	void CubemapRenderer::Disable()
 	{
-		JoyContext::Render->UnregisterCubemapRenderer(this);
+		RenderManager::Get()->UnregisterCubemapRenderer(this);
 	}
 
 	void CubemapRenderer::Update()

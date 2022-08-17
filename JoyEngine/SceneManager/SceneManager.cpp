@@ -1,7 +1,10 @@
 #include "SceneManager.h"
 
 
-namespace JoyEngine {
+namespace JoyEngine
+{
+	IMPLEMENT_SINGLETON(SceneManager)
+
 	void SceneManager::Init()
 	{
 		m_scene = std::make_unique<Scene>(GUID::StringToGuid("11dcfeba-c2b6-4c2e-a3c7-51054ff06f1d"));
@@ -9,7 +12,6 @@ namespace JoyEngine {
 
 	void SceneManager::Start()
 	{
-
 	}
 
 	void SceneManager::Stop()
@@ -24,7 +26,8 @@ namespace JoyEngine {
 
 	SceneManager::~SceneManager()
 	{
-		if (m_scene != nullptr) {
+		if (m_scene != nullptr)
+		{
 			m_scene = nullptr;
 		}
 	}

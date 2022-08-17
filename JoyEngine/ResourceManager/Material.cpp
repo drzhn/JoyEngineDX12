@@ -1,6 +1,6 @@
 #include "Material.h"
 #include <vector>
-#include "JoyContext.h"
+
 
 #include <rapidjson/document.h>
 
@@ -17,8 +17,8 @@ namespace JoyEngine
 {
 	Material::Material(GUID guid) : Resource(guid)
 	{
-		rapidjson::Document json = JoyContext::Data->GetSerializedData(guid, material);
-		m_sharedMaterial = JoyContext::Resource->LoadResource<SharedMaterial>(GUID::StringToGuid(json["sharedMaterial"].GetString()));
+		rapidjson::Document json = DataManager::Get()->GetSerializedData(guid, material);
+		m_sharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial>(GUID::StringToGuid(json["sharedMaterial"].GetString()));
 
 		std::map<std::string, std::string> bindings;
 		for (auto& bindingJson : json["bindings"].GetArray())
@@ -65,12 +65,12 @@ namespace JoyEngine
 					{
 						if (bindingsArePaths)
 						{
-							//Texture* t = JoyContext::Resource->LoadResource<Texture>(GUID::Random(), data);
-							m_textures.emplace_back(JoyContext::Resource->LoadResource<Texture>(GUID::Random(), data));
+							//Texture* t = ResourceManager::Get()->LoadResource<Texture>(GUID::Random(), data);
+							m_textures.emplace_back(ResourceManager::Get()->LoadResource<Texture>(GUID::Random(), data));
 						}
 						else
 						{
-							m_textures.emplace_back(JoyContext::Resource->LoadResource<Texture>(GUID::StringToGuid(data)));
+							m_textures.emplace_back(ResourceManager::Get()->LoadResource<Texture>(GUID::StringToGuid(data)));
 						}
 						m_rootParams.insert({
 							m_sharedMaterial->GetRootIndexByName(name),

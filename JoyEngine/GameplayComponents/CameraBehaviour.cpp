@@ -1,6 +1,6 @@
 ﻿#include "CameraBehaviour.h"
 
-#include "JoyContext.h"
+
 #include "Common/Time.h"
 #include "InputManager/InputManager.h"
 
@@ -24,24 +24,24 @@ namespace JoyEngine
 
 		float deltaX =
 #ifdef GLM_FORCE_LEFT_HANDED
-			(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_D) ? deltaTime : 0) -
-			(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_A) ? deltaTime : 0);
+			(InputManager::Get()->GetKeyDown(KeyCode::KEYCODE_D) ? deltaTime : 0) -
+			(InputManager::Get()->GetKeyDown(KeyCode::KEYCODE_A) ? deltaTime : 0);
 #else
-		(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_A) ? deltaTime : 0) -
-			(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_D) ? deltaTime : 0);
+		(InputManager::Get()->GetKeyDown(KeyCode::KEYCODE_A) ? deltaTime : 0) -
+			(InputManager::Get()->GetKeyDown(KeyCode::KEYCODE_D) ? deltaTime : 0);
 #endif
 
-		float deltaZ = (JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_W) ? Time::GetDeltaTime() : 0) -
-			(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_S) ? Time::GetDeltaTime() : 0);
+		float deltaZ = (InputManager::Get()->GetKeyDown(KeyCode::KEYCODE_W) ? Time::GetDeltaTime() : 0) -
+			(InputManager::Get()->GetKeyDown(KeyCode::KEYCODE_S) ? Time::GetDeltaTime() : 0);
 
-		float deltaY = (JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_K) ? Time::GetDeltaTime() : 0) -
-			(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_M) ? Time::GetDeltaTime() : 0);
+		float deltaY = (InputManager::Get()->GetKeyDown(KeyCode::KEYCODE_K) ? Time::GetDeltaTime() : 0) -
+			(InputManager::Get()->GetKeyDown(KeyCode::KEYCODE_M) ? Time::GetDeltaTime() : 0);
 
-		float deltaYRotation = (JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_E) ? Time::GetDeltaTime() : 0) -
-			(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_Q) ? Time::GetDeltaTime() : 0);
+		float deltaYRotation = (InputManager::Get()->GetKeyDown(KeyCode::KEYCODE_E) ? Time::GetDeltaTime() : 0) -
+			(InputManager::Get()->GetKeyDown(KeyCode::KEYCODE_Q) ? Time::GetDeltaTime() : 0);
 
-		float deltaXRotation = (JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_N) ? Time::GetDeltaTime() : 0) -
-			(JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_J) ? Time::GetDeltaTime() : 0);
+		float deltaXRotation = (InputManager::Get()->GetKeyDown(KeyCode::KEYCODE_N) ? Time::GetDeltaTime() : 0) -
+			(InputManager::Get()->GetKeyDown(KeyCode::KEYCODE_J) ? Time::GetDeltaTime() : 0);
 
 
 		glm::vec3 vec = glm::vec3(deltaX, deltaY, deltaZ);

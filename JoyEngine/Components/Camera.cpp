@@ -1,6 +1,6 @@
 #include "Camera.h"
 
-#include "JoyContext.h"
+
 #include <glm/gtx/matrix_decompose.hpp>
 #include "RenderManager/RenderManager.h"
 
@@ -8,10 +8,10 @@ namespace JoyEngine
 {
 	void Camera::Enable()
 	{
-		JoyContext::Render->RegisterCamera(this);
-		m_cameraUnit = CameraUnit(JoyContext::Render->GetAspect(),
-		                          JoyContext::Render->GetWidth(),
-		                          JoyContext::Render->GetHeight(),
+		RenderManager::Get()->RegisterCamera(this);
+		m_cameraUnit = CameraUnit(RenderManager::Get()->GetAspect(),
+		                          RenderManager::Get()->GetWidth(),
+		                          RenderManager::Get()->GetHeight(),
 		                          60,
 		                          0.1f,
 		                          1000
@@ -21,7 +21,7 @@ namespace JoyEngine
 
 	void Camera::Disable()
 	{
-		JoyContext::Render->UnregisterCamera(this);
+		RenderManager::Get()->UnregisterCamera(this);
 		m_enabled = false;
 	}
 

@@ -1,7 +1,7 @@
 ﻿#include "MtlBinaryParser.h"
 
 
-#include "JoyContext.h"
+
 #include "Material.h"
 #include "DataManager/DataManager.h"
 #include "EngineMaterialProvider/EngineMaterialProvider.h"
@@ -12,8 +12,8 @@ namespace JoyEngine
 {
 	MtlBinaryParser::MtlBinaryParser(GUID modelGuid, GUID materialGuid)
 	{
-		m_modelStream = JoyContext::Data->GetFileStream(modelGuid, false);
-		rapidjson::Document json = JoyContext::Data->GetSerializedData(materialGuid, mtl_material);
+		m_modelStream = DataManager::Get()->GetFileStream(modelGuid, false);
+		rapidjson::Document json = DataManager::Get()->GetSerializedData(materialGuid, mtl_material);
 
 		rapidjson::Value& val = json["materials"];
 		for (auto& mat : val.GetArray())
@@ -22,9 +22,9 @@ namespace JoyEngine
 				{"diffuse", mat["diffuse"].GetString()},
 				{"normal", mat["normal"].GetString()}
 			};
-			m_materials.emplace_back(JoyContext::Resource->LoadResource<Material>(
+			m_materials.emplace_back(ResourceManager::Get()->LoadResource<Material>(
 				GUID::Random(),
-				JoyContext::EngineMaterials->GetStandardSharedMaterial(),
+				EngineMaterialProvider::Get()->GetStandardSharedMaterial(),
 				bindings,
 				true
 			));

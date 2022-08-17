@@ -4,7 +4,7 @@
 #include <dxgi1_6.h>
 #include <D3Dcompiler.h>
 
-#include "JoyContext.h"
+
 
 #include "Utils/Assert.h"
 #include "DataManager/DataManager.h"
@@ -21,9 +21,9 @@ namespace JoyEngine
 
 	void Shader::InitShader()
 	{
-		const std::string shaderPath = JoyContext::Data->GetAbsolutePath(m_guid).string();
+		const std::string shaderPath = DataManager::Get()->GetAbsolutePath(m_guid).string();
 
-		const std::vector<char> shaderData = JoyContext::Data->GetData(m_guid);
+		const std::vector<char> shaderData = DataManager::Get()->GetData(m_guid);
 
 		if (m_shaderType & JoyShaderTypeCompute)
 		{

@@ -3,16 +3,19 @@
 
 #include <map>
 
+#include "Common/Singleton.h"
+
+
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <wrl.h>
 using Microsoft::WRL::ComPtr;
 
-namespace JoyEngine
-{
 #define DESCRIPTORS_COUNT 512 // I'm too lazy now for writing pool
 
-	class DescriptorManager
+namespace JoyEngine
+{
+	class DescriptorManager : public Singleton<DescriptorManager>
 	{
 	public :
 		DescriptorManager() = default;

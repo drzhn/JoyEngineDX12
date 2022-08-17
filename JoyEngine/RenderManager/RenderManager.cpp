@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "JoyContext.h"
+
 #include "Utils/Assert.h"
 
 #include "ResourceManager/ResourceManager.h"
@@ -25,14 +25,16 @@
 
 namespace JoyEngine
 {
+	IMPLEMENT_SINGLETON(RenderManager)
+
 	void RenderManager::Init()
 	{
-		m_width = JoyContext::Graphics->GetWidth();
-		m_height = JoyContext::Graphics->GetHeight();
+		m_width = GraphicsManager::Get()->GetWidth();
+		m_height = GraphicsManager::Get()->GetHeight();
 
 		ASSERT(m_width != 0 && m_height != 0);
 
-		m_queue = std::make_unique<CommandQueue>(D3D12_COMMAND_LIST_TYPE_DIRECT, JoyContext::Graphics->GetDevice(),
+		m_queue = std::make_unique<CommandQueue>(D3D12_COMMAND_LIST_TYPE_DIRECT, GraphicsManager::Get()->GetDevice(),
 		                                         FrameCount);
 
 		// Describe and create the swap chain.
@@ -44,13 +46,13 @@ namespace JoyEngine
 		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 		swapChainDesc.SampleDesc.Count = 1;
-		swapChainDesc.Flags = JoyContext::Graphics->GetTearingSupport() ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
+		swapChainDesc.Flags = GraphicsManager::Get()->GetTearingSupport() ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
 		//swapChainDesc.SampleDesc.Quality = 0;
 
 		ComPtr<IDXGISwapChain1> swapChain;
-		ASSERT_SUCC(JoyContext::Graphics->GetFactory()->CreateSwapChainForHwnd(
+		ASSERT_SUCC(GraphicsManager::Get()->GetFactory()->CreateSwapChainForHwnd(
 			m_queue->GetQueue(), // Swap chain needs the queue so that it can force a flush on it.
-			JoyContext::Graphics->GetHWND(),
+			GraphicsManager::Get()->GetHWND(),
 			&swapChainDesc,
 			nullptr,
 			nullptr,
@@ -58,7 +60,7 @@ namespace JoyEngine
 		));
 
 		// This sample does not support fullscreen transitions.
-		ASSERT_SUCC(JoyContext::Graphics->GetFactory()->MakeWindowAssociation(JoyContext::Graphics->GetHWND(), DXGI_MWA_NO_ALT_ENTER));
+		ASSERT_SUCC(GraphicsManager::Get()->GetFactory()->MakeWindowAssociation(GraphicsManager::Get()->GetHWND(), DXGI_MWA_NO_ALT_ENTER));
 		ASSERT_SUCC(swapChain.As(&m_swapChain));
 
 		m_currentFrameIndex = m_swapChain->GetCurrentBackBufferIndex();
@@ -400,7 +402,7 @@ namespace JoyEngine
 		//	commandList->ClearRenderTargetView(lightHandle, clearColor, 0, nullptr);
 		//	commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
-		//	auto sm = JoyContext::EngineMaterials->GetGBufferSharedMaterial();
+		//	auto sm = EngineMaterialProvider::Get()->GetGBufferSharedMaterial();
 		//	commandList->SetPipelineState(sm->GetPipelineObject().Get());
 		//	commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
 
@@ -460,7 +462,7 @@ namespace JoyEngine
 		//		auto cubemapConvoluted = m_cubemap->GetCubemapConvolutedTexture()->GetSRV()->GetCPUHandle();
 		//		SetViewportAndScissor(commandList, m_cubemap->GetConvolutedTextureSize(), m_cubemap->GetConvolutedTextureSize());
 
-		//		auto sm = JoyContext::EngineMaterials->GetCubemapConvolutionSharedMaterial();
+		//		auto sm = EngineMaterialProvider::Get()->GetCubemapConvolutionSharedMaterial();
 
 		//		commandList->SetPipelineState(sm->GetPipelineObject().Get());
 		//		commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
@@ -508,7 +510,7 @@ namespace JoyEngine
 		//		auto shadowmapHandle = light->GetShadowmap()->GetSRV()->GetCPUHandle();
 		//		if (light->GetLightType() == Spot)
 		//		{
-		//			auto sm = JoyContext::EngineMaterials->GetShadowProcessingSharedMaterial();
+		//			auto sm = EngineMaterialProvider::Get()->GetShadowProcessingSharedMaterial();
 
 		//			commandList->SetPipelineState(sm->GetPipelineObject().Get());
 		//			commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
@@ -526,7 +528,7 @@ namespace JoyEngine
 
 		//		if (light->GetLightType() == Point)
 		//		{
-		//			auto sm = JoyContext::EngineMaterials->GetShadowPointProcessingSharedMaterial();
+		//			auto sm = EngineMaterialProvider::Get()->GetShadowPointProcessingSharedMaterial();
 
 		//			commandList->SetPipelineState(sm->GetPipelineObject().Get());
 		//			commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
@@ -564,7 +566,7 @@ namespace JoyEngine
 		//	// Direction light
 		//	if (m_directionLight != nullptr)
 		//	{
-		//		auto sm = JoyContext::EngineMaterials->GetDirectionLightProcessingSharedMaterial();
+		//		auto sm = EngineMaterialProvider::Get()->GetDirectionLightProcessingSharedMaterial();
 
 		//		commandList->SetPipelineState(sm->GetPipelineObject().Get());
 		//		commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
@@ -590,7 +592,7 @@ namespace JoyEngine
 
 		//	// Other lights
 		//	{
-		//		auto sm = JoyContext::EngineMaterials->GetLightProcessingSharedMaterial();
+		//		auto sm = EngineMaterialProvider::Get()->GetLightProcessingSharedMaterial();
 
 		//		commandList->SetPipelineState(sm->GetPipelineObject().Get());
 		//		commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
@@ -666,8 +668,8 @@ namespace JoyEngine
 		//		);
 		//		commandList->ResourceBarrier(1, &barrier);
 
-		//		commandList->SetComputeRootSignature(JoyContext::EngineMaterials->GetParticleBufferGenerationComputePipeline()->GetRootSignature().Get());
-		//		commandList->SetPipelineState(JoyContext::EngineMaterials->GetParticleBufferGenerationComputePipeline()->GetPipelineObject().Get());
+		//		commandList->SetComputeRootSignature(EngineMaterialProvider::Get()->GetParticleBufferGenerationComputePipeline()->GetRootSignature().Get());
+		//		commandList->SetPipelineState(EngineMaterialProvider::Get()->GetParticleBufferGenerationComputePipeline()->GetPipelineObject().Get());
 
 		//		AttachViewToCompute(commandList, 0, ps->GetSRV());
 
@@ -686,8 +688,8 @@ namespace JoyEngine
 		//		);
 		//		commandList->ResourceBarrier(1, &barrier);
 
-		//		commandList->SetPipelineState(JoyContext::EngineMaterials->GetParticleSystemSharedMaterial()->GetPipelineObject().Get());
-		//		commandList->SetGraphicsRootSignature(JoyContext::EngineMaterials->GetParticleSystemSharedMaterial()->GetRootSignature().Get());
+		//		commandList->SetPipelineState(EngineMaterialProvider::Get()->GetParticleSystemSharedMaterial()->GetPipelineObject().Get());
+		//		commandList->SetGraphicsRootSignature(EngineMaterialProvider::Get()->GetParticleSystemSharedMaterial()->GetRootSignature().Get());
 
 		//		MVP mvp{
 		//			ps->GetTransform()->GetModelMatrix(),
@@ -722,7 +724,7 @@ namespace JoyEngine
 		//	//		&hdrRTVHandle,
 		//	//		FALSE, nullptr);
 
-		//	//	auto sm = JoyContext::EngineMaterials->GetSSLRPostProcessSharedMaterial();
+		//	//	auto sm = EngineMaterialProvider::Get()->GetSSLRPostProcessSharedMaterial();
 
 		//	//	commandList->SetPipelineState(sm->GetPipelineObject().Get());
 		//	//	commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
@@ -747,7 +749,7 @@ namespace JoyEngine
 
 		//	// FOG post-process
 		//	{
-		//		auto sm = JoyContext::EngineMaterials->GetFogPostProcessSharedMaterial();
+		//		auto sm = EngineMaterialProvider::Get()->GetFogPostProcessSharedMaterial();
 
 		//		commandList->SetPipelineState(sm->GetPipelineObject().Get());
 		//		commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
@@ -777,7 +779,7 @@ namespace JoyEngine
 		//			const float clearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
 		//			commandList->ClearRenderTargetView(renderHandle, clearColor, 0, nullptr);
 
-		//			auto sm = JoyContext::EngineMaterials->GetSsaoPostProcessSharedMaterial();
+		//			auto sm = EngineMaterialProvider::Get()->GetSsaoPostProcessSharedMaterial();
 
 		//			commandList->SetPipelineState(sm->GetPipelineObject().Get());
 		//			commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
@@ -805,7 +807,7 @@ namespace JoyEngine
 		//		{
 		//			uint32_t direction = 0;
 
-		//			auto sm = JoyContext::EngineMaterials->GetSsaoBlurSharedMaterial();
+		//			auto sm = EngineMaterialProvider::Get()->GetSsaoBlurSharedMaterial();
 
 		//			commandList->SetPipelineState(sm->GetPipelineObject().Get());
 		//			commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
@@ -868,7 +870,7 @@ namespace JoyEngine
 		//				&hdrRTVHandle,
 		//				FALSE, nullptr);
 
-		//			auto sm = JoyContext::EngineMaterials->GetSsaoAppendSharedMaterial();
+		//			auto sm = EngineMaterialProvider::Get()->GetSsaoAppendSharedMaterial();
 
 		//			commandList->SetPipelineState(sm->GetPipelineObject().Get());
 		//			commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
@@ -912,8 +914,8 @@ namespace JoyEngine
 
 		//	// First pass
 		//	{
-		//		commandList->SetComputeRootSignature(JoyContext::EngineMaterials->GetHdrDownscaleFirstPassComputePipeline()->GetRootSignature().Get());
-		//		commandList->SetPipelineState(JoyContext::EngineMaterials->GetHdrDownscaleFirstPassComputePipeline()->GetPipelineObject().Get());
+		//		commandList->SetComputeRootSignature(EngineMaterialProvider::Get()->GetHdrDownscaleFirstPassComputePipeline()->GetRootSignature().Get());
+		//		commandList->SetPipelineState(EngineMaterialProvider::Get()->GetHdrDownscaleFirstPassComputePipeline()->GetPipelineObject().Get());
 
 		//		commandList->SetComputeRoot32BitConstants(0, sizeof(HDRDownScaleConstants) / 4, &downScaleConstants, 0);
 		//		AttachViewToCompute(commandList, 1, m_hdrRenderTarget->GetRTV());
@@ -925,8 +927,8 @@ namespace JoyEngine
 
 		//	// Second pass
 		//	{
-		//		commandList->SetComputeRootSignature(JoyContext::EngineMaterials->GetHdrDownscaleSecondPassComputePipeline()->GetRootSignature().Get());
-		//		commandList->SetPipelineState(JoyContext::EngineMaterials->GetHdrDownscaleSecondPassComputePipeline()->GetPipelineObject().Get());
+		//		commandList->SetComputeRootSignature(EngineMaterialProvider::Get()->GetHdrDownscaleSecondPassComputePipeline()->GetRootSignature().Get());
+		//		commandList->SetPipelineState(EngineMaterialProvider::Get()->GetHdrDownscaleSecondPassComputePipeline()->GetPipelineObject().Get());
 
 		//		commandList->SetComputeRoot32BitConstants(0, sizeof(HDRDownScaleConstants) / 4, &downScaleConstants, 0);
 		//		AttachViewToCompute(commandList, 1, m_hdrLuminationBufferUAVView.get());
@@ -945,8 +947,8 @@ namespace JoyEngine
 
 		//	// Bloom bright pass
 		//	{
-		//		commandList->SetComputeRootSignature(JoyContext::EngineMaterials->GetBloomBrightPassComputePipeline()->GetRootSignature().Get());
-		//		commandList->SetPipelineState(JoyContext::EngineMaterials->GetBloomBrightPassComputePipeline()->GetPipelineObject().Get());
+		//		commandList->SetComputeRootSignature(EngineMaterialProvider::Get()->GetBloomBrightPassComputePipeline()->GetRootSignature().Get());
+		//		commandList->SetPipelineState(EngineMaterialProvider::Get()->GetBloomBrightPassComputePipeline()->GetPipelineObject().Get());
 
 		//		commandList->SetComputeRoot32BitConstants(0, sizeof(HDRDownScaleConstants) / 4, &downScaleConstants, 0);
 		//		AttachViewToCompute(commandList, 1, m_hrdDownScaledTexture->GetRTV());
@@ -964,8 +966,8 @@ namespace JoyEngine
 
 		//	// Bloom vertical filter pass
 		//	{
-		//		commandList->SetComputeRootSignature(JoyContext::EngineMaterials->GetBloomVerticalFilterComputePipeline()->GetRootSignature().Get());
-		//		commandList->SetPipelineState(JoyContext::EngineMaterials->GetBloomVerticalFilterComputePipeline()->GetPipelineObject().Get());
+		//		commandList->SetComputeRootSignature(EngineMaterialProvider::Get()->GetBloomVerticalFilterComputePipeline()->GetRootSignature().Get());
+		//		commandList->SetPipelineState(EngineMaterialProvider::Get()->GetBloomVerticalFilterComputePipeline()->GetPipelineObject().Get());
 
 		//		commandList->SetComputeRoot32BitConstants(0, sizeof(HDRDownScaleConstants) / 4, &downScaleConstants, 0);
 		//		AttachViewToCompute(commandList, 1, m_bloomFirstTexture->GetRTV());
@@ -982,8 +984,8 @@ namespace JoyEngine
 
 		//	// Bloom horizontal filter pass
 		//	{
-		//		commandList->SetComputeRootSignature(JoyContext::EngineMaterials->GetBloomHorizontalFilterComputePipeline()->GetRootSignature().Get());
-		//		commandList->SetPipelineState(JoyContext::EngineMaterials->GetBloomHorizontalFilterComputePipeline()->GetPipelineObject().Get());
+		//		commandList->SetComputeRootSignature(EngineMaterialProvider::Get()->GetBloomHorizontalFilterComputePipeline()->GetRootSignature().Get());
+		//		commandList->SetPipelineState(EngineMaterialProvider::Get()->GetBloomHorizontalFilterComputePipeline()->GetPipelineObject().Get());
 
 		//		commandList->SetComputeRoot32BitConstants(0, sizeof(HDRDownScaleConstants) / 4, &downScaleConstants, 0);
 		//		AttachViewToCompute(commandList, 1, m_bloomSecondTexture->GetRTV());
@@ -1016,7 +1018,7 @@ namespace JoyEngine
 		//			&ldrRTVHandle,
 		//			FALSE, nullptr);
 
-		//		auto sm = JoyContext::EngineMaterials->GetHdrToLdrTransitionSharedMaterial();
+		//		auto sm = EngineMaterialProvider::Get()->GetHdrToLdrTransitionSharedMaterial();
 
 		//		commandList->SetPipelineState(sm->GetPipelineObject().Get());
 		//		commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
@@ -1066,7 +1068,7 @@ namespace JoyEngine
 
 		m_queue->Execute(m_currentFrameIndex);
 
-		UINT presentFlags = JoyContext::Graphics->GetTearingSupport() ? DXGI_PRESENT_ALLOW_TEARING : 0;
+		UINT presentFlags = GraphicsManager::Get()->GetTearingSupport() ? DXGI_PRESENT_ALLOW_TEARING : 0;
 
 		// Present the frame.
 		ASSERT_SUCC(m_swapChain->Present(0, presentFlags));
@@ -1170,8 +1172,8 @@ namespace JoyEngine
 	{
 		ID3D12DescriptorHeap* heaps[2]
 		{
-			JoyContext::Descriptors->GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV),
-			JoyContext::Descriptors->GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER)
+			DescriptorManager::Get()->GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV),
+			DescriptorManager::Get()->GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER)
 		};
 		commandList->SetDescriptorHeaps(2, heaps);
 

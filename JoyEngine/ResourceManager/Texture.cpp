@@ -2,7 +2,7 @@
 
 #include <utility>
 
-#include "JoyContext.h"
+
 #include "DataManager/DataManager.h"
 #include "DescriptorManager/DescriptorManager.h"
 #include "GraphicsManager/GraphicsManager.h"
@@ -164,7 +164,7 @@ namespace JoyEngine
 		textureDesc.SampleDesc.Quality = 0;
 		textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 
-		m_texture = JoyContext::Memory->CreateResource(
+		m_texture = MemoryManager::Get()->CreateResource(
 			m_memoryPropertiesFlags.Type,
 			&textureDesc,
 			m_usageFlags,
@@ -178,8 +178,8 @@ namespace JoyEngine
 		m_usageFlags = D3D12_RESOURCE_STATE_COPY_DEST;
 		m_memoryPropertiesFlags = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 
-		bool hasRawData = JoyContext::Data->HasRawData(guid);
-		auto textureStream = JoyContext::Data->GetFileStream(guid, hasRawData);
+		bool hasRawData = DataManager::Get()->HasRawData(guid);
+		auto textureStream = DataManager::Get()->GetFileStream(guid, hasRawData);
 
 		textureStream.seekg(0);
 		uint32_t ddsMagicNumber = 0;
@@ -196,10 +196,10 @@ namespace JoyEngine
 			uint32_t pitch = header.pitchOrLinearSize;
 			// yes, i know i unload data two times.
 			// TODO make special d3d12heap for intermediate data and allocate data there
-			std::vector<char> data = JoyContext::Data->GetData(guid, false, 0);
+			std::vector<char> data = DataManager::Get()->GetData(guid, false, 0);
 			std::vector<D3D12_SUBRESOURCE_DATA> subresource;
 			LoadDDSTextureFromMemory(
-				JoyContext::Graphics->GetDevice(),
+				GraphicsManager::Get()->GetDevice(),
 				reinterpret_cast<uint8_t*>(data.data()),
 				data.size(),
 				&resource,
@@ -209,7 +209,7 @@ namespace JoyEngine
 
 			Texture::CreateImageViews();
 
-			JoyContext::Memory->LoadDataToImage(
+			MemoryManager::Get()->LoadDataToImage(
 				textureStream,
 				sizeof(uint32_t) + sizeof(DDS_HEADER),
 				subresource[0].RowPitch,
@@ -233,8 +233,8 @@ namespace JoyEngine
 		m_usageFlags = D3D12_RESOURCE_STATE_COPY_DEST;
 		m_memoryPropertiesFlags = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 
-		const bool hasRawData = JoyContext::Data->HasRawData(file);
-		auto textureStream = JoyContext::Data->GetFileStream(file, hasRawData);
+		const bool hasRawData = DataManager::Get()->HasRawData(file);
+		auto textureStream = DataManager::Get()->GetFileStream(file, hasRawData);
 
 		InitTextureFromFile(textureStream);
 	}
@@ -279,7 +279,7 @@ namespace JoyEngine
 
 		CreateImage(false, false, true, 1, m_mipLevels);
 		CreateImageViews();
-		JoyContext::Memory->LoadDataToImage(
+		MemoryManager::Get()->LoadDataToImage(
 			textureStream,
 			sizeof(uint32_t) + sizeof(uint32_t),
 			m_width * 4,

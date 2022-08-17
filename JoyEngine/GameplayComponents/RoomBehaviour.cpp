@@ -1,6 +1,6 @@
 #include "RoomBehaviour.h"
 
-#include "JoyContext.h"
+
 #include "InputManager/InputManager.h"
 
 #include <iostream>
@@ -26,13 +26,13 @@ namespace JoyEngine
 
 	void RoomBehaviour::Update()
 	{
-		//if (JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_A))
+		//if (InputManager::Get()->GetKeyDown(KeyCode::KEYCODE_A))
 		//{
 		//	m_transform->SetPosition(
 		//		m_transform->GetPosition() + glm::vec3(Time::GetDeltaTime(), 0, 0)
 		//	);
 		//}
-		//if (JoyContext::Input->GetKeyDown(KeyCode::KEYCODE_D))
+		//if (InputManager::Get()->GetKeyDown(KeyCode::KEYCODE_D))
 		//{
 		//	m_transform->SetPosition(
 		//		m_transform->GetPosition() + glm::vec3(-Time::GetDeltaTime(), 0, 0)

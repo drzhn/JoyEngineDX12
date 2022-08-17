@@ -9,6 +9,7 @@
 
 #include "Utils/FileUtils.h"
 #include "Utils/GUID.h"
+#include "Common/Singleton.h"
 
 
 namespace JoyEngine
@@ -24,7 +25,7 @@ namespace JoyEngine
 		scene,
 	};
 
-	class DataManager
+	class DataManager : public Singleton<DataManager>
 	{
 	public:
 		DataManager();

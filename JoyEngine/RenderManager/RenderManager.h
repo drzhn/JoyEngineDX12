@@ -12,7 +12,7 @@
 #include <wrl.h>
 
 #include "JoyTypes.h"
-#include "SSAO.h"
+#include "Common/Singleton.h"
 #include "ResourceManager/SharedMaterial.h"
 using Microsoft::WRL::ComPtr;
 
@@ -30,7 +30,7 @@ namespace JoyEngine
 	class RenderTexture;
 	class ResourceView;
 
-	class RenderManager
+	class RenderManager : public Singleton<RenderManager>
 	{
 	public:
 		RenderManager() = default;
@@ -107,7 +107,7 @@ namespace JoyEngine
 		static void CopyRTVResource(ID3D12GraphicsCommandList* commandList, ID3D12Resource* rtvResource, ID3D12Resource* copyResource);
 
 	private:
-		static constexpr DXGI_FORMAT hdrRTVFormat =  DXGI_FORMAT_R16G16B16A16_FLOAT;
+		static constexpr DXGI_FORMAT hdrRTVFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
 		static constexpr DXGI_FORMAT ldrRTVFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 		static constexpr DXGI_FORMAT gBufferFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
 		static constexpr DXGI_FORMAT depthFormat = DXGI_FORMAT_D32_FLOAT;

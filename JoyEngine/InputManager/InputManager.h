@@ -4,6 +4,7 @@
 #include <map>
 
 #include "windows.h"
+#include "Common/Singleton.h"
 
 namespace JoyEngine
 {
@@ -44,7 +45,7 @@ namespace JoyEngine
 		KEYCODE_ESCAPE,
 	};
 
-	class InputManager
+	class InputManager : public Singleton<InputManager>
 	{
 	public:
 		InputManager() = default;

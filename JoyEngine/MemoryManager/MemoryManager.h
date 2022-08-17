@@ -8,13 +8,14 @@
 #include "ResourceManager/Texture.h"
 
 #include "DeviceLinearAllocator.h"
+#include "Common/Singleton.h"
 
 
 namespace JoyEngine
 {
 	class JoyEngine;
 
-	class MemoryManager
+	class MemoryManager : public Singleton<MemoryManager>
 	{
 	public:
 		MemoryManager() = default;
@@ -54,7 +55,6 @@ namespace JoyEngine
 		std::array<std::unique_ptr<DeviceLinearAllocator>, 3> m_gpuHeapAllocators;
 		std::array<std::unique_ptr<DeviceLinearAllocator>, 1> m_cpuHeapAllocators;
 		std::unique_ptr<Buffer> m_stagingBuffer;
-
 	};
 }
 

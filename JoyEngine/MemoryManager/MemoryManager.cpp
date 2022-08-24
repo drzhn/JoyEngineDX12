@@ -261,18 +261,10 @@ namespace JoyEngine
 		const D3D12_CLEAR_VALUE* clearValue) const
 	{
 		ComPtr<ID3D12Resource> resource;
-		uint64_t resourceSize = 0;
-		GraphicsManager::Get()->GetDevice()->GetCopyableFootprints(
-			resourceDesc,
-			0,
-			resourceDesc->MipLevels,
-			0,
-			nullptr,
-			nullptr,
-			nullptr,
-			&resourceSize);
 
-		ASSERT(resourceSize != 0);
+		const D3D12_RESOURCE_ALLOCATION_INFO allocationInfo = GraphicsManager::Get()->GetDevice()->GetResourceAllocationInfo(
+			0, 1, resourceDesc);
+
 
 		DeviceLinearAllocator* allocator = nullptr;
 
@@ -306,7 +298,7 @@ namespace JoyEngine
 
 		ASSERT_SUCC(GraphicsManager::Get()->GetDevice()->CreatePlacedResource(
 			allocator->GetHeap(),
-			allocator->Allocate(resourceSize),
+			allocator->Allocate(allocationInfo.SizeInBytes),
 			resourceDesc,
 			initialResourceState,
 			clearValue,

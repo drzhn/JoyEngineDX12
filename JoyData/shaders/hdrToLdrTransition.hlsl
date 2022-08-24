@@ -1,10 +1,9 @@
-Texture2D<float4> hdrTexture : register(t0);
+Texture2D<float4> HdrTexture : register(t0);
 StructuredBuffer<float> AvgLum : register(t1);
 
 static const float4 LUM_FACTOR = float4(0.299, 0.587, 0.114, 0);
-static const float MiddleGrey = 2.0f;
-static const float LumWhiteSqr = 4.0f;
-static const float BloomScale = 0.3f;
+static const float MiddleGrey = 3.0f;
+static const float LumWhiteSqr = 9.0f;
 
 float4 ToneMapping(float4 HDRColor)
 {
@@ -44,14 +43,14 @@ float4 PSMain(PSInput input) : SV_Target
 {
 	const float2 screenPosition = (input.clipPos.xy / input.clipPos.w);
 
-	float4 color = hdrTexture.Load(float3(input.position.xy, 0));
+	float4 color = HdrTexture.Load(float3(input.position.xy, 0));
 
 	//color += BloomScale * BloomTexture.Sample(LinearSampler, screenPosition);
 
 	//float gamma = 2.2;
 	//color.rgb = pow(color.rgb, float3(1, 1, 1) * (1.0 / gamma));
 
-	//color = ToneMapping(color);
+	color = ToneMapping(color);
 
 
 	return color;

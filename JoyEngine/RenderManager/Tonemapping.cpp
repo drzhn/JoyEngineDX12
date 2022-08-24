@@ -161,9 +161,7 @@ namespace JoyEngine
 
 	void Tonemapping::Render(ID3D12GraphicsCommandList* commandList, const RenderTexture* currentBackBuffer)
 	{
-		auto swapchainResource = currentBackBuffer->GetImage().Get();
-		auto ldrRTVHandle = currentBackBuffer->GetRTV()->GetCPUHandle();
-
+		const auto ldrRTVHandle = currentBackBuffer->GetRTV()->GetCPUHandle();
 
 		// First pass
 		{
@@ -211,12 +209,14 @@ namespace JoyEngine
 				&ldrRTVHandle,
 				FALSE, nullptr);
 
-			commandList->SetPipelineState(m_hdrToLdrTransitionSharedMaterial->GetPipelineObject().Get());
-			commandList->SetGraphicsRootSignature(m_hdrToLdrTransitionSharedMaterial->GetRootSignature().Get());
+			const auto sm = m_hdrToLdrTransitionSharedMaterial;
+
+			commandList->SetPipelineState(sm->GetPipelineObject().Get());
+			commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
 			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-			//GraphicsUtils::AttachViewToGraphics(commandList, 0, m_hdrLuminationBufferSRVView.get());
-			GraphicsUtils::AttachViewToGraphics(commandList, 0, m_hdrRenderTarget->GetSRV());
+			GraphicsUtils::AttachViewToGraphics(commandList, 0, m_hdrLuminationBufferSRVView.get());
+			GraphicsUtils::AttachViewToGraphics(commandList, 1, m_hdrRenderTarget->GetSRV());
 
 			commandList->DrawInstanced(
 				3,

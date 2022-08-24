@@ -190,22 +190,22 @@ namespace JoyEngine
 		const glm::mat4 mainCameraViewMatrix = m_currentCamera->GetViewMatrix();
 		const glm::mat4 mainCameraProjMatrix = m_currentCamera->GetProjMatrix();
 
-		//{
-		//	m_engineDataBuffer->Lock(m_currentFrameIndex);
+		{
+			m_engineDataBuffer->Lock(m_currentFrameIndex);
 
-		//	const auto data = static_cast<JoyData*>(m_engineDataBuffer->GetPtr());
-		//	data->cameraWorldPos = m_currentCamera->GetTransform()->GetPosition();
-		//	data->time = Time::GetTime();
-		//	data->perspectiveValues = glm::vec4(
-		//		1.0f / mainCameraProjMatrix[0][0],
-		//		1.0f / mainCameraProjMatrix[1][1],
-		//		mainCameraProjMatrix[3][2],
-		//		mainCameraProjMatrix[2][2]
-		//	);
-		//	data->cameraInvProj = glm::inverse(mainCameraProjMatrix);
+			const auto data = static_cast<JoyData*>(m_engineDataBuffer->GetPtr());
+			data->cameraWorldPos = m_currentCamera->GetTransform()->GetPosition();
+			data->time = Time::GetTime();
+			data->perspectiveValues = glm::vec4(
+				1.0f / mainCameraProjMatrix[0][0],
+				1.0f / mainCameraProjMatrix[1][1],
+				mainCameraProjMatrix[3][2],
+				mainCameraProjMatrix[2][2]
+			);
+			data->cameraInvProj = glm::inverse(mainCameraProjMatrix);
 
-		//	m_engineDataBuffer->Unlock();
-		//}
+			m_engineDataBuffer->Unlock();
+		}
 
 		//Drawing main color
 		{
@@ -216,7 +216,7 @@ namespace JoyEngine
 				&hdrRTVHandle,
 				FALSE, &dsvHandle);
 
-			const float clearColor[] = {0.0f, 0.2f, 0.4f, 1.0f};
+			constexpr float clearColor[] = {0.0f, 0.2f, 0.4f, 1.0f};
 			commandList->ClearRenderTargetView(hdrRTVHandle, clearColor, 0, nullptr);
 			commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 

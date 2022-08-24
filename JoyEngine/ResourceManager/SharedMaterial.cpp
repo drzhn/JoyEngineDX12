@@ -77,7 +77,7 @@ namespace JoyEngine
 					params[paramsIndex].InitAsConstants(
 						sizeof(MipMapGenerationData) / 4, input.BindPoint, input.Space, input.Visibility);
 					//m_engineBindings.insert({ static_cast<uint32_t>(paramsIndex), ModelViewProjection });
-					m_rootIndices.insert({ strHash(name.c_str()), paramsIndex });
+					m_rootIndices.insert({strHash(name.c_str()), paramsIndex});
 					paramsIndex++;
 				}
 				else
@@ -186,39 +186,22 @@ namespace JoyEngine
 	// =============================== SHARED MATERIAL =================================
 
 
-	std::vector<D3D12_INPUT_ELEMENT_DESC> SharedMaterial::m_inputLayout = {
-		{
-			"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT,
-			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
-		},
-		{
-			"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT,
-			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
-		},
-		{
-			"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT,
-			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
-		},
-		{
-			"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT,
-			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
-		},
-	};
-
 	SharedMaterial::SharedMaterial(GUID guid) :
 		Resource(guid)
 	{
+		GraphicsPipelineArgs args = {};
+
 		rapidjson::Document json = DataManager::Get()->GetSerializedData(m_guid, sharedMaterial);
 
-		m_hasVertexInput = json["hasVertexInput"].GetBool();
-		m_depthTest = json["depthTest"].GetBool();
-		m_depthWrite = json["depthWrite"].GetBool();
+		args.hasVertexInput = json["hasVertexInput"].GetBool();
+		args.depthTest = json["depthTest"].GetBool();
+		args.depthWrite = json["depthWrite"].GetBool();
 
 		std::string depthCompStr = json["comparison"].GetString();
 		switch (strHash(depthCompStr.c_str()))
 		{
 		case strHash("less_equal"):
-			m_depthComparisonFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+			args.depthComparisonFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 			break;
 		default:
 			ASSERT(false);
@@ -228,13 +211,13 @@ namespace JoyEngine
 		switch (strHash(cullModeStr.c_str()))
 		{
 		case strHash("back"):
-			m_cullMode = D3D12_CULL_MODE_BACK;
+			args.cullMode = D3D12_CULL_MODE_BACK;
 			break;
 		case strHash("front"):
-			m_cullMode = D3D12_CULL_MODE_FRONT;
+			args.cullMode = D3D12_CULL_MODE_FRONT;
 			break;
 		case strHash("none"):
-			m_cullMode = D3D12_CULL_MODE_NONE;
+			args.cullMode = D3D12_CULL_MODE_NONE;
 			break;
 		default:
 			ASSERT(false);
@@ -268,43 +251,113 @@ namespace JoyEngine
 		};
 
 		// Shader creation
-		ShaderTypeFlags shaderTypeFlags = 0;
+		args.shaderTypes = 0;
+
 		for (auto& type : json["shaderTypes"].GetArray())
 		{
 			std::string typeStr = type.GetString();
 			switch (strHash(typeStr.c_str()))
 			{
-			case strHash("vertex"): shaderTypeFlags |= JoyShaderTypeVertex;
+			case strHash("vertex"): args.shaderTypes |= JoyShaderTypeVertex;
 				break;
-			case strHash("hull"): shaderTypeFlags |= JoyShaderTypeHull;
+			case strHash("hull"): args.shaderTypes |= JoyShaderTypeHull;
 				break;
-			case strHash("domain"): shaderTypeFlags |= JoyShaderTypeDomain;
+			case strHash("domain"): args.shaderTypes |= JoyShaderTypeDomain;
 				break;
-			case strHash("geometry"): shaderTypeFlags |= JoyShaderTypeGeometry;
+			case strHash("geometry"): args.shaderTypes |= JoyShaderTypeGeometry;
 				break;
-			case strHash("pixel"): shaderTypeFlags |= JoyShaderTypePixel;
+			case strHash("pixel"): args.shaderTypes |= JoyShaderTypePixel;
 				break;
-			case strHash("amplification"): shaderTypeFlags |= JoyShaderTypeAmplification;
+			case strHash("amplification"): args.shaderTypes |= JoyShaderTypeAmplification;
 				break;
-			case strHash("mesh"): shaderTypeFlags |= JoyShaderTypeMesh;
+			case strHash("mesh"): args.shaderTypes |= JoyShaderTypeMesh;
 				break;
-			case strHash("compute"): shaderTypeFlags |= JoyShaderTypeCompute;
+			case strHash("compute"): args.shaderTypes |= JoyShaderTypeCompute;
 				break;
 			default:
 				ASSERT(false);
 			}
 		}
 
-		GUID shaderGuid = GUID::StringToGuid(json["shader"].GetString());
-		CreateShaderAndRootSignature(shaderGuid, shaderTypeFlags);
+		args.shader = GUID::StringToGuid(json["shader"].GetString());
 
-		DXGI_FORMAT depthFormat = RenderManager::GetDepthFormat();
-		CreateGraphicsPipeline(renderTargetsFormats, blendDesc, depthFormat, topology);
+		args.depthFormat = RenderManager::GetDepthFormat();
+		args.blendDesc = blendDesc;
+		args.topology = topology;
+		args.renderTargetsFormats = renderTargetsFormats;
+
+		GUID graphicsPipelineGuid = GUID::Random();
+		m_graphicsPipeline = ResourceManager::Get()->LoadResource<GraphicsPipeline>(graphicsPipelineGuid, args);
 
 		RenderManager::Get()->RegisterSharedMaterial(this);
 	}
 
-	SharedMaterial::SharedMaterial(const GUID guid, const SharedMaterialArgs args) :
+	SharedMaterial::SharedMaterial(GUID guid, GraphicsPipelineArgs args) :
+		Resource(guid)
+	{
+		GUID graphicsPipelineGuid = GUID::Random();
+		m_graphicsPipeline = ResourceManager::Get()->LoadResource<GraphicsPipeline>(graphicsPipelineGuid, args);
+
+		RenderManager::Get()->RegisterSharedMaterial(this);
+	}
+
+	SharedMaterial::~SharedMaterial()
+	{
+		RenderManager::Get()->UnregisterSharedMaterial(this);
+	}
+
+
+	bool SharedMaterial::IsLoaded() const noexcept
+	{
+		return m_graphicsPipeline->IsLoaded();
+	}
+
+	void SharedMaterial::RegisterMeshRenderer(MeshRenderer* meshRenderer)
+	{
+		m_meshRenderers.insert(meshRenderer);
+	}
+
+	void SharedMaterial::UnregisterMeshRenderer(MeshRenderer* meshRenderer)
+	{
+		if (m_meshRenderers.find(meshRenderer) == m_meshRenderers.end())
+		{
+			ASSERT(false);
+		}
+		m_meshRenderers.erase(meshRenderer);
+	}
+
+	std::set<MeshRenderer*>& SharedMaterial::GetMeshRenderers()
+	{
+		return m_meshRenderers;
+	}
+
+	GraphicsPipeline* SharedMaterial::GetGraphicsPipeline()
+	{
+		return m_graphicsPipeline;
+	}
+
+	// =============================== GRAPHICS PIPELINE =================================
+
+	std::vector<D3D12_INPUT_ELEMENT_DESC> GraphicsPipeline::m_inputLayout = {
+		{
+			"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT,
+			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
+		},
+		{
+			"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT,
+			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
+		},
+		{
+			"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT,
+			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
+		},
+		{
+			"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT,
+			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
+		},
+	};
+
+	GraphicsPipeline::GraphicsPipeline(const GUID guid, const GraphicsPipelineArgs args) :
 		Resource(guid),
 		m_hasVertexInput(args.hasVertexInput),
 		m_depthTest(args.depthTest),
@@ -314,11 +367,9 @@ namespace JoyEngine
 	{
 		CreateShaderAndRootSignature(args.shader, args.shaderTypes);
 		CreateGraphicsPipeline(args.renderTargetsFormats, args.blendDesc, args.depthFormat, args.topology);
-
-		RenderManager::Get()->RegisterSharedMaterial(this);
 	}
 
-	void SharedMaterial::CreateGraphicsPipeline(
+	void GraphicsPipeline::CreateGraphicsPipeline(
 		const std::vector<DXGI_FORMAT>& renderTargetsFormats,
 		CD3DX12_BLEND_DESC blendDesc,
 		DXGI_FORMAT depthFormat,
@@ -381,37 +432,7 @@ namespace JoyEngine
 	}
 
 
-	SharedMaterial::~SharedMaterial()
-	{
-		RenderManager::Get()->UnregisterSharedMaterial(this);
-	}
-
-
-	bool SharedMaterial::IsLoaded() const noexcept
-	{
-		return m_shader->IsLoaded();
-	}
-
-	void SharedMaterial::RegisterMeshRenderer(MeshRenderer* meshRenderer)
-	{
-		m_meshRenderers.insert(meshRenderer);
-	}
-
-	void SharedMaterial::UnregisterMeshRenderer(MeshRenderer* meshRenderer)
-	{
-		if (m_meshRenderers.find(meshRenderer) == m_meshRenderers.end())
-		{
-			ASSERT(false);
-		}
-		m_meshRenderers.erase(meshRenderer);
-	}
-
-	std::set<MeshRenderer*>& SharedMaterial::GetMeshRenderers()
-	{
-		return m_meshRenderers;
-	}
-
-	std::map<uint32_t, EngineBindingType>& SharedMaterial::GetEngineBindings()
+	std::map<uint32_t, EngineBindingType>& GraphicsPipeline::GetEngineBindings()
 	{
 		return m_engineBindings;
 	}

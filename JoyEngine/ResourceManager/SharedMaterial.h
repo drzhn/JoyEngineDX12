@@ -20,7 +20,7 @@ namespace JoyEngine
 		EngineData
 	};
 
-	struct SharedMaterialArgs
+	struct GraphicsPipelineArgs
 	{
 		GUID shader;
 		ShaderTypeFlags shaderTypes;
@@ -72,22 +72,40 @@ namespace JoyEngine
 		void CreateComputePipeline();
 	};
 
+	class GraphicsPipeline : public Resource, public AbstractPipelineObject
+	{
+	public:
+		explicit GraphicsPipeline(GUID, GraphicsPipelineArgs);
+		[[nodiscard]] bool IsLoaded() const noexcept override { return true; }
+		[[nodiscard]] std::map<uint32_t, EngineBindingType>& GetEngineBindings();
 
-	// TODO: make AbstractPipelineObject -> GraphicsPipeline -> SharedMaterial
-	class SharedMaterial final : public Resource, public AbstractPipelineObject 
+	private:
+		void CreateGraphicsPipeline(const std::vector<DXGI_FORMAT>& renderTargetsFormats, CD3DX12_BLEND_DESC blendDesc, DXGI_FORMAT depthFormat, D3D12_PRIMITIVE_TOPOLOGY_TYPE topology);
+
+		static std::vector<D3D12_INPUT_ELEMENT_DESC> m_inputLayout;
+
+		bool m_hasVertexInput = false;
+		bool m_depthTest = false;
+		bool m_depthWrite = false;
+		D3D12_COMPARISON_FUNC m_depthComparisonFunc;
+		D3D12_CULL_MODE m_cullMode;
+	};
+
+
+	class SharedMaterial final : public Resource
 	{
 	public :
 		SharedMaterial() = delete;
 
 		explicit SharedMaterial(GUID);
-		explicit SharedMaterial(GUID, SharedMaterialArgs);
+		explicit SharedMaterial(GUID, GraphicsPipelineArgs);
 
 		~SharedMaterial() final;
 
 		[[nodiscard]] bool IsLoaded() const noexcept override;
 
 		[[nodiscard]] std::set<MeshRenderer*>& GetMeshRenderers();
-		[[nodiscard]] std::map<uint32_t, EngineBindingType>& GetEngineBindings();
+		[[nodiscard]] GraphicsPipeline* GetGraphicsPipeline();
 
 		void RegisterMeshRenderer(MeshRenderer* meshRenderer);
 
@@ -95,16 +113,7 @@ namespace JoyEngine
 
 	private :
 		std::set<MeshRenderer*> m_meshRenderers;
-
-		bool m_hasVertexInput = false;
-		bool m_depthTest = false;
-		bool m_depthWrite = false;
-		D3D12_COMPARISON_FUNC m_depthComparisonFunc;
-		D3D12_CULL_MODE m_cullMode;
-
-	private:
-		void CreateGraphicsPipeline(const std::vector<DXGI_FORMAT>& renderTargetsFormats, CD3DX12_BLEND_DESC blendDesc, DXGI_FORMAT depthFormat, D3D12_PRIMITIVE_TOPOLOGY_TYPE topology);
-		static std::vector<D3D12_INPUT_ELEMENT_DESC> m_inputLayout;
+		ResourceHandle<GraphicsPipeline> m_graphicsPipeline;
 	};
 }
 

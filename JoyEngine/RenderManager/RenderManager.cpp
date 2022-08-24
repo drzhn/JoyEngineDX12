@@ -362,8 +362,8 @@ namespace JoyEngine
 
 		for (auto const& sm : m_sharedMaterials)
 		{
-			commandList->SetPipelineState(sm->GetPipelineObject().Get());
-			commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+			commandList->SetPipelineState(sm->GetGraphicsPipeline()->GetPipelineObject().Get());
+			commandList->SetGraphicsRootSignature(sm->GetGraphicsPipeline()->GetRootSignature().Get());
 
 			for (const auto& mr : sm->GetMeshRenderers())
 			{
@@ -382,7 +382,7 @@ namespace JoyEngine
 					GraphicsUtils::AttachViewToGraphics(commandList, index, param.second);
 				}
 
-				ProcessEngineBindings(commandList, sm->GetEngineBindings(), &mvp, isDrawingMainColor);
+				ProcessEngineBindings(commandList, sm->GetGraphicsPipeline()->GetEngineBindings(), &mvp, isDrawingMainColor);
 
 				commandList->DrawIndexedInstanced(
 					mr->GetMesh()->GetIndexSize(),

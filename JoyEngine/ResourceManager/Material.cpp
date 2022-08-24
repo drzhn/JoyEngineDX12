@@ -49,7 +49,7 @@ namespace JoyEngine
 			const std::string& name = binding.first;
 			const std::string& data = binding.second;
 
-			ShaderInput const* shaderInput = m_sharedMaterial->GetShaderInputByName(name);
+			ShaderInput const* shaderInput = m_sharedMaterial->GetGraphicsPipeline()->GetShaderInputByName(name);
 
 			if (shaderInput == nullptr) continue;
 
@@ -73,7 +73,7 @@ namespace JoyEngine
 							m_textures.emplace_back(ResourceManager::Get()->LoadResource<Texture>(GUID::StringToGuid(data)));
 						}
 						m_rootParams.insert({
-							m_sharedMaterial->GetRootIndexByName(name),
+							m_sharedMaterial->GetGraphicsPipeline()->GetRootIndexByName(name),
 							m_textures.back()->GetSRV()
 						});
 					}
@@ -93,7 +93,7 @@ namespace JoyEngine
 					}
 
 					m_rootParams.insert({
-						m_sharedMaterial->GetRootIndexByName(name),
+						m_sharedMaterial->GetGraphicsPipeline()->GetRootIndexByName(name),
 						samplerView
 					});
 					break;

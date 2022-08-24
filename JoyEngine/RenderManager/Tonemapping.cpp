@@ -58,7 +58,7 @@ namespace JoyEngine
 			const GUID hdrToLdrTransitionShaderGuid = GUID::StringToGuid("aa366fc9-b8a7-4cca-b5d3-670216174566"); //shaders/hdrToLdrTransition.hlsl
 			const GUID hdrToLdrTransitionSharedMaterialGuid = GUID::Random();
 
-			m_hdrToLdrTransitionSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, SharedMaterialArgs>(
+			m_hdrToLdrTransitionSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, GraphicsPipelineArgs>(
 				hdrToLdrTransitionSharedMaterialGuid,
 				{
 					hdrToLdrTransitionShaderGuid,
@@ -211,8 +211,8 @@ namespace JoyEngine
 
 			const auto sm = m_hdrToLdrTransitionSharedMaterial;
 
-			commandList->SetPipelineState(sm->GetPipelineObject().Get());
-			commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+			commandList->SetPipelineState(sm->GetGraphicsPipeline()->GetPipelineObject().Get());
+			commandList->SetGraphicsRootSignature(sm->GetGraphicsPipeline()->GetRootSignature().Get());
 			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 			GraphicsUtils::AttachViewToGraphics(commandList, 0, m_hdrLuminationBufferSRVView.get());

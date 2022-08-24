@@ -47,7 +47,7 @@ namespace JoyEngine
 		//	const GUID gbufferWriteShaderGuid = GUID::StringToGuid("48ffacc9-5c00-4058-b359-cf72189896ac"); //shaders/gbufferwrite.hlsl
 		//	const GUID gbufferWriteSharedMaterialGuid = GUID::Random();
 
-		//	m_gbufferWriteSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, SharedMaterialArgs>(
+		//	m_gbufferWriteSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, GraphicsPipelineArgs>(
 		//		gbufferWriteSharedMaterialGuid,
 		//		{
 		//			gbufferWriteShaderGuid,
@@ -74,7 +74,7 @@ namespace JoyEngine
 		//	const GUID shadowProcessingShaderGuid = GUID::StringToGuid("9ee0a40a-c055-4b2c-93db-bc19def8e8cc"); //shaders/shadowprocessing.hlsl
 		//	const GUID shadowProcessingSharedMaterialGuid = GUID::Random();
 
-		//	m_shadowProcessingSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, SharedMaterialArgs>(
+		//	m_shadowProcessingSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, GraphicsPipelineArgs>(
 		//		shadowProcessingSharedMaterialGuid,
 		//		{
 		//			shadowProcessingShaderGuid,
@@ -96,7 +96,7 @@ namespace JoyEngine
 		//	const GUID shadowPointProcessingShaderGuid = GUID::StringToGuid("9d678808-8c11-4ff3-9ee1-dd1b7fc5f691"); //shaders/shadowpointprocessing.hlsl
 		//	const GUID shadowPointProcessingSharedMaterialGuid = GUID::Random();
 
-		//	m_shadowPointProcessingSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, SharedMaterialArgs>(
+		//	m_shadowPointProcessingSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, GraphicsPipelineArgs>(
 		//		shadowPointProcessingSharedMaterialGuid,
 		//		{
 		//			shadowPointProcessingShaderGuid,
@@ -118,7 +118,7 @@ namespace JoyEngine
 		//	const GUID directionLightProcessingShaderGuid = GUID::StringToGuid("1c6cb88f-f3ef-4797-9d65-44682ca7baba"); //shaders/directionlightprocessing.hlsl
 		//	const GUID directionLightProcessingSharedMaterialGuid = GUID::Random();
 
-		//	m_directionLightProcessingSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, SharedMaterialArgs>(
+		//	m_directionLightProcessingSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, GraphicsPipelineArgs>(
 		//		directionLightProcessingSharedMaterialGuid,
 		//		{
 		//			directionLightProcessingShaderGuid,
@@ -156,7 +156,7 @@ namespace JoyEngine
 		//		desc = defaultRenderTargetBlendDesc;
 		//	}
 
-		//	m_lightProcessingSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, SharedMaterialArgs>(
+		//	m_lightProcessingSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, GraphicsPipelineArgs>(
 		//		lightProcessingSharedMaterialGuid,
 		//		{
 		//			lightProcessingShaderGuid,
@@ -182,7 +182,7 @@ namespace JoyEngine
 		//		const GUID dynamicCubemapShaderGUID = GUID::StringToGuid("4a8ea369-904f-4d9a-9061-b4eedacc3918"); // shaders/dynamiccubemapreflections.hlsl
 		//		const GUID sharedMaterialGuid = GUID::Random();
 
-		//		m_dynamicCubemapReflectionsSharedMaterialHandle = ResourceManager::Get()->LoadResource<SharedMaterial, SharedMaterialArgs>(
+		//		m_dynamicCubemapReflectionsSharedMaterialHandle = ResourceManager::Get()->LoadResource<SharedMaterial, GraphicsPipelineArgs>(
 		//			sharedMaterialGuid,
 		//			{
 		//				dynamicCubemapShaderGUID,
@@ -206,7 +206,7 @@ namespace JoyEngine
 		//		const GUID cubemapConvolutionShaderGuid = GUID::StringToGuid("613710d9-304e-453b-a655-b1c842904f4c"); //shaders/dynamiccubemapconvolition.hlsl
 		//		const GUID cubemapConvolutionSharedMaterialGuid = GUID::Random();
 
-		//		m_cubemapConvolutionSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, SharedMaterialArgs>(
+		//		m_cubemapConvolutionSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, GraphicsPipelineArgs>(
 		//			cubemapConvolutionSharedMaterialGuid,
 		//			{
 		//				cubemapConvolutionShaderGuid,
@@ -231,7 +231,7 @@ namespace JoyEngine
 		//	const GUID shaderGuid = GUID::StringToGuid("a36fff56-b183-418a-9bd1-31cffd247e37"); // shaders/particles.hlsl
 		//	const GUID sharedMaterialGuid = GUID::Random();
 
-		//	m_particleSystemSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, SharedMaterialArgs>(
+		//	m_particleSystemSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, GraphicsPipelineArgs>(
 		//		sharedMaterialGuid,
 		//		{
 		//			shaderGuid,
@@ -267,7 +267,7 @@ namespace JoyEngine
 		//	const GUID fogPostEffectShaderGuid = GUID::StringToGuid("5e897d4b-2ed5-4176-890b-2f17e52cb836"); //shaders/fogpostprocess.hlsl
 		//	const GUID fogPostEffectSharedMaterialGuid = GUID::Random();
 
-		//	m_fogPostProcessSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, SharedMaterialArgs>(
+		//	m_fogPostProcessSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, GraphicsPipelineArgs>(
 		//		fogPostEffectSharedMaterialGuid,
 		//		{
 		//			fogPostEffectShaderGuid,
@@ -291,7 +291,7 @@ namespace JoyEngine
 		//	const GUID sslrPostEffectShaderGuid = GUID::StringToGuid("70d5a60a-615a-4344-977f-d2ad9d37b0cf"); //shaders/sslrpostprocess.hlsl
 		//	const GUID sslrPostEffectSharedMaterialGuid = GUID::Random();
 
-		//	m_sslrPostProcessSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, SharedMaterialArgs>(
+		//	m_sslrPostProcessSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, GraphicsPipelineArgs>(
 		//		sslrPostEffectSharedMaterialGuid,
 		//		{
 		//			sslrPostEffectShaderGuid,
@@ -317,7 +317,7 @@ namespace JoyEngine
 		//		const GUID ssaoPostEffectShaderGuid = GUID::StringToGuid("3cf96278-de88-4614-bb23-5cfa2b54e41a"); //shaders/ssaopostprocess.hlsl
 		//		const GUID ssaoPostEffectSharedMaterialGuid = GUID::Random();
 
-		//		m_ssaoPostProcessSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, SharedMaterialArgs>(
+		//		m_ssaoPostProcessSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, GraphicsPipelineArgs>(
 		//			ssaoPostEffectSharedMaterialGuid,
 		//			{
 		//				ssaoPostEffectShaderGuid,
@@ -341,7 +341,7 @@ namespace JoyEngine
 		//		const GUID ssaoBlurShaderGuid = GUID::StringToGuid("81312dae-c920-4cd6-bd08-87d1a2a3b6f4"); //shaders/ssaoblur.hlsl
 		//		const GUID ssaoBlurSharedMaterialGuid = GUID::Random();
 
-		//		m_ssaoBlurSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, SharedMaterialArgs>(
+		//		m_ssaoBlurSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, GraphicsPipelineArgs>(
 		//			ssaoBlurSharedMaterialGuid,
 		//			{
 		//				ssaoBlurShaderGuid,
@@ -365,7 +365,7 @@ namespace JoyEngine
 		//		const GUID ssaoAppendShaderGuid = GUID::StringToGuid("c7986e89-5d7e-4348-903e-761f007c3f12"); //shaders/ssaoappend.hlsl
 		//		const GUID ssaoAppendSharedMaterialGuid = GUID::Random();
 
-		//		m_ssaoAppendSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, SharedMaterialArgs>(
+		//		m_ssaoAppendSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, GraphicsPipelineArgs>(
 		//			ssaoAppendSharedMaterialGuid,
 		//			{
 		//				ssaoAppendShaderGuid,

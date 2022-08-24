@@ -26,7 +26,7 @@ namespace JoyEngine
 	class Buffer final : public Resource
 	{
 	public:
-		Buffer() = default;
+		Buffer() = delete;
 		Buffer(const Buffer& other) = delete;
 		Buffer(Buffer&& other) = delete;
 

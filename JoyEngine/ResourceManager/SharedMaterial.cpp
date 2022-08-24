@@ -264,7 +264,7 @@ namespace JoyEngine
 
 		std::vector<DXGI_FORMAT> renderTargetsFormats
 		{
-			JoyEngine::RenderManager::GetMainColorFormat() // materials created form GUIDs can only write to one main color rtv
+			RenderManager::GetMainColorFormat() // materials created form GUIDs can only write to one main color rtv
 		};
 
 		// Shader creation

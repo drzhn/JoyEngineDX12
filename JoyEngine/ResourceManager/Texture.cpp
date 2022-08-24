@@ -534,48 +534,40 @@ namespace JoyEngine
 		m_depthStencilView = std::make_unique<ResourceView>(depthStencilViewDesc, m_texture.Get());
 	}
 
-	//UAVTexture::UAVTexture(
-	//	uint32_t width,
-	//	uint32_t height,
-	//	DXGI_FORMAT format,
-	//	D3D12_RESOURCE_STATES usage,
-	//	D3D12_HEAP_TYPE properties,
-	//	uint32_t arraySize):
-	//	Texture(width,
-	//	        height,
-	//	        format,
-	//	        usage,
-	//	        properties,
-	//	        false,
-	//	        false,
-	//	        true,
-	//	        arraySize)
-	//{
-	//	ASSERT(arraySize > 0);
+	UAVTexture::UAVTexture(uint32_t width, uint32_t height, DXGI_FORMAT format, D3D12_RESOURCE_STATES usage, D3D12_HEAP_TYPE heapType)
+	{
+		m_width = width;
+		m_height = height;
+		m_format = format;
+		m_usageFlags = usage;
+		m_memoryPropertiesFlags = CD3DX12_HEAP_PROPERTIES(heapType);
 
-	//	D3D12_SHADER_RESOURCE_VIEW_DESC desc;
-	//	desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	//	desc.Format = this->GetFormat();
-	//	if (arraySize == 1)
-	//	{
-	//		desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	//		desc.Texture2D = {
-	//			0,
-	//			1,
-	//			0,
-	//			0
-	//		};
-	//	}
-	//	else
-	//	{
-	//		desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
-	//		desc.TextureCube.MipLevels = 1;
-	//		desc.TextureCube.MostDetailedMip = 0;
-	//		desc.TextureCube.ResourceMinLODClamp = 0.0f;
-	//	}
-	//	m_inputAttachmentView = std::make_unique<ResourceView>(
-	//		desc,
-	//		this->GetImage().Get()
-	//	);
-	//}
+		CreateImage(false, false, true, 1, 1);
+		CreateImageViews();
+	}
+
+	void UAVTexture::CreateImageViews()
+	{
+		D3D12_SHADER_RESOURCE_VIEW_DESC desc;
+		desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		desc.Format = this->GetFormat();
+		desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+		desc.Texture2D = {
+			0,
+			1,
+			0,
+			0
+		};
+		m_resourceView = std::make_unique<ResourceView>(desc, m_texture.Get());
+
+		D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc;
+		uavDesc.Format = this->GetFormat();
+		uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
+		uavDesc.Texture2D = {
+			0,
+			0
+		};
+
+		m_unorderedAccessView = std::make_unique<ResourceView>(uavDesc, m_texture.Get());
+	}
 }

@@ -35,10 +35,6 @@ namespace JoyEngine
 		[[nodiscard]] ResourceHandle<SharedMaterial> GetFogPostProcessSharedMaterial() const noexcept { return m_fogPostProcessSharedMaterial; }
 		[[nodiscard]] ResourceHandle<SharedMaterial> GetSSLRPostProcessSharedMaterial() const noexcept { return m_sslrPostProcessSharedMaterial; }
 
-		[[nodiscard]] ResourceHandle<ComputePipeline> GetHdrDownscaleFirstPassComputePipeline() const noexcept { return m_hdrDownscaleFirstPassComputePipeline; }
-		[[nodiscard]] ResourceHandle<ComputePipeline> GetHdrDownscaleSecondPassComputePipeline() const noexcept { return m_hdrDownscaleSecondPassComputePipeline; }
-		[[nodiscard]] ResourceHandle<SharedMaterial> GetHdrToLdrTransitionSharedMaterial() const noexcept { return m_hdrToLdrTransitionSharedMaterial; }
-
 		[[nodiscard]] ResourceHandle<ComputePipeline> GetBloomBrightPassComputePipeline() const noexcept { return m_bloomBrightPassComputePipeline; }
 		[[nodiscard]] ResourceHandle<ComputePipeline> GetBloomVerticalFilterComputePipeline() const noexcept { return m_bloomVerticalFilterComputePipeline; }
 		[[nodiscard]] ResourceHandle<ComputePipeline> GetBloomHorizontalFilterComputePipeline() const noexcept { return m_bloomHorizontalFilterComputePipeline; }
@@ -73,10 +69,6 @@ namespace JoyEngine
 		ResourceHandle<SharedMaterial> m_particleSystemSharedMaterial;
 
 		ResourceHandle<SharedMaterial> m_fogPostProcessSharedMaterial;
-
-		ResourceHandle<ComputePipeline> m_hdrDownscaleFirstPassComputePipeline;
-		ResourceHandle<ComputePipeline> m_hdrDownscaleSecondPassComputePipeline;
-		ResourceHandle<SharedMaterial> m_hdrToLdrTransitionSharedMaterial;
 
 		ResourceHandle<ComputePipeline> m_bloomBrightPassComputePipeline;
 		ResourceHandle<ComputePipeline> m_bloomVerticalFilterComputePipeline;

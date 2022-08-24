@@ -77,7 +77,7 @@ namespace JoyEngine
 	class AbstractArrayTexture : public AbstractTextureResource
 	{
 	public:
-		[[nodiscard]] std::vector<std::unique_ptr<ResourceView>>& GetResourceViewArray() 
+		[[nodiscard]] std::vector<std::unique_ptr<ResourceView>>& GetResourceViewArray()
 		{
 			return m_resourceViewArray;
 		}
@@ -165,23 +165,22 @@ namespace JoyEngine
 		std::unique_ptr<ResourceView> m_depthStencilView;
 	};
 
-	//class UAVTexture final : public Texture
-	//{
-	//public:
-	//	explicit UAVTexture(
-	//		uint32_t width,
-	//		uint32_t height,
-	//		DXGI_FORMAT format,
-	//		D3D12_RESOURCE_STATES usage,
-	//		D3D12_HEAP_TYPE properties,
-	//		uint32_t arraySize = 1
-	//	);
-
-	//	[[nodiscard]] ResourceView* GetSrv() const noexcept { return m_inputAttachmentView.get(); }
-
-	//private:
-	//	std::unique_ptr<ResourceView> m_inputAttachmentView; // additional view for using this texture as input attachment
-	//};
+	class UAVTexture final : public AbstractSingleTexture
+	{
+	public:
+		explicit UAVTexture(
+			uint32_t width,
+			uint32_t height,
+			DXGI_FORMAT format,
+			D3D12_RESOURCE_STATES usage,
+			D3D12_HEAP_TYPE heapType
+		);
+		[[nodiscard]] ResourceView* GetUAV() const noexcept { return m_unorderedAccessView.get(); }
+	protected:
+		void CreateImageViews() override;
+	private:
+		std::unique_ptr<ResourceView> m_unorderedAccessView;
+	};
 }
 
 #endif

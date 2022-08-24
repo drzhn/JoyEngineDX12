@@ -2,6 +2,7 @@
 
 
 #include "Common/CameraUnit.h"
+#include "RenderManager/JoyTypes.h"
 #include "RenderManager/RenderManager.h"
 #include "ResourceManager/Buffer.h"
 #include "ResourceManager/Texture.h"

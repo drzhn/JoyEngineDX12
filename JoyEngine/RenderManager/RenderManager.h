@@ -3,7 +3,7 @@
 
 #include <array>
 #include <set>
-#include <chrono>
+#include <map>
 #include <memory>
 
 #include <glm/glm.hpp>
@@ -11,16 +11,20 @@
 #include <dxgi1_6.h>
 #include <wrl.h>
 
-#include "JoyTypes.h"
 #include "Common/Singleton.h"
-#include "ResourceManager/SharedMaterial.h"
+#include "ResourceManager/DynamicBuffer.h"
+
+#include "Tonemapping.h"
+
 using Microsoft::WRL::ComPtr;
 
 namespace JoyEngine
 {
-	class Buffer;
-	class CubemapRenderer;
-	class ParticleSystem;
+	enum EngineBindingType;
+
+	struct JoyData;
+	struct MVP;
+
 	class CommandQueue;
 	class Light;
 	class Mesh;
@@ -29,6 +33,7 @@ namespace JoyEngine
 	class Texture;
 	class RenderTexture;
 	class ResourceView;
+	class DepthTexture;
 
 	class RenderManager : public Singleton<RenderManager>
 	{
@@ -61,23 +66,16 @@ namespace JoyEngine
 
 		void UnregisterCamera(Camera* camera);
 
-		void RegisterParticleSystem(ParticleSystem* ps);
-
-		void UnregisterParticleSystem(ParticleSystem* ps);
-
-		void RegisterCubemapRenderer(CubemapRenderer* cr);
-
-		void UnregisterCubemapRenderer(CubemapRenderer* cr);
-
 		[[nodiscard]] float GetAspect() const noexcept;
 		[[nodiscard]] float GetWidth() const noexcept;
 		[[nodiscard]] float GetHeight() const noexcept;
-		[[nodiscard]] static DXGI_FORMAT GetMainColorFormat() noexcept { return ldrRTVFormat; }
-		[[nodiscard]] static DXGI_FORMAT GetHdrRTVFormat() noexcept { return hdrRTVFormat; }
-		[[nodiscard]] static DXGI_FORMAT GetLdrRTVFormat() noexcept { return ldrRTVFormat; }
-		[[nodiscard]] static DXGI_FORMAT GetGBufferFormat() noexcept { return gBufferFormat; }
-		[[nodiscard]] static DXGI_FORMAT GetDepthFormat() noexcept { return depthFormat; }
-		[[nodiscard]] static DXGI_FORMAT GetSSAOFormat() noexcept { return ssaoFormat; }
+		[[nodiscard]] static constexpr uint32_t GetFrameCount() noexcept { return frameCount; }
+		[[nodiscard]] static constexpr DXGI_FORMAT GetMainColorFormat() noexcept { return hdrRTVFormat; }
+		[[nodiscard]] static constexpr DXGI_FORMAT GetHdrRTVFormat() noexcept { return hdrRTVFormat; }
+		[[nodiscard]] static constexpr DXGI_FORMAT GetLdrRTVFormat() noexcept { return ldrRTVFormat; }
+		[[nodiscard]] static constexpr DXGI_FORMAT GetGBufferFormat() noexcept { return gBufferFormat; }
+		[[nodiscard]] static constexpr DXGI_FORMAT GetDepthFormat() noexcept { return depthFormat; }
+		[[nodiscard]] static constexpr DXGI_FORMAT GetSSAOFormat() noexcept { return ssaoFormat; }
 
 	private:
 		void RenderEntireScene(
@@ -100,34 +98,34 @@ namespace JoyEngine
 			bool isDrawingMainColor
 		) const;
 
-		static void SetViewportAndScissor(ID3D12GraphicsCommandList* commandList, uint32_t width, uint32_t height);
-		static void AttachViewToGraphics(ID3D12GraphicsCommandList* commandList, uint32_t rootParameterIndex, const ResourceView* view);
-		static void AttachViewToCompute(ID3D12GraphicsCommandList* commandList, uint32_t rootParameterIndex, const ResourceView* view);
-		static void Barrier(ID3D12GraphicsCommandList* commandList, ID3D12Resource* pResource, D3D12_RESOURCE_STATES stateBefore, D3D12_RESOURCE_STATES stateAfter);
 		static void CopyRTVResource(ID3D12GraphicsCommandList* commandList, ID3D12Resource* rtvResource, ID3D12Resource* copyResource);
 
 	private:
+
+		static constexpr uint32_t frameCount = 3;
+
+
 		static constexpr DXGI_FORMAT hdrRTVFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
 		static constexpr DXGI_FORMAT ldrRTVFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 		static constexpr DXGI_FORMAT gBufferFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
 		static constexpr DXGI_FORMAT depthFormat = DXGI_FORMAT_D32_FLOAT;
 		static constexpr DXGI_FORMAT ssaoFormat = DXGI_FORMAT_R16_FLOAT;
 
-		static constexpr UINT FrameCount = 3;
 
 		ComPtr<IDXGISwapChain3> m_swapChain;
 
-		std::array<std::unique_ptr<RenderTexture>, FrameCount> m_swapchainRenderTargets;
+		std::array<std::unique_ptr<RenderTexture>, frameCount> m_swapchainRenderTargets;
 
 		std::unique_ptr<DepthTexture> m_depthAttachment;
-		//std::unique_ptr<RenderTexture> m_hdrRenderTarget;
+		std::unique_ptr<RenderTexture> m_hdrRenderTarget;
+		std::unique_ptr<Tonemapping> m_tonemapping;
 		//std::unique_ptr<Texture> m_renderTargetCopyAttachment;
 
-		//std::unique_ptr<UAVTexture> m_hrdDownScaledTexture;
 
 		//std::unique_ptr<UAVTexture> m_bloomFirstTexture;
 		//std::unique_ptr<UAVTexture> m_bloomSecondTexture;
 
+		//std::unique_ptr<UAVTexture> m_hrdDownScaledTexture;
 		//std::unique_ptr<Buffer> m_hdrLuminationBuffer;
 		//std::unique_ptr<ResourceView> m_hdrLuminationBufferUAVView;
 		//std::unique_ptr<ResourceView> m_hdrLuminationBufferSRVView;
@@ -145,8 +143,7 @@ namespace JoyEngine
 		//ResourceHandle<Mesh> m_planeMesh;
 		//ResourceHandle<Mesh> m_cubeMesh;
 
-		//std::unique_ptr<Buffer> m_engineDataBuffer;
-		//std::unique_ptr<ResourceView> m_engineDataBufferView;
+		std::unique_ptr<DynamicBuffer<JoyData>> m_engineDataBuffer;
 
 		//std::set<ParticleSystem*> m_particleSystems;
 		std::set<SharedMaterial*> m_sharedMaterials;

@@ -14,6 +14,7 @@
 
 #include "GraphicsManager/GraphicsManager.h"
 #include "EngineMaterialProvider/EngineMaterialProvider.h"
+#include "RenderManager/JoyTypes.h"
 
 #include "ResourceManager/Buffer.h"
 #include "ResourceManager/ResourceView.h"

@@ -46,8 +46,8 @@ namespace JoyEngine
 		[[nodiscard]] ComPtr<ID3D12RootSignature> GetRootSignature() const noexcept { return m_rootSignature; }
 		[[nodiscard]] ComPtr<ID3D12PipelineState> GetPipelineObject() const noexcept { return m_pipelineState; };
 		[[nodiscard]] ShaderInput const* GetShaderInputByName(const std::string&) const;
-		[[nodiscard]] uint32_t GetRootIndexByName(const std::string&) const;
-		[[nodiscard]] uint32_t GetRootIndexByHash(const uint32_t hash) const;
+		[[nodiscard]] uint32_t GetBindingIndexByName(const std::string&) const;
+		[[nodiscard]] uint32_t GetBindingIndexByHash(const uint32_t hash) const;
 
 	protected:
 		ComPtr<ID3D12RootSignature> m_rootSignature;
@@ -59,7 +59,7 @@ namespace JoyEngine
 	protected:
 		void CreateShaderAndRootSignature(GUID shaderGuid, ShaderTypeFlags shaderTypes);
 	private:
-		void CreateRootSignature(CD3DX12_ROOT_PARAMETER1* params, uint32_t paramsCount);
+		void CreateRootSignature(const CD3DX12_ROOT_PARAMETER1* params, uint32_t paramsCount);
 	};
 
 	class ComputePipeline final : public Resource, public AbstractPipelineObject
@@ -75,7 +75,8 @@ namespace JoyEngine
 	class GraphicsPipeline : public Resource, public AbstractPipelineObject
 	{
 	public:
-		explicit GraphicsPipeline(GUID, GraphicsPipelineArgs);
+		explicit GraphicsPipeline(GUID, const GraphicsPipelineArgs&);
+		[[nodiscard]] D3D12_PRIMITIVE_TOPOLOGY_TYPE GetTopology() const { return m_topology; }
 		[[nodiscard]] bool IsLoaded() const noexcept override { return true; }
 		[[nodiscard]] std::map<uint32_t, EngineBindingType>& GetEngineBindings();
 
@@ -84,6 +85,7 @@ namespace JoyEngine
 
 		static std::vector<D3D12_INPUT_ELEMENT_DESC> m_inputLayout;
 
+		D3D12_PRIMITIVE_TOPOLOGY_TYPE m_topology;
 		bool m_hasVertexInput = false;
 		bool m_depthTest = false;
 		bool m_depthWrite = false;
@@ -106,6 +108,7 @@ namespace JoyEngine
 
 		[[nodiscard]] std::set<MeshRenderer*>& GetMeshRenderers();
 		[[nodiscard]] GraphicsPipeline* GetGraphicsPipeline();
+		[[nodiscard]] uint32_t GetBindingIndexByHash(uint32_t hash) const;
 
 		void RegisterMeshRenderer(MeshRenderer* meshRenderer);
 

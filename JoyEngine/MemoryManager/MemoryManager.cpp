@@ -192,12 +192,12 @@ namespace JoyEngine
 
 			AttachView(
 				commandList,
-				mipMapGenerationPipeline->GetRootIndexByHash(strHash("SrcMip")),
+				mipMapGenerationPipeline->GetBindingIndexByHash(strHash("SrcMip")),
 				gpuImage->GetSRV());
 
 			AttachView(
 				commandList,
-				mipMapGenerationPipeline->GetRootIndexByHash(strHash("BilinearClamp")),
+				mipMapGenerationPipeline->GetBindingIndexByHash(strHash("BilinearClamp")),
 				EngineSamplersProvider::GetLinearClampSampler());
 
 			uint32_t dispatchCount = ((mipMapsCount - 1) + 3) / 4;
@@ -221,7 +221,7 @@ namespace JoyEngine
 
 					AttachView(
 						commandList,
-						mipMapGenerationPipeline->GetRootIndexByName("OutMip" + std::to_string(i + 1)), // I do not sorry
+						mipMapGenerationPipeline->GetBindingIndexByName("OutMip" + std::to_string(i + 1)), // I do not sorry
 						&mipViews[i]);
 				}
 
@@ -233,7 +233,7 @@ namespace JoyEngine
 				};
 
 				commandList->SetComputeRoot32BitConstants(
-					mipMapGenerationPipeline->GetRootIndexByHash(strHash("MipMapGenerationData")),
+					mipMapGenerationPipeline->GetBindingIndexByHash(strHash("MipMapGenerationData")),
 					sizeof(MipMapGenerationData) / 4,
 					&generationData,
 					0);

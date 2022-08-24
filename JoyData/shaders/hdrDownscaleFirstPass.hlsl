@@ -1,6 +1,6 @@
 #include "common.hlsl"
 
-ConstantBuffer<HDRDownScaleConstants> constants: register(b0);
+ConstantBuffer<HDRDownScaleConstants> Constants: register(b0);
 Texture2D<float4> HDRTex : register(t0);
 RWStructuredBuffer<float> AverageLum : register(u0);
 RWTexture2D<float4> HDRDownScale : register(u1);
@@ -13,7 +13,7 @@ float DownScale4x4(uint2 CurPixel, uint groupThreadId)
 {
 	float avgLum = 0.0;
 	// Skip out of bound pixels
-	if (CurPixel.y < constants.Res.y)
+	if (CurPixel.y < Constants.Res.y)
 	{
 		// Sum a group of 4x4 pixels
 		int3 nFullResPos = int3(CurPixel * 4, 0);
@@ -52,9 +52,9 @@ float DownScale1024to4(uint dispatchThreadId, uint groupThreadId,
 		{
 			// Calculate the luminance sum for this step
 			float stepAvgLum = avgLum;
-			stepAvgLum += dispatchThreadId + step1 < constants.Domain ? SharedPositions[groupThreadId + step1] : avgLum;
-			stepAvgLum += dispatchThreadId + step2 < constants.Domain ? SharedPositions[groupThreadId + step2] : avgLum;
-			stepAvgLum += dispatchThreadId + step3 < constants.Domain ? SharedPositions[groupThreadId + step3] : avgLum;
+			stepAvgLum += dispatchThreadId + step1 < Constants.Domain ? SharedPositions[groupThreadId + step1] : avgLum;
+			stepAvgLum += dispatchThreadId + step2 < Constants.Domain ? SharedPositions[groupThreadId + step2] : avgLum;
+			stepAvgLum += dispatchThreadId + step3 < Constants.Domain ? SharedPositions[groupThreadId + step3] : avgLum;
 			// Store the results
 			avgLum = stepAvgLum;
 			SharedPositions[groupThreadId] = stepAvgLum;
@@ -72,9 +72,9 @@ void DownScale4to1(uint dispatchThreadId, uint groupThreadId, uint
 	{
 		// Calculate the average lumenance for this thread group
 		float fFinalAvgLum = avgLum;
-		fFinalAvgLum += dispatchThreadId + 256 < constants.Domain ? SharedPositions[groupThreadId + 256] : avgLum;
-		fFinalAvgLum += dispatchThreadId + 512 < constants.Domain ? SharedPositions[groupThreadId + 512] : avgLum;
-		fFinalAvgLum += dispatchThreadId + 768 < constants.Domain ? SharedPositions[groupThreadId + 768] : avgLum;
+		fFinalAvgLum += dispatchThreadId + 256 < Constants.Domain ? SharedPositions[groupThreadId + 256] : avgLum;
+		fFinalAvgLum += dispatchThreadId + 512 < Constants.Domain ? SharedPositions[groupThreadId + 512] : avgLum;
+		fFinalAvgLum += dispatchThreadId + 768 < Constants.Domain ? SharedPositions[groupThreadId + 768] : avgLum;
 		fFinalAvgLum /= 1024.0;
 		// Write the final value into the 1D UAV which
 		// will be used on the next step
@@ -87,8 +87,8 @@ void CSMain(uint3 groupId : SV_GroupID,
             uint3 dispatchThreadId : SV_DispatchThreadID,
             uint3 groupThreadId : SV_GroupThreadID)
 {
-	uint2 CurPixel = uint2(dispatchThreadId.x % constants.Res.x,
-	                       dispatchThreadId.x / constants.Res.x);
+	uint2 CurPixel = uint2(dispatchThreadId.x % Constants.Res.x,
+	                       dispatchThreadId.x / Constants.Res.x);
 	// Reduce a group of 16 pixels to a single pixel and store in the shared memory
 	float avgLum = DownScale4x4(CurPixel, groupThreadId.x);
 	// Down scale from 1024 to 4

@@ -35,13 +35,13 @@ namespace JoyEngine
 		return nullptr;
 	}
 
-	uint32_t AbstractPipelineObject::GetRootIndexByName(const std::string& name) const
+	uint32_t AbstractPipelineObject::GetBindingIndexByName(const std::string& name) const
 	{
 		ASSERT(m_rootIndices.find(strHash(name.c_str())) != m_rootIndices.end());
 		return m_rootIndices.find(strHash(name.c_str()))->second;
 	}
 
-	uint32_t AbstractPipelineObject::GetRootIndexByHash(const uint32_t hash) const
+	uint32_t AbstractPipelineObject::GetBindingIndexByHash(const uint32_t hash) const
 	{
 		ASSERT(m_rootIndices.find(hash) != m_rootIndices.end());
 		return m_rootIndices.find(hash)->second;
@@ -122,7 +122,7 @@ namespace JoyEngine
 		CreateRootSignature(params, paramsIndex);
 	}
 
-	void AbstractPipelineObject::CreateRootSignature(CD3DX12_ROOT_PARAMETER1* params, uint32_t paramsCount)
+	void AbstractPipelineObject::CreateRootSignature(const CD3DX12_ROOT_PARAMETER1* params, uint32_t paramsCount)
 	{
 		D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = {};
 
@@ -336,6 +336,11 @@ namespace JoyEngine
 		return m_graphicsPipeline;
 	}
 
+	uint32_t SharedMaterial::GetBindingIndexByHash(uint32_t hash) const
+	{
+		return m_graphicsPipeline->GetBindingIndexByHash(hash);
+	}
+
 	// =============================== GRAPHICS PIPELINE =================================
 
 	std::vector<D3D12_INPUT_ELEMENT_DESC> GraphicsPipeline::m_inputLayout = {
@@ -357,8 +362,9 @@ namespace JoyEngine
 		},
 	};
 
-	GraphicsPipeline::GraphicsPipeline(const GUID guid, const GraphicsPipelineArgs args) :
+	GraphicsPipeline::GraphicsPipeline(const GUID guid, const GraphicsPipelineArgs& args) :
 		Resource(guid),
+		m_topology(args.topology),
 		m_hasVertexInput(args.hasVertexInput),
 		m_depthTest(args.depthTest),
 		m_depthWrite(args.depthWrite),

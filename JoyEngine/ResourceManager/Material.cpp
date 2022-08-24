@@ -73,7 +73,7 @@ namespace JoyEngine
 							m_textures.emplace_back(ResourceManager::Get()->LoadResource<Texture>(GUID::StringToGuid(data)));
 						}
 						m_rootParams.insert({
-							m_sharedMaterial->GetGraphicsPipeline()->GetRootIndexByName(name),
+							m_sharedMaterial->GetGraphicsPipeline()->GetBindingIndexByName(name),
 							m_textures.back()->GetSRV()
 						});
 					}
@@ -93,7 +93,7 @@ namespace JoyEngine
 					}
 
 					m_rootParams.insert({
-						m_sharedMaterial->GetGraphicsPipeline()->GetRootIndexByName(name),
+						m_sharedMaterial->GetGraphicsPipeline()->GetBindingIndexByName(name),
 						samplerView
 					});
 					break;

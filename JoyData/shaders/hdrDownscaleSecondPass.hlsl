@@ -2,7 +2,7 @@
 
 #include "common.hlsl"
 
-ConstantBuffer<HDRDownScaleConstants> constants: register(b0);
+ConstantBuffer<HDRDownScaleConstants> Constants: register(b0);
 RWStructuredBuffer<float> AverageLum : register(u0);
 RWStructuredBuffer<float> PrevAverageLum : register(u1);
 
@@ -16,7 +16,7 @@ void CSMain(uint3 groupId : SV_GroupID, uint3
 {
 	// Fill the shared memory with the 1D values
 	float avgLum = 0.0;
-	if (dispatchThreadId.x < constants.GroupSize)
+	if (dispatchThreadId.x < Constants.GroupSize)
 	{
 		avgLum = AverageLum[dispatchThreadId.x];
 	}
@@ -27,9 +27,9 @@ void CSMain(uint3 groupId : SV_GroupID, uint3
 	{
 		// Calculate the luminance sum for this step
 		float stepAvgLum = avgLum;
-		stepAvgLum += dispatchThreadId.x + 1 < constants.GroupSize ? SharedAvgFinal[dispatchThreadId.x + 1] : avgLum;
-		stepAvgLum += dispatchThreadId.x + 2 < constants.GroupSize ? SharedAvgFinal[dispatchThreadId.x + 2] : avgLum;
-		stepAvgLum += dispatchThreadId.x + 3 < constants.GroupSize ? SharedAvgFinal[dispatchThreadId.x + 3] : avgLum;
+		stepAvgLum += dispatchThreadId.x + 1 < Constants.GroupSize ? SharedAvgFinal[dispatchThreadId.x + 1] : avgLum;
+		stepAvgLum += dispatchThreadId.x + 2 < Constants.GroupSize ? SharedAvgFinal[dispatchThreadId.x + 2] : avgLum;
+		stepAvgLum += dispatchThreadId.x + 3 < Constants.GroupSize ? SharedAvgFinal[dispatchThreadId.x + 3] : avgLum;
 		// Store the results
 		avgLum = stepAvgLum;
 		SharedAvgFinal[dispatchThreadId.x] = stepAvgLum;
@@ -40,9 +40,9 @@ void CSMain(uint3 groupId : SV_GroupID, uint3
 	{
 		// Calculate the luminance sum for this step
 		float stepAvgLum = avgLum;
-		stepAvgLum += dispatchThreadId.x + 4 < constants.GroupSize ? SharedAvgFinal[dispatchThreadId.x + 4] : avgLum;
-		stepAvgLum += dispatchThreadId.x + 8 < constants.GroupSize ? SharedAvgFinal[dispatchThreadId.x + 8] : avgLum;
-		stepAvgLum += dispatchThreadId.x + 12 < constants.GroupSize ? SharedAvgFinal[dispatchThreadId.x + 12] : avgLum;
+		stepAvgLum += dispatchThreadId.x + 4 < Constants.GroupSize ? SharedAvgFinal[dispatchThreadId.x + 4] : avgLum;
+		stepAvgLum += dispatchThreadId.x + 8 < Constants.GroupSize ? SharedAvgFinal[dispatchThreadId.x + 8] : avgLum;
+		stepAvgLum += dispatchThreadId.x + 12 < Constants.GroupSize ? SharedAvgFinal[dispatchThreadId.x + 12] : avgLum;
 		// Store the results
 		avgLum = stepAvgLum;
 		SharedAvgFinal[dispatchThreadId.x] = stepAvgLum;
@@ -53,14 +53,14 @@ void CSMain(uint3 groupId : SV_GroupID, uint3
 	{
 		// Calculate the average luminace
 		float fFinalLumValue = avgLum;
-		fFinalLumValue += dispatchThreadId.x + 16 < constants.GroupSize ? SharedAvgFinal[dispatchThreadId.x + 16] : avgLum;
-		fFinalLumValue += dispatchThreadId.x + 32 < constants.GroupSize ? SharedAvgFinal[dispatchThreadId.x + 32] : avgLum;
-		fFinalLumValue += dispatchThreadId.x + 48 < constants.GroupSize ? SharedAvgFinal[dispatchThreadId.x + 48] : avgLum;
+		fFinalLumValue += dispatchThreadId.x + 16 < Constants.GroupSize ? SharedAvgFinal[dispatchThreadId.x + 16] : avgLum;
+		fFinalLumValue += dispatchThreadId.x + 32 < Constants.GroupSize ? SharedAvgFinal[dispatchThreadId.x + 32] : avgLum;
+		fFinalLumValue += dispatchThreadId.x + 48 < Constants.GroupSize ? SharedAvgFinal[dispatchThreadId.x + 48] : avgLum;
 		fFinalLumValue /= 64.0;
 
 
 		// Calculate the adaptive luminance
-		float fAdaptedAverageLum = lerp(PrevAverageLum[0], fFinalLumValue, constants.Adaptation);
+		float fAdaptedAverageLum = lerp(PrevAverageLum[0], fFinalLumValue, Constants.Adaptation);
 		// Store the final value
 		AverageLum[0] = fAdaptedAverageLum; // max(fAdaptedAverageLum, 0.0001);
 		PrevAverageLum[0] = fAdaptedAverageLum;

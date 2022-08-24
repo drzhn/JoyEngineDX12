@@ -1,6 +1,7 @@
 ﻿#include "Tonemapping.h"
 
 #include "JoyTypes.h"
+#include "Common/HashDefs.h"
 #include "EngineMaterialProvider/EngineMaterialProvider.h"
 #include "ResourceManager/ResourceManager.h"
 #include "ResourceManager/SharedMaterial.h"
@@ -165,26 +166,28 @@ namespace JoyEngine
 
 		// First pass
 		{
-			commandList->SetComputeRootSignature(m_hdrDownscaleFirstPassComputePipeline->GetRootSignature().Get());
-			commandList->SetPipelineState(m_hdrDownscaleFirstPassComputePipeline->GetPipelineObject().Get());
+			const auto& sm = m_hdrDownscaleFirstPassComputePipeline;
+			commandList->SetComputeRootSignature(sm->GetRootSignature().Get());
+			commandList->SetPipelineState(sm->GetPipelineObject().Get());
 
 
-			GraphicsUtils::AttachViewToCompute(commandList, 0, m_hdrLuminationBufferUAVView.get());
-			GraphicsUtils::AttachViewToCompute(commandList, 1, m_hrdDownScaledTexture->GetUAV());
-			GraphicsUtils::AttachViewToCompute(commandList, 2, m_hdrRenderTarget->GetSRV());
-			GraphicsUtils::AttachViewToCompute(commandList, 3, m_constants->GetView());
+			GraphicsUtils::AttachViewToCompute(commandList, sm->GetBindingIndexByHash(strHash("AverageLum")), m_hdrLuminationBufferUAVView.get());
+			GraphicsUtils::AttachViewToCompute(commandList, sm->GetBindingIndexByHash(strHash("HDRDownScale")), m_hrdDownScaledTexture->GetUAV());
+			GraphicsUtils::AttachViewToCompute(commandList, sm->GetBindingIndexByHash(strHash("HDRTex")), m_hdrRenderTarget->GetSRV());
+			GraphicsUtils::AttachViewToCompute(commandList, sm->GetBindingIndexByHash(strHash("Constants")), m_constants->GetView());
 
 			commandList->Dispatch(m_groupSize, 1, 1);
 		}
 
 		// Second pass
 		{
-			commandList->SetComputeRootSignature(m_hdrDownscaleSecondPassComputePipeline->GetRootSignature().Get());
-			commandList->SetPipelineState(m_hdrDownscaleSecondPassComputePipeline->GetPipelineObject().Get());
+			const auto& sm = m_hdrDownscaleSecondPassComputePipeline;
+			commandList->SetComputeRootSignature(sm->GetRootSignature().Get());
+			commandList->SetPipelineState(sm->GetPipelineObject().Get());
 
-			GraphicsUtils::AttachViewToCompute(commandList, 0, m_hdrLuminationBufferUAVView.get());
-			GraphicsUtils::AttachViewToCompute(commandList, 1, m_hdrPrevLuminationBufferUAVView.get());
-			GraphicsUtils::AttachViewToCompute(commandList, 2, m_constants->GetView());
+			GraphicsUtils::AttachViewToCompute(commandList, sm->GetBindingIndexByHash(strHash("AverageLum")), m_hdrLuminationBufferUAVView.get());
+			GraphicsUtils::AttachViewToCompute(commandList, sm->GetBindingIndexByHash(strHash("PrevAverageLum")), m_hdrPrevLuminationBufferUAVView.get());
+			GraphicsUtils::AttachViewToCompute(commandList, sm->GetBindingIndexByHash(strHash("Constants")), m_constants->GetView());
 
 			commandList->Dispatch(m_groupSize, 1, 1);
 		}
@@ -209,14 +212,14 @@ namespace JoyEngine
 				&ldrRTVHandle,
 				FALSE, nullptr);
 
-			const auto sm = m_hdrToLdrTransitionSharedMaterial;
+			const auto& sm = m_hdrToLdrTransitionSharedMaterial;
 
 			commandList->SetPipelineState(sm->GetGraphicsPipeline()->GetPipelineObject().Get());
 			commandList->SetGraphicsRootSignature(sm->GetGraphicsPipeline()->GetRootSignature().Get());
 			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-			GraphicsUtils::AttachViewToGraphics(commandList, 0, m_hdrLuminationBufferSRVView.get());
-			GraphicsUtils::AttachViewToGraphics(commandList, 1, m_hdrRenderTarget->GetSRV());
+			GraphicsUtils::AttachViewToGraphics(commandList, sm->GetBindingIndexByHash(strHash("AvgLum")), m_hdrLuminationBufferSRVView.get());
+			GraphicsUtils::AttachViewToGraphics(commandList, sm->GetBindingIndexByHash(strHash("HdrTexture")), m_hdrRenderTarget->GetSRV());
 
 			commandList->DrawInstanced(
 				3,

@@ -103,7 +103,6 @@ namespace JoyEngine
 		static void CopyRTVResource(ID3D12GraphicsCommandList* commandList, ID3D12Resource* rtvResource, ID3D12Resource* copyResource);
 
 	private:
-
 		static constexpr uint32_t frameCount = 3;
 
 
@@ -159,7 +158,9 @@ namespace JoyEngine
 
 		uint32_t m_width;
 		uint32_t m_height;
+
 		uint32_t m_imguiDescriptorIndex;
+		mutable  uint32_t m_trianglesCount = 0;
 	};
 }
 

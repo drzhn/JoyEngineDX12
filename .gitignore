@@ -27,7 +27,7 @@
 
 *.cache
 
-
+imgui.ini
 
 .idea/
 .vs/

@@ -276,6 +276,7 @@ namespace JoyEngine
 		m_currentFrameIndex = m_swapChain->GetCurrentBackBufferIndex();
 
 		m_queue->WaitForFence(m_currentFrameIndex);
+		m_trianglesCount = 0;
 	}
 
 	void RenderManager::DrawGui(ID3D12GraphicsCommandList* commandList)
@@ -284,24 +285,14 @@ namespace JoyEngine
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
 
-		static float f = 0.0f;
-		static int counter = 0;
-
-		ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
-		ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-
-		ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-
-		if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-			counter++;
-		ImGui::SameLine();
-		ImGui::Text("counter = %d", counter);
-
-		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-		ImGui::End();
-
-		// Rendering
+		ImGui::SetNextWindowPos({ 0,0 });
+		ImGui::SetNextWindowSize({ 300,100});
+		{
+			ImGui::Begin("Stats:");
+			ImGui::Text("Num triangles %d", m_trianglesCount);
+			ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0 / static_cast<double>(ImGui::GetIO().Framerate), static_cast<double>(ImGui::GetIO().Framerate));
+			ImGui::End();
+		}
 		ImGui::Render();
 		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
 	}
@@ -432,6 +423,7 @@ namespace JoyEngine
 					mr->GetMesh()->GetIndexSize(),
 					1,
 					0, 0, 0);
+				m_trianglesCount += mr->GetMesh()->GetIndexSize() / 3;
 			}
 		}
 	}

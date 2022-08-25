@@ -56,20 +56,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 		nullptr // Additional application data
 	);
 
-	//HWND hwndButton = CreateWindow(
-	//	L"STATIC", // Predefined class; Unicode assumed 
-	//	L"OK", // Button text 
-	//	WS_VISIBLE | WS_CHILD, // | BS_DEFPUSHBUTTON, // Styles 
-	//	10, // x position 
-	//	10, // y position 
-	//	100, // Button width
-	//	100, // Button height
-	//	hwnd, // Parent window
-	//	NULL, // No menu.
-	//	(HINSTANCE)GetWindowLongPtr(hwnd, GWLP_HINSTANCE),
-	//	NULL); // Pointer not needed.
-
-	//SetWindowTextA(hwndButton, "sdfsdfsdfsdfsdfsdfsdfsdfsdfsdf");
 	if (hwnd == nullptr)
 	{
 		return 0;

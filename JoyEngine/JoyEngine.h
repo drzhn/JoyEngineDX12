@@ -63,7 +63,7 @@ namespace JoyEngine
 		HWND m_windowHandle;
 
 		std::unique_ptr<InputManager> m_inputManager;
-		std::unique_ptr<GraphicsManager> m_graphicsContext;
+		std::unique_ptr<GraphicsManager> m_graphicsManager;
 		std::unique_ptr<MemoryManager> m_memoryManager;
 		std::unique_ptr<DataManager> m_dataManager;
 		std::unique_ptr<DescriptorManager> m_descriptorSetManager;

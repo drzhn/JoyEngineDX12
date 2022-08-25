@@ -50,6 +50,8 @@ namespace JoyEngine
 
 		void Update();
 
+		void DrawGui(ID3D12GraphicsCommandList* commandList);
+
 		void RegisterSharedMaterial(SharedMaterial*);
 
 		void UnregisterSharedMaterial(SharedMaterial*);
@@ -157,6 +159,7 @@ namespace JoyEngine
 
 		uint32_t m_width;
 		uint32_t m_height;
+		uint32_t m_imguiDescriptorIndex;
 	};
 }
 

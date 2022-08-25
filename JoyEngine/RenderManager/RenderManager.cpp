@@ -2,6 +2,10 @@
 
 #include <memory>
 
+#include "imgui.h"
+#include "backends/imgui_impl_dx12.h"
+#include "backends/imgui_impl_win32.h"
+
 
 #include "Utils/Assert.h"
 
@@ -13,14 +17,13 @@
 #include "ResourceManager/SharedMaterial.h"
 #include "JoyTypes.h"
 #include "Tonemapping.h"
+
 #include "Common/Time.h"
 #include "Components/MeshRenderer.h"
 #include "DescriptorManager/DescriptorManager.h"
 #include "GraphicsManager/GraphicsManager.h"
 #include "EngineMaterialProvider/EngineMaterialProvider.h"
-
 #include "ResourceManager/DynamicBuffer.h"
-#include "ResourceManager/SharedMaterial.h"
 
 #include "Utils/GraphicsUtils.h"
 
@@ -105,6 +108,18 @@ namespace JoyEngine
 			m_width, m_height,
 			m_hdrRenderTarget.get(),
 			hdrRTVFormat, ldrRTVFormat, depthFormat);
+
+		D3D12_CPU_DESCRIPTOR_HANDLE imguiCpuHandle;
+		D3D12_GPU_DESCRIPTOR_HANDLE imguiGpuHandle;
+
+		DescriptorManager::Get()->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, m_imguiDescriptorIndex,
+		                                             imguiCpuHandle,
+		                                             imguiGpuHandle);
+
+		ImGui_ImplDX12_Init(GraphicsManager::Get()->GetDevice(), frameCount,
+		                    ldrRTVFormat, DescriptorManager::Get()->GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV),
+		                    imguiCpuHandle,
+		                    imguiGpuHandle);
 	}
 
 	void RenderManager::Start()
@@ -236,6 +251,7 @@ namespace JoyEngine
 
 		m_tonemapping->Render(commandList, m_swapchainRenderTargets[m_currentFrameIndex].get());
 
+		DrawGui(commandList);
 
 		GraphicsUtils::Barrier(commandList,
 		                       swapchainResource,
@@ -260,6 +276,34 @@ namespace JoyEngine
 		m_currentFrameIndex = m_swapChain->GetCurrentBackBufferIndex();
 
 		m_queue->WaitForFence(m_currentFrameIndex);
+	}
+
+	void RenderManager::DrawGui(ID3D12GraphicsCommandList* commandList)
+	{
+		ImGui_ImplDX12_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
+
+		static float f = 0.0f;
+		static int counter = 0;
+
+		ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+
+		ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+
+		ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+
+		if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+			counter++;
+		ImGui::SameLine();
+		ImGui::Text("counter = %d", counter);
+
+		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		ImGui::End();
+
+		// Rendering
+		ImGui::Render();
+		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
 	}
 
 	void RenderManager::ProcessEngineBindings(

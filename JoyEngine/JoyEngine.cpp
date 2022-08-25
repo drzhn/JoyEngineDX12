@@ -2,7 +2,8 @@
 
 #include <string>
 
-
+#include "imgui.h"
+#include "backends/imgui_impl_win32.h"
 
 #include "SceneManager/SceneManager.h"
 #include "RenderManager/RenderManager.h"
@@ -16,6 +17,9 @@
 #include "InputManager/InputManager.h"
 #include "Utils/Assert.h"
 
+// Forward declare message handler from imgui_impl_win32.cpp
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 namespace JoyEngine
 {
 	static auto startTime = std::chrono::high_resolution_clock::now();
@@ -23,7 +27,7 @@ namespace JoyEngine
 	JoyEngine::JoyEngine(HINSTANCE instance, HWND windowHandle, uint32_t width, uint32_t height) :
 		m_windowHandle(windowHandle),
 		m_inputManager(new InputManager()),
-		m_graphicsContext(new GraphicsManager(instance, windowHandle, width, height)),
+		m_graphicsManager(new GraphicsManager(instance, windowHandle, width, height)),
 		m_memoryManager(new MemoryManager()),
 		m_dataManager(new DataManager()),
 		m_descriptorSetManager(new DescriptorManager()),
@@ -33,7 +37,7 @@ namespace JoyEngine
 		m_engineMaterials(new EngineMaterialProvider())
 	{
 		ASSERT(m_inputManager != nullptr);
-		ASSERT(m_graphicsContext != nullptr);
+		ASSERT(m_graphicsManager != nullptr);
 		ASSERT(m_memoryManager != nullptr);
 		ASSERT(m_dataManager != nullptr);
 		ASSERT(m_descriptorSetManager != nullptr);
@@ -43,6 +47,20 @@ namespace JoyEngine
 		ASSERT(m_engineMaterials != nullptr);
 
 		OutputDebugStringA("Context created\n");
+
+
+		// Setup Dear ImGui context
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+		// Setup Dear ImGui style
+		ImGui::StyleColorsDark();
+
+		// Setup Platform/Renderer backends
+		ImGui_ImplWin32_Init(windowHandle);
 	}
 
 	void JoyEngine::Init() const noexcept
@@ -93,13 +111,15 @@ namespace JoyEngine
 		m_descriptorSetManager = nullptr;
 		m_dataManager = nullptr;
 		m_memoryManager = nullptr; //free gpu memory
-		m_graphicsContext = nullptr; //delete surface, device, instance
+		m_graphicsManager = nullptr; //delete surface, device, instance
 
 		OutputDebugStringA("Context destroyed\n");
 	}
 
 	void JoyEngine::HandleMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
+		ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam);
+
 		m_inputManager->HandleWinMessage(hwnd, uMsg, wParam, lParam);
 	}
 }

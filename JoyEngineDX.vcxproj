@@ -117,7 +117,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;NOMINMAX;GLM_FORCE_LEFT_HANDED;GLM_FORCE_DEPTH_ZERO_TO_ONE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)JoyEngine;$(SolutionDir)Libs\rapidjson\include;$(SolutionDir)Libs\glm;$(SolutionDir)Libs\DirectXTK12\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)JoyEngine;$(SolutionDir)Libs\rapidjson\include;$(SolutionDir)Libs\glm;$(SolutionDir)Libs\DirectXTK12\Inc;$(SolutionDir)Libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -185,6 +185,13 @@
     <ClCompile Include="JoyEngine\SceneManager\Transform.cpp" />
     <ClCompile Include="JoyEngine\EngineMaterialProvider\EngineMaterialProvider.cpp" />
     <ClCompile Include="JoyEngine\Utils\GraphicsUtils.cpp" />
+    <ClCompile Include="Libs\imgui\backends\imgui_impl_dx12.cpp" />
+    <ClCompile Include="Libs\imgui\backends\imgui_impl_win32.cpp" />
+    <ClCompile Include="Libs\imgui\imgui.cpp" />
+    <ClCompile Include="Libs\imgui\imgui_demo.cpp" />
+    <ClCompile Include="Libs\imgui\imgui_draw.cpp" />
+    <ClCompile Include="Libs\imgui\imgui_tables.cpp" />
+    <ClCompile Include="Libs\imgui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="WindowHandler.cpp" />
   </ItemGroup>
@@ -239,6 +246,14 @@
     <ClInclude Include="JoyEngine\Utils\FileUtils.h" />
     <ClInclude Include="JoyEngine\Utils\GraphicsUtils.h" />
     <ClInclude Include="JoyEngine\Utils\GUID.h" />
+    <ClInclude Include="Libs\imgui\backends\imgui_impl_dx12.h" />
+    <ClInclude Include="Libs\imgui\backends\imgui_impl_win32.h" />
+    <ClInclude Include="Libs\imgui\imconfig.h" />
+    <ClInclude Include="Libs\imgui\imgui.h" />
+    <ClInclude Include="Libs\imgui\imgui_internal.h" />
+    <ClInclude Include="Libs\imgui\imstb_rectpack.h" />
+    <ClInclude Include="Libs\imgui\imstb_textedit.h" />
+    <ClInclude Include="Libs\imgui\imstb_truetype.h" />
     <ClInclude Include="WindowHandler.h" />
   </ItemGroup>
   <ItemGroup>

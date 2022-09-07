@@ -68,7 +68,7 @@ namespace JoyEngine
 		ASSERT_SUCC(GraphicsManager::Get()->GetFactory()->MakeWindowAssociation(GraphicsManager::Get()->GetHWND(), DXGI_MWA_NO_ALT_ENTER));
 		ASSERT_SUCC(swapChain.As(&m_swapChain));
 
-		m_currentFrameIndex = m_swapChain->GetCurrentBackBufferIndex();
+		//m_currentFrameIndex = m_swapChain->GetCurrentBackBufferIndex();
 
 		// Create a RTV and a command allocator for each frame.
 		for (UINT n = 0; n < frameCount; n++)
@@ -109,17 +109,19 @@ namespace JoyEngine
 			m_hdrRenderTarget.get(),
 			hdrRTVFormat, ldrRTVFormat, depthFormat);
 
-		D3D12_CPU_DESCRIPTOR_HANDLE imguiCpuHandle;
-		D3D12_GPU_DESCRIPTOR_HANDLE imguiGpuHandle;
+		{
+			D3D12_CPU_DESCRIPTOR_HANDLE imguiCpuHandle;
+			D3D12_GPU_DESCRIPTOR_HANDLE imguiGpuHandle;
 
-		DescriptorManager::Get()->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, m_imguiDescriptorIndex,
-		                                             imguiCpuHandle,
-		                                             imguiGpuHandle);
+			DescriptorManager::Get()->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, m_imguiDescriptorIndex,
+				imguiCpuHandle,
+				imguiGpuHandle);
 
-		ImGui_ImplDX12_Init(GraphicsManager::Get()->GetDevice(), frameCount,
-		                    ldrRTVFormat, DescriptorManager::Get()->GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV),
-		                    imguiCpuHandle,
-		                    imguiGpuHandle);
+			ImGui_ImplDX12_Init(GraphicsManager::Get()->GetDevice(), frameCount,
+				ldrRTVFormat, DescriptorManager::Get()->GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV),
+				imguiCpuHandle,
+				imguiGpuHandle);
+		}
 	}
 
 	void RenderManager::Start()
@@ -130,6 +132,9 @@ namespace JoyEngine
 
 	void RenderManager::Stop()
 	{
+		m_queue->WaitQueueIdle();
+
+
 		m_tonemapping = nullptr;
 		m_queue = nullptr;
 	}
@@ -189,7 +194,12 @@ namespace JoyEngine
 
 	void RenderManager::Update()
 	{
+		m_currentFrameIndex = m_swapChain->GetCurrentBackBufferIndex();
+
+		m_queue->WaitForFence(m_currentFrameIndex);
+
 		m_queue->ResetForFrame(m_currentFrameIndex);
+
 
 		const auto commandList = m_queue->GetCommandList(m_currentFrameIndex);
 
@@ -272,10 +282,6 @@ namespace JoyEngine
 		// Present the frame.
 		ASSERT_SUCC(m_swapChain->Present(0, presentFlags));
 
-		// Update the frame index.
-		m_currentFrameIndex = m_swapChain->GetCurrentBackBufferIndex();
-
-		m_queue->WaitForFence(m_currentFrameIndex);
 		m_trianglesCount = 0;
 	}
 

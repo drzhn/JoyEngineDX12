@@ -123,17 +123,6 @@ namespace JoyEngine
 		//std::unique_ptr<Texture> m_renderTargetCopyAttachment;
 
 
-		//std::unique_ptr<UAVTexture> m_bloomFirstTexture;
-		//std::unique_ptr<UAVTexture> m_bloomSecondTexture;
-
-		//std::unique_ptr<UAVTexture> m_hrdDownScaledTexture;
-		//std::unique_ptr<Buffer> m_hdrLuminationBuffer;
-		//std::unique_ptr<ResourceView> m_hdrLuminationBufferUAVView;
-		//std::unique_ptr<ResourceView> m_hdrLuminationBufferSRVView;
-		//std::unique_ptr<Buffer> m_hdrPrevLuminationBuffer;
-		//std::unique_ptr<ResourceView> m_hdrPrevLuminationBufferUAVView;
-
-
 		//std::unique_ptr<RenderTexture> m_positionAttachment;
 		//std::unique_ptr<RenderTexture> m_worldNormalAttachment;
 		//std::unique_ptr<RenderTexture> m_viewNormalAttachment;

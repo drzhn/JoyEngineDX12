@@ -13,7 +13,7 @@ namespace JoyEngine
 		m_windowHandle(windowHandle)
 	{
 		UINT createFactoryFlags = 0;
-#if defined(_DEBUG)
+#if defined(FULL_DEBUG)
 		ASSERT_SUCC(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)));
 		debugController->EnableDebugLayer();
 		createFactoryFlags = DXGI_CREATE_FACTORY_DEBUG;
@@ -62,7 +62,7 @@ namespace JoyEngine
 		ASSERT_SUCC(m_logicalDevice->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS, &m_featureSupport, sizeof(m_featureSupport)));
 
 		// Enable debug messages in debug mode.
-#if defined(_DEBUG)
+#if defined(FULL_DEBUG)
 		ComPtr<ID3D12InfoQueue> pInfoQueue;
 		if (SUCCEEDED(m_logicalDevice.As(&pInfoQueue)))
 		{

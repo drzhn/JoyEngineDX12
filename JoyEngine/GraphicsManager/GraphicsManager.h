@@ -43,7 +43,7 @@ namespace JoyEngine
 		ComPtr<IDXGIFactory5> m_dxgiFactory = nullptr;
 		ComPtr<IDXGIAdapter4> m_physicalDevice = nullptr;
 		ComPtr<ID3D12Device2> m_logicalDevice = nullptr;
-#if defined(_DEBUG)
+#if defined(FULL_DEBUG)
 		ComPtr<ID3D12Debug> debugController;
 #endif
 		uint32_t m_m4xMsaaQuality;

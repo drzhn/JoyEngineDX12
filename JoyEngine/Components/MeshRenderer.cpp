@@ -1,7 +1,6 @@
 #include "MeshRenderer.h"
 
 
-
 #include "ResourceManager/Material.h"
 #include "ResourceManager/Mesh.h"
 
@@ -9,6 +8,11 @@
 
 namespace JoyEngine
 {
+	MeshRenderer::MeshRenderer(bool isStatic):
+		m_isStatic(isStatic)
+	{
+	}
+
 	void MeshRenderer::Enable()
 	{
 		//ASSERT(m_mesh != nullptr && m_material != nullptr);
@@ -72,6 +76,11 @@ namespace JoyEngine
 	void MeshRenderer::SetMaterial(const ResourceHandle<Material>& mat)
 	{
 		m_material = mat;
+	}
+
+	bool MeshRenderer::IsStatic() const noexcept
+	{
+		return m_isStatic;
 	}
 
 	Mesh* MeshRenderer::GetMesh() const noexcept

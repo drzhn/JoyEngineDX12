@@ -17,7 +17,9 @@ namespace JoyEngine
 	class MeshRenderer : public Component
 	{
 	public:
-		MeshRenderer() = default;
+		MeshRenderer() = delete;
+
+		explicit MeshRenderer(bool isStatic);
 
 		void Enable() final;
 
@@ -36,6 +38,7 @@ namespace JoyEngine
 		void SetMaterial(const GUID& materialGuid);
 		void SetMaterial(const ResourceHandle<Material>& mat);
 
+		[[nodiscard]] bool IsStatic() const noexcept;
 
 		[[nodiscard]] Mesh* GetMesh() const noexcept;
 
@@ -46,6 +49,8 @@ namespace JoyEngine
 	private:
 		ResourceHandle<Mesh> m_mesh;
 		ResourceHandle<Material> m_material;
+
+		bool m_isStatic;
 	};
 }
 

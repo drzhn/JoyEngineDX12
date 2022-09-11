@@ -47,7 +47,8 @@ namespace JoyEngine
 					std::string type = std::string(component["type"].GetString());
 					if (type == "renderer")
 					{
-						std::unique_ptr<MeshRenderer> mr = std::make_unique<MeshRenderer>();
+						bool isStatic = component["static"].GetBool();
+						std::unique_ptr<MeshRenderer> mr = std::make_unique<MeshRenderer>(isStatic);
 						mr->SetMesh(GUID::StringToGuid(component["model"].GetString()));
 						mr->SetMaterial(GUID::StringToGuid(component["material"].GetString()));
 						go->AddComponent(std::move(mr));
@@ -126,6 +127,7 @@ namespace JoyEngine
 				std::string nameStr = obj["name"].GetString();
 				GUID modelGuid = GUID::StringToGuid(obj["model"].GetString());
 				GUID materialGuid = GUID::StringToGuid(obj["material"].GetString());
+				bool isStatic = obj["static"].GetBool();
 				std::unique_ptr<MtlBinaryParser> parser = std::make_unique<MtlBinaryParser>(modelGuid, materialGuid);
 				MtlMeshStreamData* data = parser->Next();
 				int objectIndex = 0;
@@ -136,7 +138,7 @@ namespace JoyEngine
 					rapidjson::Value& transformValue = obj["transform"];
 					ParseTransform(go, transformValue);
 
-					std::unique_ptr<MeshRenderer> mr = std::make_unique<MeshRenderer>();
+					std::unique_ptr<MeshRenderer> mr = std::make_unique<MeshRenderer>(isStatic);
 					mr->SetMesh(GUID::Random(),
 					            data->vertexDataSize,
 					            data->indexDataSize,

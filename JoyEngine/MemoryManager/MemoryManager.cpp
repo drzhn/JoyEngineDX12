@@ -7,7 +7,6 @@
 #include "d3dx12.h"
 
 
-
 #include "Common/HashDefs.h"
 #include "DescriptorManager/DescriptorManager.h"
 
@@ -125,45 +124,60 @@ namespace JoyEngine
 	void MemoryManager::LoadDataToImage(
 		std::ifstream& stream,
 		uint64_t offset,
-		uint32_t RowPitch,
-		uint32_t SlicePitch,
-		uint32_t width,
-		uint32_t height,
 		Texture* gpuImage,
 		uint32_t mipMapsCount) const
 	{
-		const uint64_t imageSize = GetRequiredIntermediateSize(gpuImage->GetImage().Get(), 0, 1);
+		uint64_t resourceSize = 0;
+		uint64_t rowSize = 0;
+		D3D12_RESOURCE_DESC resourceDesc = gpuImage->GetImage().Get()->GetDesc();
+		D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint;
+		GraphicsManager::Get()->GetDevice()->GetCopyableFootprints(
+			&resourceDesc,
+			0,
+			1,
+			0,
+			&footprint,
+			nullptr,
+			&rowSize,
+			&resourceSize);
 
-
-		if (imageSize > g_maxResourceSizeAllocated)
+		if (resourceSize > g_maxResourceSizeAllocated)
 		{
-			g_maxResourceSizeAllocated = imageSize;
+			g_maxResourceSizeAllocated = resourceSize;
 		}
 
 
-		std::unique_ptr<BufferMappedPtr> ptr = m_stagingBuffer->GetMappedPtr(0, imageSize);
+		std::unique_ptr<BufferMappedPtr> ptr = m_stagingBuffer->GetMappedPtr(0, resourceSize);
 		stream.clear();
 
 		stream.seekg(offset);
-		stream.read(static_cast<char*>(ptr->GetMappedPtr()), imageSize);
-
-		D3D12_SUBRESOURCE_DATA textureData = {};
-		textureData.pData = ptr->GetMappedPtr();
-		textureData.RowPitch = RowPitch; //width * 4;
-		textureData.SlicePitch = SlicePitch; //textureData.RowPitch * height;
+		stream.read(static_cast<char*>(ptr->GetMappedPtr()), resourceSize);
 
 		m_queue->ResetForFrame();
 
 		const auto commandList = m_queue->GetCommandList(0);
 
-		UpdateSubresources(
-			commandList,
-			gpuImage->GetImage().Get(),
+
+		D3D12_TEXTURE_COPY_LOCATION src = {
 			m_stagingBuffer->GetBuffer().Get(),
-			0,
-			0,
-			1,
-			&textureData);
+			D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT,
+			{
+				footprint
+			}
+		};
+
+
+		D3D12_TEXTURE_COPY_LOCATION dst = {
+			gpuImage->GetImage().Get(),
+			D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX,
+			0
+		};
+
+		commandList->CopyTextureRegion(
+			&dst,
+			0,0,0,
+			&src,
+			nullptr);
 
 		CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
 			gpuImage->GetImage().Get(),
@@ -227,7 +241,7 @@ namespace JoyEngine
 
 
 				MipMapGenerationData generationData{
-					{width >> (1 + (dispatchIndex * 4)), height >> (1 + (dispatchIndex * 4))},
+					{gpuImage->GetWidth() >> (1 + (dispatchIndex * 4)), gpuImage->GetHeight() >> (1 + (dispatchIndex * 4))},
 					dispatchIndex * 4,
 					mipLevelsToGenerate
 				};
@@ -239,8 +253,8 @@ namespace JoyEngine
 					0);
 
 				commandList->Dispatch(
-					(width >> (1 + (dispatchIndex * 4))) / 8,
-					(height >> (1 + (dispatchIndex * 4))) / 8,
+					(gpuImage->GetWidth() >> (1 + (dispatchIndex * 4))) / 8,
+					(gpuImage->GetHeight() >> (1 + (dispatchIndex * 4))) / 8,
 					1);
 
 				barrier = CD3DX12_RESOURCE_BARRIER::UAV(gpuImage->GetImage().Get());

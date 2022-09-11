@@ -212,10 +212,6 @@ namespace JoyEngine
 			MemoryManager::Get()->LoadDataToImage(
 				textureStream,
 				sizeof(uint32_t) + sizeof(DDS_HEADER),
-				subresource[0].RowPitch,
-				subresource[0].SlicePitch,
-				m_width,
-				m_height,
 				this,
 				m_mipLevels);
 		}
@@ -282,10 +278,6 @@ namespace JoyEngine
 		MemoryManager::Get()->LoadDataToImage(
 			textureStream,
 			sizeof(uint32_t) + sizeof(uint32_t),
-			m_width * 4,
-			m_width * m_height * 4,
-			m_width,
-			m_height,
 			this,
 			m_mipLevels);
 	}

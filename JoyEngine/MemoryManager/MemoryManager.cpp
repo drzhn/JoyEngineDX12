@@ -24,7 +24,8 @@
 #define GPU_TEXTURE_ALLOCATION_SIZE 256*1024*1024 // 256 MB
 #define GPU_RT_DS_ALLOCATION_SIZE 128*1024*1024 // 128 MB
 
-#define CPU_BUFFER_ALLOCATION_SIZE 64*1024*1024 // 64 MB
+#define CPU_UPLOAD_ALLOCATION_SIZE 64*1024*1024 // 64 MB
+#define CPU_READBACK_ALLOCATION_SIZE 64*1024*1024 // 64 MB
 
 
 namespace JoyEngine
@@ -33,6 +34,7 @@ namespace JoyEngine
 
 	std::string ParseByteNumber(uint64_t bytes)
 	{
+		if (bytes == 0) return "0 b";
 		uint64_t gb = bytes / (1 << 30);
 		uint64_t mb = bytes % (1 << 30) / (1 << 20);
 		uint64_t kb = bytes % (1 << 20) / (1 << 10);
@@ -49,7 +51,7 @@ namespace JoyEngine
 		uint64_t unaligned = allocator->GetUnalignedBytesAllocated();
 		uint64_t aligned = allocator->GetAlignedBytesAllocated();
 		return "Requested " + ParseByteNumber(unaligned) + ", allocated with align " + ParseByteNumber(aligned) +
-			", ratio " + std::to_string(static_cast<float>(unaligned) / static_cast<float>(aligned) * 100) + "%\n";
+			", ratio " + (aligned > 0 ? std::to_string(static_cast<float>(unaligned) / static_cast<float>(aligned) * 100) : "") + "%\n";
 	}
 
 	inline D3D12_RESOURCE_BARRIER Transition(
@@ -85,40 +87,47 @@ namespace JoyEngine
 	{
 		m_queue = std::make_unique<CommandQueue>(D3D12_COMMAND_LIST_TYPE_DIRECT, GraphicsManager::Get()->GetDevice());
 
-		m_gpuHeapAllocators[DeviceAllocatorTypeBuffer] = std::make_unique<DeviceLinearAllocator>(
+		m_allocators[DeviceAllocatorTypeGpuBuffer] = std::make_unique<DeviceLinearAllocator>(
 			D3D12_HEAP_TYPE_DEFAULT,
-			DeviceAllocatorTypeBuffer,
+			DeviceAllocatorTypeGpuBuffer,
 			GPU_BUFFER_ALLOCATION_SIZE,
 			GraphicsManager::Get()->GetDevice());
 
-		m_gpuHeapAllocators[DeviceAllocatorTypeTextures] = std::make_unique<DeviceLinearAllocator>(
+		m_allocators[DeviceAllocatorTypeTextures] = std::make_unique<DeviceLinearAllocator>(
 			D3D12_HEAP_TYPE_DEFAULT,
 			DeviceAllocatorTypeTextures,
 			GPU_TEXTURE_ALLOCATION_SIZE,
 			GraphicsManager::Get()->GetDevice());
 
-		m_gpuHeapAllocators[DeviceAllocatorTypeRtDsTextures] = std::make_unique<DeviceLinearAllocator>(
+		m_allocators[DeviceAllocatorTypeRtDsTextures] = std::make_unique<DeviceLinearAllocator>(
 			D3D12_HEAP_TYPE_DEFAULT,
 			DeviceAllocatorTypeRtDsTextures,
 			GPU_RT_DS_ALLOCATION_SIZE,
 			GraphicsManager::Get()->GetDevice());
 
-		m_cpuHeapAllocators[DeviceAllocatorTypeBuffer] = std::make_unique<DeviceLinearAllocator>(
+		m_allocators[DeviceAllocatorTypeCpuUploadBuffer] = std::make_unique<DeviceLinearAllocator>(
 			D3D12_HEAP_TYPE_UPLOAD,
-			DeviceAllocatorTypeBuffer,
-			GPU_BUFFER_ALLOCATION_SIZE,
+			DeviceAllocatorTypeCpuUploadBuffer,
+			CPU_UPLOAD_ALLOCATION_SIZE,
+			GraphicsManager::Get()->GetDevice());
+
+		m_allocators[DeviceAllocatorTypeCpuReadbackBuffer] = std::make_unique<DeviceLinearAllocator>(
+			D3D12_HEAP_TYPE_READBACK,
+			DeviceAllocatorTypeCpuReadbackBuffer,
+			CPU_READBACK_ALLOCATION_SIZE,
 			GraphicsManager::Get()->GetDevice());
 
 		m_stagingBuffer = std::make_unique<Buffer>(32 * 1024 * 1024, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD);
 	}
 
-	void MemoryManager::Start()
+	void MemoryManager::PrintStats()
 	{
 		OutputDebugStringA(("Biggest resource allocated: " + ParseByteNumber(g_maxResourceSizeAllocated) + "\n").c_str());
-		OutputDebugStringA(("GPU buffer allocator: " + ParseAllocatorStats(m_gpuHeapAllocators[DeviceAllocatorTypeBuffer].get())).c_str());
-		OutputDebugStringA(("GPU textures allocator: " + ParseAllocatorStats(m_gpuHeapAllocators[DeviceAllocatorTypeTextures].get())).c_str());
-		OutputDebugStringA(("GPU RT DS textures allocator: " + ParseAllocatorStats(m_gpuHeapAllocators[DeviceAllocatorTypeRtDsTextures].get())).c_str());
-		OutputDebugStringA(("CPU buffer allocator: " + ParseAllocatorStats(m_cpuHeapAllocators[DeviceAllocatorTypeBuffer].get())).c_str());
+		OutputDebugStringA(("GPU buffer allocator: " + ParseAllocatorStats(m_allocators[DeviceAllocatorTypeGpuBuffer].get())).c_str());
+		OutputDebugStringA(("GPU textures allocator: " + ParseAllocatorStats(m_allocators[DeviceAllocatorTypeTextures].get())).c_str());
+		OutputDebugStringA(("GPU RT DS textures allocator: " + ParseAllocatorStats(m_allocators[DeviceAllocatorTypeRtDsTextures].get())).c_str());
+		OutputDebugStringA(("CPU upload buffer allocator: " + ParseAllocatorStats(m_allocators[DeviceAllocatorTypeCpuUploadBuffer].get())).c_str());
+		OutputDebugStringA(("CPU readback buffer allocator: " + ParseAllocatorStats(m_allocators[DeviceAllocatorTypeCpuReadbackBuffer].get())).c_str());
 	}
 
 	void MemoryManager::LoadDataToImage(
@@ -175,7 +184,7 @@ namespace JoyEngine
 
 		commandList->CopyTextureRegion(
 			&dst,
-			0,0,0,
+			0, 0, 0,
 			&src,
 			nullptr);
 
@@ -286,24 +295,28 @@ namespace JoyEngine
 		{
 			if (resourceDesc->Dimension == D3D12_RESOURCE_DIMENSION_BUFFER)
 			{
-				allocator = m_gpuHeapAllocators[DeviceAllocatorTypeBuffer].get();
+				allocator = m_allocators[DeviceAllocatorTypeGpuBuffer].get();
 			}
 			else
 			{
 				if (resourceDesc->Flags & D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL ||
 					resourceDesc->Flags & D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET)
 				{
-					allocator = m_gpuHeapAllocators[DeviceAllocatorTypeRtDsTextures].get();
+					allocator = m_allocators[DeviceAllocatorTypeRtDsTextures].get();
 				}
 				else
 				{
-					allocator = m_gpuHeapAllocators[DeviceAllocatorTypeTextures].get();
+					allocator = m_allocators[DeviceAllocatorTypeTextures].get();
 				}
 			}
 		}
 		else if (heapType == D3D12_HEAP_TYPE_UPLOAD)
 		{
-			allocator = m_cpuHeapAllocators[DeviceAllocatorTypeBuffer].get();
+			allocator = m_allocators[DeviceAllocatorTypeCpuUploadBuffer].get();
+		}
+		else if (heapType == D3D12_HEAP_TYPE_READBACK)
+		{
+			allocator = m_allocators[DeviceAllocatorTypeCpuReadbackBuffer].get();
 		}
 		else
 		{

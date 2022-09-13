@@ -67,10 +67,15 @@ namespace JoyEngine
 	{
 		Time::Init(m_deltaTimeHandler);
 
+		// allocating memory for rendering and creating allocators
 		m_memoryManager->Init();
+		// allocating descriptors
 		m_descriptorSetManager->Init();
+		// creating render resources
 		m_renderManager->Init();
+		// creating internal engine materials
 		m_engineMaterials->Init();
+		// loading scene from disk
 		m_sceneManager->Init();
 
 		const auto currentTime = std::chrono::high_resolution_clock::now();
@@ -81,7 +86,7 @@ namespace JoyEngine
 
 	void JoyEngine::Start() const noexcept
 	{
-		m_memoryManager->Start();
+		m_memoryManager->PrintStats();
 		m_renderManager->Start();
 	}
 
@@ -89,7 +94,6 @@ namespace JoyEngine
 	{
 		Time::Update();
 
-		//m_memoryManager->Update();
 		m_sceneManager->Update();
 		m_renderManager->Update();
 	}

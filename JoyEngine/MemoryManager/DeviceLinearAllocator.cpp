@@ -14,7 +14,9 @@ namespace JoyEngine
 		D3D12_HEAP_FLAGS flags = D3D12_HEAP_FLAG_NONE;
 		switch (type)
 		{
-		case DeviceAllocatorTypeBuffer:
+		case DeviceAllocatorTypeGpuBuffer:
+		case DeviceAllocatorTypeCpuUploadBuffer:
+		case DeviceAllocatorTypeCpuReadbackBuffer:
 			flags =
 				D3D12_HEAP_FLAG_DENY_RT_DS_TEXTURES |
 				D3D12_HEAP_FLAG_DENY_NON_RT_DS_TEXTURES;

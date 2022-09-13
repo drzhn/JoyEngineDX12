@@ -12,9 +12,11 @@ namespace JoyEngine
 {
 	enum DeviceAllocatorType
 	{
-		DeviceAllocatorTypeBuffer = 0,
+		DeviceAllocatorTypeGpuBuffer = 0,
 		DeviceAllocatorTypeTextures = 1,
-		DeviceAllocatorTypeRtDsTextures = 2
+		DeviceAllocatorTypeRtDsTextures = 2,
+		DeviceAllocatorTypeCpuUploadBuffer = 3,
+		DeviceAllocatorTypeCpuReadbackBuffer = 4,
 	};
 
 	class DeviceLinearAllocator

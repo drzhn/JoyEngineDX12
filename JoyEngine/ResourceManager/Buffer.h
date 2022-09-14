@@ -22,7 +22,6 @@ namespace JoyEngine
 		ComPtr<ID3D12Resource> m_bufferMemory;
 	};
 
-	// TODO make Buffer<T> for cpu-visible small buffers
 	class Buffer final : public Resource
 	{
 	public:

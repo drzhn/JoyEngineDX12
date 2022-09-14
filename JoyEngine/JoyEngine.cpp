@@ -86,8 +86,8 @@ namespace JoyEngine
 
 	void JoyEngine::Start() const noexcept
 	{
-		m_memoryManager->PrintStats();
 		m_renderManager->Start();
+		m_memoryManager->PrintStats();
 	}
 
 	void JoyEngine::Update() const noexcept

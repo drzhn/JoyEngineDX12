@@ -15,6 +15,7 @@
 #include "ResourceManager/DynamicBuffer.h"
 
 #include "Tonemapping.h"
+#include "Raytracing.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -119,7 +120,10 @@ namespace JoyEngine
 
 		std::unique_ptr<DepthTexture> m_depthAttachment;
 		std::unique_ptr<RenderTexture> m_hdrRenderTarget;
+
+
 		std::unique_ptr<Tonemapping> m_tonemapping;
+		std::unique_ptr<Raytracing> m_raytracing;
 		//std::unique_ptr<Texture> m_renderTargetCopyAttachment;
 
 
@@ -127,11 +131,6 @@ namespace JoyEngine
 		//std::unique_ptr<RenderTexture> m_worldNormalAttachment;
 		//std::unique_ptr<RenderTexture> m_viewNormalAttachment;
 		//std::unique_ptr<RenderTexture> m_lightingAttachment;
-
-		//std::unique_ptr<SSAO> m_ssaoEffect;
-
-		//ResourceHandle<Mesh> m_planeMesh;
-		//ResourceHandle<Mesh> m_cubeMesh;
 
 		std::unique_ptr<DynamicBuffer<JoyData>> m_engineDataBuffer;
 

@@ -22,7 +22,7 @@ namespace JoyEngine
 
 		void Init();
 
-		void PrintStats();
+		void PrintStats() const;
 
 		void Update();
 
@@ -30,7 +30,12 @@ namespace JoyEngine
 			std::ifstream& stream,
 			uint64_t offset,
 			uint64_t bufferSize,
-			Buffer* gpuBuffer) const;
+			const Buffer* gpuBuffer) const;
+
+		void LoadDataToBuffer(
+			void* ptr, 
+			uint64_t bufferSize, 
+			const Buffer* gpuBuffer) const;
 
 		void LoadDataToImage(
 			std::ifstream& stream,
@@ -38,18 +43,24 @@ namespace JoyEngine
 			Texture* gpuImage,
 			uint32_t mipMapsCount = 1) const;
 
+		void ReadbackDataFromBuffer(
+			void* ptr,
+			uint64_t bufferSize,
+			const Buffer* gpuBuffer) const;
+
 		ComPtr<ID3D12Resource> CreateResource(
 			D3D12_HEAP_TYPE heapType,
 			const D3D12_RESOURCE_DESC* resourceDesc,
 			D3D12_RESOURCE_STATES initialResourceState,
 			const D3D12_CLEAR_VALUE* clearValue = nullptr) const;
 
-		void ChangeResourceState(ID3D12Resource* resource, D3D12_RESOURCE_STATES stateBefore, D3D12_RESOURCE_STATES stateAfter);
-
 	private:
+		void LoadDataToBufferInternal(uint64_t bufferSize, const Buffer* gpuBuffer) const;
+
 		std::unique_ptr<CommandQueue> m_queue;
 		std::array<std::unique_ptr<DeviceLinearAllocator>, 5> m_allocators;
-		std::unique_ptr<Buffer> m_stagingBuffer;
+		std::unique_ptr<Buffer> m_uploadStagingBuffer;
+		std::unique_ptr<Buffer> m_readbackStagingBuffer;
 	};
 }
 

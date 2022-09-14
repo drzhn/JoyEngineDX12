@@ -19,6 +19,7 @@
 #include "ResourceManager/ResourceView.h"
 #include "ResourceManager/Texture.h"
 #include "Utils/Assert.h"
+#include "Utils/GraphicsUtils.h"
 
 #define GPU_BUFFER_ALLOCATION_SIZE 256*1024*1024 // 256 MB
 #define GPU_TEXTURE_ALLOCATION_SIZE 256*1024*1024 // 256 MB
@@ -52,23 +53,6 @@ namespace JoyEngine
 		uint64_t aligned = allocator->GetAlignedBytesAllocated();
 		return "Requested " + ParseByteNumber(unaligned) + ", allocated with align " + ParseByteNumber(aligned) +
 			", ratio " + (aligned > 0 ? std::to_string(static_cast<float>(unaligned) / static_cast<float>(aligned) * 100) : "") + "%\n";
-	}
-
-	inline D3D12_RESOURCE_BARRIER Transition(
-		_In_ ID3D12Resource* pResource,
-		D3D12_RESOURCE_STATES stateBefore,
-		D3D12_RESOURCE_STATES stateAfter,
-		UINT subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES,
-		D3D12_RESOURCE_BARRIER_FLAGS flags = D3D12_RESOURCE_BARRIER_FLAG_NONE) noexcept
-	{
-		D3D12_RESOURCE_BARRIER barrier = {};
-		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-		barrier.Flags = flags;
-		barrier.Transition.pResource = pResource;
-		barrier.Transition.StateBefore = stateBefore;
-		barrier.Transition.StateAfter = stateAfter;
-		barrier.Transition.Subresource = subresource;
-		return barrier;
 	}
 
 	void AttachView(
@@ -117,10 +101,11 @@ namespace JoyEngine
 			CPU_READBACK_ALLOCATION_SIZE,
 			GraphicsManager::Get()->GetDevice());
 
-		m_stagingBuffer = std::make_unique<Buffer>(32 * 1024 * 1024, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD);
+		m_uploadStagingBuffer = std::make_unique<Buffer>(32 * 1024 * 1024, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD);
+		m_readbackStagingBuffer = std::make_unique<Buffer>(32 * 1024 * 1024, D3D12_RESOURCE_STATE_COPY_DEST, D3D12_HEAP_TYPE_READBACK);
 	}
 
-	void MemoryManager::PrintStats()
+	void MemoryManager::PrintStats() const
 	{
 		OutputDebugStringA(("Biggest resource allocated: " + ParseByteNumber(g_maxResourceSizeAllocated) + "\n").c_str());
 		OutputDebugStringA(("GPU buffer allocator: " + ParseAllocatorStats(m_allocators[DeviceAllocatorTypeGpuBuffer].get())).c_str());
@@ -156,7 +141,7 @@ namespace JoyEngine
 		}
 
 
-		std::unique_ptr<BufferMappedPtr> ptr = m_stagingBuffer->GetMappedPtr(0, resourceSize);
+		std::unique_ptr<BufferMappedPtr> ptr = m_uploadStagingBuffer->GetMappedPtr(0, resourceSize);
 		stream.clear();
 
 		stream.seekg(offset);
@@ -168,7 +153,7 @@ namespace JoyEngine
 
 
 		D3D12_TEXTURE_COPY_LOCATION src = {
-			m_stagingBuffer->GetBuffer().Get(),
+			m_uploadStagingBuffer->GetBuffer().Get(),
 			D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT,
 			{
 				footprint
@@ -277,6 +262,43 @@ namespace JoyEngine
 		m_queue->WaitQueueIdle();
 	}
 
+	void MemoryManager::ReadbackDataFromBuffer(
+		void* ptr, 
+		uint64_t bufferSize, 
+		const Buffer* gpuBuffer) const
+	{
+		m_queue->ResetForFrame();
+
+		const auto commandList = m_queue->GetCommandList(0);
+
+		const D3D12_RESOURCE_STATES state = gpuBuffer->GetCurrentResourceState();
+
+		GraphicsUtils::Barrier(commandList, gpuBuffer->GetBuffer().Get(),
+			state,
+			D3D12_RESOURCE_STATE_COPY_SOURCE);
+
+		commandList->CopyBufferRegion(
+			m_readbackStagingBuffer->GetBuffer().Get(),
+			0,
+			gpuBuffer->GetBuffer().Get(),
+			0,
+			bufferSize);
+
+		GraphicsUtils::Barrier(commandList, gpuBuffer->GetBuffer().Get(),
+			D3D12_RESOURCE_STATE_COPY_SOURCE,
+			state);
+
+		ASSERT_SUCC(commandList->Close());
+
+		m_queue->Execute(0);
+
+		m_queue->WaitQueueIdle();
+
+		const std::unique_ptr<BufferMappedPtr> bufferMappedPtr = m_readbackStagingBuffer->GetMappedPtr(0, bufferSize);
+
+		memcpy(ptr, bufferMappedPtr->GetMappedPtr(), bufferSize);
+	}
+
 	ComPtr<ID3D12Resource> MemoryManager::CreateResource(
 		D3D12_HEAP_TYPE heapType,
 		const D3D12_RESOURCE_DESC* resourceDesc,
@@ -334,80 +356,63 @@ namespace JoyEngine
 
 		return resource;
 	}
-
-	void MemoryManager::ChangeResourceState(
-		ID3D12Resource* resource,
-		D3D12_RESOURCE_STATES stateBefore,
-		D3D12_RESOURCE_STATES stateAfter
-	)
-	{
-		m_queue->ResetForFrame();
-
-		const auto commandList = m_queue->GetCommandList(0);
-
-
-		CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-			resource,
-			stateBefore,
-			stateAfter
-		);
-		commandList->ResourceBarrier(1, &barrier);
-
-		ASSERT_SUCC(commandList->Close());
-
-		m_queue->Execute(0);
-
-		m_queue->WaitQueueIdle();
-	}
-
+	
 
 	void MemoryManager::LoadDataToBuffer(
 		std::ifstream& stream,
 		uint64_t offset,
 		uint64_t bufferSize,
-		Buffer* gpuBuffer) const
+		const Buffer* gpuBuffer) const
+	{
+		const std::unique_ptr<BufferMappedPtr> bufferMappedPtr = m_uploadStagingBuffer->GetMappedPtr(0, bufferSize);
+		stream.clear();
+		stream.seekg(offset);
+		stream.read(static_cast<char*>(bufferMappedPtr->GetMappedPtr()), bufferSize);
+
+		LoadDataToBufferInternal(bufferSize, gpuBuffer);
+	}
+
+	void MemoryManager::LoadDataToBuffer(
+		void* ptr,
+		uint64_t bufferSize,
+		const Buffer* gpuBuffer) const
+	{
+		const std::unique_ptr<BufferMappedPtr> bufferMappedPtr = m_uploadStagingBuffer->GetMappedPtr(0, bufferSize);
+
+		memcpy(bufferMappedPtr->GetMappedPtr(), ptr, bufferSize);
+
+		LoadDataToBufferInternal(bufferSize, gpuBuffer);
+	}
+
+	void MemoryManager::LoadDataToBufferInternal(
+		uint64_t bufferSize,
+		const Buffer* gpuBuffer) const
 	{
 		if (bufferSize > g_maxResourceSizeAllocated)
 		{
 			g_maxResourceSizeAllocated = bufferSize;
 		}
 
-		std::unique_ptr<BufferMappedPtr> ptr = m_stagingBuffer->GetMappedPtr(0, bufferSize);
-		stream.clear();
-		stream.seekg(offset);
-		stream.read(static_cast<char*>(ptr->GetMappedPtr()), bufferSize);
-
-		D3D12_SUBRESOURCE_DATA bufferData = {};
-		bufferData.pData = ptr->GetMappedPtr();
-		bufferData.RowPitch = bufferSize;
-		bufferData.SlicePitch = bufferSize;
-
 		m_queue->ResetForFrame();
 
 		const auto commandList = m_queue->GetCommandList(0);
 
-		D3D12_RESOURCE_STATES state = gpuBuffer->GetCurrentResourceState();
+		const D3D12_RESOURCE_STATES state = gpuBuffer->GetCurrentResourceState();
 
-		const D3D12_RESOURCE_BARRIER barrierBefore = Transition(
-			gpuBuffer->GetBuffer().Get(),
-			state,
-			D3D12_RESOURCE_STATE_COPY_DEST);
-
-		commandList->ResourceBarrier(1, &barrierBefore);
+		GraphicsUtils::Barrier(commandList, gpuBuffer->GetBuffer().Get(),
+		                       state,
+		                       D3D12_RESOURCE_STATE_COPY_DEST);
 
 		commandList->CopyBufferRegion(
 			gpuBuffer->GetBuffer().Get(),
 			0,
-			m_stagingBuffer->GetBuffer().Get(),
+			m_uploadStagingBuffer->GetBuffer().Get(),
 			0,
 			bufferSize);
 
-		const D3D12_RESOURCE_BARRIER barrierAfter = Transition(
-			gpuBuffer->GetBuffer().Get(),
-			D3D12_RESOURCE_STATE_COPY_DEST,
-			state);
-
-		commandList->ResourceBarrier(1, &barrierAfter);
+		GraphicsUtils::Barrier(commandList, gpuBuffer->GetBuffer().Get(),
+		                       D3D12_RESOURCE_STATE_COPY_DEST,
+		                       state);
 
 		ASSERT_SUCC(commandList->Close());
 

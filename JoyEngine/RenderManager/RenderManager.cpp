@@ -109,6 +109,8 @@ namespace JoyEngine
 			m_hdrRenderTarget.get(),
 			hdrRTVFormat, ldrRTVFormat, depthFormat);
 
+		m_raytracing = std::make_unique<Raytracing>();
+
 		{
 			D3D12_CPU_DESCRIPTOR_HANDLE imguiCpuHandle;
 			D3D12_GPU_DESCRIPTOR_HANDLE imguiGpuHandle;

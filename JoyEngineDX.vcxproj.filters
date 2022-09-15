@@ -367,5 +367,6 @@
     <None Include="JoyData\shaders\ssaoblur.hlsl" />
     <None Include="JoyData\shaders\sslrpostprocess.hlsl" />
     <None Include="JoyData\shaders\standardShader.hlsl" />
+    <None Include="JoyData\shaders\gizmoAxisDrawer.hlsl" />
   </ItemGroup>
 </Project>

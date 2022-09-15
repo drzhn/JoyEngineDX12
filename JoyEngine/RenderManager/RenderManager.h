@@ -95,8 +95,7 @@ namespace JoyEngine
 		void ProcessEngineBindings(
 			ID3D12GraphicsCommandList* commandList,
 			const std::map<uint32_t, EngineBindingType>& bindings,
-			::MVP* mvp,
-			bool isDrawingMainColor
+			::MVP* mvp
 		) const;
 
 		static void CopyRTVResource(ID3D12GraphicsCommandList* commandList, ID3D12Resource* rtvResource, ID3D12Resource* copyResource);

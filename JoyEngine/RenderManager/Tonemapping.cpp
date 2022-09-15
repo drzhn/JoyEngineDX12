@@ -203,13 +203,6 @@ namespace JoyEngine
 
 		// Transition
 		{
-			GraphicsUtils::SetViewportAndScissor(commandList, m_screenWidth, m_screenHeight);
-
-			commandList->OMSetRenderTargets(
-				1,
-				&ldrRTVHandle,
-				FALSE, nullptr);
-
 			const auto& sm = m_hdrToLdrTransitionSharedMaterial;
 
 			commandList->SetPipelineState(sm->GetGraphicsPipeline()->GetPipelineObject().Get());

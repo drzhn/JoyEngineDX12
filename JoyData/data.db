@@ -190,6 +190,10 @@
             "guid": "70d5a60a-615a-4344-977f-d2ad9d37b0cf",
             "path": "shaders/sslrpostprocess.hlsl"
         },
+        {
+            "guid": "c8478fd3-33c3-4f3f-9e8a-56a9cfa846ce",
+            "path": "shaders/gizmoAxisDrawer.hlsl"
+        },
 		
 		
         {

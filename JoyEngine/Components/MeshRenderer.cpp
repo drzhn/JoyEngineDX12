@@ -63,10 +63,10 @@ namespace JoyEngine
 		);
 	}
 
-	void MeshRenderer::SetMaterial(const std::string& materialName)
-	{
-		m_material = EngineMaterialProvider::Get()->GetSampleMaterialByName(materialName); //for debug purposes 
-	}
+	//void MeshRenderer::SetMaterial(const std::string& materialName)
+	//{
+	//	m_material = EngineMaterialProvider::Get()->GetSampleMaterialByName(materialName); //for debug purposes 
+	//}
 
 	void MeshRenderer::SetMaterial(const GUID& materialGuid)
 	{

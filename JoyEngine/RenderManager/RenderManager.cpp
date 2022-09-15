@@ -115,13 +115,13 @@ namespace JoyEngine
 			D3D12_GPU_DESCRIPTOR_HANDLE imguiGpuHandle;
 
 			DescriptorManager::Get()->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, m_imguiDescriptorIndex,
-				imguiCpuHandle,
-				imguiGpuHandle);
+			                                             imguiCpuHandle,
+			                                             imguiGpuHandle);
 
 			ImGui_ImplDX12_Init(GraphicsManager::Get()->GetDevice(), frameCount,
-				ldrRTVFormat, DescriptorManager::Get()->GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV),
-				imguiCpuHandle,
-				imguiGpuHandle);
+			                    ldrRTVFormat, DescriptorManager::Get()->GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV),
+			                    imguiCpuHandle,
+			                    imguiGpuHandle);
 		}
 	}
 
@@ -260,9 +260,39 @@ namespace JoyEngine
 		                       D3D12_RESOURCE_STATE_PRESENT,
 		                       D3D12_RESOURCE_STATE_RENDER_TARGET);
 
+		GraphicsUtils::SetViewportAndScissor(commandList, m_width, m_height);
+
+		commandList->OMSetRenderTargets(
+			1,
+			&ldrRTVHandle,
+			FALSE, nullptr);
+
 		m_tonemapping->Render(commandList, m_swapchainRenderTargets[m_currentFrameIndex].get());
 
 		DrawGui(commandList);
+
+		{
+			auto sm = EngineMaterialProvider::Get()->GetGizmoAxisDrawerSharedMaterial();
+
+			commandList->SetPipelineState(sm->GetGraphicsPipeline()->GetPipelineObject().Get());
+			commandList->SetGraphicsRootSignature(sm->GetGraphicsPipeline()->GetRootSignature().Get());
+			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
+			GraphicsUtils::SetViewportAndScissor(commandList, m_width, m_height);
+
+			::MVP mvp{
+				glm::identity<glm::mat4>(),
+				mainCameraViewMatrix,
+				mainCameraProjMatrix
+			};
+
+			ProcessEngineBindings(commandList, sm->GetGraphicsPipeline()->GetEngineBindings(), &mvp);
+
+			commandList->DrawInstanced(
+				6,
+				1,
+				0, 0);
+		}
+
 
 		GraphicsUtils::Barrier(commandList,
 		                       swapchainResource,
@@ -292,8 +322,8 @@ namespace JoyEngine
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
 
-		ImGui::SetNextWindowPos({ 0,0 });
-		ImGui::SetNextWindowSize({ 300,100});
+		ImGui::SetNextWindowPos({0, 0});
+		ImGui::SetNextWindowSize({300, 100});
 		{
 			ImGui::Begin("Stats:");
 			ImGui::Text("Num triangles %d", m_trianglesCount);
@@ -303,11 +333,11 @@ namespace JoyEngine
 		ImGui::Render();
 		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
 	}
+
 	void RenderManager::ProcessEngineBindings(
 		ID3D12GraphicsCommandList* commandList,
 		const std::map<uint32_t, EngineBindingType>& bindings,
-		::MVP* mvp,
-		bool isDrawingMainColor
+		::MVP* mvp
 	) const
 	{
 		for (const auto& pair : bindings)
@@ -423,7 +453,7 @@ namespace JoyEngine
 					GraphicsUtils::AttachViewToGraphics(commandList, index, param.second);
 				}
 
-				ProcessEngineBindings(commandList, sm->GetGraphicsPipeline()->GetEngineBindings(), &mvp, isDrawingMainColor);
+				ProcessEngineBindings(commandList, sm->GetGraphicsPipeline()->GetEngineBindings(), &mvp);
 
 				commandList->DrawIndexedInstanced(
 					mr->GetMesh()->GetIndexSize(),

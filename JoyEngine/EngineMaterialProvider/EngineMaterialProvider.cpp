@@ -42,6 +42,30 @@ namespace JoyEngine
 				});
 		}
 
+		// Gizmo Axis draw 
+		{
+			const GUID gizmoAxisDrawerShaderGuid = GUID::StringToGuid("c8478fd3-33c3-4f3f-9e8a-56a9cfa846ce"); // shaders/gizmoAxisDrawer.hlsl
+			const GUID gizmoAxisDrawerSharedMaterialGuid = GUID::Random();
+
+			m_gizmoAxisDrawerSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, GraphicsPipelineArgs>(
+				gizmoAxisDrawerSharedMaterialGuid,
+				{
+					gizmoAxisDrawerShaderGuid,
+					JoyShaderTypeVertex | JoyShaderTypePixel,
+					false,
+					false,
+					false,
+					D3D12_CULL_MODE_NONE,
+					D3D12_COMPARISON_FUNC_NEVER,
+					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
+					{
+						swapchainLdrFormat
+					},
+					mainDSVFormat,
+					D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE,
+				});
+		}
+
 		//// GBuffer write shader
 		//{
 		//	const GUID gbufferWriteShaderGuid = GUID::StringToGuid("48ffacc9-5c00-4058-b359-cf72189896ac"); //shaders/gbufferwrite.hlsl

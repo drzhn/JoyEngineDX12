@@ -3,7 +3,7 @@
 
 
 #include <vector>
-#include "RenderManager/JoyTypes.h"
+#include "CommonEngineStructs.h"
 #include "DataManager/DataManager.h"
 #include "MemoryManager/MemoryManager.h"
 

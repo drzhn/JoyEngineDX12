@@ -4,6 +4,7 @@
 #include <dxgiformat.h>
 #include <memory>
 
+#include "CommonEngineStructs.h"
 #include "ResourceManager/ConstantBuffer.h"
 #include "ResourceManager/DynamicBuffer.h"
 #include "ResourceManager/ResourceHandle.h"
@@ -12,8 +13,6 @@
 namespace JoyEngine
 {
 	class RenderTexture;
-	struct JoyData;
-	struct HDRDownScaleConstants;
 	class ComputePipeline;
 	class SharedMaterial;
 	class UAVTexture;

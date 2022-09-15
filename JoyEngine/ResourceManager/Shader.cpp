@@ -4,13 +4,9 @@
 #include <dxgi1_6.h>
 #include <D3Dcompiler.h>
 
-
-
 #include "Utils/Assert.h"
 #include "DataManager/DataManager.h"
 #include "GraphicsManager/GraphicsManager.h"
-
-#define D3D_COMPILE_STANDARD_FILE_INCLUDE ((ID3DInclude*)(UINT_PTR)1)
 
 namespace JoyEngine
 {
@@ -102,17 +98,23 @@ namespace JoyEngine
 		// Enable better shader debugging with the graphics debugging tools.
 		constexpr UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 #else
-		UINT compileFlags = 0;
+		constexpr UINT compileFlags = 0;
 #endif
 		ID3DBlob* errorMessages = nullptr;
 		HRESULT hr;
 
+		D3D_SHADER_MACRO Shader_Macros[] = {{"SHADER", "1"}, nullptr, nullptr};
+
+		//{
+		//	{"SHADER", "1"}
+		//};
+		ID3DInclude* pInclude = DataManager::Get()->GetCommonEngineStructsInclude();
 		hr = (D3DCompile(
 			shaderData.data(),
 			shaderData.size(),
 			shaderPath,
-			nullptr,
-			D3D_COMPILE_STANDARD_FILE_INCLUDE,
+			Shader_Macros,
+			pInclude,
 			entryPoint,
 			target, compileFlags, 0, &module, &errorMessages));
 

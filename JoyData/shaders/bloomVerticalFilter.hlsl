@@ -1,4 +1,4 @@
-#include "common.hlsl"
+#include "CommonEngineStructs.h"
 
 
 static const float SampleWeights[13] = {

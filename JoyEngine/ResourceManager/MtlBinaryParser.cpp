@@ -5,7 +5,7 @@
 #include "Material.h"
 #include "DataManager/DataManager.h"
 #include "EngineMaterialProvider/EngineMaterialProvider.h"
-#include "RenderManager/JoyTypes.h"
+#include "CommonEngineStructs.h"
 
 
 namespace JoyEngine

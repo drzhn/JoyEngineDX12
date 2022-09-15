@@ -11,6 +11,7 @@
 #include <dxgi1_6.h>
 #include <wrl.h>
 
+#include "CommonEngineStructs.h"
 #include "Common/Singleton.h"
 #include "ResourceManager/DynamicBuffer.h"
 
@@ -22,9 +23,6 @@ using Microsoft::WRL::ComPtr;
 namespace JoyEngine
 {
 	enum EngineBindingType;
-
-	struct JoyData;
-	struct MVP;
 
 	class CommandQueue;
 	class Light;
@@ -97,7 +95,7 @@ namespace JoyEngine
 		void ProcessEngineBindings(
 			ID3D12GraphicsCommandList* commandList,
 			const std::map<uint32_t, EngineBindingType>& bindings,
-			MVP* mvp,
+			::MVP* mvp,
 			bool isDrawingMainColor
 		) const;
 

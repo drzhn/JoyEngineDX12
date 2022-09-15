@@ -1,4 +1,4 @@
-#include "common.hlsl"
+#include "CommonEngineStructs.h"
 
 struct PSInput
 {
@@ -28,7 +28,7 @@ inline float4 ComputeNonStereoScreenPos(float4 pos)
 PSInput VSMain(float3 position : POSITION, float3 color : COLOR, float3 normal: NORMAL, float2 uv : TEXCOORD)
 {
 	PSInput result;
-	float4x4 resMatrix = mul(mvp.projection, mul(mvp.view, mvp.model));
+	float4x4 resMatrix = mul(mvp.proj, mul(mvp.view, mvp.model));
 	result.position = mul(resMatrix, float4(position, 1));
 	result.clipPos = ComputeNonStereoScreenPos(result.position);
 	//result.clipPos.xy /= result.clipPos.w;

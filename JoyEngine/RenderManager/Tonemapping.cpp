@@ -1,13 +1,11 @@
 ﻿#include "Tonemapping.h"
 
-#include "JoyTypes.h"
 #include "Common/HashDefs.h"
 #include "EngineMaterialProvider/EngineMaterialProvider.h"
 #include "ResourceManager/ResourceManager.h"
 #include "ResourceManager/SharedMaterial.h"
 #include "ResourceManager/Texture.h"
 #include "ResourceManager/Buffer.h"
-#include "ResourceManager/DynamicBuffer.h"
 #include "ResourceManager/ResourceView.h"
 #include "Utils/GraphicsUtils.h"
 
@@ -149,7 +147,7 @@ namespace JoyEngine
 		m_groupSize = static_cast<uint32_t>(m_screenWidth * m_screenHeight / 16.0f / 1024.0f) + 1;
 
 
-		const HDRDownScaleConstants downScaleConstants = {
+		const ::HDRDownScaleConstants downScaleConstants = {
 			glm::uvec2(m_screenWidth / 4, m_screenHeight / 4),
 			m_screenWidth * m_screenHeight / 16,
 			m_groupSize,
@@ -157,7 +155,7 @@ namespace JoyEngine
 			0.2f
 		};
 
-		m_constants = std::make_unique<ConstantBuffer<HDRDownScaleConstants>>(&downScaleConstants);
+		m_constants = std::make_unique<ConstantBuffer<::HDRDownScaleConstants>>(&downScaleConstants);
 	}
 
 	void Tonemapping::Render(ID3D12GraphicsCommandList* commandList, const RenderTexture* currentBackBuffer)

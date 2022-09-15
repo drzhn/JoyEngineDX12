@@ -1,6 +1,6 @@
 #define MAX_GROUPS 64
 
-#include "common.hlsl"
+#include "CommonEngineStructs.h"
 
 ConstantBuffer<HDRDownScaleConstants> Constants: register(b0);
 RWStructuredBuffer<float> AverageLum : register(u0);

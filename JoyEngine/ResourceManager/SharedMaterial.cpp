@@ -8,7 +8,7 @@
 #include "Common/SerializationUtils.h"
 #include "DataManager/DataManager.h"
 #include "GraphicsManager/GraphicsManager.h"
-#include "RenderManager/JoyTypes.h"
+#include "CommonEngineStructs.h"
 #include "RenderManager/RenderManager.h"
 
 

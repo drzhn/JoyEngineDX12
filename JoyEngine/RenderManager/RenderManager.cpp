@@ -15,7 +15,6 @@
 #include "ResourceManager/Mesh.h"
 #include "Components/Camera.h"
 #include "ResourceManager/SharedMaterial.h"
-#include "JoyTypes.h"
 #include "Tonemapping.h"
 
 #include "Common/Time.h"
@@ -220,7 +219,7 @@ namespace JoyEngine
 		{
 			m_engineDataBuffer->Lock(m_currentFrameIndex);
 
-			const auto data = static_cast<JoyData*>(m_engineDataBuffer->GetPtr());
+			const auto data = static_cast<::JoyData*>(m_engineDataBuffer->GetPtr());
 			data->cameraWorldPos = m_currentCamera->GetTransform()->GetPosition();
 			data->time = Time::GetTime();
 			data->perspectiveValues = glm::vec4(
@@ -304,11 +303,10 @@ namespace JoyEngine
 		ImGui::Render();
 		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
 	}
-
 	void RenderManager::ProcessEngineBindings(
 		ID3D12GraphicsCommandList* commandList,
 		const std::map<uint32_t, EngineBindingType>& bindings,
-		MVP* mvp,
+		::MVP* mvp,
 		bool isDrawingMainColor
 	) const
 	{
@@ -322,7 +320,7 @@ namespace JoyEngine
 			case ModelViewProjection:
 				{
 					ASSERT(mvp != nullptr)
-					commandList->SetGraphicsRoot32BitConstants(rootIndex, sizeof(MVP) / 4, mvp, 0);
+					commandList->SetGraphicsRoot32BitConstants(rootIndex, sizeof(::MVP) / 4, mvp, 0);
 					break;
 				}
 			//case LightAttachment:
@@ -374,13 +372,13 @@ namespace JoyEngine
 				commandList->IASetVertexBuffers(0, 1, mr->GetMesh()->GetVertexBufferView());
 				commandList->IASetIndexBuffer(mr->GetMesh()->GetIndexBufferView());
 
-				MVP mvp{
+				::MVP mvp{
 					mr->GetTransform()->GetModelMatrix(),
 					view,
 					proj
 				};
 				uint32_t var = 5;
-				commandList->SetGraphicsRoot32BitConstants(0, sizeof(MVP) / 4, &mvp, 0);
+				commandList->SetGraphicsRoot32BitConstants(0, sizeof(::MVP) / 4, &mvp, 0);
 				commandList->DrawIndexedInstanced(
 					mr->GetMesh()->GetIndexSize(),
 					1,
@@ -414,7 +412,7 @@ namespace JoyEngine
 				commandList->IASetVertexBuffers(0, 1, mr->GetMesh()->GetVertexBufferView());
 				commandList->IASetIndexBuffer(mr->GetMesh()->GetIndexBufferView());
 
-				MVP mvp{
+				::MVP mvp{
 					mr->GetTransform()->GetModelMatrix(),
 					view,
 					proj

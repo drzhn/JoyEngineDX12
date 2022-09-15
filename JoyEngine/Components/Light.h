@@ -3,7 +3,7 @@
 
 #include "Component.h"
 #include "Common/CameraUnit.h"
-#include "RenderManager/JoyTypes.h"
+#include "CommonEngineStructs.h"
 #include "Common/Color.h"
 #include "ResourceManager/Buffer.h"
 #include "ResourceManager/ResourceView.h"

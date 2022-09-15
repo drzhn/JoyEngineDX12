@@ -1,4 +1,4 @@
-#include "common.hlsl"
+#include "CommonEngineStructs.h"
 
 ConstantBuffer<HDRDownScaleConstants> constants: register(b0);
 Texture2D<float4> HDRDownScaleTex : register(t0);

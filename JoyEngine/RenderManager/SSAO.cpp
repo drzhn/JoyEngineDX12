@@ -8,7 +8,7 @@
 #include "ResourceManager/Buffer.h"
 #include "ResourceManager/ResourceView.h"
 #include "ResourceManager/Texture.h"
-#include "JoyTypes.h"
+#include "CommonEngineStructs.h"
 
 
 namespace JoyEngine

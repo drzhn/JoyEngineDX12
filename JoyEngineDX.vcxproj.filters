@@ -206,7 +206,7 @@
     <ClInclude Include="JoyEngine\RenderManager\RenderManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JoyEngine\RenderManager\JoyTypes.h">
+    <ClInclude Include="JoyEngine\CommonEngineStructs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JoyEngine\Common\CommandQueue.h">
@@ -363,7 +363,6 @@
     <None Include="JoyData\shaders\bloomHorizontalFilter.hlsl" />
     <None Include="JoyData\shaders\dynamiccubemapconvolition.hlsl" />
     <None Include="JoyData\shaders\ssaopostprocess.hlsl" />
-    <None Include="JoyData\shaders\common.hlsl" />
     <None Include="JoyData\shaders\ssaoappend.hlsl" />
     <None Include="JoyData\shaders\ssaoblur.hlsl" />
     <None Include="JoyData\shaders\sslrpostprocess.hlsl" />

@@ -1,4 +1,4 @@
-#include "common.hlsl"
+#include "CommonEngineStructs.h"
 
 struct PSInput
 {

@@ -2,6 +2,7 @@
 #define COMMON_ENGINE_STRUCTS
 
 #ifdef ENGINE
+#include <cstdint>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #endif
@@ -105,12 +106,13 @@ struct CubemapConvolutionConstants
 	MAT4 projection;
 };
 
-struct JoyData
+struct EngineData
 {
 	VEC4 perspectiveValues;
 	VEC3 cameraWorldPos;
 	float time;
 	MAT4 cameraInvProj;
+	MAT4 cameraInvView;
 };
 
 struct HDRDownScaleConstants

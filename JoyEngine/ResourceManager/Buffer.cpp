@@ -1,5 +1,6 @@
 #include "Buffer.h"
 
+#include <utility>
 
 #include "GraphicsManager/GraphicsManager.h"
 #include "MemoryManager/MemoryManager.h"
@@ -10,7 +11,7 @@ namespace JoyEngine
 	// BufferMappedPtr
 
 	BufferMappedPtr::BufferMappedPtr(ComPtr<ID3D12Resource> bufferMemory, uint64_t offset, uint64_t size) :
-		m_bufferMemory(bufferMemory)
+		m_bufferMemory(std::move(bufferMemory))
 	{
 		CD3DX12_RANGE readRange(offset, offset + size);
 		ASSERT_SUCC(m_bufferMemory->Map(0, &readRange, &m_bufferPtr))
@@ -43,8 +44,6 @@ namespace JoyEngine
 
 	std::unique_ptr<BufferMappedPtr> Buffer::GetMappedPtr(uint64_t offset, uint64_t size) const
 	{
-		const CD3DX12_HEAP_PROPERTIES heapProperties = CD3DX12_HEAP_PROPERTIES(m_properties);
-
 		ASSERT(m_properties.IsCPUAccessible());
 		ASSERT(size <= m_size);
 

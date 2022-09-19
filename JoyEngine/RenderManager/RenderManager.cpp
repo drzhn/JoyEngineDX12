@@ -16,6 +16,7 @@
 #include "Components/Camera.h"
 #include "ResourceManager/SharedMaterial.h"
 #include "Tonemapping.h"
+#include "Common/HashDefs.h"
 
 #include "Common/Time.h"
 #include "Components/MeshRenderer.h"
@@ -100,7 +101,7 @@ namespace JoyEngine
 			D3D12_HEAP_TYPE_DEFAULT);
 
 
-		m_engineDataBuffer = std::make_unique<DynamicBuffer<JoyData>>(frameCount);
+		m_engineDataBuffer = std::make_unique<DynamicBuffer<::EngineData>>(frameCount);
 
 
 		m_tonemapping = std::make_unique<Tonemapping>(
@@ -219,7 +220,7 @@ namespace JoyEngine
 		{
 			m_engineDataBuffer->Lock(m_currentFrameIndex);
 
-			const auto data = static_cast<::JoyData*>(m_engineDataBuffer->GetPtr());
+			const auto data = static_cast<::EngineData*>(m_engineDataBuffer->GetPtr());
 			data->cameraWorldPos = m_currentCamera->GetTransform()->GetPosition();
 			data->time = Time::GetTime();
 			data->perspectiveValues = glm::vec4(
@@ -229,6 +230,7 @@ namespace JoyEngine
 				mainCameraProjMatrix[2][2]
 			);
 			data->cameraInvProj = glm::inverse(mainCameraProjMatrix);
+			data->cameraInvView = glm::inverse(mainCameraViewMatrix);
 
 			m_engineDataBuffer->Unlock();
 		}
@@ -277,7 +279,26 @@ namespace JoyEngine
 			commandList->SetPipelineState(sm->GetGraphicsPipeline()->GetPipelineObject().Get());
 			commandList->SetGraphicsRootSignature(sm->GetGraphicsPipeline()->GetRootSignature().Get());
 			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
-			GraphicsUtils::SetViewportAndScissor(commandList, m_width, m_height);
+
+			float gizmoViewportWidth = static_cast<float>(m_width) / 5.f;
+			float gizmoViewportHeight = static_cast<float>(m_height) / 5.f;
+
+			const D3D12_VIEWPORT viewport = {
+				static_cast<float>(m_width) - gizmoViewportWidth + (gizmoViewportWidth - gizmoViewportHeight) / 2,
+				0.0f,
+				gizmoViewportWidth,
+				gizmoViewportHeight,
+				D3D12_MIN_DEPTH,
+				D3D12_MAX_DEPTH
+			};
+			const D3D12_RECT scissorRect = {
+				0,
+				0,
+				static_cast<LONG>(m_width),
+				static_cast<LONG>(m_height)
+			};
+			commandList->RSSetViewports(1, &viewport);
+			commandList->RSSetScissorRects(1, &scissorRect);
 
 			::MVP mvp{
 				glm::identity<glm::mat4>(),
@@ -316,7 +337,7 @@ namespace JoyEngine
 		m_trianglesCount = 0;
 	}
 
-	void RenderManager::DrawGui(ID3D12GraphicsCommandList* commandList)
+	void RenderManager::DrawGui(ID3D12GraphicsCommandList* commandList) const
 	{
 		ImGui_ImplDX12_NewFrame();
 		ImGui_ImplWin32_NewFrame();
@@ -327,7 +348,8 @@ namespace JoyEngine
 		{
 			ImGui::Begin("Stats:");
 			ImGui::Text("Num triangles %d", m_trianglesCount);
-			ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0 / static_cast<double>(ImGui::GetIO().Framerate), static_cast<double>(ImGui::GetIO().Framerate));
+			const glm::vec3 camPos = m_currentCamera->GetTransform()->GetPosition();
+			ImGui::Text("Camera: %.3f %.3f %.3f", camPos.x, camPos.y, camPos.z);
 			ImGui::End();
 		}
 		ImGui::Render();

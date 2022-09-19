@@ -19,18 +19,19 @@ namespace JoyEngine
 			m_count(count),
 			m_size(((sizeof(T) - 1) / 256 + 1) * 256)
 		{
-			m_buffer = std::make_unique<Buffer>(
-				m_size * m_count,
-				D3D12_RESOURCE_STATE_GENERIC_READ,
-				D3D12_HEAP_TYPE_UPLOAD
-			);
-
+			m_buffers = std::vector<std::unique_ptr<Buffer>>(m_count);
 			m_resourceViews = std::vector<std::unique_ptr<ResourceView>>(m_count);
 
 			for (uint32_t i = 0; i < m_count; i++)
 			{
+				m_buffers[i] = std::make_unique<Buffer>(
+					m_size,
+					D3D12_RESOURCE_STATE_GENERIC_READ,
+					D3D12_HEAP_TYPE_UPLOAD
+				);
+
 				D3D12_CONSTANT_BUFFER_VIEW_DESC desc = {
-					m_buffer.get()->GetBuffer()->GetGPUVirtualAddress() + m_size * i,
+					m_buffers[i]->GetBuffer()->GetGPUVirtualAddress(),
 					m_size
 				};
 				m_resourceViews[i] = std::make_unique<ResourceView>(desc);
@@ -44,13 +45,14 @@ namespace JoyEngine
 
 		void Lock(uint32_t index)
 		{
-			m_currentLockedArea = std::move(m_buffer->GetMappedPtr(m_size * index, m_size));
+			ASSERT(m_currentLockedArea == nullptr);
+			m_currentLockedArea = m_buffers[index]->GetMappedPtr(0, m_size);
 		}
 
 		[[nodiscard]] void* GetPtr() const
 		{
 			ASSERT(m_currentLockedArea != nullptr);
-			return m_currentLockedArea.get()->GetMappedPtr();
+			return m_currentLockedArea->GetMappedPtr();
 		}
 
 		void Unlock()
@@ -63,7 +65,7 @@ namespace JoyEngine
 		std::unique_ptr<BufferMappedPtr> m_currentLockedArea;
 
 		std::vector<std::unique_ptr<ResourceView>> m_resourceViews;
-		std::unique_ptr<Buffer> m_buffer;
+		std::vector<std::unique_ptr<Buffer>> m_buffers;
 		uint32_t m_count;
 		uint32_t m_size;
 	};

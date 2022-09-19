@@ -49,7 +49,7 @@ namespace JoyEngine
 
 		void Update();
 
-		void DrawGui(ID3D12GraphicsCommandList* commandList);
+		void DrawGui(ID3D12GraphicsCommandList* commandList) const;
 
 		void RegisterSharedMaterial(SharedMaterial*);
 
@@ -129,7 +129,7 @@ namespace JoyEngine
 		//std::unique_ptr<RenderTexture> m_viewNormalAttachment;
 		//std::unique_ptr<RenderTexture> m_lightingAttachment;
 
-		std::unique_ptr<DynamicBuffer<JoyData>> m_engineDataBuffer;
+		std::unique_ptr<DynamicBuffer<::EngineData>> m_engineDataBuffer;
 
 		//std::set<ParticleSystem*> m_particleSystems;
 		std::set<SharedMaterial*> m_sharedMaterials;

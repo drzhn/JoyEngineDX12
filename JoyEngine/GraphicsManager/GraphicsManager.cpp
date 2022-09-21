@@ -1,6 +1,7 @@
 #include "GraphicsManager/GraphicsManager.h"
 
 #include "Utils/Assert.h"
+#include "Utils/TimeCounter.h"
 
 namespace JoyEngine
 {
@@ -12,6 +13,7 @@ namespace JoyEngine
 		m_windowInstance(instance),
 		m_windowHandle(windowHandle)
 	{
+		TIME_PERF("GraphicsManager ctor")
 		UINT createFactoryFlags = 0;
 #if defined(FULL_DEBUG)
 		ASSERT_SUCC(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)));

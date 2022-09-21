@@ -16,6 +16,7 @@
 #include "Common/Time.h"
 #include "InputManager/InputManager.h"
 #include "Utils/Assert.h"
+#include "Utils/TimeCounter.h"
 
 // Forward declare message handler from imgui_impl_win32.cpp
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -45,9 +46,6 @@ namespace JoyEngine
 		ASSERT(m_sceneManager != nullptr);
 		ASSERT(m_renderManager != nullptr);
 		ASSERT(m_engineMaterials != nullptr);
-
-		OutputDebugStringA("Context created\n");
-
 
 		{
 			// Setup Dear ImGui context
@@ -80,7 +78,7 @@ namespace JoyEngine
 
 		const auto currentTime = std::chrono::high_resolution_clock::now();
 		const float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-		std::string s = "Context initialized in " + std::to_string(time) + " seconds\n";
+		std::string s = "=========== Context initialized in " + std::to_string(time) + " seconds ===========\n";
 		OutputDebugStringA(s.c_str());
 	}
 

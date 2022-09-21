@@ -3,6 +3,7 @@
 
 #include "GraphicsManager/GraphicsManager.h"
 #include "Utils/Assert.h"
+#include "Utils/TimeCounter.h"
 
 
 namespace JoyEngine
@@ -11,6 +12,8 @@ namespace JoyEngine
 
 	void DescriptorManager::Init()
 	{
+		TIME_PERF("DescriptorManager init")
+
 		for (const auto pair : m_descriptorStorage)
 		{
 			D3D12_DESCRIPTOR_HEAP_TYPE type = pair.first;

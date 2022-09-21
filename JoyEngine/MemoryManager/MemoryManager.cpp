@@ -20,6 +20,7 @@
 #include "ResourceManager/Texture.h"
 #include "Utils/Assert.h"
 #include "Utils/GraphicsUtils.h"
+#include "Utils/TimeCounter.h"
 
 #define GPU_BUFFER_ALLOCATION_SIZE 256*1024*1024 // 256 MB
 #define GPU_TEXTURE_ALLOCATION_SIZE 256*1024*1024 // 256 MB
@@ -51,7 +52,7 @@ namespace JoyEngine
 	{
 		uint64_t aligned = allocator->GetAlignedBytesAllocated();
 		return "Requested " + ParseByteNumber(aligned) +
-			", ratio " + std::to_string(static_cast<float>(aligned) / static_cast<float>(allocator->GetSize()) * 100) + "%\n";
+			", used " + std::to_string(static_cast<float>(aligned) / static_cast<float>(allocator->GetSize()) * 100) + "%\n";
 	}
 
 	void AttachView(
@@ -68,6 +69,8 @@ namespace JoyEngine
 
 	void MemoryManager::Init()
 	{
+		TIME_PERF("MemoryManager init")
+
 		m_queue = std::make_unique<CommandQueue>(D3D12_COMMAND_LIST_TYPE_DIRECT, GraphicsManager::Get()->GetDevice());
 
 		m_allocators[DeviceAllocatorTypeGpuBuffer] = std::make_unique<DeviceLinearAllocator>(

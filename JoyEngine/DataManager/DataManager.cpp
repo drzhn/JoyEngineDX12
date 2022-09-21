@@ -7,6 +7,7 @@
 #include <rapidjson/document.h>
 
 #include "Utils/FileUtils.h"
+#include "Utils/TimeCounter.h"
 
 namespace JoyEngine
 {
@@ -46,6 +47,8 @@ namespace JoyEngine
 		m_dataPath(std::filesystem::absolute(R"(JoyData/)").generic_string()),
 		m_databaseFilename(R"(data.db)")
 	{
+		TIME_PERF("DataManager init")
+
 		ParseDatabase(m_pathDatabase, ReadFile(m_dataPath + m_databaseFilename).data());
 		m_commonEngineStructsInclude = std::make_unique<EngineStructsInclude>();
 	}

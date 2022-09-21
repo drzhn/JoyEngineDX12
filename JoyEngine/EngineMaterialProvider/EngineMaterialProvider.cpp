@@ -4,6 +4,7 @@
 
 #include "d3dx12.h"
 #include "RenderManager/RenderManager.h"
+#include "Utils/TimeCounter.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -16,6 +17,8 @@ namespace JoyEngine
 
 	void EngineMaterialProvider::Init()
 	{
+		TIME_PERF("EngineMaterialProvider init")
+
 		EngineSamplersProvider::InitSamplers();
 		DXGI_FORMAT mainRTVFormat = RenderManager::GetHdrRTVFormat();
 		DXGI_FORMAT swapchainLdrFormat = RenderManager::GetLdrRTVFormat();

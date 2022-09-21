@@ -306,6 +306,7 @@
     <ClInclude Include="JoyEngine\Utils\FileUtils.h" />
     <ClInclude Include="JoyEngine\Utils\GraphicsUtils.h" />
     <ClInclude Include="JoyEngine\Utils\GUID.h" />
+    <ClInclude Include="JoyEngine\Utils\TimeCounter.h" />
     <ClInclude Include="Libs\imgui\backends\imgui_impl_dx12.h" />
     <ClInclude Include="Libs\imgui\backends\imgui_impl_win32.h" />
     <ClInclude Include="Libs\imgui\imconfig.h" />

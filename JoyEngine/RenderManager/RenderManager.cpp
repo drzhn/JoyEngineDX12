@@ -26,6 +26,7 @@
 #include "ResourceManager/DynamicBuffer.h"
 
 #include "Utils/GraphicsUtils.h"
+#include "Utils/TimeCounter.h"
 
 #define GLM_FORCE_RADIANS
 
@@ -35,6 +36,8 @@ namespace JoyEngine
 
 	void RenderManager::Init()
 	{
+		TIME_PERF("RenderManager init")
+
 		m_width = GraphicsManager::Get()->GetWidth();
 		m_height = GraphicsManager::Get()->GetHeight();
 

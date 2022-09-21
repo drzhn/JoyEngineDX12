@@ -61,6 +61,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 		return 0;
 	}
 
+	OutputDebugStringA("=========== JOY ENGINE ===========\n");
+
 	JoyEngine::JoyEngine* graphicsContext = new JoyEngine::JoyEngine(hInstance, hwnd, windowWidth, windowHeight);
 	WindowHandler::RegisterMessageHandler(graphicsContext, hwnd);
 

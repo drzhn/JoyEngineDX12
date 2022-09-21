@@ -60,10 +60,4 @@ namespace JoyEngine
 	{
 		return m_buffer;
 	}
-
-	void Buffer::LoadData(std::ifstream& stream, uint32_t offset) 
-	{
-		ASSERT(!m_properties.IsCPUAccessible());
-		MemoryManager::Get()->LoadDataToBuffer(stream, offset, m_size, this);
-	}
 }

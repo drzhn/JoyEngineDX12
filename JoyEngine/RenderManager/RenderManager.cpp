@@ -432,7 +432,7 @@ namespace JoyEngine
 				uint32_t var = 5;
 				commandList->SetGraphicsRoot32BitConstants(0, sizeof(::MVP) / 4, &mvp, 0);
 				commandList->DrawIndexedInstanced(
-					mr->GetMesh()->GetIndexSize(),
+					mr->GetMesh()->GetIndexCount(),
 					1,
 					0, 0, 0);
 			}
@@ -478,10 +478,10 @@ namespace JoyEngine
 				ProcessEngineBindings(commandList, sm->GetGraphicsPipeline()->GetEngineBindings(), &mvp);
 
 				commandList->DrawIndexedInstanced(
-					mr->GetMesh()->GetIndexSize(),
+					mr->GetMesh()->GetIndexCount(),
 					1,
 					0, 0, 0);
-				m_trianglesCount += mr->GetMesh()->GetIndexSize() / 3;
+				m_trianglesCount += mr->GetMesh()->GetIndexCount() / 3;
 			}
 		}
 	}

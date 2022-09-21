@@ -4,6 +4,8 @@
 #include <memory>
 #include <fstream>
 
+#include "CommonEngineStructs.h"
+
 #include "Common/Resource.h"
 #include "ResourceManager/Buffer.h"
 #include "Utils/GUID.h"
@@ -18,11 +20,15 @@ namespace JoyEngine
 		explicit Mesh(GUID);
 		explicit Mesh(GUID, uint32_t, uint32_t, std::ifstream&, uint32_t, uint32_t);
 
-		~Mesh() override = default;
+		~Mesh() override;
 
-		[[nodiscard]] uint32_t GetIndexSize() const noexcept { return m_indexCount; }
+		[[nodiscard]] uint32_t GetIndexCount() const noexcept { return m_indexCount; }
 
-		[[nodiscard]] uint32_t GetVertexSize() const noexcept { return m_vertexCount; }
+		[[nodiscard]] uint32_t GetVertexCount() const noexcept { return m_vertexCount; }
+
+		[[nodiscard]] Vertex* GetVertices() const noexcept { return m_verticesData; }
+
+		[[nodiscard]] uint32_t* GetIndices() const noexcept { return m_indicesData; }
 
 		[[nodiscard]] ComPtr<ID3D12Resource> GetVertexBuffer() const noexcept { return m_vertexBuffer->GetBuffer(); }
 
@@ -46,6 +52,9 @@ namespace JoyEngine
 
 		D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView = {};
 		D3D12_INDEX_BUFFER_VIEW m_indexBufferView = {};
+
+		Vertex* m_verticesData;
+		uint32_t* m_indicesData;
 	};
 }
 

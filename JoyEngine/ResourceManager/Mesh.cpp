@@ -1,7 +1,5 @@
 #include "Mesh.h"
 
-
-
 #include <vector>
 #include "CommonEngineStructs.h"
 #include "DataManager/DataManager.h"
@@ -49,6 +47,17 @@ namespace JoyEngine
 		uint32_t vertexDataStreamOffset,
 		uint32_t indexDataStreamOffset)
 	{
+		m_verticesData = reinterpret_cast<Vertex*>(malloc(vertexDataSize));
+		m_indicesData = reinterpret_cast<uint32_t*>(malloc(indexDataSize));
+
+		modelStream.clear();
+		modelStream.seekg(vertexDataStreamOffset);
+		modelStream.read(reinterpret_cast<char*>(m_verticesData), vertexDataSize);
+
+		modelStream.clear();
+		modelStream.seekg(indexDataStreamOffset);
+		modelStream.read(reinterpret_cast<char*>(m_indicesData), indexDataSize);
+
 		m_vertexCount = vertexDataSize / sizeof(Vertex);
 		m_indexCount = indexDataSize / sizeof(uint32_t);
 
@@ -62,9 +71,8 @@ namespace JoyEngine
 			D3D12_RESOURCE_STATE_GENERIC_READ,
 			D3D12_HEAP_TYPE_DEFAULT);
 
-		m_vertexBuffer->LoadData(modelStream, vertexDataStreamOffset); // sizeof(uint32_t) + sizeof(uint32_t));
-
-		m_indexBuffer->LoadData(modelStream, indexDataStreamOffset); // sizeof(uint32_t) + sizeof(uint32_t) + verticesDataSize);
+		MemoryManager::Get()->LoadDataToBuffer((void*)m_verticesData, vertexDataSize, m_vertexBuffer.get());
+		MemoryManager::Get()->LoadDataToBuffer((void*)m_indicesData, indexDataSize, m_indexBuffer.get());
 
 		m_vertexBufferView = {
 			m_vertexBuffer->GetBuffer()->GetGPUVirtualAddress(),
@@ -77,5 +85,11 @@ namespace JoyEngine
 			indexDataSize,
 			DXGI_FORMAT_R32_UINT,
 		};
+	}
+
+	Mesh::~Mesh()
+	{
+		free(m_verticesData);
+		free(m_indicesData);
 	}
 }

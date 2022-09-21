@@ -114,9 +114,6 @@
     <ClCompile Include="JoyEngine\Common\CameraUnit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JoyEngine\RenderManager\SSAO.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="JoyEngine\ResourceManager\MtlBinaryParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -288,9 +285,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JoyEngine\ResourceManager\DDS.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="JoyEngine\RenderManager\SSAO.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JoyEngine\ResourceManager\MtlBinaryParser.h">

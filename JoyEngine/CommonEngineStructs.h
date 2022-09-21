@@ -66,6 +66,18 @@ enum LightType
 #endif
 
 
+#define RADIX 8
+#define BUCKET_SIZE 256 // 2 ^ RADIX
+#define BLOCK_SIZE 512
+#define THREADS_PER_BLOCK 1024
+#define WARP_SIZE 32
+#define ELEM_PER_THREAD  1
+
+#define DATA_ARRAY_COUNT ELEM_PER_THREAD*THREADS_PER_BLOCK*BLOCK_SIZE
+
+#define MAX_FLOAT 0x7F7FFFFF // just a big float
+#define MAX_UINT 0xFFFFFFFF
+
 struct Vertex
 {
 	VEC3 pos;
@@ -127,14 +139,14 @@ struct HDRDownScaleConstants
 	float fBloomThreshold; // Bloom threshold percentage
 };
 
-struct SSAOData
-{
-	VEC4 offsetVectors[14];
-	VEC2 invRenderTargetSize;
-	UINT1 isHorizontal;
-	UINT1 _dummy;
-	VEC4 blurWeights[3];
-};
+//struct SSAOData
+//{
+//	VEC4 offsetVectors[14];
+//	VEC2 invRenderTargetSize;
+//	UINT1 isHorizontal;
+//	UINT1 _dummy;
+//	VEC4 blurWeights[3];
+//};
 
 struct MipMapGenerationData
 {
@@ -142,5 +154,54 @@ struct MipMapGenerationData
 	UINT1 SrcMipLevel; // Texture level of source mip
 	UINT1 NumMipLevels; // Number of OutMips to write: [1, 4]
 };
+
+
+// Raytracing structs
+
+struct AABB
+{
+	VEC3 min;
+	float _dummy0;
+	VEC3 max;
+	float _dummy1;
+};
+
+struct Triangle
+{
+	VEC3 a;
+	float _dummy0;
+	VEC3 b;
+	float _dummy1;
+	VEC3 c;
+	float _dummy2;
+	VEC2 a_uv;
+	VEC2 b_uv;
+	VEC2 c_uv;
+	VEC2 _dummy3;
+
+	VEC3 a_normal;
+	float _dummy4;
+	VEC3 b_normal;
+	float _dummy5;
+	VEC3 c_normal;
+	float _dummy6;
+};
+
+struct InternalNode
+{
+	UINT1 leftNode;
+	UINT1 leftNodeType;
+	UINT1 rightNode;
+	UINT1 rightNodeType;
+	UINT1 parent;
+	UINT1 index;
+};
+
+struct LeafNode
+{
+	UINT1 parent;
+	UINT1 index;
+};
+
 
 #endif //COMMON_ENGINE_STRUCTS

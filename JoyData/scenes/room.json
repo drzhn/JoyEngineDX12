@@ -6,7 +6,7 @@
             "name": "camera",
             "type": "obj_simple",
             "transform": {
-                "localPosition": [ 0.0, 20.0, -4.0 ],
+                "localPosition": [ -60.0, 20.0, -4.0 ],
                 "localRotation": [ 0.0, 90.0, 0.0 ],
                 "localScale": [ 1.0, 1.0, 1.0 ]
             },
@@ -45,6 +45,23 @@
                         "m_speed": 4,
                         "m_color": [ 0.4, 0.5, 0.8, 1.0 ]
                     }
+                }
+            ]
+        },        
+        {
+            "name": "TestSphere",
+            "type": "obj_simple",
+            "transform": {
+                "localPosition": [ 0.0, 0.0, 0.0 ],
+                "localRotation": [ 0.0, 0.0, 0.0 ],
+                "localScale": [ 1.0, 1.0, 1.0 ]
+            },
+            "components": [
+                {
+                    "type": "renderer",
+                    "model": "47000776-d056-43a2-bacb-c3e54701294a",
+                    "material": "cbab0eb5-74a0-400f-92c2-8aae39175ed7",
+                    "static": false
                 }
             ]
         },

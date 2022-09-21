@@ -160,7 +160,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;NOMINMAX;%(PreprocessorDefinitions);ENGINE</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)JoyEngine;$(SolutionDir)Libs\rapidjson\include;$(SolutionDir)Libs\glm;$(SolutionDir)Libs\DirectXTK12\Inc;$(SolutionDir)Libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -176,7 +176,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;NOMINMAX;FULL_DEBUG;%(PreprocessorDefinitions);ENGINE</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)JoyEngine;$(SolutionDir)Libs\rapidjson\include;$(SolutionDir)Libs\glm;$(SolutionDir)Libs\DirectXTK12\Inc;$(SolutionDir)Libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -216,7 +216,6 @@
     <ClCompile Include="JoyEngine\GameplayComponents\RoomBehaviour.cpp" />
     <ClCompile Include="JoyEngine\MemoryManager\DeviceLinearAllocator.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\Raytracing.cpp" />
-    <ClCompile Include="JoyEngine\RenderManager\SSAO.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\Tonemapping.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\Buffer.cpp" />
     <ClCompile Include="JoyEngine\DataManager\DataManager.cpp" />
@@ -268,7 +267,6 @@
     <ClInclude Include="JoyEngine\GameplayComponents\RoomBehaviour.h" />
     <ClInclude Include="JoyEngine\MemoryManager\DeviceLinearAllocator.h" />
     <ClInclude Include="JoyEngine\RenderManager\Raytracing.h" />
-    <ClInclude Include="JoyEngine\RenderManager\SSAO.h" />
     <ClInclude Include="JoyEngine\RenderManager\Tonemapping.h" />
     <ClInclude Include="JoyEngine\ResourceManager\Buffer.h" />
     <ClInclude Include="JoyEngine\DataManager\DataManager.h" />

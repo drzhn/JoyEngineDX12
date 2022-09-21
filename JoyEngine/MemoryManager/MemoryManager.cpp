@@ -23,10 +23,10 @@
 
 #define GPU_BUFFER_ALLOCATION_SIZE 256*1024*1024 // 256 MB
 #define GPU_TEXTURE_ALLOCATION_SIZE 256*1024*1024 // 256 MB
-#define GPU_RT_DS_ALLOCATION_SIZE 128*1024*1024 // 128 MB
+#define GPU_RT_DS_ALLOCATION_SIZE 32*1024*1024 // 128 MB
 
-#define CPU_UPLOAD_ALLOCATION_SIZE 64*1024*1024 // 64 MB
-#define CPU_READBACK_ALLOCATION_SIZE 64*1024*1024 // 64 MB
+#define CPU_UPLOAD_ALLOCATION_SIZE 256*1024*1024 // 64 MB
+#define CPU_READBACK_ALLOCATION_SIZE 256*1024*1024 // 64 MB
 
 
 namespace JoyEngine
@@ -49,10 +49,9 @@ namespace JoyEngine
 
 	std::string ParseAllocatorStats(const DeviceLinearAllocator* allocator)
 	{
-		uint64_t unaligned = allocator->GetUnalignedBytesAllocated();
 		uint64_t aligned = allocator->GetAlignedBytesAllocated();
-		return "Requested " + ParseByteNumber(unaligned) + ", allocated with align " + ParseByteNumber(aligned) +
-			", ratio " + (aligned > 0 ? std::to_string(static_cast<float>(unaligned) / static_cast<float>(aligned) * 100) : "") + "%\n";
+		return "Requested " + ParseByteNumber(aligned) +
+			", ratio " + std::to_string(static_cast<float>(aligned) / static_cast<float>(allocator->GetSize()) * 100) + "%\n";
 	}
 
 	void AttachView(
@@ -101,8 +100,8 @@ namespace JoyEngine
 			CPU_READBACK_ALLOCATION_SIZE,
 			GraphicsManager::Get()->GetDevice());
 
-		m_uploadStagingBuffer = std::make_unique<Buffer>(32 * 1024 * 1024, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD);
-		m_readbackStagingBuffer = std::make_unique<Buffer>(32 * 1024 * 1024, D3D12_RESOURCE_STATE_COPY_DEST, D3D12_HEAP_TYPE_READBACK);
+		m_uploadStagingBuffer = std::make_unique<Buffer>(128 * 1024 * 1024, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD);
+		m_readbackStagingBuffer = std::make_unique<Buffer>(128 * 1024 * 1024, D3D12_RESOURCE_STATE_COPY_DEST, D3D12_HEAP_TYPE_READBACK);
 	}
 
 	void MemoryManager::PrintStats() const

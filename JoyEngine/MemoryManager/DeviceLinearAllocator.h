@@ -30,6 +30,7 @@ namespace JoyEngine
 
 		[[nodiscard]] uint64_t GetAlignedBytesAllocated() const noexcept { return m_currentOffset; }
 		[[nodiscard]] uint64_t GetUnalignedBytesAllocated() const noexcept { return m_unalignedBytesAllocated; }
+		[[nodiscard]] uint64_t GetSize() const noexcept { return m_size; }
 	private:
 		ID3D12Device* m_device;
 		ComPtr<ID3D12Heap> m_heap;

@@ -6,16 +6,21 @@
 
 #include "DataManager/DataManager.h"
 
+#define DXIL_FOURCC(ch0, ch1, ch2, ch3) (                            \
+  (uint32_t)(uint8_t)(ch0)        | (uint32_t)(uint8_t)(ch1) << 8  | \
+  (uint32_t)(uint8_t)(ch2) << 16  | (uint32_t)(uint8_t)(ch3) << 24   \
+  )
+
 namespace JoyEngine
 {
-	EngineStructsInclude::EngineStructsInclude() :
+	EngineStructsInclude::EngineStructsInclude(IDxcLibrary* library) :
+		m_dxcLibrary(library),
 		m_commonEngineStructsPath(std::filesystem::absolute(R"(JoyEngine/CommonEngineStructs.h)").generic_string())
 	{
 		m_data = ReadFile(m_commonEngineStructsPath, 0);
 
 		uint32_t codePage = CP_UTF8;
 
-		ASSERT_SUCC(DxcCreateInstance(CLSID_DxcLibrary, IID_PPV_ARGS(&m_dxcLibrary)));
 		m_dxcLibrary->CreateBlobWithEncodingFromPinned(
 			m_data.data(), m_data.size(), codePage, &m_dataBlob);
 	}
@@ -34,7 +39,7 @@ namespace JoyEngine
 
 	HRESULT EngineStructsInclude::LoadSource(LPCWSTR pFilename, IDxcBlob** ppIncludeSource)
 	{
-		*ppIncludeSource = m_dataBlob.Get();
+		*ppIncludeSource = m_dataBlob;
 		return S_OK;
 	}
 
@@ -45,28 +50,63 @@ namespace JoyEngine
 
 	ComPtr<IDxcLibrary> ShaderCompiler::s_dxcLibrary = nullptr;
 	ComPtr<IDxcCompiler> ShaderCompiler::s_dxcCompiler = nullptr;
+	ComPtr<IDxcContainerReflection> ShaderCompiler::s_dxcReflection = nullptr;
+	ComPtr<IDxcValidator> ShaderCompiler::s_validator = nullptr;
 	std::unique_ptr<EngineStructsInclude> ShaderCompiler::m_commonEngineStructsInclude = nullptr;
+
+	HMODULE dxil_module = nullptr;
+	DxcCreateInstanceProc dxil_create_func = nullptr;
+
+	HMODULE dxc_module = nullptr;
+	DxcCreateInstanceProc dxc_create_func = nullptr;
 
 	void ShaderCompiler::Compile(
 		ShaderType type,
 		const char* shaderPath,
 		const std::vector<char>& shaderData,
-		ComPtr<ID3DBlob>& module,
+		ID3DBlob** module,
 		std::map<std::string, ShaderInput>& m_inputMap)
 	{
+		if (dxil_module == nullptr)
+		{
+			dxil_module = LoadLibrary(L"C:/Program Files (x86)/Windows Kits/10/bin/10.0.19041.0/x64/dxil.dll");
+			ASSERT(dxil_module != nullptr);
+			dxil_create_func = (DxcCreateInstanceProc)GetProcAddress(dxil_module, "DxcCreateInstance");
+			ASSERT(dxil_create_func != nullptr);
+		}
+
+		if (dxc_module == nullptr)
+		{
+			dxc_module = LoadLibrary(L"C:/Program Files (x86)/Windows Kits/10/bin/10.0.19041.0/x64/dxcompiler.dll");
+			ASSERT(dxc_module != nullptr);
+			dxc_create_func = (DxcCreateInstanceProc)GetProcAddress(dxc_module, "DxcCreateInstance");
+			ASSERT(dxc_create_func != nullptr);
+		}
+
 		if (s_dxcLibrary == nullptr)
 		{
-			ASSERT_SUCC(DxcCreateInstance(CLSID_DxcLibrary, IID_PPV_ARGS(&s_dxcLibrary)));
+			(dxc_create_func(CLSID_DxcLibrary, IID_PPV_ARGS(&s_dxcLibrary)));
 		}
 
 		if (s_dxcCompiler == nullptr)
 		{
-			ASSERT_SUCC(DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&s_dxcCompiler)));
+			(dxc_create_func(CLSID_DxcCompiler, IID_PPV_ARGS(&s_dxcCompiler)));
 		}
+
+		if (s_dxcReflection == nullptr)
+		{
+			(dxc_create_func(CLSID_DxcContainerReflection, IID_PPV_ARGS(&s_dxcReflection)));
+		}
+
+		if (s_validator == nullptr)
+		{
+			(dxil_create_func(CLSID_DxcValidator, IID_PPV_ARGS(&s_validator)));
+		}
+
 
 		if (m_commonEngineStructsInclude == nullptr)
 		{
-			m_commonEngineStructsInclude = std::make_unique<EngineStructsInclude>();
+			m_commonEngineStructsInclude = std::make_unique<EngineStructsInclude>(s_dxcLibrary.Get());
 		}
 
 
@@ -107,10 +147,12 @@ namespace JoyEngine
 			ASSERT(false);
 		}
 
+		ComPtr<ID3D12ShaderReflection> reflection;
+
 
 		if (type == JoyShaderTypeCompute6_5)
 		{
-			DxcDefine Shader_Macros[] = { {L"SHADER", L"0"}, nullptr, nullptr };
+			DxcDefine Shader_Macros[] = {{L"SHADER", L"1"}, nullptr, nullptr};
 			IDxcIncludeHandler* includeHandler = m_commonEngineStructsInclude.get();
 
 			uint32_t codePage = CP_UTF8;
@@ -120,36 +162,72 @@ namespace JoyEngine
 			ASSERT_SUCC(s_dxcLibrary->CreateBlobWithEncodingFromPinned(
 				shaderData.data(),
 				shaderData.size(),
-				codePage,
+				0,
 				&sourceBlob));
+
+#if defined(_DEBUG)
+			// Enable better shader debugging with the graphics debugging tools.
+			LPCWSTR arguments[] = {
+				L"/Od", // D3DCOMPILE_SKIP_OPTIMIZATION 
+				L"/Zi" // D3DCOMPILE_DEBUG
+			};
+			uint32_t argCount = 2;
+#else
+			LPCWSTR* arguments = nullptr;
+			uint32_t argCount = 0;
+
+#endif
 
 			HRESULT res = s_dxcCompiler->Compile(
 				sourceBlob.Get(), // pSource
 				entryPointL, // pSourceName
 				entryPointL, // pEntryPoint
 				targetL, // pTargetProfile
-				NULL, 0, // pArguments, argCount
+				arguments, argCount, // pArguments, argCount
 				Shader_Macros, 1, // pDefines, defineCount
 				includeHandler, // pIncludeHandler
 				&dxcOperationResult);
 			if (SUCCEEDED(res))
+			{
 				dxcOperationResult->GetStatus(&res);
+			}
+			if (dxcOperationResult)
+			{
+				ComPtr<IDxcBlobEncoding> errorsBlob;
+				res = dxcOperationResult->GetErrorBuffer(&errorsBlob);
+				if (SUCCEEDED(res) && errorsBlob)
+				{
+					const char* errorMsg = static_cast<const char*>(errorsBlob->GetBufferPointer());
+					OutputDebugStringA(errorMsg);
+				}
+			}
+			ASSERT_SUCC(res);
+
+			//ComPtr<IDxcBlob> modulePtr;// = reinterpret_cast<IDxcBlob*>(module.Get()); // ID3DBlob
+			//ComPtr<ID3DBlob> moduleBlob;
+			ASSERT_SUCC(dxcOperationResult->GetResult((IDxcBlob**)module));
+
+
+			s_validator->Validate((IDxcBlob*)(*module), 0, &dxcOperationResult);
+			dxcOperationResult->GetStatus(&res);
 			if (FAILED(res))
 			{
-				if (dxcOperationResult)
+				ComPtr<IDxcBlobEncoding> errorsBlob;
+				res = dxcOperationResult->GetErrorBuffer(&errorsBlob);
+				if (SUCCEEDED(res) && errorsBlob)
 				{
-					ComPtr<IDxcBlobEncoding> errorsBlob;
-					res = dxcOperationResult->GetErrorBuffer(&errorsBlob);
-					if (SUCCEEDED(res) && errorsBlob)
-					{
-						const char* errorMsg = static_cast<const char*>(errorsBlob->GetBufferPointer());
-						OutputDebugStringA(errorMsg);
-					}
+					const char* errorMsg = static_cast<const char*>(errorsBlob->GetBufferPointer());
+					OutputDebugStringA(errorMsg);
 				}
-				// Handle compilation error...
 			}
-			ComPtr<IDxcBlob> code;
-			dxcOperationResult->GetResult(&code);
+
+			ASSERT_SUCC(s_dxcReflection->Load((IDxcBlob*)(* module)));
+			uint32_t partCount;
+			ASSERT_SUCC(s_dxcReflection->GetPartCount(&partCount));
+
+			uint32_t shaderId;
+			ASSERT_SUCC(s_dxcReflection->FindFirstPartKind(DXIL_FOURCC('D', 'X', 'I', 'L'), &shaderId));
+			ASSERT_SUCC(s_dxcReflection->GetPartReflection(shaderId, __uuidof(ID3D12ShaderReflection), (void**)&reflection));
 		}
 		else
 		{
@@ -175,7 +253,7 @@ namespace JoyEngine
 				Shader_Macros,
 				pInclude,
 				entryPoint,
-				target, compileFlags, 0, &module, &errorMessages));
+				target, compileFlags, 0, module, &errorMessages));
 
 			if (FAILED(hr) && errorMessages)
 			{
@@ -185,40 +263,37 @@ namespace JoyEngine
 			}
 
 
-			ComPtr<ID3D12ShaderReflection> reflection;
-			hr = D3DReflect(module->GetBufferPointer(),
-			                module->GetBufferSize(),
-			                IID_PPV_ARGS(&reflection)
-			);
+			ASSERT_SUCC(D3DReflect((* module)->GetBufferPointer(),
+				(* module)->GetBufferSize(),
+				IID_PPV_ARGS(&reflection)));
+		}
 
-			ASSERT(!FAILED(hr));
 
-			D3D12_SHADER_DESC desc;
-			reflection->GetDesc(&desc);
+		D3D12_SHADER_DESC desc;
+		reflection->GetDesc(&desc);
 
-			for (uint32_t i = 0; i < desc.BoundResources; i++)
+		for (uint32_t i = 0; i < desc.BoundResources; i++)
+		{
+			D3D12_SHADER_INPUT_BIND_DESC inputBindDesc;
+			reflection->GetResourceBindingDesc(i, &inputBindDesc);
+
+			std::string name = inputBindDesc.Name;
+			if (m_inputMap.find(name) == m_inputMap.end())
 			{
-				D3D12_SHADER_INPUT_BIND_DESC inputBindDesc;
-				reflection->GetResourceBindingDesc(i, &inputBindDesc);
-
-				std::string name = inputBindDesc.Name;
-				if (m_inputMap.find(name) == m_inputMap.end())
-				{
-					m_inputMap.insert({
-						inputBindDesc.Name,
-						{
-							inputBindDesc.Type,
-							inputBindDesc.BindPoint,
-							inputBindDesc.BindCount,
-							inputBindDesc.Space,
-							visibility
-						}
-					});
-				}
-				else
-				{
-					m_inputMap[name].Visibility = D3D12_SHADER_VISIBILITY_ALL;
-				}
+				m_inputMap.insert({
+					inputBindDesc.Name,
+					{
+						inputBindDesc.Type,
+						inputBindDesc.BindPoint,
+						inputBindDesc.BindCount,
+						inputBindDesc.Space,
+						visibility
+					}
+				});
+			}
+			else
+			{
+				m_inputMap[name].Visibility = D3D12_SHADER_VISIBILITY_ALL;
 			}
 		}
 	}

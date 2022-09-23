@@ -72,6 +72,6 @@ namespace JoyEngine
 
 	void Shader::CompileShader(ShaderType type, const char* shaderPath, const std::vector<char>& shaderData, ComPtr<ID3DBlob>& module)
 	{
-		ShaderCompiler::Compile(type, shaderPath, shaderData, module, m_inputMap);
+		ShaderCompiler::Compile(type, shaderPath, shaderData, &module, m_inputMap);
 	}
 }

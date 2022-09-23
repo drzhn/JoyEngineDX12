@@ -16,7 +16,11 @@ namespace JoyEngine
 {
 	struct EngineStructsInclude final : ID3DInclude, IDxcIncludeHandler
 	{
-		EngineStructsInclude();
+		EngineStructsInclude() = delete;
+
+		EngineStructsInclude(IDxcLibrary* library);
+
+		~EngineStructsInclude() = default;
 
 		HRESULT __stdcall Open(
 			D3D_INCLUDE_TYPE IncludeType,
@@ -36,8 +40,8 @@ namespace JoyEngine
 	private:
 		const std::string m_commonEngineStructsPath;
 		std::vector<char> m_data;
-		ComPtr<IDxcBlobEncoding> m_dataBlob;
-		ComPtr<IDxcLibrary> m_dxcLibrary;
+		IDxcBlobEncoding* m_dataBlob;
+		IDxcLibrary* m_dxcLibrary;
 	};
 
 
@@ -74,11 +78,13 @@ namespace JoyEngine
 			ShaderType type,
 			const char* shaderPath,
 			const std::vector<char>& shaderData,
-			ComPtr<ID3DBlob>& module, std::map<std::string, ShaderInput>& m_inputMap
+			ID3DBlob** module,
+			std::map<std::string, ShaderInput>& m_inputMap
 		);
 		static ComPtr<IDxcLibrary> s_dxcLibrary;
 		static ComPtr<IDxcCompiler> s_dxcCompiler;
-
+		static ComPtr<IDxcContainerReflection> s_dxcReflection;
+		static ComPtr<IDxcValidator> s_validator;
 		static std::unique_ptr<EngineStructsInclude> m_commonEngineStructsInclude;
 	};
 }

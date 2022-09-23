@@ -38,6 +38,7 @@ namespace JoyEngine
 	struct ComputePipelineArgs
 	{
 		GUID computeShaderGuid;
+		D3D_SHADER_MODEL shaderModel;
 	};
 
 	class AbstractPipelineObject

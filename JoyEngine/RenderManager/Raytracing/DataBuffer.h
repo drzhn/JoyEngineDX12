@@ -1,16 +1,7 @@
-﻿#ifndef RAYTRACING_H
-#define RAYTRACING_H
-
-#include <d3d12.h>
-
-#include <memory>
-
-#include "CommonEngineStructs.h"
+﻿#ifndef DATA_BUFFER_H
+#define DATA_BUFFER_H
 
 #include "MemoryManager/MemoryManager.h"
-#include "ResourceManager/Buffer.h"
-#include "ResourceManager/Mesh.h"
-#include "ResourceManager/ResourceHandle.h"
 
 namespace JoyEngine
 {
@@ -20,7 +11,7 @@ namespace JoyEngine
 	public:
 		DataBuffer() = delete;
 
-		DataBuffer(size_t size, T initialValue):
+		DataBuffer(size_t size, T initialValue) :
 			DataBuffer(size)
 		{
 			for (int i = 0; i < size; i++)
@@ -31,7 +22,7 @@ namespace JoyEngine
 			UploadCpuData();
 		}
 
-		explicit DataBuffer(size_t size):
+		explicit DataBuffer(size_t size) :
 			m_size(size)
 		{
 			m_dataArray = static_cast<T*>(malloc(size * sizeof(T)));
@@ -41,6 +32,19 @@ namespace JoyEngine
 				D3D12_RESOURCE_STATE_GENERIC_READ,
 				D3D12_HEAP_TYPE_DEFAULT,
 				D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
+			D3D12_UNORDERED_ACCESS_VIEW_DESC desc = {
+				.Format = DXGI_FORMAT_UNKNOWN,
+				.ViewDimension = D3D12_UAV_DIMENSION_BUFFER,
+				.Buffer = {
+					.FirstElement = 0,
+					.NumElements = static_cast<uint32_t>(size),
+					.StructureByteStride = sizeof(T),
+					.CounterOffsetInBytes = 0,
+					.Flags = D3D12_BUFFER_UAV_FLAG_NONE,
+				}
+			};
+
+			m_bufferView = std::make_unique<ResourceView>(desc, m_gpuBuffer->GetBuffer().Get());
 		}
 
 		~DataBuffer()
@@ -68,25 +72,9 @@ namespace JoyEngine
 
 	private:
 		std::unique_ptr<Buffer> m_gpuBuffer;
+		std::unique_ptr<ResourceView> m_bufferView;
 		T* m_dataArray;
 		const size_t m_size;
 	};
-
-	class Raytracing
-	{
-	public:
-		Raytracing();
-	private:
-		uint32_t m_trianglesLength;
-		std::unique_ptr<DataBuffer<uint32_t>> m_keysBuffer;
-		std::unique_ptr<DataBuffer<uint32_t>> m_triangleIndexBuffer;
-		std::unique_ptr<DataBuffer<Triangle>> m_triangleDataBuffer;
-		std::unique_ptr<DataBuffer<AABB>> m_triangleAABBBuffer;
-		std::unique_ptr<DataBuffer<AABB>> m_bvhDataBuffer;
-		std::unique_ptr<DataBuffer<LeafNode>> m_bvhLeafNodesBuffer;
-		std::unique_ptr<DataBuffer<InternalNode>> m_bvhInternalNodesBuffer;
-
-		ResourceHandle<Mesh> m_mesh;
-	};
 }
-#endif // RAYTRACING_H
+#endif // DATA_BUFFER_H

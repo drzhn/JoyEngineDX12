@@ -116,5 +116,8 @@ namespace JoyEngine
 		m_triangleIndexBuffer->UploadCpuData();
 		m_triangleDataBuffer->UploadCpuData();
 		m_triangleAABBBuffer->UploadCpuData();
+
+
+		m_bufferSorter = std::make_unique<BufferSorter>(m_trianglesLength, m_keysBuffer.get(), m_triangleIndexBuffer.get());
 	}
 }

@@ -167,7 +167,7 @@ namespace JoyEngine
 	ComputePipeline::ComputePipeline(GUID guid, ComputePipelineArgs args) :
 		Resource(guid)
 	{
-		CreateShaderAndRootSignature(args.computeShaderGuid, JoyShaderTypeCompute);
+		CreateShaderAndRootSignature(args.computeShaderGuid, args.shaderModel == D3D_SHADER_MODEL_6_5 ? JoyShaderTypeCompute6_5 : JoyShaderTypeCompute);
 		CreateComputePipeline();
 	}
 
@@ -271,8 +271,6 @@ namespace JoyEngine
 			case strHash("amplification"): args.shaderTypes |= JoyShaderTypeAmplification;
 				break;
 			case strHash("mesh"): args.shaderTypes |= JoyShaderTypeMesh;
-				break;
-			case strHash("compute"): args.shaderTypes |= JoyShaderTypeCompute;
 				break;
 			default:
 				ASSERT(false);

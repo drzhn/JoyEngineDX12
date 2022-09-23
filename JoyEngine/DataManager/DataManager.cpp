@@ -1,46 +1,21 @@
 #include "DataManager.h"
 
+#include <d3d12.h>
+#include <d3dcommon.h>
+#include <dxcapi.h>
+
 #include <fstream>
 #include <iostream>
 #include <vector>
 
 #include <rapidjson/document.h>
+#include <wrl/client.h>
 
 #include "Utils/FileUtils.h"
 #include "Utils/TimeCounter.h"
 
 namespace JoyEngine
 {
-	struct EngineStructsInclude final : public ID3DInclude
-	{
-		EngineStructsInclude()
-			: m_commonEngineStructsPath(std::filesystem::absolute(R"(JoyEngine/CommonEngineStructs.h)").generic_string())
-		{
-			m_data = ReadFile(m_commonEngineStructsPath, 0);
-		}
-
-		HRESULT __stdcall Open(
-			D3D_INCLUDE_TYPE IncludeType,
-			LPCSTR pFileName,
-			LPCVOID pParentData,
-			LPCVOID* ppData,
-			UINT* pBytes) override
-		{
-			*ppData = m_data.data();
-			*pBytes = static_cast<UINT>(m_data.size());
-			return S_OK;
-		}
-
-		HRESULT __stdcall Close(LPCVOID pData) override
-		{
-			return S_OK;
-		}
-
-	private:
-		const std::string m_commonEngineStructsPath;
-		std::vector<char> m_data;
-	};
-
 	IMPLEMENT_SINGLETON(DataManager)
 
 	DataManager::DataManager() :
@@ -50,7 +25,6 @@ namespace JoyEngine
 		TIME_PERF("DataManager init")
 
 		ParseDatabase(m_pathDatabase, ReadFile(m_dataPath + m_databaseFilename).data());
-		m_commonEngineStructsInclude = std::make_unique<EngineStructsInclude>();
 	}
 
 	std::vector<char> DataManager::GetData(GUID guid, bool shouldReadRawData, uint32_t offset) const
@@ -117,11 +91,6 @@ namespace JoyEngine
 		std::filesystem::path root = m_dataPath;
 		root += m_pathDatabase.find(guid)->second;
 		return root;
-	}
-
-	ID3DInclude* DataManager::GetCommonEngineStructsInclude() const
-	{
-		return m_commonEngineStructsInclude.get();
 	}
 
 	void DataManager::ParseDatabase(std::map<GUID, std::filesystem::path>& pathDatabase, const char* data)

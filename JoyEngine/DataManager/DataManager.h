@@ -6,8 +6,10 @@
 #include <filesystem>
 
 #include <d3dcommon.h>
+#include <dxcapi.h>
 
 #include <rapidjson/document.h>
+#include <wrl/client.h>
 
 #include "Utils/FileUtils.h"
 #include "Utils/GUID.h"
@@ -40,13 +42,10 @@ namespace JoyEngine
 		[[nodiscard]] std::ifstream GetFileStream(const std::string& path, bool shouldReadRawData = false) const;
 		[[nodiscard]] rapidjson::Document GetSerializedData(const GUID&, DataType) const;
 		[[nodiscard]] std::filesystem::path GetAbsolutePath(GUID) const;
-		[[nodiscard]] ID3DInclude* GetCommonEngineStructsInclude() const;
-
 	private:
 		const std::string m_dataPath;
 		const std::string m_databaseFilename;
 		std::map<GUID, std::filesystem::path> m_pathDatabase;
-		std::unique_ptr<ID3DInclude> m_commonEngineStructsInclude;
 
 	private:
 		const std::filesystem::path& GetPath(GUID);

@@ -153,7 +153,13 @@
     <ClCompile Include="Libs\imgui\backends\imgui_impl_win32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JoyEngine\RenderManager\Raytracing.cpp">
+    <ClCompile Include="JoyEngine\RenderManager\Raytracing\Raytracing.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JoyEngine\RenderManager\Raytracing\BufferSorter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JoyEngine\ResourceManager\ShaderCompiler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -332,10 +338,19 @@
     <ClInclude Include="Libs\imgui\backends\imgui_impl_win32.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JoyEngine\RenderManager\Raytracing.h">
+    <ClInclude Include="JoyEngine\RenderManager\Raytracing\Raytracing.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JoyEngine\Utils\TimeCounter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JoyEngine\RenderManager\Raytracing\BufferSorter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JoyEngine\RenderManager\Raytracing\DataBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JoyEngine\ResourceManager\ShaderCompiler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -365,5 +380,6 @@
     <None Include="JoyData\shaders\sslrpostprocess.hlsl" />
     <None Include="JoyData\shaders\standardShader.hlsl" />
     <None Include="JoyData\shaders\gizmoAxisDrawer.hlsl" />
+    <None Include="JoyData\shaders\raytracing\LocalRadixSort.hlsl" />
   </ItemGroup>
 </Project>

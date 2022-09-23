@@ -16,7 +16,7 @@
 #include "ResourceManager/DynamicBuffer.h"
 
 #include "Tonemapping.h"
-#include "Raytracing.h"
+#include "Raytracing/Raytracing.h"
 
 using Microsoft::WRL::ComPtr;
 

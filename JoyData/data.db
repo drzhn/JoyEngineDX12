@@ -4,24 +4,24 @@
         {
             "guid": "46bc949d-eacb-4cff-a7f8-07e738bbfb3e",
             "path": "models/sponza.data"
-        },          
+        },
         {
             "guid": "fc972e06-70d9-4271-8615-825003b43f74",
             "path": "models/viking_room.obj"
-        },        
-		{
+        },
+        {
             "guid": "7489a35d-1173-48cd-9ad0-606f13c33319",
             "path": "models/Floor.obj"
         },
         {
             "guid": "13dc6d97-5ced-4b99-b296-bb9e6df2242a",
             "path": "models/male_head.obj"
-        },        
-		{
+        },
+        {
             "guid": "c1496bff-f383-4f46-97cc-bc9955f7f4cf",
             "path": "models/Cube.obj"
-        },		
-		{
+        },
+        {
             "guid": "47000776-d056-43a2-bacb-c3e54701294a",
             "path": "models/Sphere.obj"
         },
@@ -33,7 +33,7 @@
         {
             "guid": "b6316780-7043-4ca5-96da-c8bb84042b78",
             "path": "shared_materials/standardSharedMaterial.json"
-        },       
+        },
         {
             "guid": "74eac505-944d-45af-acdf-51bcb04fee30",
             "path": "shared_materials/vikingSharedMaterial.json"
@@ -47,8 +47,8 @@
             "guid": "a254d10b-ba5a-444d-9ef0-4ef7777b918b",
             "path": "materials/sponza.json"
         },
-		
-		
+
+
         {
             "guid": "1d451f58-3f84-4b2b-8c6f-fe8e2821d7f0",
             "path": "textures/viking_room.png"
@@ -56,37 +56,37 @@
         {
             "guid": "7e50aa82-5696-428c-a088-538fb78c0ee6",
             "path": "textures/Chopping-Board.jpg"
-        },        
-		{
+        },
+        {
             "guid": "e8448435-7baf-4e40-ac72-b99e49284929",
             "path": "textures/wood.png"
-        },   		
-		{
+        },
+        {
             "guid": "cf021726-708f-42d2-860e-d33a550e631b",
             "path": "textures/DDSSample.dds"
-        },           
+        },
 
-		{
+        {
             "guid": "797b0023-1f05-4b37-a331-835903cfc005",
             "path": "textures/Std_Skin_Head_Diffuse.jpg"
         },
         {
             "guid": "028b0f63-ff0c-4c39-aee5-e13afb20e747",
             "path": "textures/Std_Skin_Head_Normal.jpg"
-        },  
-		{
+        },
+        {
             "guid": "17a24dcb-72ae-4a6a-b4d6-5ddac79c77ff",
             "path": "textures/Std_Skin_Head_SpecMask_invert.jpg"
-        },   		
-		{
+        },
+        {
             "guid": "cd13654b-102a-4e8c-8f2a-d720b2ca0903",
             "path": "textures/Std_Skin_Head_roughness.jpg"
-        }, 		
-		{
+        },
+        {
             "guid": "9694ff4a-d639-4488-a421-c58494d6c56b",
             "path": "textures/Barce_Rooftop_C_8k.jpg"
-        }, 		
-		{
+        },
+        {
             "guid": "65c0d16a-9cf6-46e5-9a5e-a5026b350b8d",
             "path": "textures/ColorNoise.png"
         },
@@ -96,32 +96,32 @@
         {
             "guid": "908a43e5-84b5-4d81-bf17-3bdcbdd4a224",
             "path": "shaders/standardShader.hlsl"
-        },          
+        },
         {
             "guid": "183d6cfe-ca85-4e0b-ab36-7b1ca0f99d34",
             "path": "shaders/vikingShader.hlsl"
-        },        
-		{
+        },
+        {
             "guid": "01da575c-6970-4ac1-97e5-823817af8b34",
             "path": "shaders/annaShader.hlsl"
-        },        
-		{
+        },
+        {
             "guid": "4a8ea369-904f-4d9a-9061-b4eedacc3918",
             "path": "shaders/dynamiccubemapreflections.hlsl"
-        },		
-		{
+        },
+        {
             "guid": "613710d9-304e-453b-a655-b1c842904f4c",
             "path": "shaders/dynamiccubemapconvolition.hlsl"
         },
         {
             "guid": "48ffacc9-5c00-4058-b359-cf72189896ac",
             "path": "shaders/gbufferwrite.hlsl"
-        },        
-		{
+        },
+        {
             "guid": "f9da7adf-4ebb-4601-8437-a19c07e8471a",
             "path": "shaders/lightprocessing.hlsl"
-        },        
-		{
+        },
+        {
             "guid": "1c6cb88f-f3ef-4797-9d65-44682ca7baba",
             "path": "shaders/directionlightprocessing.hlsl"
         },
@@ -132,61 +132,61 @@
         {
             "guid": "9d678808-8c11-4ff3-9ee1-dd1b7fc5f691",
             "path": "shaders/shadowpointprocessing.hlsl"
-        },        
-		{
+        },
+        {
             "guid": "3fb4d89b-ceab-46c3-b34f-d41a49e072cf",
             "path": "shaders/generateMipMaps.hlsl"
-        },		
-		{
+        },
+        {
             "guid": "a36fff56-b183-418a-9bd1-31cffd247e37",
             "path": "shaders/particles.hlsl"
-        },		
-		{
+        },
+        {
             "guid": "38d4f011-405a-4602-8f8e-79b4888d26b6",
             "path": "shaders/particlesbuffergeneration.hlsl"
-        },		
-		{
+        },
+        {
             "guid": "5e897d4b-2ed5-4176-890b-2f17e52cb836",
             "path": "shaders/fogpostprocess.hlsl"
-        },		
-		{
+        },
+        {
             "guid": "e3e039f4-4f96-4e5b-b90b-1f46d460b724",
             "path": "shaders/hdrDownscaleFirstPass.hlsl"
-        },		
-		{
+        },
+        {
             "guid": "c3a1592f-f12d-4c25-bcbb-1e6ace76b0fb",
             "path": "shaders/hdrDownscaleSecondPass.hlsl"
         },
-		{
+        {
             "guid": "aa366fc9-b8a7-4cca-b5d3-670216174566",
             "path": "shaders/hdrToLdrTransition.hlsl"
         },
-				
-		{
+
+        {
             "guid": "110f9d5d-008a-4f07-8a7c-e0a208353bf1",
             "path": "shaders/bloomBrightPass.hlsl"
-        },		
-		{
+        },
+        {
             "guid": "fcdfbb5b-72ea-4b7b-b432-3f807ffc576d",
             "path": "shaders/bloomHorizontalFilter.hlsl"
         },
-		{
+        {
             "guid": "79791a5c-5374-4e44-9ad0-f2cf57e7c8e6",
             "path": "shaders/bloomVerticalFilter.hlsl"
-        },		
-		{
+        },
+        {
             "guid": "3cf96278-de88-4614-bb23-5cfa2b54e41a",
             "path": "shaders/ssaopostprocess.hlsl"
-        },		
-		{
+        },
+        {
             "guid": "81312dae-c920-4cd6-bd08-87d1a2a3b6f4",
             "path": "shaders/ssaoblur.hlsl"
-        },		
-		{
+        },
+        {
             "guid": "c7986e89-5d7e-4348-903e-761f007c3f12",
             "path": "shaders/ssaoappend.hlsl"
         },
-		{
+        {
             "guid": "70d5a60a-615a-4344-977f-d2ad9d37b0cf",
             "path": "shaders/sslrpostprocess.hlsl"
         },
@@ -194,8 +194,11 @@
             "guid": "c8478fd3-33c3-4f3f-9e8a-56a9cfa846ce",
             "path": "shaders/gizmoAxisDrawer.hlsl"
         },
-		
-		
+        {
+            "guid": "fb423066-e885-4ea4-93d5-01b69037a9aa",
+            "path": "shaders/raytracing/LocalRadixSort.hlsl"
+        },
+
         {
             "guid": "11dcfeba-c2b6-4c2e-a3c7-51054ff06f1d",
             "path": "scenes/room.json"

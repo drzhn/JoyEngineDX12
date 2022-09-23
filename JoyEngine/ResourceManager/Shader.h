@@ -5,6 +5,7 @@
 #include <map>
 
 #include "d3dx12.h"
+#include "ShaderCompiler.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -12,30 +13,6 @@ using Microsoft::WRL::ComPtr;
 
 namespace JoyEngine
 {
-	struct ShaderInput
-	{
-		D3D_SHADER_INPUT_TYPE Type; // Type of resource (e.g. texture, cbuffer, etc.)
-		uint32_t BindPoint; // Starting bind point
-		uint32_t BindCount; // Number of contiguous bind points (for arrays)
-		uint32_t Space; // Register space
-		D3D12_SHADER_VISIBILITY Visibility;
-	};
-
-	typedef
-	enum ShaderType
-	{
-		JoyShaderTypeVertex = 1 << 0,
-		JoyShaderTypeHull = 1 << 1,
-		JoyShaderTypeDomain = 1 << 2,
-		JoyShaderTypeGeometry = 1 << 3,
-		JoyShaderTypePixel = 1 << 4,
-		JoyShaderTypeAmplification = 1 << 5,
-		JoyShaderTypeMesh = 1 << 6,
-		JoyShaderTypeCompute = 1 << 7
-	} ShaderType;
-
-	typedef uint32_t ShaderTypeFlags;
-
 	class Shader final : public Resource
 	{
 	public :

@@ -2,7 +2,6 @@
 
 #include <d3d12.h>
 #include <dxgi1_6.h>
-#include <D3Dcompiler.h>
 
 #include "Utils/Assert.h"
 #include "DataManager/DataManager.h"
@@ -25,6 +24,15 @@ namespace JoyEngine
 		{
 			CompileShader(
 				JoyShaderTypeCompute,
+				shaderPath.c_str(),
+				shaderData,
+				m_computeModule
+			);
+		}
+		if (m_shaderType & JoyShaderTypeCompute6_5)
+		{
+			CompileShader(
+				JoyShaderTypeCompute6_5,
 				shaderPath.c_str(),
 				shaderData,
 				m_computeModule
@@ -64,101 +72,6 @@ namespace JoyEngine
 
 	void Shader::CompileShader(ShaderType type, const char* shaderPath, const std::vector<char>& shaderData, ComPtr<ID3DBlob>& module)
 	{
-		const char* entryPoint = nullptr;
-		const char* target = nullptr;
-		D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL;
-
-		switch (type)
-		{
-		case JoyShaderTypeVertex:
-			entryPoint = "VSMain";
-			target = "vs_5_1";
-			visibility = D3D12_SHADER_VISIBILITY_VERTEX;
-			break;
-		case JoyShaderTypeGeometry:
-			entryPoint = "GSMain";
-			target = "gs_5_1";
-			visibility = D3D12_SHADER_VISIBILITY_GEOMETRY;
-			break;
-		case JoyShaderTypePixel:
-			entryPoint = "PSMain";
-			target = "ps_5_1";
-			visibility = D3D12_SHADER_VISIBILITY_PIXEL;
-			break;
-		case JoyShaderTypeCompute:
-			entryPoint = "CSMain";
-			target = "cs_5_1";
-			visibility = D3D12_SHADER_VISIBILITY_ALL;
-			break;
-		default:
-			ASSERT(false);
-		}
-
-#if defined(_DEBUG)
-		// Enable better shader debugging with the graphics debugging tools.
-		constexpr UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
-#else
-		constexpr UINT compileFlags = 0;
-#endif
-		ID3DBlob* errorMessages = nullptr;
-		HRESULT hr;
-
-		D3D_SHADER_MACRO Shader_Macros[] = {{"SHADER", "1"}, nullptr, nullptr};
-
-		//{
-		//	{"SHADER", "1"}
-		//};
-		ID3DInclude* pInclude = DataManager::Get()->GetCommonEngineStructsInclude();
-		hr = (D3DCompile(
-			shaderData.data(),
-			shaderData.size(),
-			shaderPath,
-			Shader_Macros,
-			pInclude,
-			entryPoint,
-			target, compileFlags, 0, &module, &errorMessages));
-
-		if (FAILED(hr) && errorMessages)
-		{
-			const char* errorMsg = static_cast<const char*>(errorMessages->GetBufferPointer());
-			OutputDebugStringA(errorMsg);
-			ASSERT(false);
-		}
-
-		ComPtr<ID3D12ShaderReflection> reflection;
-		hr = D3DReflect(module->GetBufferPointer(),
-		                module->GetBufferSize(),
-		                IID_PPV_ARGS(&reflection)
-		);
-
-		ASSERT(!FAILED(hr));
-
-		D3D12_SHADER_DESC desc;
-		reflection->GetDesc(&desc);
-
-		for (uint32_t i = 0; i < desc.BoundResources; i++)
-		{
-			D3D12_SHADER_INPUT_BIND_DESC inputBindDesc;
-			reflection->GetResourceBindingDesc(i, &inputBindDesc);
-
-			std::string name = inputBindDesc.Name;
-			if (m_inputMap.find(name) == m_inputMap.end())
-			{
-				m_inputMap.insert({
-					inputBindDesc.Name,
-					{
-						inputBindDesc.Type,
-						inputBindDesc.BindPoint,
-						inputBindDesc.BindCount,
-						inputBindDesc.Space,
-						visibility
-					}
-				});
-			}
-			else
-			{
-				m_inputMap[name].Visibility = D3D12_SHADER_VISIBILITY_ALL;
-			}
-		}
+		ShaderCompiler::Compile(type, shaderPath, shaderData, module, m_inputMap);
 	}
 }

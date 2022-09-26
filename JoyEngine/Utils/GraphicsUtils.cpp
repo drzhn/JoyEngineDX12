@@ -1,5 +1,6 @@
 ﻿#include "GraphicsUtils.h"
 
+#include "Common/HashDefs.h"
 #include "ResourceManager/ResourceView.h"
 
 namespace JoyEngine
@@ -53,6 +54,12 @@ namespace JoyEngine
 	{
 		commandList->SetComputeRootDescriptorTable(
 			rootParameterIndex, view->GetGPUHandle());
+	}
+
+	void GraphicsUtils::AttachViewToCompute(ID3D12GraphicsCommandList* commandList, const ResourceHandle<ComputePipeline>& pipeline, const char* paramName, const ResourceView* view)
+	{
+		commandList->SetComputeRootDescriptorTable(
+			pipeline->GetBindingIndexByHash(strHash(paramName)), view->GetGPUHandle());
 	}
 
 	void GraphicsUtils::SetViewportAndScissor(

@@ -18,6 +18,7 @@ namespace JoyEngine
 	{
 	public:
 		Raytracing();
+		void PrepareBVH();
 	private:
 		uint32_t m_trianglesLength;
 		std::unique_ptr<DataBuffer<uint32_t>> m_keysBuffer;

@@ -57,6 +57,13 @@ namespace JoyEngine
 			m_currentLockedArea = nullptr;
 		}
 
+		void SetData(T data)
+		{
+			Lock();
+			memcpy(GetPtr(), &data, sizeof(T));
+			Unlock();
+		}
+
 		~ConstantBuffer() = default;
 	private:
 		std::unique_ptr<BufferMappedPtr> m_currentLockedArea;

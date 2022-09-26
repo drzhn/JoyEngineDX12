@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <d3d12.h>
 
+#include "ResourceManager/SharedMaterial.h"
+
 namespace JoyEngine
 {
 	class ResourceView;
@@ -13,6 +15,7 @@ namespace JoyEngine
 	public:
 		static void AttachViewToGraphics(ID3D12GraphicsCommandList* commandList, uint32_t rootParameterIndex, const ResourceView* view);
 		static void AttachViewToCompute(ID3D12GraphicsCommandList* commandList, uint32_t rootParameterIndex, const ResourceView* view);
+		static void AttachViewToCompute(ID3D12GraphicsCommandList* commandList, const ResourceHandle<ComputePipeline>& pipeline, const char* paramName, const ResourceView* view);
 		static void Barrier(ID3D12GraphicsCommandList* commandList, ID3D12Resource* pResource, D3D12_RESOURCE_STATES stateBefore, D3D12_RESOURCE_STATES stateAfter);
 		static void SetViewportAndScissor(ID3D12GraphicsCommandList* commandList, uint32_t width, uint32_t height);
 	};

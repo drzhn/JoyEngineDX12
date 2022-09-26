@@ -5,7 +5,7 @@
 
 namespace JoyEngine
 {
-	ComputeDispatcher::ComputeDispatcher()
+	ComputeDispatcher::ComputeDispatcher(): m_currentCommandList(nullptr)
 	{
 		m_queue = std::make_unique<CommandQueue>(D3D12_COMMAND_LIST_TYPE_COMPUTE, GraphicsManager::Get()->GetDevice());
 	}
@@ -18,7 +18,7 @@ namespace JoyEngine
 		return m_currentCommandList;
 	}
 
-	void ComputeDispatcher::DispatchAndWait() const
+	void ComputeDispatcher::ExecuteAndWait() const
 	{
 		ASSERT_SUCC(m_currentCommandList->Close());
 

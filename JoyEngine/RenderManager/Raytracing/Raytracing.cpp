@@ -125,4 +125,9 @@ namespace JoyEngine
 			m_triangleIndexBuffer.get(),
 			m_dispatcher.get());
 	}
+
+	void Raytracing::PrepareBVH()
+	{
+		m_bufferSorter->Sort();
+	}
 }

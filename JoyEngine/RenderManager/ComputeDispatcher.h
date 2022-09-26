@@ -11,7 +11,7 @@ namespace JoyEngine
 	public:
 		ComputeDispatcher();
 		[[nodiscard]] ID3D12GraphicsCommandList* GetCommandList() noexcept;
-		void DispatchAndWait() const;
+		void ExecuteAndWait() const;
 	private:
 		std::unique_ptr<CommandQueue> m_queue;
 		ID3D12GraphicsCommandList* m_currentCommandList;

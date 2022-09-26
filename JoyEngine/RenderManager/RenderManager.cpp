@@ -132,6 +132,7 @@ namespace JoyEngine
 	void RenderManager::Start()
 	{
 		m_queue->WaitQueueIdle();
+		m_raytracing->PrepareBVH();
 	}
 
 

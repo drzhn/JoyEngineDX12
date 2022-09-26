@@ -78,14 +78,16 @@ namespace JoyEngine
 
 		const auto currentTime = std::chrono::high_resolution_clock::now();
 		const float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-		std::string s = "=========== Context initialized in " + std::to_string(time) + " seconds ===========\n";
-		OutputDebugStringA(s.c_str());
+		Logger::LogFormat("=========== Context initialized in %.3f seconds ===========\n", time);
+
+		m_memoryManager->PrintStats();
+
+		Logger::Log("==================================================================\n");
 	}
 
 	void JoyEngine::Start() const noexcept
 	{
 		m_renderManager->Start();
-		m_memoryManager->PrintStats();
 	}
 
 	void JoyEngine::Update() const noexcept

@@ -158,6 +158,11 @@ struct MipMapGenerationData
 
 // Raytracing structs
 
+struct RaytracingData
+{
+	UINT1 bitOffset;
+};
+
 struct AABB
 {
 	VEC3 min;

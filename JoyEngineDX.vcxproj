@@ -215,6 +215,7 @@
     <ClCompile Include="JoyEngine\GameplayComponents\CameraBehaviour.cpp" />
     <ClCompile Include="JoyEngine\GameplayComponents\RoomBehaviour.cpp" />
     <ClCompile Include="JoyEngine\MemoryManager\DeviceLinearAllocator.cpp" />
+    <ClCompile Include="JoyEngine\RenderManager\ComputeDispatcher.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\Raytracing\BufferSorter.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\Raytracing\Raytracing.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\Tonemapping.cpp" />
@@ -247,6 +248,7 @@
     <ClCompile Include="JoyEngine\SceneManager\Transform.cpp" />
     <ClCompile Include="JoyEngine\EngineMaterialProvider\EngineMaterialProvider.cpp" />
     <ClCompile Include="JoyEngine\Utils\GraphicsUtils.cpp" />
+    <ClCompile Include="JoyEngine\Utils\Log.cpp" />
     <ClCompile Include="Libs\imgui\backends\imgui_impl_dx12.cpp" />
     <ClCompile Include="Libs\imgui\backends\imgui_impl_win32.cpp" />
     <ClCompile Include="Libs\imgui\imgui.cpp" />
@@ -268,6 +270,7 @@
     <ClInclude Include="JoyEngine\GameplayComponents\CameraBehaviour.h" />
     <ClInclude Include="JoyEngine\GameplayComponents\RoomBehaviour.h" />
     <ClInclude Include="JoyEngine\MemoryManager\DeviceLinearAllocator.h" />
+    <ClInclude Include="JoyEngine\RenderManager\ComputeDispatcher.h" />
     <ClInclude Include="JoyEngine\RenderManager\Raytracing\BufferSorter.h" />
     <ClInclude Include="JoyEngine\RenderManager\Raytracing\DataBuffer.h" />
     <ClInclude Include="JoyEngine\RenderManager\Raytracing\Raytracing.h" />
@@ -311,6 +314,7 @@
     <ClInclude Include="JoyEngine\Utils\FileUtils.h" />
     <ClInclude Include="JoyEngine\Utils\GraphicsUtils.h" />
     <ClInclude Include="JoyEngine\Utils\GUID.h" />
+    <ClInclude Include="JoyEngine\Utils\Log.h" />
     <ClInclude Include="JoyEngine\Utils\TimeCounter.h" />
     <ClInclude Include="Libs\imgui\backends\imgui_impl_dx12.h" />
     <ClInclude Include="Libs\imgui\backends\imgui_impl_win32.h" />

@@ -55,16 +55,6 @@ namespace JoyEngine
 			", used " + std::to_string(static_cast<float>(aligned) / static_cast<float>(allocator->GetSize()) * 100) + "%\n";
 	}
 
-	void AttachView(
-		ID3D12GraphicsCommandList* commandList,
-		uint32_t rootParameterIndex,
-		const ResourceView* view
-	)
-	{
-		commandList->SetComputeRootDescriptorTable(
-			rootParameterIndex, view->GetGPUHandle());
-	}
-
 	IMPLEMENT_SINGLETON(MemoryManager)
 
 	void MemoryManager::Init()
@@ -200,12 +190,12 @@ namespace JoyEngine
 			commandList->SetPipelineState(mipMapGenerationPipeline->GetPipelineObject().Get());
 
 
-			AttachView(
+			GraphicsUtils::AttachViewToCompute(
 				commandList,
 				mipMapGenerationPipeline->GetBindingIndexByHash(strHash("SrcMip")),
 				gpuImage->GetSRV());
 
-			AttachView(
+			GraphicsUtils::AttachViewToCompute(
 				commandList,
 				mipMapGenerationPipeline->GetBindingIndexByHash(strHash("BilinearClamp")),
 				EngineSamplersProvider::GetLinearClampSampler());
@@ -229,7 +219,7 @@ namespace JoyEngine
 					};
 					mipViews.emplace(mipViews.begin() + i, desc, gpuImage->GetImage().Get());
 
-					AttachView(
+					GraphicsUtils::AttachViewToCompute(
 						commandList,
 						mipMapGenerationPipeline->GetBindingIndexByName("OutMip" + std::to_string(i + 1)), // I do not sorry
 						&mipViews[i]);

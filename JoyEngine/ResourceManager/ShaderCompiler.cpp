@@ -201,10 +201,7 @@ namespace JoyEngine
 			}
 			ASSERT_SUCC(res);
 
-			//ComPtr<IDxcBlob> modulePtr;// = reinterpret_cast<IDxcBlob*>(module.Get()); // ID3DBlob
-			//ComPtr<ID3DBlob> moduleBlob;
 			ASSERT_SUCC(dxcOperationResult->GetResult((IDxcBlob**)module));
-
 
 			s_validator->Validate((IDxcBlob*)(*module), 0, &dxcOperationResult);
 			dxcOperationResult->GetStatus(&res);

@@ -6,11 +6,13 @@
 
 namespace JoyEngine
 {
+	class ComputeDispatcher;
+
 	class BufferSorter
 	{
 	public:
 		BufferSorter() = delete;
-		explicit BufferSorter(int dataLength, DataBuffer<uint32_t>* keys, DataBuffer<uint32_t>* values);
+		explicit BufferSorter(int dataLength, DataBuffer<uint32_t>* keys, DataBuffer<uint32_t>* values, ComputeDispatcher* dispatcher);
 	private:
 		uint32_t m_dataLength;
 		DataBuffer<uint32_t>* m_keys;
@@ -23,6 +25,8 @@ namespace JoyEngine
 		std::unique_ptr<DataBuffer<uint32_t>> m_offsetsData;
 		std::unique_ptr<DataBuffer<uint32_t>> m_sizesData;
 		std::unique_ptr<DataBuffer<uint32_t>> m_sizesPrefixSumData;
+
+		ComputeDispatcher* m_dispatcher;
 	};
 }
 #endif // BUFFER_SORTER_H

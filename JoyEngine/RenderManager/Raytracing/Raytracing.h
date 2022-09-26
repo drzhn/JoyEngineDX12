@@ -8,6 +8,7 @@
 #include "CommonEngineStructs.h"
 #include "DataBuffer.h"
 #include "BufferSorter.h"
+#include "RenderManager/ComputeDispatcher.h"
 #include "ResourceManager/Mesh.h"
 #include "ResourceManager/ResourceHandle.h"
 
@@ -29,6 +30,7 @@ namespace JoyEngine
 
 		ResourceHandle<Mesh> m_mesh;
 		std::unique_ptr<BufferSorter> m_bufferSorter;
+		std::unique_ptr<ComputeDispatcher> m_dispatcher;
 	};
 }
 #endif // RAYTRACING_H

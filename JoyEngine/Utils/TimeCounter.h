@@ -2,7 +2,7 @@
 #define TIME_COUNTER_H
 #include <chrono>
 
-#include <Windows.h>
+#include "Log.h"
 
 #define TIME_PERF(message) TimeCounter counter = TimeCounter(message);
 
@@ -20,10 +20,8 @@ namespace JoyEngine
 		{
 			const auto currentTime = std::chrono::high_resolution_clock::now();
 			const double time = std::chrono::duration<double, std::chrono::seconds::period>(currentTime - m_startTime).count();
-			OutputDebugStringA(m_message);
-			char buf[16];
-			sprintf_s(buf, ": %.3f\n", time);
-			OutputDebugStringA(buf);
+			Logger::Log(m_message);
+			Logger::LogFormat(": %.3f\n", time);
 		}
 	private:
 		std::chrono::time_point<std::chrono::steady_clock> m_startTime;

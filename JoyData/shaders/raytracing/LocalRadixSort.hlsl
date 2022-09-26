@@ -1,5 +1,7 @@
 #include "CommonEngineStructs.h"
 
+ConstantBuffer<RaytracingData> raytracingData;
+
 StructuredBuffer<uint> keysData; // size = THREADS_PER_BLOCK * BLOCK_SIZE
 StructuredBuffer<uint> valuesData; // size = THREADS_PER_BLOCK * BLOCK_SIZE
 
@@ -10,7 +12,6 @@ RWStructuredBuffer<uint> sortedBlocksValuesData; // size = THREADS_PER_BLOCK * B
 RWStructuredBuffer<uint> offsetsData; // size = BLOCK_SIZE * BUCKET_SIZE
 RWStructuredBuffer<uint> sizesData; // size = BLOCK_SIZE * BUCKET_SIZE
 
-uniform int bitOffset;
 
 groupshared uint sortTile[THREADS_PER_BLOCK];
 groupshared uint valuesTile[THREADS_PER_BLOCK];
@@ -58,7 +59,7 @@ void CSMain(uint3 tid : SV_GroupThreadID, uint3 gid : SV_GroupID)
 
     AllMemoryBarrierWithGroupSync();
 
-    for (uint shift = bitOffset; shift < bitOffset + RADIX; shift++)
+    for (uint shift = raytracingData.bitOffset; shift < raytracingData.bitOffset + RADIX; shift++)
     {
         uint predResult = 0;
 
@@ -96,7 +97,7 @@ void CSMain(uint3 tid : SV_GroupThreadID, uint3 gid : SV_GroupID)
     sortedBlocksKeysData[groupId * THREADS_PER_BLOCK + threadId] = key;
     sortedBlocksValuesData[groupId * THREADS_PER_BLOCK + threadId] = value;
     
-    radixTile[threadId] = (key >> bitOffset) & (BUCKET_SIZE - 1);
+    radixTile[threadId] = (key >> raytracingData.bitOffset) & (BUCKET_SIZE - 1);
 
     if (threadId < BUCKET_SIZE)
     {

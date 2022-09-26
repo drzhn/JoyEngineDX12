@@ -4,10 +4,11 @@
 
 namespace JoyEngine
 {
-	BufferSorter::BufferSorter(int dataLength, DataBuffer<uint32_t>* keys, DataBuffer<uint32_t>* values):
+	BufferSorter::BufferSorter(int dataLength, DataBuffer<uint32_t>* keys, DataBuffer<uint32_t>* values, ComputeDispatcher* dispatcher):
 		m_dataLength(dataLength),
 		m_keys(keys),
-		m_values(values)
+		m_values(values),
+		m_dispatcher(dispatcher)
 	{
 		const GUID localRadixSortShaderGuid = GUID::StringToGuid("fb423066-e885-4ea4-93d5-01b69037a9aa");
 		const GUID localRaidxSortPipelineGuid = GUID::Random();

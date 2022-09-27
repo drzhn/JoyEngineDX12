@@ -140,7 +140,7 @@ namespace JoyEngine
 	{
 		m_queue->WaitQueueIdle();
 
-
+		m_raytracing = nullptr;
 		m_tonemapping = nullptr;
 		m_queue = nullptr;
 	}

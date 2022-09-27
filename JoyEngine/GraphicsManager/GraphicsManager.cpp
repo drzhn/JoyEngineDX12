@@ -16,14 +16,14 @@ namespace JoyEngine
 		TIME_PERF("GraphicsManager ctor")
 		UINT createFactoryFlags = 0;
 #if defined(FULL_DEBUG)
-		ASSERT_SUCC(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)));
-		debugController->EnableDebugLayer();
+
+		ASSERT_SUCC(D3D12GetDebugInterface(IID_PPV_ARGS(&m_debugController)));
+		m_debugController->EnableDebugLayer();
 		createFactoryFlags = DXGI_CREATE_FACTORY_DEBUG;
+
 #endif
 
 		ASSERT_SUCC(CreateDXGIFactory2(createFactoryFlags, IID_PPV_ARGS(&m_dxgiFactory)));
-
-
 		ASSERT_SUCC(m_dxgiFactory->CheckFeatureSupport(
 			DXGI_FEATURE_PRESENT_ALLOW_TEARING,
 			&m_allowTearing,
@@ -75,7 +75,7 @@ namespace JoyEngine
 		{
 			pInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, TRUE);
 			pInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, TRUE);
-			pInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, TRUE);
+			pInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, FALSE);
 			// Suppress whole categories of messages
 			//D3D12_MESSAGE_CATEGORY Categories[] = {};
 
@@ -121,5 +121,10 @@ namespace JoyEngine
 		//	sizeof(msQualityLevels)));
 		//m_m4xMsaaQuality = msQualityLevels.NumQualityLevels;
 		//ASSERT(m_m4xMsaaQuality > 0);
+	}
+
+	GraphicsManager::~GraphicsManager()
+	{
+		m_logicalDevice->Release();
 	}
 }

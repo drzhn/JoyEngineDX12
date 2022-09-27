@@ -9,7 +9,6 @@
 #include "MemoryManager/MemoryManager.h"
 #include "Utils/Assert.h"
 #include "DDS.h"
-#include "DDSTextureLoader.h"
 #include "JoyEngine.h"
 
 using namespace DirectX;
@@ -186,34 +185,34 @@ namespace JoyEngine
 		textureStream.read(reinterpret_cast<char*>(&ddsMagicNumber), sizeof(uint32_t));
 		if (ddsMagicNumber == DDS_MAGIC)
 		{
-			DDS_HEADER header = {};
-			textureStream.read(reinterpret_cast<char*>(&header), sizeof(DDS_HEADER));
-			m_width = header.width;
-			m_height = header.height;
-			m_format = DXGI_FORMAT_BC1_UNORM;
-			//CreateImage(false, false, false, 1, 1);
-			ID3D12Resource* resource = nullptr; // = m_texture.Get();
-			uint32_t pitch = header.pitchOrLinearSize;
-			// yes, i know i unload data two times.
-			// TODO make special d3d12heap for intermediate data and allocate data there
-			std::vector<char> data = DataManager::Get()->GetData(guid, false, 0);
-			std::vector<D3D12_SUBRESOURCE_DATA> subresource;
-			LoadDDSTextureFromMemory(
-				GraphicsManager::Get()->GetDevice(),
-				reinterpret_cast<uint8_t*>(data.data()),
-				data.size(),
-				&resource,
-				subresource
-			);
-			m_texture = resource;
+			//DDS_HEADER header = {};
+			//textureStream.read(reinterpret_cast<char*>(&header), sizeof(DDS_HEADER));
+			//m_width = header.width;
+			//m_height = header.height;
+			//m_format = DXGI_FORMAT_BC1_UNORM;
+			////CreateImage(false, false, false, 1, 1);
+			//ID3D12Resource* resource = nullptr; // = m_texture.Get();
+			//uint32_t pitch = header.pitchOrLinearSize;
+			//// yes, i know i unload data two times.
+			//// TODO make special d3d12heap for intermediate data and allocate data there
+			//std::vector<char> data = DataManager::Get()->GetData(guid, false, 0);
+			//std::vector<D3D12_SUBRESOURCE_DATA> subresource;
+			//LoadDDSTextureFromMemory(
+			//	GraphicsManager::Get()->GetDevice(),
+			//	reinterpret_cast<uint8_t*>(data.data()),
+			//	data.size(),
+			//	&resource,
+			//	subresource
+			//);
+			//m_texture = resource;
 
-			Texture::CreateImageViews();
+			//Texture::CreateImageViews();
 
-			MemoryManager::Get()->LoadDataToImage(
-				textureStream,
-				sizeof(uint32_t) + sizeof(DDS_HEADER),
-				this,
-				m_mipLevels);
+			//MemoryManager::Get()->LoadDataToImage(
+			//	textureStream,
+			//	sizeof(uint32_t) + sizeof(DDS_HEADER),
+			//	this,
+			//	m_mipLevels);
 		}
 		else
 		{

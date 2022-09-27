@@ -40,7 +40,7 @@ namespace JoyEngine
 	private:
 		const std::string m_commonEngineStructsPath;
 		std::vector<char> m_data;
-		//IDxcBlobEncoding* m_dataBlob;
+		ComPtr<IDxcBlobEncoding> m_dataBlob;
 		IDxcLibrary* m_dxcLibrary;
 	};
 
@@ -74,6 +74,10 @@ namespace JoyEngine
 	class ShaderCompiler
 	{
 	public:
+
+		static void Init();
+		static void Release();
+
 		static void Compile(
 			ShaderType type,
 			const char* shaderPath,
@@ -81,6 +85,8 @@ namespace JoyEngine
 			ID3DBlob** module,
 			std::map<std::string, ShaderInput>& m_inputMap
 		);
+
+
 		static ComPtr<IDxcLibrary> s_dxcLibrary;
 		static ComPtr<IDxcCompiler> s_dxcCompiler;
 		static ComPtr<IDxcContainerReflection> s_dxcReflection;

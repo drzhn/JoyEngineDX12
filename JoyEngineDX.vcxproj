@@ -413,11 +413,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="Libs\DirectXTK12\DirectXTK_Desktop_2022_Win10.vcxproj">
-      <Project>{3e0e8608-cd9b-4c76-af33-29ca38f2c9f0}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="JoyData\shaders\dynamiccubemapconvolition.hlsl">
       <FileType>Document</FileType>
     </None>

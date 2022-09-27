@@ -18,6 +18,7 @@ namespace JoyEngine
 		m_dxcLibrary(library)
 	{
 		m_data = ReadFile(m_commonEngineStructsPath, 0);
+		ASSERT_SUCC(m_dxcLibrary->CreateBlobWithEncodingFromPinned(m_data.data(), m_data.size(), 0, &m_dataBlob));
 	}
 
 	HRESULT EngineStructsInclude::Open(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID* ppData, UINT* pBytes)
@@ -34,8 +35,6 @@ namespace JoyEngine
 
 	HRESULT EngineStructsInclude::LoadSource(LPCWSTR pFilename, IDxcBlob** ppIncludeSource)
 	{
-		ComPtr<IDxcBlobEncoding> m_dataBlob = nullptr;
-		ASSERT_SUCC(m_dxcLibrary->CreateBlobWithEncodingFromPinned(m_data.data(), m_data.size(), 0, &m_dataBlob));
 		*ppIncludeSource = m_dataBlob.Get();
 		m_dataBlob.Detach();
 		return S_OK;
@@ -57,6 +56,18 @@ namespace JoyEngine
 
 	HMODULE dxc_module = nullptr;
 	DxcCreateInstanceProc dxc_create_func = nullptr;
+
+	void ShaderCompiler::Release()
+	{
+		m_commonEngineStructsInclude = nullptr;
+		s_validator = nullptr;
+		s_dxcReflection = nullptr;
+		s_dxcCompiler = nullptr;
+		s_dxcLibrary = nullptr;
+
+		FreeLibrary(dxc_module);
+		FreeLibrary(dxil_module);
+	}
 
 	void ShaderCompiler::Compile(
 		ShaderType type,

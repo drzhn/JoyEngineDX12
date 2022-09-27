@@ -10,20 +10,21 @@
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <wrl.h>
+#include <dxgidebug.h>
 
 #include "Common/Singleton.h"
 using Microsoft::WRL::ComPtr;
 
 namespace JoyEngine
 {
-	class GraphicsManager: public Singleton<GraphicsManager>
+	class GraphicsManager : public Singleton<GraphicsManager>
 	{
 	public:
 		GraphicsManager() = delete;
 
 		explicit GraphicsManager(HINSTANCE instance, HWND windowHandle, uint32_t width, uint32_t height);
 
-		~GraphicsManager() = default;
+		~GraphicsManager();
 
 		[[nodiscard]] HINSTANCE GetHINSTANCE() const noexcept { return m_windowInstance; }
 		[[nodiscard]] HWND GetHWND() const noexcept { return m_windowHandle; }
@@ -44,7 +45,8 @@ namespace JoyEngine
 		ComPtr<IDXGIAdapter4> m_physicalDevice = nullptr;
 		ComPtr<ID3D12Device2> m_logicalDevice = nullptr;
 #if defined(FULL_DEBUG)
-		ComPtr<ID3D12Debug> debugController;
+		ComPtr<ID3D12Debug> m_debugController;
+
 #endif
 		uint32_t m_m4xMsaaQuality;
 		bool m_allowTearing;

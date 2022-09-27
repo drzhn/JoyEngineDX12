@@ -88,6 +88,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 		graphicsContext->Update();
 	}
 
+	graphicsContext->Stop();
+
 	delete graphicsContext;
 
 	return 0;

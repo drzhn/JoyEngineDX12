@@ -5,8 +5,6 @@ VisualStudioVersion = 17.1.31911.260
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JoyEngineDX", "JoyEngineDX.vcxproj", "{D905D1CE-2783-416D-A489-EA9B22994E6E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectXTK12", "Libs\DirectXTK12\DirectXTK_Desktop_2022_Win10.vcxproj", "{3E0E8608-CD9B-4C76-AF33-29CA38F2C9F0}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -29,18 +27,6 @@ Global
 		{D905D1CE-2783-416D-A489-EA9B22994E6E}.Release|x64.Build.0 = Release|x64
 		{D905D1CE-2783-416D-A489-EA9B22994E6E}.Release|x86.ActiveCfg = Release|Win32
 		{D905D1CE-2783-416D-A489-EA9B22994E6E}.Release|x86.Build.0 = Release|Win32
-		{3E0E8608-CD9B-4C76-AF33-29CA38F2C9F0}.Debug|x64.ActiveCfg = Debug|x64
-		{3E0E8608-CD9B-4C76-AF33-29CA38F2C9F0}.Debug|x64.Build.0 = Debug|x64
-		{3E0E8608-CD9B-4C76-AF33-29CA38F2C9F0}.Debug|x86.ActiveCfg = Debug|Win32
-		{3E0E8608-CD9B-4C76-AF33-29CA38F2C9F0}.Debug|x86.Build.0 = Debug|Win32
-		{3E0E8608-CD9B-4C76-AF33-29CA38F2C9F0}.Full Debug|x64.ActiveCfg = Debug|x64
-		{3E0E8608-CD9B-4C76-AF33-29CA38F2C9F0}.Full Debug|x64.Build.0 = Debug|x64
-		{3E0E8608-CD9B-4C76-AF33-29CA38F2C9F0}.Full Debug|x86.ActiveCfg = Debug|Win32
-		{3E0E8608-CD9B-4C76-AF33-29CA38F2C9F0}.Full Debug|x86.Build.0 = Debug|Win32
-		{3E0E8608-CD9B-4C76-AF33-29CA38F2C9F0}.Release|x64.ActiveCfg = Release|x64
-		{3E0E8608-CD9B-4C76-AF33-29CA38F2C9F0}.Release|x64.Build.0 = Release|x64
-		{3E0E8608-CD9B-4C76-AF33-29CA38F2C9F0}.Release|x86.ActiveCfg = Release|Win32
-		{3E0E8608-CD9B-4C76-AF33-29CA38F2C9F0}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -74,10 +74,6 @@ namespace JoyEngine
 	class ShaderCompiler
 	{
 	public:
-
-		static void Init();
-		static void Release();
-
 		static void Compile(
 			ShaderType type,
 			const char* shaderPath,

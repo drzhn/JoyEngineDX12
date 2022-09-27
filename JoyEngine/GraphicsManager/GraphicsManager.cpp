@@ -122,9 +122,4 @@ namespace JoyEngine
 		//m_m4xMsaaQuality = msQualityLevels.NumQualityLevels;
 		//ASSERT(m_m4xMsaaQuality > 0);
 	}
-
-	GraphicsManager::~GraphicsManager()
-	{
-		m_logicalDevice->Release();
-	}
 }

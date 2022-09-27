@@ -102,9 +102,10 @@ namespace JoyEngine
 	{
 		m_renderManager->Stop();
 
+	}
 
-
-
+	JoyEngine::~JoyEngine()
+	{
 		// will destroy managers in certain order
 		m_inputManager = nullptr;
 		m_sceneManager = nullptr; // unregister mesh renderers, remove descriptor set, pipelines, pipeline layouts
@@ -114,21 +115,20 @@ namespace JoyEngine
 		m_descriptorSetManager = nullptr;
 		m_dataManager = nullptr;
 		m_memoryManager = nullptr; //free gpu memory
-
-		ShaderCompiler::Release();
 		m_graphicsManager = nullptr; //delete surface, device, instance
 
+		ImGui_ImplWin32_Shutdown();
+		ImGui::DestroyContext();
 
+#ifdef _DEBUG
 		IDXGIDebug1* pDebug = nullptr;
 		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&pDebug))))
 		{
 			pDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_SUMMARY);
 			pDebug->Release();
 		}
-	}
+#endif
 
-	JoyEngine::~JoyEngine()
-	{
 		OutputDebugStringA("Context destroyed\n");
 	}
 

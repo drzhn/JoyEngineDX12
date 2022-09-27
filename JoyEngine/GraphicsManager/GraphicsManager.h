@@ -24,7 +24,7 @@ namespace JoyEngine
 
 		explicit GraphicsManager(HINSTANCE instance, HWND windowHandle, uint32_t width, uint32_t height);
 
-		~GraphicsManager();
+		~GraphicsManager() = default;
 
 		[[nodiscard]] HINSTANCE GetHINSTANCE() const noexcept { return m_windowInstance; }
 		[[nodiscard]] HWND GetHWND() const noexcept { return m_windowHandle; }

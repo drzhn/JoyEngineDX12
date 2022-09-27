@@ -143,6 +143,10 @@ namespace JoyEngine
 		m_raytracing = nullptr;
 		m_tonemapping = nullptr;
 		m_queue = nullptr;
+
+		{
+			ImGui_ImplDX12_Shutdown();
+		}
 	}
 
 	void RenderManager::RegisterSharedMaterial(SharedMaterial* sm)

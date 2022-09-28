@@ -15,49 +15,75 @@ namespace JoyEngine
 		m_values(values),
 		m_dispatcher(dispatcher)
 	{
-		{ //shaders/raytracing/LocalRadixSort.hlsl
-			const GUID localRadixSortShaderGuid = GUID::StringToGuid("fb423066-e885-4ea4-93d5-01b69037a9aa"); 
-			const GUID localRaidxSortPipelineGuid = GUID::Random();
+		{
+			// LOCAL RADIX SORT
+			{
+				//shaders/raytracing/LocalRadixSort.hlsl
+				const GUID localRadixSortShaderGuid = GUID::StringToGuid("fb423066-e885-4ea4-93d5-01b69037a9aa");
+				const GUID localRaidxSortPipelineGuid = GUID::Random();
 
-			m_localRaidxSortPipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
-				localRaidxSortPipelineGuid,
-				{
-					localRadixSortShaderGuid,
-					D3D_SHADER_MODEL_6_5
-				});
+				m_localRaidxSortPipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
+					localRaidxSortPipelineGuid,
+					{
+						localRadixSortShaderGuid,
+						D3D_SHADER_MODEL_6_5
+					});
+			}
 		}
-		{ //shaders/raytracing/PreScan.hlsl
-			const GUID preScanShaderGuid = GUID::StringToGuid("8190cec8-aa5a-420e-8de2-34c6f838476c"); 
-			const GUID preScanPipelineGuid = GUID::Random();
+		{
+			// SCAN 
+			{
+				//shaders/raytracing/PreScan.hlsl
+				const GUID preScanShaderGuid = GUID::StringToGuid("8190cec8-aa5a-420e-8de2-34c6f838476c");
+				const GUID preScanPipelineGuid = GUID::Random();
 
-			m_preScanPipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
-				preScanPipelineGuid,
-				{
-					preScanShaderGuid,
-					D3D_SHADER_MODEL_6_5
-				});
+				m_preScanPipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
+					preScanPipelineGuid,
+					{
+						preScanShaderGuid,
+						D3D_SHADER_MODEL_6_5
+					});
+			}
+			{
+				//shaders/raytracing/BlockSum.hlsl
+				const GUID blockSumShaderGuid = GUID::StringToGuid("d00ec3ea-53c4-48f3-bc42-d775c67db85c");
+				const GUID blockSumPipelineGuid = GUID::Random();
+
+				m_blockSumSortPipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
+					blockSumPipelineGuid,
+					{
+						blockSumShaderGuid,
+						D3D_SHADER_MODEL_6_5
+					});
+			}
+			{
+				//shaders/raytracing/GlobalScan.hlsl
+				const GUID globalScanShaderGuid = GUID::StringToGuid("8e67cd9b-afdf-409e-bb98-a79ad3f692c8");
+				const GUID globalScanPipelineGuid = GUID::Random();
+
+				m_globalScanPipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
+					globalScanPipelineGuid,
+					{
+						globalScanShaderGuid,
+						D3D_SHADER_MODEL_6_5
+					});
+			}
 		}
-		{ //shaders/raytracing/BlockSum.hlsl
-			const GUID blockSumShaderGuid = GUID::StringToGuid("d00ec3ea-53c4-48f3-bc42-d775c67db85c"); 
-			const GUID blockSumPipelineGuid = GUID::Random();
 
-			m_blockSumSortPipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
-				blockSumPipelineGuid,
-				{
-					blockSumShaderGuid,
-					D3D_SHADER_MODEL_6_5
-				});
-		}
-		{ //shaders/raytracing/GlobalScan.hlsl
-			const GUID globalScanShaderGuid = GUID::StringToGuid("8e67cd9b-afdf-409e-bb98-a79ad3f692c8"); 
-			const GUID globalScanPipelineGuid = GUID::Random();
+		{
+			// GLOBAL RADIX SORT
+			{
+				//shaders/raytracing/GlobalRadixSort.hlsl
+				const GUID globalRadixSortShaderGuid = GUID::StringToGuid("fc94651f-874c-49c8-9b01-83a238ce580b");
+				const GUID globalRadixSortPipelineGuid = GUID::Random();
 
-			m_globalScanPipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
-				globalScanPipelineGuid,
-				{
-					globalScanShaderGuid,
-					D3D_SHADER_MODEL_6_5
-				});
+				m_globalRadixSortPipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
+					globalRadixSortPipelineGuid,
+					{
+						globalRadixSortShaderGuid,
+						D3D_SHADER_MODEL_6_5
+					});
+			}
 		}
 
 		m_sortedBlocksKeysData = std::make_unique<DataBuffer<uint32_t>>(DATA_ARRAY_COUNT);
@@ -69,7 +95,7 @@ namespace JoyEngine
 
 		m_keys->ReadbackAndWriteToMemory(m_unsortedKeysLocalData.data());
 
-		Logger::LogUintArray(m_unsortedKeysLocalData.data(), m_unsortedKeysLocalData.size());
+		//Logger::LogUintArray(m_unsortedKeysLocalData.data(), m_unsortedKeysLocalData.size());
 
 		for (int i = 0; i < BUCKET_SIZE; i++)
 		{
@@ -109,21 +135,88 @@ namespace JoyEngine
 
 				commandList->Dispatch(BLOCK_SIZE, 1, 1);
 			}
+
+			GraphicsUtils::UAVBarrier(commandList, m_keys->GetBuffer()->GetBuffer().Get());
+			GraphicsUtils::UAVBarrier(commandList, m_values->GetBuffer()->GetBuffer().Get());
+			GraphicsUtils::UAVBarrier(commandList, m_sortedBlocksKeysData->GetBuffer()->GetBuffer().Get());
+			GraphicsUtils::UAVBarrier(commandList, m_sortedBlocksValuesData->GetBuffer()->GetBuffer().Get());
+			GraphicsUtils::UAVBarrier(commandList, m_offsetsData->GetBuffer()->GetBuffer().Get());
+			GraphicsUtils::UAVBarrier(commandList, m_sizesData->GetBuffer()->GetBuffer().Get());
+
+			// Pre scan 
+			{
+				commandList->SetComputeRootSignature(m_preScanPipeline->GetRootSignature().Get());
+				commandList->SetPipelineState(m_preScanPipeline->GetPipelineObject().Get());
+
+
+				GraphicsUtils::AttachViewToCompute(commandList, m_preScanPipeline, "data", m_sizesData->GetUAV());
+				GraphicsUtils::AttachViewToCompute(commandList, m_preScanPipeline, "blockSumsData", m_sizesPrefixSumData->GetUAV());
+
+				commandList->Dispatch(BLOCK_SIZE / (THREADS_PER_BLOCK / BUCKET_SIZE), 1, 1);
+			}
+
+			GraphicsUtils::UAVBarrier(commandList, m_sizesData->GetBuffer()->GetBuffer().Get());
+			GraphicsUtils::UAVBarrier(commandList, m_sizesPrefixSumData->GetBuffer()->GetBuffer().Get());
+
+			// Block sum
+			{
+				commandList->SetComputeRootSignature(m_blockSumSortPipeline->GetRootSignature().Get());
+				commandList->SetPipelineState(m_blockSumSortPipeline->GetPipelineObject().Get());
+
+
+				GraphicsUtils::AttachViewToCompute(commandList, m_blockSumSortPipeline, "blockSumsData", m_sizesPrefixSumData->GetUAV());
+
+				commandList->Dispatch(1, 1, 1);
+			}
+
+			GraphicsUtils::UAVBarrier(commandList, m_sizesPrefixSumData->GetBuffer()->GetBuffer().Get());
+
+			// Global scan
+			{
+				commandList->SetComputeRootSignature(m_globalScanPipeline->GetRootSignature().Get());
+				commandList->SetPipelineState(m_globalScanPipeline->GetPipelineObject().Get());
+
+
+				GraphicsUtils::AttachViewToCompute(commandList, m_globalScanPipeline, "data", m_sizesData->GetUAV());
+				GraphicsUtils::AttachViewToCompute(commandList, m_globalScanPipeline, "blockSumsData", m_sizesPrefixSumData->GetUAV());
+
+				commandList->Dispatch(BLOCK_SIZE / (THREADS_PER_BLOCK / BUCKET_SIZE), 1, 1);
+			}
+
+			GraphicsUtils::UAVBarrier(commandList, m_sizesData->GetBuffer()->GetBuffer().Get());
+			GraphicsUtils::UAVBarrier(commandList, m_sizesPrefixSumData->GetBuffer()->GetBuffer().Get());
+
+			// Global radix sort
+			{
+				commandList->SetComputeRootSignature(m_globalRadixSortPipeline->GetRootSignature().Get());
+				commandList->SetPipelineState(m_globalRadixSortPipeline->GetPipelineObject().Get());
+
+
+				GraphicsUtils::AttachViewToCompute(commandList, m_globalRadixSortPipeline, "raytracingData", m_raytracingData.GetView());
+
+				GraphicsUtils::AttachViewToCompute(commandList, m_globalRadixSortPipeline, "sortedBlocksKeysData", m_sortedBlocksKeysData->GetSRV());
+				GraphicsUtils::AttachViewToCompute(commandList, m_globalRadixSortPipeline, "sortedBlocksValuesData", m_sortedBlocksValuesData->GetSRV());
+				GraphicsUtils::AttachViewToCompute(commandList, m_globalRadixSortPipeline, "offsetsData", m_offsetsData->GetSRV());
+				GraphicsUtils::AttachViewToCompute(commandList, m_globalRadixSortPipeline, "sizesData", m_sizesData->GetSRV());
+				GraphicsUtils::AttachViewToCompute(commandList, m_globalRadixSortPipeline, "sortedKeysData", m_keys->GetUAV());
+				GraphicsUtils::AttachViewToCompute(commandList, m_globalRadixSortPipeline, "sortedValuesData", m_values->GetUAV());
+
+				commandList->Dispatch(BLOCK_SIZE, 1, 1);
+			}
 			m_dispatcher->ExecuteAndWait();
 		}
 
-		m_sortedBlocksKeysData->ReadbackGpuData();
-		Logger::Log("\n\n");
-		Logger::LogUintArray(m_sortedBlocksKeysData->GetLocalData(), m_sortedBlocksKeysData->GetSize());
+#ifdef _DEBUG
+		m_keys->ReadbackGpuData();
+		//Logger::Log("\n\n");
+		//Logger::LogUintArray(m_keys->GetLocalData(), m_keys->GetSize(), 1030);
 
-		//for (int i = 0; i < BLOCK_SIZE; i++)
-		//{
-		//	for (int j = 0; j < THREADS_PER_BLOCK - 1; j++)
-		//	{
-		//		uint32_t first = m_sortedBlocksKeysData->GetLocalData()[i * THREADS_PER_BLOCK + j];
-		//		uint32_t second = m_sortedBlocksKeysData->GetLocalData()[i * THREADS_PER_BLOCK + j + 1];
-		//		ASSERT(first <= second);
-		//	}
-		//}
+		for (int i = 0; i < BLOCK_SIZE * THREADS_PER_BLOCK - 1; i++)
+		{
+			uint32_t first = m_keys->GetLocalData()[i];
+			uint32_t second = m_keys->GetLocalData()[i + 1];
+			ASSERT(first <= second);
+		}
+#endif
 	}
 }

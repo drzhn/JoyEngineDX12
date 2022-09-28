@@ -396,5 +396,6 @@
     <None Include="JoyData\shaders\raytracing\GlobalScan.hlsl" />
     <None Include="JoyData\shaders\raytracing\BlockSum.hlsl" />
     <None Include="JoyData\shaders\raytracing\PreScan.hlsl" />
+    <None Include="JoyData\shaders\raytracing\GlobalRadixSort.hlsl" />
   </ItemGroup>
 </Project>

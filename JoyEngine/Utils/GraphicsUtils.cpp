@@ -36,6 +36,17 @@ namespace JoyEngine
 		commandList->ResourceBarrier(1, &barrier);
 	}
 
+	void GraphicsUtils::UAVBarrier(ID3D12GraphicsCommandList* commandList, ID3D12Resource* pResource)
+	{
+		D3D12_RESOURCE_BARRIER barrier = {};
+		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_UAV;
+		barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+		barrier.UAV = {
+			.pResource = pResource
+		};
+		commandList->ResourceBarrier(1, &barrier);
+	}
+
 	void GraphicsUtils::AttachViewToGraphics(
 		ID3D12GraphicsCommandList* commandList,
 		uint32_t rootParameterIndex,

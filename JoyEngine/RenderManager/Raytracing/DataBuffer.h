@@ -100,6 +100,7 @@ namespace JoyEngine
 		}
 
 		[[nodiscard]] size_t GetSize() const noexcept { return m_size; }
+		Buffer* GetBuffer() const noexcept { return m_gpuBuffer.get(); }
 
 	private:
 		std::unique_ptr<Buffer> m_gpuBuffer;

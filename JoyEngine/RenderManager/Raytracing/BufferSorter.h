@@ -25,6 +25,7 @@ namespace JoyEngine
 		ResourceHandle<ComputePipeline> m_preScanPipeline;
 		ResourceHandle<ComputePipeline> m_blockSumSortPipeline;
 		ResourceHandle<ComputePipeline> m_globalScanPipeline;
+		ResourceHandle<ComputePipeline> m_globalRadixSortPipeline;
 
 		std::unique_ptr<DataBuffer<uint32_t>> m_sortedBlocksKeysData;
 		std::unique_ptr<DataBuffer<uint32_t>> m_sortedBlocksValuesData;

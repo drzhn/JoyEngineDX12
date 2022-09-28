@@ -211,6 +211,10 @@
             "guid": "8e67cd9b-afdf-409e-bb98-a79ad3f692c8",
             "path": "shaders/raytracing/GlobalScan.hlsl"
         },
+        {
+            "guid": "fc94651f-874c-49c8-9b01-83a238ce580b",
+            "path": "shaders/raytracing/GlobalRadixSort.hlsl"
+        },
 
         {
             "guid": "11dcfeba-c2b6-4c2e-a3c7-51054ff06f1d",

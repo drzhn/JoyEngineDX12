@@ -22,6 +22,9 @@ namespace JoyEngine
 		DataBuffer<uint32_t>* m_values;
 
 		ResourceHandle<ComputePipeline> m_localRaidxSortPipeline;
+		ResourceHandle<ComputePipeline> m_preScanPipeline;
+		ResourceHandle<ComputePipeline> m_blockSumSortPipeline;
+		ResourceHandle<ComputePipeline> m_globalScanPipeline;
 
 		std::unique_ptr<DataBuffer<uint32_t>> m_sortedBlocksKeysData;
 		std::unique_ptr<DataBuffer<uint32_t>> m_sortedBlocksValuesData;
@@ -33,13 +36,13 @@ namespace JoyEngine
 
 		ComputeDispatcher* m_dispatcher = nullptr;
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 		std::array<uint32_t, DATA_ARRAY_COUNT> m_unsortedKeysLocalData = std::array<uint32_t, DATA_ARRAY_COUNT>();
 		std::array<uint32_t, DATA_ARRAY_COUNT> m_sortedKeysLocalData = std::array<uint32_t, DATA_ARRAY_COUNT>();
 		std::array<uint32_t, BUCKET_SIZE * BLOCK_SIZE> m_sizesLocalDataBeforeScan = std::array<uint32_t, BUCKET_SIZE * BLOCK_SIZE>();
 
 		std::array<int, BUCKET_SIZE> _debugDataArray = std::array<int, BUCKET_SIZE>();
-#endif
+		//#endif
 	};
 }
 #endif // BUFFER_SORTER_H

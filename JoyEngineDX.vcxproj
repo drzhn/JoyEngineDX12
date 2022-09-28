@@ -449,6 +449,17 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="JoyData\shaders\raytracing\LocalRadixSort.hlsl">
+      <FileType>HLSL</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="JoyData\shaders\raytracing\BlockSum.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="JoyData\shaders\raytracing\GlobalScan.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="JoyData\shaders\raytracing\PreScan.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

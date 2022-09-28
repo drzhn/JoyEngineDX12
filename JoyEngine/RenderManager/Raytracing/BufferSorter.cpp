@@ -15,15 +15,50 @@ namespace JoyEngine
 		m_values(values),
 		m_dispatcher(dispatcher)
 	{
-		const GUID localRadixSortShaderGuid = GUID::StringToGuid("fb423066-e885-4ea4-93d5-01b69037a9aa");
-		const GUID localRaidxSortPipelineGuid = GUID::Random();
+		{ //shaders/raytracing/LocalRadixSort.hlsl
+			const GUID localRadixSortShaderGuid = GUID::StringToGuid("fb423066-e885-4ea4-93d5-01b69037a9aa"); 
+			const GUID localRaidxSortPipelineGuid = GUID::Random();
 
-		m_localRaidxSortPipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
-			localRaidxSortPipelineGuid,
-			{
-				localRadixSortShaderGuid,
-				D3D_SHADER_MODEL_6_5
-			});
+			m_localRaidxSortPipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
+				localRaidxSortPipelineGuid,
+				{
+					localRadixSortShaderGuid,
+					D3D_SHADER_MODEL_6_5
+				});
+		}
+		{ //shaders/raytracing/PreScan.hlsl
+			const GUID preScanShaderGuid = GUID::StringToGuid("8190cec8-aa5a-420e-8de2-34c6f838476c"); 
+			const GUID preScanPipelineGuid = GUID::Random();
+
+			m_preScanPipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
+				preScanPipelineGuid,
+				{
+					preScanShaderGuid,
+					D3D_SHADER_MODEL_6_5
+				});
+		}
+		{ //shaders/raytracing/BlockSum.hlsl
+			const GUID blockSumShaderGuid = GUID::StringToGuid("d00ec3ea-53c4-48f3-bc42-d775c67db85c"); 
+			const GUID blockSumPipelineGuid = GUID::Random();
+
+			m_blockSumSortPipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
+				blockSumPipelineGuid,
+				{
+					blockSumShaderGuid,
+					D3D_SHADER_MODEL_6_5
+				});
+		}
+		{ //shaders/raytracing/GlobalScan.hlsl
+			const GUID globalScanShaderGuid = GUID::StringToGuid("8e67cd9b-afdf-409e-bb98-a79ad3f692c8"); 
+			const GUID globalScanPipelineGuid = GUID::Random();
+
+			m_globalScanPipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
+				globalScanPipelineGuid,
+				{
+					globalScanShaderGuid,
+					D3D_SHADER_MODEL_6_5
+				});
+		}
 
 		m_sortedBlocksKeysData = std::make_unique<DataBuffer<uint32_t>>(DATA_ARRAY_COUNT);
 		m_sortedBlocksValuesData = std::make_unique<DataBuffer<uint32_t>>(DATA_ARRAY_COUNT);
@@ -58,20 +93,22 @@ namespace JoyEngine
 			};
 			commandList->SetDescriptorHeaps(2, heaps);
 
-			commandList->SetComputeRootSignature(m_localRaidxSortPipeline->GetRootSignature().Get());
-			commandList->SetPipelineState(m_localRaidxSortPipeline->GetPipelineObject().Get());
+			// Local radix sort
+			{
+				commandList->SetComputeRootSignature(m_localRaidxSortPipeline->GetRootSignature().Get());
+				commandList->SetPipelineState(m_localRaidxSortPipeline->GetPipelineObject().Get());
 
 
-			GraphicsUtils::AttachViewToCompute(commandList, m_localRaidxSortPipeline, "raytracingData", m_raytracingData.GetView());
-			GraphicsUtils::AttachViewToCompute(commandList, m_localRaidxSortPipeline, "keysData", m_keys->GetSRV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_localRaidxSortPipeline, "valuesData", m_values->GetSRV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_localRaidxSortPipeline, "sortedBlocksKeysData", m_sortedBlocksKeysData->GetUAV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_localRaidxSortPipeline, "sortedBlocksValuesData", m_sortedBlocksValuesData->GetUAV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_localRaidxSortPipeline, "offsetsData", m_offsetsData->GetUAV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_localRaidxSortPipeline, "sizesData", m_sizesData->GetUAV());
+				GraphicsUtils::AttachViewToCompute(commandList, m_localRaidxSortPipeline, "raytracingData", m_raytracingData.GetView());
+				GraphicsUtils::AttachViewToCompute(commandList, m_localRaidxSortPipeline, "keysData", m_keys->GetSRV());
+				GraphicsUtils::AttachViewToCompute(commandList, m_localRaidxSortPipeline, "valuesData", m_values->GetSRV());
+				GraphicsUtils::AttachViewToCompute(commandList, m_localRaidxSortPipeline, "sortedBlocksKeysData", m_sortedBlocksKeysData->GetUAV());
+				GraphicsUtils::AttachViewToCompute(commandList, m_localRaidxSortPipeline, "sortedBlocksValuesData", m_sortedBlocksValuesData->GetUAV());
+				GraphicsUtils::AttachViewToCompute(commandList, m_localRaidxSortPipeline, "offsetsData", m_offsetsData->GetUAV());
+				GraphicsUtils::AttachViewToCompute(commandList, m_localRaidxSortPipeline, "sizesData", m_sizesData->GetUAV());
 
-			commandList->Dispatch(BLOCK_SIZE, 1, 1);
-
+				commandList->Dispatch(BLOCK_SIZE, 1, 1);
+			}
 			m_dispatcher->ExecuteAndWait();
 		}
 

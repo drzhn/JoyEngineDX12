@@ -18,7 +18,7 @@ namespace JoyEngine
 		m_dxcLibrary(library)
 	{
 		m_data = ReadFile(m_commonEngineStructsPath, 0);
-		ASSERT_SUCC(m_dxcLibrary->CreateBlobWithEncodingFromPinned(m_data.data(), m_data.size(), 0, &m_dataBlob));
+
 	}
 
 	HRESULT EngineStructsInclude::Open(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID* ppData, UINT* pBytes)
@@ -35,6 +35,8 @@ namespace JoyEngine
 
 	HRESULT EngineStructsInclude::LoadSource(LPCWSTR pFilename, IDxcBlob** ppIncludeSource)
 	{
+		ComPtr<IDxcBlobEncoding> m_dataBlob;
+		ASSERT_SUCC(m_dxcLibrary->CreateBlobWithEncodingFromPinned(m_data.data(), m_data.size(), 0, &m_dataBlob));
 		*ppIncludeSource = m_dataBlob.Get();
 		m_dataBlob.Detach();
 		return S_OK;

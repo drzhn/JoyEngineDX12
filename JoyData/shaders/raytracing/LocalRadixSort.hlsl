@@ -1,3 +1,4 @@
+// LOCAL RADIX SORT
 #include "CommonEngineStructs.h"
 
 ConstantBuffer<RaytracingData> raytracingData : register(b0);

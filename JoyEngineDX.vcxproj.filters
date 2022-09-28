@@ -393,5 +393,8 @@
     <None Include="JoyData\shaders\standardShader.hlsl" />
     <None Include="JoyData\shaders\gizmoAxisDrawer.hlsl" />
     <None Include="JoyData\shaders\raytracing\LocalRadixSort.hlsl" />
+    <None Include="JoyData\shaders\raytracing\GlobalScan.hlsl" />
+    <None Include="JoyData\shaders\raytracing\BlockSum.hlsl" />
+    <None Include="JoyData\shaders\raytracing\PreScan.hlsl" />
   </ItemGroup>
 </Project>

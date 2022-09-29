@@ -78,6 +78,9 @@ enum LightType
 #define MAX_FLOAT 0x7F7FFFFF // just a big float
 #define MAX_UINT 0xFFFFFFFF
 
+#define INTERNAL_NODE 0
+#define LEAF_NODE 1
+
 struct Vertex
 {
 	VEC3 pos;
@@ -158,9 +161,14 @@ struct MipMapGenerationData
 
 // Raytracing structs
 
-struct RaytracingData
+struct BufferSorterData
 {
 	UINT1 bitOffset;
+};
+
+struct BVHConstructorData
+{
+	UINT1 trianglesCount;
 };
 
 struct AABB

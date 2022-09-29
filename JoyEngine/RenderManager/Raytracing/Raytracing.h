@@ -8,6 +8,7 @@
 #include "CommonEngineStructs.h"
 #include "DataBuffer.h"
 #include "BufferSorter.h"
+#include "BVHConstructor.h"
 #include "RenderManager/ComputeDispatcher.h"
 #include "ResourceManager/Mesh.h"
 #include "ResourceManager/ResourceHandle.h"
@@ -25,12 +26,14 @@ namespace JoyEngine
 		std::unique_ptr<DataBuffer<uint32_t>> m_triangleIndexBuffer;
 		std::unique_ptr<DataBuffer<Triangle>> m_triangleDataBuffer;
 		std::unique_ptr<DataBuffer<AABB>> m_triangleAABBBuffer;
+
 		std::unique_ptr<DataBuffer<AABB>> m_bvhDataBuffer;
 		std::unique_ptr<DataBuffer<LeafNode>> m_bvhLeafNodesBuffer;
 		std::unique_ptr<DataBuffer<InternalNode>> m_bvhInternalNodesBuffer;
 
 		ResourceHandle<Mesh> m_mesh;
 		std::unique_ptr<BufferSorter> m_bufferSorter;
+		std::unique_ptr<BVHConstructor> m_bvhConstructor;
 		std::unique_ptr<ComputeDispatcher> m_dispatcher;
 	};
 }

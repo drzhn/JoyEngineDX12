@@ -91,16 +91,6 @@ namespace JoyEngine
 		m_offsetsData = std::make_unique<DataBuffer<uint32_t>>(BUCKET_SIZE * BLOCK_SIZE);
 		m_sizesData = std::make_unique<DataBuffer<uint32_t>>(BUCKET_SIZE * BLOCK_SIZE);
 		m_sizesPrefixSumData = std::make_unique<DataBuffer<uint32_t>>(BLOCK_SIZE / (THREADS_PER_BLOCK / BUCKET_SIZE));
-
-
-		m_keys->ReadbackAndWriteToMemory(m_unsortedKeysLocalData.data());
-
-		//Logger::LogUintArray(m_unsortedKeysLocalData.data(), m_unsortedKeysLocalData.size());
-
-		for (int i = 0; i < BUCKET_SIZE; i++)
-		{
-			_debugDataArray[i] = 0;
-		}
 	}
 
 	void BufferSorter::Sort()
@@ -109,7 +99,7 @@ namespace JoyEngine
 
 		for (uint32_t bitOffset = 0; bitOffset < sizeof(uint32_t) * 8; bitOffset += RADIX)
 		{
-			m_raytracingData.SetData({.bitOffset = bitOffset});
+			m_data.SetData({.bitOffset = bitOffset});
 			const auto commandList = m_dispatcher->GetCommandList();
 
 			ID3D12DescriptorHeap* heaps[2]
@@ -125,7 +115,8 @@ namespace JoyEngine
 				commandList->SetPipelineState(m_localRaidxSortPipeline->GetPipelineObject().Get());
 
 
-				GraphicsUtils::AttachViewToCompute(commandList, m_localRaidxSortPipeline, "raytracingData", m_raytracingData.GetView());
+				GraphicsUtils::AttachViewToCompute(commandList, m_localRaidxSortPipeline, "data", m_data.GetView());
+
 				GraphicsUtils::AttachViewToCompute(commandList, m_localRaidxSortPipeline, "keysData", m_keys->GetSRV());
 				GraphicsUtils::AttachViewToCompute(commandList, m_localRaidxSortPipeline, "valuesData", m_values->GetSRV());
 				GraphicsUtils::AttachViewToCompute(commandList, m_localRaidxSortPipeline, "sortedBlocksKeysData", m_sortedBlocksKeysData->GetUAV());
@@ -192,7 +183,7 @@ namespace JoyEngine
 				commandList->SetPipelineState(m_globalRadixSortPipeline->GetPipelineObject().Get());
 
 
-				GraphicsUtils::AttachViewToCompute(commandList, m_globalRadixSortPipeline, "raytracingData", m_raytracingData.GetView());
+				GraphicsUtils::AttachViewToCompute(commandList, m_globalRadixSortPipeline, "data", m_data.GetView());
 
 				GraphicsUtils::AttachViewToCompute(commandList, m_globalRadixSortPipeline, "sortedBlocksKeysData", m_sortedBlocksKeysData->GetSRV());
 				GraphicsUtils::AttachViewToCompute(commandList, m_globalRadixSortPipeline, "sortedBlocksValuesData", m_sortedBlocksValuesData->GetSRV());

@@ -1,7 +1,7 @@
 // GLOBAL RADIX SORT
 #include "CommonEngineStructs.h"
 
-ConstantBuffer<RaytracingData> raytracingData : register(b0);
+ConstantBuffer<BufferSorterData> data : register(b0);
 
 StructuredBuffer<uint> sortedBlocksKeysData; // size = THREADS_PER_BLOCK * BLOCK_SIZE
 StructuredBuffer<uint> sortedBlocksValuesData; // size = THREADS_PER_BLOCK * BLOCK_SIZE
@@ -30,7 +30,7 @@ void CSMain(uint3 tid : SV_GroupThreadID, uint3 gid : SV_GroupID)
     }
     AllMemoryBarrierWithGroupSync();
 
-    const uint radix = (key >> raytracingData.bitOffset) & (BUCKET_SIZE - 1);
+    const uint radix = (key >> data.bitOffset) & (BUCKET_SIZE - 1);
     const uint indexOutput = sizesTile[radix] + threadId - offsetsTile[radix];
     
     sortedKeysData[indexOutput] = key;

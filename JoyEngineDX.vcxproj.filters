@@ -168,6 +168,9 @@
     <ClCompile Include="JoyEngine\Utils\Log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="JoyEngine\RenderManager\Raytracing\BVHConstructor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="JoyEngine\JoyEngine.h">
@@ -365,6 +368,9 @@
     <ClInclude Include="JoyEngine\Utils\Log.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="JoyEngine\RenderManager\Raytracing\BVHConstructor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="JoyData\shaders\gbufferwrite.hlsl" />
@@ -397,5 +403,7 @@
     <None Include="JoyData\shaders\raytracing\BlockSum.hlsl" />
     <None Include="JoyData\shaders\raytracing\PreScan.hlsl" />
     <None Include="JoyData\shaders\raytracing\GlobalRadixSort.hlsl" />
+    <None Include="JoyData\shaders\raytracing\BVHTreeConstructor.hlsl" />
+    <None Include="JoyData\shaders\raytracing\BVHAABBMerger.hlsl" />
   </ItemGroup>
 </Project>

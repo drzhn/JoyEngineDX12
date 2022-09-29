@@ -26,6 +26,10 @@
             "path": "models/Sphere.obj"
         },
         {
+            "guid": "87b5a0a5-e806-40cd-8051-257091065a76",
+            "path": "models/ExampleObject2.obj"
+        },
+        {
             "guid": "2529df0e-9a8e-4730-9b8d-a70b4b93251a",
             "path": "models/Anna_Head.obj"
         },
@@ -214,6 +218,14 @@
         {
             "guid": "fc94651f-874c-49c8-9b01-83a238ce580b",
             "path": "shaders/raytracing/GlobalRadixSort.hlsl"
+        },
+        {
+            "guid": "326057ce-8c0c-40be-b912-67b63d25211e",
+            "path": "shaders/raytracing/BVHTreeConstructor.hlsl"
+        },
+        {
+            "guid": "d611cd9f-6ce0-42f5-b908-af7289b0eae5",
+            "path": "shaders/raytracing/BVHAABBMerger.hlsl"
         },
 
         {

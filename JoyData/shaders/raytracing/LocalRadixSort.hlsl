@@ -1,7 +1,7 @@
 // LOCAL RADIX SORT
 #include "CommonEngineStructs.h"
 
-ConstantBuffer<RaytracingData> raytracingData : register(b0);
+ConstantBuffer<BufferSorterData> data : register(b0);
 
 StructuredBuffer<uint> keysData : register(t0); // size = THREADS_PER_BLOCK * BLOCK_SIZE
 StructuredBuffer<uint> valuesData : register(t1); // size = THREADS_PER_BLOCK * BLOCK_SIZE
@@ -60,7 +60,7 @@ void CSMain(uint3 tid : SV_GroupThreadID, uint3 gid : SV_GroupID)
 
 	AllMemoryBarrierWithGroupSync();
 
-	for (uint shift = raytracingData.bitOffset; shift < raytracingData.bitOffset + RADIX; shift++)
+	for (uint shift = data.bitOffset; shift < data.bitOffset + RADIX; shift++)
 	{
 		uint predResult = 0;
 
@@ -98,7 +98,7 @@ void CSMain(uint3 tid : SV_GroupThreadID, uint3 gid : SV_GroupID)
 	sortedBlocksKeysData[groupId * THREADS_PER_BLOCK + threadId] = key;
 	sortedBlocksValuesData[groupId * THREADS_PER_BLOCK + threadId] = value;
 
-	radixTile[threadId] = (key >> raytracingData.bitOffset) & (BUCKET_SIZE - 1);
+	radixTile[threadId] = (key >> data.bitOffset) & (BUCKET_SIZE - 1);
 
 	if (threadId < BUCKET_SIZE)
 	{

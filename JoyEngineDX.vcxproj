@@ -217,6 +217,7 @@
     <ClCompile Include="JoyEngine\MemoryManager\DeviceLinearAllocator.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\ComputeDispatcher.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\Raytracing\BufferSorter.cpp" />
+    <ClCompile Include="JoyEngine\RenderManager\Raytracing\BVHConstructor.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\Raytracing\Raytracing.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\Tonemapping.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\Buffer.cpp" />
@@ -272,6 +273,7 @@
     <ClInclude Include="JoyEngine\MemoryManager\DeviceLinearAllocator.h" />
     <ClInclude Include="JoyEngine\RenderManager\ComputeDispatcher.h" />
     <ClInclude Include="JoyEngine\RenderManager\Raytracing\BufferSorter.h" />
+    <ClInclude Include="JoyEngine\RenderManager\Raytracing\BVHConstructor.h" />
     <ClInclude Include="JoyEngine\RenderManager\Raytracing\DataBuffer.h" />
     <ClInclude Include="JoyEngine\RenderManager\Raytracing\Raytracing.h" />
     <ClInclude Include="JoyEngine\RenderManager\Tonemapping.h" />
@@ -465,6 +467,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="JoyData\shaders\raytracing\GlobalRadixSort.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="JoyData\shaders\raytracing\BVHAABBMerger.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="JoyData\shaders\raytracing\BVHTreeConstructor.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

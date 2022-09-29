@@ -1,28 +1,39 @@
 ﻿#include "Raytracing.h"
 
 #include "ResourceManager/ResourceManager.h"
+#include "Utils/Log.h"
 
 namespace JoyEngine
 {
 	AABB Whole = {
-		.min = glm::vec3(-6.f, -6.f, -6.f),
-		.max = glm::vec3(6.f, 6.f, 6.f),
+		.min = glm::vec3(-8.f, -8.f, -8.f),
+		.max = glm::vec3(8.f, 8.f, 8.f),
 	};
+
+	inline float Min(float a, float b)
+	{
+		return a <= b ? a : b;
+	}
+
+	inline float Max(float a, float b)
+	{
+		return a >= b ? a : b;
+	}
 
 	uint32_t ExpandBits(uint32_t v)
 	{
-		v = (v * 0x00010001u) & 0xFF0000FFu;
-		v = (v * 0x00000101u) & 0x0F00F00Fu;
-		v = (v * 0x00000011u) & 0xC30C30C3u;
-		v = (v * 0x00000005u) & 0x49249249u;
+		v = (v * 0x00010001) & 0xFF0000FF;
+		v = (v * 0x00000101) & 0x0F00F00F;
+		v = (v * 0x00000011) & 0xC30C30C3;
+		v = (v * 0x00000005) & 0x49249249;
 		return v;
 	}
 
 	uint32_t Morton3D(float x, float y, float z)
 	{
-		x = std::min(std::max(x * 1024.0f, 0.0f), 1023.0f);
-		y = std::min(std::max(y * 1024.0f, 0.0f), 1023.0f);
-		z = std::min(std::max(z * 1024.0f, 0.0f), 1023.0f);
+		x = Min(Max(x * 1024.0f, 0.0f), 1023.0f);
+		y = Min(Max(y * 1024.0f, 0.0f), 1023.0f);
+		z = Min(Max(z * 1024.0f, 0.0f), 1023.0f);
 		uint32_t xx = ExpandBits(static_cast<uint32_t>(x));
 		uint32_t yy = ExpandBits(static_cast<uint32_t>(y));
 		uint32_t zz = ExpandBits(static_cast<uint32_t>(z));
@@ -32,14 +43,14 @@ namespace JoyEngine
 	void GetCentroidAndAABB(glm::vec3 a, glm::vec3 b, glm::vec3 c, glm::vec3* centroid, AABB* aabb)
 	{
 		glm::vec3 min = glm::vec3(
-			std::min(std::min(a.x, b.x), c.x) - 0.001f,
-			std::min(std::min(a.y, b.y), c.y) - 0.001f,
-			std::min(std::min(a.z, b.z), c.z) - 0.001f
+			Min(Min(a.x, b.x), c.x) - 0.001f,
+			Min(Min(a.y, b.y), c.y) - 0.001f,
+			Min(Min(a.z, b.z), c.z) - 0.001f
 		);
 		glm::vec3 max = glm::vec3(
-			std::max(std::max(a.x, b.x), c.x) + 0.001f,
-			std::max(std::max(a.y, b.y), c.y) + 0.001f,
-			std::max(std::max(a.z, b.z), c.z) + 0.001f
+			Max(Max(a.x, b.x), c.x) + 0.001f,
+			Max(Max(a.y, b.y), c.y) + 0.001f,
+			Max(Max(a.z, b.z), c.z) + 0.001f
 		);
 
 		*centroid = (min + max) * 0.5f;
@@ -124,10 +135,53 @@ namespace JoyEngine
 			m_keysBuffer.get(),
 			m_triangleIndexBuffer.get(),
 			m_dispatcher.get());
+
+		m_bvhConstructor = std::make_unique<BVHConstructor>(
+			m_trianglesLength,
+			m_keysBuffer.get(),
+			m_triangleIndexBuffer.get(),
+			m_triangleAABBBuffer.get(),
+			m_bvhInternalNodesBuffer.get(),
+			m_bvhLeafNodesBuffer.get(),
+			m_bvhDataBuffer.get(),
+			m_dispatcher.get()
+		);
+
+		Logger::LogFormat("Triangles length %d\n", m_trianglesLength);
 	}
 
 	void Raytracing::PrepareBVH()
 	{
 		m_bufferSorter->Sort();
+		m_bvhConstructor->ConstructTree();
+		m_bvhConstructor->ConstructBVH();
+
+		m_bvhDataBuffer->ReadbackGpuData();
+		m_bvhLeafNodesBuffer->ReadbackGpuData();
+		m_bvhInternalNodesBuffer->ReadbackGpuData();
+
+		for (int i = 0; i < 14; i++)
+		{
+			AABB data = m_bvhDataBuffer->GetLocalData()[i];
+			Logger::LogFormat("%.3f %.3f %.3f %.3f %.3f %.3f \n",
+			                  data.min.x,
+			                  data.min.y,
+			                  data.min.z,
+			                  data.max.x,
+			                  data.max.y,
+			                  data.max.z);
+		}
+
+		for (int i = 0; i < 14; i++)
+		{
+			LeafNode data = m_bvhLeafNodesBuffer->GetLocalData()[i];
+			Logger::LogFormat("index %d, parent %d\n", data.index, data.parent);
+		}
+
+		for (int i = 0; i < 14; i++)
+		{
+			InternalNode data = m_bvhInternalNodesBuffer->GetLocalData()[i];
+			Logger::LogFormat("index %d, left %d, right %d, parent %d\n", data.index, data.leftNode, data.rightNode, data.parent);
+		}
 	}
 }

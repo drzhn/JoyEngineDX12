@@ -13,7 +13,7 @@
 
 #include "CommonEngineStructs.h"
 #include "Common/Singleton.h"
-#include "ResourceManager/DynamicBuffer.h"
+#include "ResourceManager/DynamicCpuBuffer.h"
 
 #include "Tonemapping.h"
 #include "Raytracing/Raytracing.h"
@@ -129,7 +129,7 @@ namespace JoyEngine
 		//std::unique_ptr<RenderTexture> m_viewNormalAttachment;
 		//std::unique_ptr<RenderTexture> m_lightingAttachment;
 
-		std::unique_ptr<DynamicBuffer<::EngineData>> m_engineDataBuffer;
+		std::unique_ptr<DynamicCpuBuffer<::EngineData>> m_engineDataBuffer;
 
 		//std::set<ParticleSystem*> m_particleSystems;
 		std::set<SharedMaterial*> m_sharedMaterials;

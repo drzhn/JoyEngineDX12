@@ -15,7 +15,7 @@ namespace JoyEngine
 		DataBuffer<LeafNode>* leafNodes,
 		DataBuffer<AABB>* bvhData,
 		ComputeDispatcher* dispatcher,
-		ConstantBuffer<BVHConstructorData>* bvhConstructionData
+		ConstantCpuBuffer<BVHConstructorData>* bvhConstructionData
 	) :
 
 		m_sortedMortonCodes(sortedMortonCodes),

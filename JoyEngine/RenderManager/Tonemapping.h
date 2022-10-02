@@ -5,8 +5,8 @@
 #include <memory>
 
 #include "CommonEngineStructs.h"
-#include "ResourceManager/ConstantBuffer.h"
-#include "ResourceManager/DynamicBuffer.h"
+#include "ResourceManager/ConstantCpuBuffer.h"
+#include "ResourceManager/DynamicCpuBuffer.h"
 #include "ResourceManager/ResourceHandle.h"
 
 
@@ -48,7 +48,7 @@ namespace JoyEngine
 		std::unique_ptr<Buffer> m_hdrPrevLuminationBuffer;
 		std::unique_ptr<ResourceView> m_hdrPrevLuminationBufferUAVView;
 
-		std::unique_ptr<ConstantBuffer<HDRDownScaleConstants>> m_constants;
+		std::unique_ptr<ConstantCpuBuffer<HDRDownScaleConstants>> m_constants;
 
 		DXGI_FORMAT m_hdrRTVFormat;
 		DXGI_FORMAT m_ldrRTVFormat;

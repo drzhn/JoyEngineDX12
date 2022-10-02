@@ -232,8 +232,8 @@
     <ClCompile Include="JoyEngine\JoyEngine.cpp" />
     <ClCompile Include="JoyEngine\MemoryManager\MemoryManager.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\RenderManager.cpp" />
-    <ClCompile Include="JoyEngine\ResourceManager\ConstantBuffer.cpp" />
-    <ClCompile Include="JoyEngine\ResourceManager\DynamicBuffer.cpp" />
+    <ClCompile Include="JoyEngine\ResourceManager\ConstantCpuBuffer.cpp" />
+    <ClCompile Include="JoyEngine\ResourceManager\DynamicCpuBuffer.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\MtlBinaryParser.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\ResourceView.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\Material.cpp" />
@@ -243,6 +243,7 @@
     <ClCompile Include="JoyEngine\ResourceManager\ShaderCompiler.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\SharedMaterial.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\Texture.cpp" />
+    <ClCompile Include="JoyEngine\ResourceManager\UavGpuBuffer.cpp" />
     <ClCompile Include="JoyEngine\SceneManager\GameObject.cpp" />
     <ClCompile Include="JoyEngine\SceneManager\Scene.cpp" />
     <ClCompile Include="JoyEngine\SceneManager\SceneManager.cpp" />
@@ -294,8 +295,8 @@
     <ClInclude Include="JoyEngine\MemoryManager\MemoryManager.h" />
     <ClInclude Include="JoyEngine\RenderManager\RenderManager.h" />
     <ClInclude Include="JoyEngine\CommonEngineStructs.h" />
-    <ClInclude Include="JoyEngine\ResourceManager\ConstantBuffer.h" />
-    <ClInclude Include="JoyEngine\ResourceManager\DynamicBuffer.h" />
+    <ClInclude Include="JoyEngine\ResourceManager\ConstantCpuBuffer.h" />
+    <ClInclude Include="JoyEngine\ResourceManager\DynamicCpuBuffer.h" />
     <ClInclude Include="JoyEngine\ResourceManager\DDS.h" />
     <ClInclude Include="JoyEngine\ResourceManager\MtlBinaryParser.h" />
     <ClInclude Include="JoyEngine\ResourceManager\ResourceView.h" />
@@ -307,6 +308,7 @@
     <ClInclude Include="JoyEngine\ResourceManager\ShaderCompiler.h" />
     <ClInclude Include="JoyEngine\ResourceManager\SharedMaterial.h" />
     <ClInclude Include="JoyEngine\ResourceManager\Texture.h" />
+    <ClInclude Include="JoyEngine\ResourceManager\UavGpuBuffer.h" />
     <ClInclude Include="JoyEngine\SceneManager\GameObject.h" />
     <ClInclude Include="JoyEngine\SceneManager\Scene.h" />
     <ClInclude Include="JoyEngine\SceneManager\SceneManager.h" />

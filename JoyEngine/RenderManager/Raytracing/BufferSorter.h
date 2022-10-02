@@ -3,7 +3,7 @@
 
 #include "CommonEngineStructs.h"
 #include "DataBuffer.h"
-#include "ResourceManager/ConstantBuffer.h"
+#include "ResourceManager/ConstantCpuBuffer.h"
 #include "ResourceManager/SharedMaterial.h"
 
 namespace JoyEngine
@@ -33,7 +33,7 @@ namespace JoyEngine
 		std::unique_ptr<DataBuffer<uint32_t>> m_sizesData;
 		std::unique_ptr<DataBuffer<uint32_t>> m_sizesPrefixSumData;
 
-		ConstantBuffer<BufferSorterData> m_data;
+		ConstantCpuBuffer<BufferSorterData> m_data;
 
 		ComputeDispatcher* m_dispatcher = nullptr;
 	};

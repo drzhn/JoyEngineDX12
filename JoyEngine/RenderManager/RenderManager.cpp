@@ -23,7 +23,7 @@
 #include "DescriptorManager/DescriptorManager.h"
 #include "GraphicsManager/GraphicsManager.h"
 #include "EngineMaterialProvider/EngineMaterialProvider.h"
-#include "ResourceManager/DynamicBuffer.h"
+#include "ResourceManager/DynamicCpuBuffer.h"
 
 #include "Utils/GraphicsUtils.h"
 #include "Utils/TimeCounter.h"
@@ -104,7 +104,7 @@ namespace JoyEngine
 			D3D12_HEAP_TYPE_DEFAULT);
 
 
-		m_engineDataBuffer = std::make_unique<DynamicBuffer<::EngineData>>(frameCount);
+		m_engineDataBuffer = std::make_unique<DynamicCpuBuffer<::EngineData>>(frameCount);
 
 
 		m_tonemapping = std::make_unique<Tonemapping>(

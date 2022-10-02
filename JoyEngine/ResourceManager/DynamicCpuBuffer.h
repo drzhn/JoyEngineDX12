@@ -10,12 +10,12 @@
 namespace JoyEngine
 {
 	template <typename T>
-	class DynamicBuffer
+	class DynamicCpuBuffer
 	{
 	public:
-		DynamicBuffer() = delete;
+		DynamicCpuBuffer() = delete;
 
-		explicit DynamicBuffer(uint32_t count):
+		explicit DynamicCpuBuffer(uint32_t count):
 			m_count(count),
 			m_size(((sizeof(T) - 1) / 256 + 1) * 256)
 		{
@@ -60,7 +60,7 @@ namespace JoyEngine
 			m_currentLockedArea = nullptr;
 		}
 
-		~DynamicBuffer() = default;
+		~DynamicCpuBuffer() = default;
 	private:
 		std::unique_ptr<BufferMappedPtr> m_currentLockedArea;
 

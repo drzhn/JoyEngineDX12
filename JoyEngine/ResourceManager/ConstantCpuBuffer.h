@@ -10,10 +10,10 @@
 namespace JoyEngine
 {
 	template <typename T>
-	class ConstantBuffer
+	class ConstantCpuBuffer
 	{
 	public:
-		explicit ConstantBuffer() :
+		explicit ConstantCpuBuffer() :
 			m_size(((sizeof(T) - 1) / 256 + 1) * 256)
 		{
 			m_buffer = std::make_unique<Buffer>(
@@ -29,7 +29,7 @@ namespace JoyEngine
 			m_resourceView = std::make_unique<ResourceView>(desc);
 		}
 
-		explicit ConstantBuffer(const T* data) : ConstantBuffer()
+		explicit ConstantCpuBuffer(const T* data) : ConstantCpuBuffer()
 		{
 			const auto mappedPtr = m_buffer->GetMappedPtr();
 			const auto ptr = static_cast<T*>(mappedPtr->GetMappedPtr());
@@ -64,7 +64,7 @@ namespace JoyEngine
 			Unlock();
 		}
 
-		~ConstantBuffer() = default;
+		~ConstantCpuBuffer() = default;
 	private:
 		std::unique_ptr<BufferMappedPtr> m_currentLockedArea;
 

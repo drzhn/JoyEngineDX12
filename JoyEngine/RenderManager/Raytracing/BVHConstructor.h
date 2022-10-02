@@ -5,7 +5,7 @@
 
 #include "CommonEngineStructs.h"
 #include "DataBuffer.h"
-#include "ResourceManager/ConstantBuffer.h"
+#include "ResourceManager/ConstantCpuBuffer.h"
 #include "ResourceManager/ResourceHandle.h"
 #include "ResourceManager/SharedMaterial.h"
 
@@ -24,7 +24,7 @@ namespace JoyEngine
 			DataBuffer<LeafNode>* leafNodes,
 			DataBuffer<AABB>* bvhData,
 			ComputeDispatcher* dispatcher,
-			ConstantBuffer<BVHConstructorData>* bvhConstructionData
+			ConstantCpuBuffer<BVHConstructorData>* bvhConstructionData
 		);
 
 		void ConstructTree();
@@ -36,7 +36,7 @@ namespace JoyEngine
 		DataBuffer<InternalNode>* m_internalNodes;
 		DataBuffer<LeafNode>* m_leafNodes;
 		DataBuffer<AABB>* m_bvhData;
-		ConstantBuffer<BVHConstructorData>* m_bvhConstructionData;
+		ConstantCpuBuffer<BVHConstructorData>* m_bvhConstructionData;
 
 		std::unique_ptr<DataBuffer<uint32_t>> m_atomics;
 

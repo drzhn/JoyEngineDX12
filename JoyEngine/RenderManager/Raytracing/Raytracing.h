@@ -32,7 +32,7 @@ namespace JoyEngine
 		std::unique_ptr<DataBuffer<LeafNode>> m_bvhLeafNodesBuffer;
 		std::unique_ptr<DataBuffer<InternalNode>> m_bvhInternalNodesBuffer;
 
-		ConstantBuffer<BVHConstructorData> m_bvhConstructionData;
+		ConstantCpuBuffer<BVHConstructorData> m_bvhConstructionData;
 
 		ResourceHandle<Mesh> m_mesh;
 		std::unique_ptr<BufferSorter> m_bufferSorter;

@@ -155,7 +155,7 @@ namespace JoyEngine
 			0.2f
 		};
 
-		m_constants = std::make_unique<ConstantBuffer<::HDRDownScaleConstants>>(&downScaleConstants);
+		m_constants = std::make_unique<ConstantCpuBuffer<::HDRDownScaleConstants>>(&downScaleConstants);
 	}
 
 	void Tonemapping::Render(ID3D12GraphicsCommandList* commandList, const RenderTexture* currentBackBuffer)

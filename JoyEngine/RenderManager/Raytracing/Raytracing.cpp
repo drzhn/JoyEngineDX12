@@ -1,24 +1,18 @@
 ﻿#include "Raytracing.h"
 
+#include "Common/HashDefs.h"
+#include "RenderManager/RenderManager.h"
 #include "ResourceManager/ResourceManager.h"
+#include "Utils/GraphicsUtils.h"
 #include "Utils/Log.h"
+#include "Utils/TimeCounter.h"
 
 namespace JoyEngine
 {
 	AABB Whole = {
-		.min = glm::vec3(-8.f, -8.f, -8.f),
-		.max = glm::vec3(8.f, 8.f, 8.f),
+		.min = glm::vec3(-15.5f, -15.5f, -15.5f),
+		.max = glm::vec3(15.5f, 15.5f, 15.5f),
 	};
-
-	inline float Min(float a, float b)
-	{
-		return a <= b ? a : b;
-	}
-
-	inline float Max(float a, float b)
-	{
-		return a >= b ? a : b;
-	}
 
 	uint32_t ExpandBits(uint32_t v)
 	{
@@ -31,9 +25,9 @@ namespace JoyEngine
 
 	uint32_t Morton3D(float x, float y, float z)
 	{
-		x = Min(Max(x * 1024.0f, 0.0f), 1023.0f);
-		y = Min(Max(y * 1024.0f, 0.0f), 1023.0f);
-		z = Min(Max(z * 1024.0f, 0.0f), 1023.0f);
+		x = std::min(std::max(x * 1024.0f, 0.0f), 1023.0f);
+		y = std::min(std::max(y * 1024.0f, 0.0f), 1023.0f);
+		z = std::min(std::max(z * 1024.0f, 0.0f), 1023.0f);
 		uint32_t xx = ExpandBits(static_cast<uint32_t>(x));
 		uint32_t yy = ExpandBits(static_cast<uint32_t>(y));
 		uint32_t zz = ExpandBits(static_cast<uint32_t>(z));
@@ -43,14 +37,14 @@ namespace JoyEngine
 	void GetCentroidAndAABB(glm::vec3 a, glm::vec3 b, glm::vec3 c, glm::vec3* centroid, AABB* aabb)
 	{
 		glm::vec3 min = glm::vec3(
-			Min(Min(a.x, b.x), c.x) - 0.001f,
-			Min(Min(a.y, b.y), c.y) - 0.001f,
-			Min(Min(a.z, b.z), c.z) - 0.001f
+			std::min(std::min(a.x, b.x), c.x) - 0.001f,
+			std::min(std::min(a.y, b.y), c.y) - 0.001f,
+			std::min(std::min(a.z, b.z), c.z) - 0.001f
 		);
 		glm::vec3 max = glm::vec3(
-			Max(Max(a.x, b.x), c.x) + 0.001f,
-			Max(Max(a.y, b.y), c.y) + 0.001f,
-			Max(Max(a.z, b.z), c.z) + 0.001f
+			std::max(std::max(a.x, b.x), c.x) + 0.001f,
+			std::max(std::max(a.y, b.y), c.y) + 0.001f,
+			std::max(std::max(a.z, b.z), c.z) + 0.001f
 		);
 
 		*centroid = (min + max) * 0.5f;
@@ -136,23 +130,72 @@ namespace JoyEngine
 			m_triangleIndexBuffer.get(),
 			m_dispatcher.get());
 
+		m_bvhConstructionData.SetData({.trianglesCount = m_trianglesLength});
+
 		m_bvhConstructor = std::make_unique<BVHConstructor>(
-			m_trianglesLength,
 			m_keysBuffer.get(),
 			m_triangleIndexBuffer.get(),
 			m_triangleAABBBuffer.get(),
 			m_bvhInternalNodesBuffer.get(),
 			m_bvhLeafNodesBuffer.get(),
 			m_bvhDataBuffer.get(),
-			m_dispatcher.get()
+			m_dispatcher.get(),
+			&m_bvhConstructionData
 		);
 
 		Logger::LogFormat("Triangles length %d\n", m_trianglesLength);
+
+
+		// Gizmo AABB draw 
+		{
+			const GUID gizmoAABBDrawerShaderGuid = GUID::StringToGuid("a231c467-dc15-4753-a3db-8888efc73c1a"); // shaders/raytracing/gizmoAABBDrawer.hlsl
+			const GUID gizmoAABBDrawerSharedMaterialGuid = GUID::Random();
+
+			m_gizmoAABBDrawerSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, GraphicsPipelineArgs>(
+				gizmoAABBDrawerSharedMaterialGuid,
+				{
+					gizmoAABBDrawerShaderGuid,
+					JoyShaderTypeVertex | JoyShaderTypePixel,
+					false,
+					false,
+					false,
+					D3D12_CULL_MODE_NONE,
+					D3D12_COMPARISON_FUNC_NEVER,
+					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
+					{
+						RenderManager::Get()->GetLdrRTVFormat()
+					},
+					RenderManager::Get()->GetDepthFormat(),
+					D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE,
+				});
+		}
 	}
 
 	void Raytracing::PrepareBVH()
 	{
+		TIME_PERF("Prepare Scene BVH")
+
 		m_bufferSorter->Sort();
+
+		{ // Update keys array. Now we guarantee all the elements are unique
+			m_keysBuffer->ReadbackGpuData();
+
+			uint32_t* keysArray = m_keysBuffer->GetLocalData();
+
+			uint32_t newCurrentValue = 0;
+			uint32_t oldCurrentValue = keysArray[0];
+			keysArray[0] = newCurrentValue;
+
+			for (uint32_t i = 1; i < m_trianglesLength; i++)
+			{
+				newCurrentValue += std::max(keysArray[i] - oldCurrentValue, 1u);
+				oldCurrentValue = keysArray[i];
+				keysArray[i] = newCurrentValue;
+			}
+
+			m_keysBuffer->UploadCpuData();
+		}
+
 		m_bvhConstructor->ConstructTree();
 		m_bvhConstructor->ConstructBVH();
 
@@ -160,28 +203,47 @@ namespace JoyEngine
 		m_bvhLeafNodesBuffer->ReadbackGpuData();
 		m_bvhInternalNodesBuffer->ReadbackGpuData();
 
-		for (int i = 0; i < 14; i++)
-		{
-			AABB data = m_bvhDataBuffer->GetLocalData()[i];
-			Logger::LogFormat("%.3f %.3f %.3f %.3f %.3f %.3f \n",
-			                  data.min.x,
-			                  data.min.y,
-			                  data.min.z,
-			                  data.max.x,
-			                  data.max.y,
-			                  data.max.z);
-		}
+		//for (int i = 0; i < 14; i++)
+		//{
+		//	AABB data = m_bvhDataBuffer->GetLocalData()[i];
+		//	Logger::LogFormat("%.3f %.3f %.3f %.3f %.3f %.3f \n",
+		//	                  data.min.x,
+		//	                  data.min.y,
+		//	                  data.min.z,
+		//	                  data.max.x,
+		//	                  data.max.y,
+		//	                  data.max.z);
+		//}
 
-		for (int i = 0; i < 14; i++)
-		{
-			LeafNode data = m_bvhLeafNodesBuffer->GetLocalData()[i];
-			Logger::LogFormat("index %d, parent %d\n", data.index, data.parent);
-		}
+		//for (int i = 0; i < 14; i++)
+		//{
+		//	LeafNode data = m_bvhLeafNodesBuffer->GetLocalData()[i];
+		//	Logger::LogFormat("index %d, parent %d\n", data.index, data.parent);
+		//}
 
-		for (int i = 0; i < 14; i++)
-		{
-			InternalNode data = m_bvhInternalNodesBuffer->GetLocalData()[i];
-			Logger::LogFormat("index %d, left %d, right %d, parent %d\n", data.index, data.leftNode, data.rightNode, data.parent);
-		}
+		//for (int i = 0; i < 14; i++)
+		//{
+		//	InternalNode data = m_bvhInternalNodesBuffer->GetLocalData()[i];
+		//	Logger::LogFormat("index %d, left %d, right %d, parent %d\n", data.index, data.leftNode, data.rightNode, data.parent);
+		//}
+	}
+
+	void Raytracing::DrawGizmo(ID3D12GraphicsCommandList* commandList, MVP mvp)
+	{
+		auto sm = m_gizmoAABBDrawerSharedMaterial;
+
+		commandList->SetPipelineState(sm->GetGraphicsPipeline()->GetPipelineObject().Get());
+		commandList->SetGraphicsRootSignature(sm->GetGraphicsPipeline()->GetRootSignature().Get());
+		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
+
+
+		commandList->SetGraphicsRoot32BitConstants(1, sizeof(::MVP) / 4, &mvp, 0);
+
+		GraphicsUtils::AttachViewToGraphics(commandList, sm, "BVHData", m_bvhDataBuffer->GetSRV());
+
+		commandList->DrawInstanced(
+			24,
+			DATA_ARRAY_COUNT,
+			0, 0);
 	}
 }

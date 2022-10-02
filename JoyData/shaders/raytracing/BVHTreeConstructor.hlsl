@@ -8,24 +8,9 @@ StructuredBuffer<uint> sortedMortonCodes; // size = THREADS_PER_BLOCK * BLOCK_SI
 RWStructuredBuffer<InternalNode> internalNodes; // size = THREADS_PER_BLOCK * BLOCK_SIZE - 1
 RWStructuredBuffer<LeafNode> leafNodes; // size = THREADS_PER_BLOCK * BLOCK_SIZE
 
-inline uint clz(uint64_t v)
+inline uint clz32(uint v)
 {
-    uint ret = 0;
-    for (int i = 63; i >= 0; i--)
-    {
-        if ((v >> i) & 1)
-        {
-            return ret;
-        }
-        ret++;
-    }
-    return ret;
-}
-
-inline uint64_t combine(uint a, uint b)
-{
-    uint64_t ret = a;
-    return (ret << 32) | b;
+    return 31 - firstbithigh(v);
 }
 
 inline int delta(int x, int y, int numObjects)
@@ -34,7 +19,8 @@ inline int delta(int x, int y, int numObjects)
     {
         const uint x_code = sortedMortonCodes[x];
         const uint y_code = sortedMortonCodes[y];
-        return clz(combine(x_code, x) ^ combine(y_code, y));
+        // we guarantee that x_code != y_code
+        return clz32(x_code ^ y_code);
     }
     return -1;
 }
@@ -71,7 +57,7 @@ inline int FindSplit(int first, int last)
     // Calculate the number of highest bits that are the same
     // for all objects, using the count-leading-zeros intrinsic.
 
-    const int commonPrefix = clz(combine(firstCode, first) ^ combine(lastCode, last));
+    const int commonPrefix = clz32(firstCode ^ lastCode);
 
     // Use binary search to find where the next bit differs.
     // Specifically, we are looking for the highest object that
@@ -88,7 +74,7 @@ inline int FindSplit(int first, int last)
         if (newSplit < last)
         {
             const uint splitCode = sortedMortonCodes[newSplit];
-            const int splitPrefix = clz(combine(firstCode, first) ^ combine(splitCode, newSplit));
+            const int splitPrefix = clz32(firstCode ^ splitCode);
             if (splitPrefix > commonPrefix)
                 split = newSplit; // accept proposal
         }

@@ -405,5 +405,6 @@
     <None Include="JoyData\shaders\raytracing\GlobalRadixSort.hlsl" />
     <None Include="JoyData\shaders\raytracing\BVHTreeConstructor.hlsl" />
     <None Include="JoyData\shaders\raytracing\BVHAABBMerger.hlsl" />
+    <None Include="JoyData\shaders\raytracing\gizmoAABBDrawer.hlsl" />
   </ItemGroup>
 </Project>

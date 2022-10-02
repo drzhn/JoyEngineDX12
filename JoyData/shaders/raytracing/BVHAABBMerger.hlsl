@@ -6,8 +6,9 @@ ConstantBuffer<BVHConstructorData> data : register(b0);
 StructuredBuffer<uint> sortedTriangleIndices; // size = THREADS_PER_BLOCK * BLOCK_SIZE
 StructuredBuffer<AABB> triangleAABB; // size = THREADS_PER_BLOCK * BLOCK_SIZE
 
-RWStructuredBuffer<InternalNode> internalNodes; // size = THREADS_PER_BLOCK * BLOCK_SIZE - 1
-RWStructuredBuffer<LeafNode> leafNodes; // size = THREADS_PER_BLOCK * BLOCK_SIZE
+StructuredBuffer<InternalNode> internalNodes; // size = THREADS_PER_BLOCK * BLOCK_SIZE - 1
+StructuredBuffer<LeafNode> leafNodes; // size = THREADS_PER_BLOCK * BLOCK_SIZE
+
 RWStructuredBuffer<uint> atomicsData; // size = THREADS_PER_BLOCK * BLOCK_SIZE 
 RWStructuredBuffer<AABB> BVHData; // size = THREADS_PER_BLOCK * BLOCK_SIZE - 1
 

@@ -227,6 +227,10 @@
             "guid": "d611cd9f-6ce0-42f5-b908-af7289b0eae5",
             "path": "shaders/raytracing/BVHAABBMerger.hlsl"
         },
+        {
+            "guid": "a231c467-dc15-4753-a3db-8888efc73c1a",
+            "path": "shaders/raytracing/gizmoAABBDrawer.hlsl"
+        },
 
         {
             "guid": "11dcfeba-c2b6-4c2e-a3c7-51054ff06f1d",

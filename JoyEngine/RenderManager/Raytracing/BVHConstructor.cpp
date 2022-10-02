@@ -8,22 +8,23 @@
 namespace JoyEngine
 {
 	BVHConstructor::BVHConstructor(
-		uint32_t trianglesCount,
 		DataBuffer<uint32_t>* sortedMortonCodes,
 		DataBuffer<uint32_t>* sortedTriangleIndices,
 		DataBuffer<AABB>* triangleAABB,
 		DataBuffer<InternalNode>* internalNodes,
 		DataBuffer<LeafNode>* leafNodes,
 		DataBuffer<AABB>* bvhData,
-		ComputeDispatcher* dispatcher) :
+		ComputeDispatcher* dispatcher,
+		ConstantBuffer<BVHConstructorData>* bvhConstructionData
+	) :
 
-		m_trianglesCount(trianglesCount),
 		m_sortedMortonCodes(sortedMortonCodes),
 		m_sortedTriangleIndices(sortedTriangleIndices),
 		m_triangleAABB(triangleAABB),
 		m_internalNodes(internalNodes),
 		m_leafNodes(leafNodes),
 		m_bvhData(bvhData),
+		m_bvhConstructionData(bvhConstructionData),
 		m_dispatcher(dispatcher)
 
 	{
@@ -62,8 +63,6 @@ namespace JoyEngine
 	{
 		TIME_PERF("Scene BVH tree construction");
 
-		m_data.SetData({.trianglesCount = m_trianglesCount});
-
 		const auto commandList = m_dispatcher->GetCommandList();
 
 		ID3D12DescriptorHeap* heaps[2]
@@ -79,7 +78,7 @@ namespace JoyEngine
 			commandList->SetPipelineState(m_bvhTreeConstructorPipeline->GetPipelineObject().Get());
 
 
-			GraphicsUtils::AttachViewToCompute(commandList, m_bvhTreeConstructorPipeline, "data", m_data.GetView());
+			GraphicsUtils::AttachViewToCompute(commandList, m_bvhTreeConstructorPipeline, "data", m_bvhConstructionData->GetView());
 
 			GraphicsUtils::AttachViewToCompute(commandList, m_bvhTreeConstructorPipeline, "sortedMortonCodes", m_sortedMortonCodes->GetSRV());
 			GraphicsUtils::AttachViewToCompute(commandList, m_bvhTreeConstructorPipeline, "internalNodes", m_internalNodes->GetUAV());
@@ -93,8 +92,6 @@ namespace JoyEngine
 	void BVHConstructor::ConstructBVH()
 	{
 		TIME_PERF("Scene BVH merge");
-
-		m_data.SetData({.trianglesCount = m_trianglesCount});
 
 		const auto commandList = m_dispatcher->GetCommandList();
 
@@ -110,12 +107,12 @@ namespace JoyEngine
 			commandList->SetComputeRootSignature(m_bvhMergerPipeline->GetRootSignature().Get());
 			commandList->SetPipelineState(m_bvhMergerPipeline->GetPipelineObject().Get());
 
-			GraphicsUtils::AttachViewToCompute(commandList, m_bvhMergerPipeline, "data", m_data.GetView());
+			GraphicsUtils::AttachViewToCompute(commandList, m_bvhMergerPipeline, "data", m_bvhConstructionData->GetView());
 
 			GraphicsUtils::AttachViewToCompute(commandList, m_bvhMergerPipeline, "sortedTriangleIndices", m_sortedTriangleIndices->GetSRV());
 			GraphicsUtils::AttachViewToCompute(commandList, m_bvhMergerPipeline, "triangleAABB", m_triangleAABB->GetSRV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_bvhMergerPipeline, "internalNodes", m_internalNodes->GetUAV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_bvhMergerPipeline, "leafNodes", m_leafNodes->GetUAV());
+			GraphicsUtils::AttachViewToCompute(commandList, m_bvhMergerPipeline, "internalNodes", m_internalNodes->GetSRV());
+			GraphicsUtils::AttachViewToCompute(commandList, m_bvhMergerPipeline, "leafNodes", m_leafNodes->GetSRV());
 			GraphicsUtils::AttachViewToCompute(commandList, m_bvhMergerPipeline, "atomicsData", m_atomics->GetUAV());
 			GraphicsUtils::AttachViewToCompute(commandList, m_bvhMergerPipeline, "BVHData", m_bvhData->GetUAV());
 		}

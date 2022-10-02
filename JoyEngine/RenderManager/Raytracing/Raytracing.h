@@ -20,6 +20,7 @@ namespace JoyEngine
 	public:
 		Raytracing();
 		void PrepareBVH();
+		void DrawGizmo(ID3D12GraphicsCommandList* commandList, MVP mvp);
 	private:
 		uint32_t m_trianglesLength;
 		std::unique_ptr<DataBuffer<uint32_t>> m_keysBuffer;
@@ -31,10 +32,14 @@ namespace JoyEngine
 		std::unique_ptr<DataBuffer<LeafNode>> m_bvhLeafNodesBuffer;
 		std::unique_ptr<DataBuffer<InternalNode>> m_bvhInternalNodesBuffer;
 
+		ConstantBuffer<BVHConstructorData> m_bvhConstructionData;
+
 		ResourceHandle<Mesh> m_mesh;
 		std::unique_ptr<BufferSorter> m_bufferSorter;
 		std::unique_ptr<BVHConstructor> m_bvhConstructor;
 		std::unique_ptr<ComputeDispatcher> m_dispatcher;
+
+		ResourceHandle<SharedMaterial> m_gizmoAABBDrawerSharedMaterial;
 	};
 }
 #endif // RAYTRACING_H

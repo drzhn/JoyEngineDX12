@@ -279,7 +279,15 @@ namespace JoyEngine
 
 		m_tonemapping->Render(commandList, m_swapchainRenderTargets[m_currentFrameIndex].get());
 
-		DrawGui(commandList);
+		MVP mvp{
+			glm::identity<glm::mat4>(),
+			mainCameraViewMatrix,
+			mainCameraProjMatrix
+		};
+
+		GraphicsUtils::SetViewportAndScissor(commandList, m_width, m_height);
+
+		m_raytracing->DrawGizmo(commandList, mvp);
 
 		{
 			auto sm = EngineMaterialProvider::Get()->GetGizmoAxisDrawerSharedMaterial();
@@ -308,12 +316,6 @@ namespace JoyEngine
 			commandList->RSSetViewports(1, &viewport);
 			commandList->RSSetScissorRects(1, &scissorRect);
 
-			::MVP mvp{
-				glm::identity<glm::mat4>(),
-				mainCameraViewMatrix,
-				mainCameraProjMatrix
-			};
-
 			ProcessEngineBindings(commandList, sm->GetGraphicsPipeline()->GetEngineBindings(), &mvp);
 
 			commandList->DrawInstanced(
@@ -321,6 +323,9 @@ namespace JoyEngine
 				1,
 				0, 0);
 		}
+
+
+		DrawGui(commandList);
 
 
 		GraphicsUtils::Barrier(commandList,

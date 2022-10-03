@@ -254,7 +254,7 @@ namespace JoyEngine
 
 		std::vector<DXGI_FORMAT> renderTargetsFormats
 		{
-			RenderManager::GetMainColorFormat() // materials created form GUIDs can only write to one main color rtv
+			RenderManager::Get()->GetMainColorFormat() // materials created form GUIDs can only write to one main color rtv
 		};
 
 		// Shader creation
@@ -286,7 +286,7 @@ namespace JoyEngine
 
 		args.shader = GUID::StringToGuid(json["shader"].GetString());
 
-		args.depthFormat = RenderManager::GetDepthFormat();
+		args.depthFormat = RenderManager::Get()->GetDepthFormat();
 		args.blendDesc = blendDesc;
 		args.topology = topology;
 		args.renderTargetsFormats = renderTargetsFormats;

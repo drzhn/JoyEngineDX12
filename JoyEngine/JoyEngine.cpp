@@ -6,6 +6,7 @@
 #include "backends/imgui_impl_win32.h"
 
 #include "SceneManager/SceneManager.h"
+#include "RenderManager/IRenderManager.h"
 #include "RenderManager/RenderManager.h"
 #include "EngineMaterialProvider/EngineMaterialProvider.h"
 #include "MemoryManager/MemoryManager.h"
@@ -69,10 +70,10 @@ namespace JoyEngine
 		m_memoryManager->Init();
 		// allocating descriptors
 		m_descriptorSetManager->Init();
-		// creating render resources
-		m_renderManager->Init();
 		// creating internal engine materials
 		m_engineMaterials->Init();
+		// creating render resources
+		m_renderManager->Init();
 		// loading scene from disk
 		m_sceneManager->Init();
 

@@ -273,6 +273,7 @@
     <ClInclude Include="JoyEngine\GameplayComponents\RoomBehaviour.h" />
     <ClInclude Include="JoyEngine\MemoryManager\DeviceLinearAllocator.h" />
     <ClInclude Include="JoyEngine\RenderManager\ComputeDispatcher.h" />
+    <ClInclude Include="JoyEngine\RenderManager\IRenderManager.h" />
     <ClInclude Include="JoyEngine\RenderManager\Raytracing\BufferSorter.h" />
     <ClInclude Include="JoyEngine\RenderManager\Raytracing\BVHConstructor.h" />
     <ClInclude Include="JoyEngine\RenderManager\Raytracing\DataBuffer.h" />
@@ -482,6 +483,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="JoyData\shaders\raytracing\gizmoAABBDrawer.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="JoyData\shaders\raytracing\Raytracing.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

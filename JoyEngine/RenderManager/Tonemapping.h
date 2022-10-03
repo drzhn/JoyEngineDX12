@@ -8,6 +8,7 @@
 #include "ResourceManager/ConstantCpuBuffer.h"
 #include "ResourceManager/DynamicCpuBuffer.h"
 #include "ResourceManager/ResourceHandle.h"
+#include "ResourceManager/SharedMaterial.h"
 #include "ResourceManager/UAVGpuBuffer.h"
 
 
@@ -40,7 +41,7 @@ namespace JoyEngine
 	private:
 		ResourceHandle<ComputePipeline> m_hdrDownscaleFirstPassComputePipeline;
 		ResourceHandle<ComputePipeline> m_hdrDownscaleSecondPassComputePipeline;
-		ResourceHandle<SharedMaterial> m_hdrToLdrTransitionSharedMaterial;
+		ResourceHandle<GraphicsPipeline> m_hdrToLdrTransitionGraphicsPipeline;
 
 		std::unique_ptr<UAVTexture> m_hrdDownScaledTexture;
 		std::unique_ptr<UAVGpuBuffer> m_hdrLuminationBuffer;

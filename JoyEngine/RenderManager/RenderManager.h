@@ -12,6 +12,7 @@
 #include <wrl.h>
 
 #include "CommonEngineStructs.h"
+#include "IRenderManager.h"
 #include "Common/Singleton.h"
 #include "ResourceManager/DynamicCpuBuffer.h"
 
@@ -34,12 +35,12 @@ namespace JoyEngine
 	class ResourceView;
 	class DepthTexture;
 
-	class RenderManager : public Singleton<RenderManager>
+	class RenderManager final : public Singleton<RenderManager>, public IRenderManager
 	{
 	public:
 		RenderManager() = default;
 
-		~RenderManager() = default;
+		~RenderManager() override = default;
 
 		void Init();
 
@@ -51,32 +52,32 @@ namespace JoyEngine
 
 		void DrawGui(ID3D12GraphicsCommandList* commandList) const;
 
-		void RegisterSharedMaterial(SharedMaterial*);
+		void RegisterSharedMaterial(SharedMaterial*) override;
 
-		void UnregisterSharedMaterial(SharedMaterial*);
+		void UnregisterSharedMaterial(SharedMaterial*) override;
 
-		void RegisterLight(Light*);
+		void RegisterLight(Light*) override;
 
-		void UnregisterLight(Light*);
+		void UnregisterLight(Light*) override;
 
-		void RegisterDirectionLight(Light*);
+		void RegisterDirectionLight(Light*) override;
 
-		void UnregisterDirectionLight(Light*);
+		void UnregisterDirectionLight(Light*) override;
 
-		void RegisterCamera(Camera* camera);
+		void RegisterCamera(Camera* camera) override;
 
-		void UnregisterCamera(Camera* camera);
+		void UnregisterCamera(Camera* camera) override;
 
-		[[nodiscard]] float GetAspect() const noexcept;
-		[[nodiscard]] float GetWidth() const noexcept;
-		[[nodiscard]] float GetHeight() const noexcept;
-		[[nodiscard]] static constexpr uint32_t GetFrameCount() noexcept { return frameCount; }
-		[[nodiscard]] static constexpr DXGI_FORMAT GetMainColorFormat() noexcept { return hdrRTVFormat; }
-		[[nodiscard]] static constexpr DXGI_FORMAT GetHdrRTVFormat() noexcept { return hdrRTVFormat; }
-		[[nodiscard]] static constexpr DXGI_FORMAT GetLdrRTVFormat() noexcept { return ldrRTVFormat; }
-		[[nodiscard]] static constexpr DXGI_FORMAT GetGBufferFormat() noexcept { return gBufferFormat; }
-		[[nodiscard]] static constexpr DXGI_FORMAT GetDepthFormat() noexcept { return depthFormat; }
-		[[nodiscard]] static constexpr DXGI_FORMAT GetSSAOFormat() noexcept { return ssaoFormat; }
+		float GetAspect() const noexcept override;
+		float GetWidth() const noexcept override;
+		float GetHeight() const noexcept override;
+		[[nodiscard]] uint32_t GetFrameCount() noexcept { return frameCount; }
+		[[nodiscard]] DXGI_FORMAT GetMainColorFormat() noexcept { return hdrRTVFormat; };
+		[[nodiscard]] DXGI_FORMAT GetHdrRTVFormat() noexcept { return hdrRTVFormat; }
+		[[nodiscard]] DXGI_FORMAT GetLdrRTVFormat() noexcept { return ldrRTVFormat; }
+		[[nodiscard]] DXGI_FORMAT GetGBufferFormat() noexcept { return gBufferFormat; }
+		[[nodiscard]] DXGI_FORMAT GetDepthFormat() noexcept { return depthFormat; }
+		[[nodiscard]] DXGI_FORMAT GetSSAOFormat() noexcept { return ssaoFormat; }
 
 	private:
 		//void RenderEntireScene(
@@ -128,7 +129,7 @@ namespace JoyEngine
 		//std::unique_ptr<RenderTexture> m_viewNormalAttachment;
 		//std::unique_ptr<RenderTexture> m_lightingAttachment;
 
-		std::unique_ptr<DynamicCpuBuffer<::EngineData>> m_engineDataBuffer;
+		std::unique_ptr<DynamicCpuBuffer<EngineData>> m_engineDataBuffer;
 
 		//std::set<ParticleSystem*> m_particleSystems;
 		std::set<SharedMaterial*> m_sharedMaterials;

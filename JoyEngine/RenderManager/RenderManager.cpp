@@ -28,6 +28,7 @@
 #include "Raytracing/BVHConstructor.h"
 #include "Raytracing/BVHConstructor.h"
 #include "ResourceManager/DynamicCpuBuffer.h"
+#include "SceneManager/Transform.h"
 
 #include "Utils/GraphicsUtils.h"
 #include "Utils/TimeCounter.h"
@@ -41,6 +42,8 @@ namespace JoyEngine
 	void RenderManager::Init()
 	{
 		TIME_PERF("RenderManager init")
+
+		static_assert(sizeof(EngineData) == 176);
 
 		m_width = GraphicsManager::Get()->GetWidth();
 		m_height = GraphicsManager::Get()->GetHeight();
@@ -108,7 +111,7 @@ namespace JoyEngine
 			D3D12_HEAP_TYPE_DEFAULT);
 
 
-		m_engineDataBuffer = std::make_unique<DynamicCpuBuffer<::EngineData>>(frameCount);
+		m_engineDataBuffer = std::make_unique<DynamicCpuBuffer<EngineData>>(frameCount);
 
 
 		m_tonemapping = std::make_unique<Tonemapping>(
@@ -116,7 +119,11 @@ namespace JoyEngine
 			m_hdrRenderTarget.get(),
 			hdrRTVFormat, ldrRTVFormat, depthFormat);
 
-		m_raytracing = std::make_unique<Raytracing>();
+		m_raytracing = std::make_unique<Raytracing>(
+			GetMainColorFormat(),
+			GetLdrRTVFormat(),
+			m_width,
+			m_height);
 
 		{
 			D3D12_CPU_DESCRIPTOR_HANDLE imguiCpuHandle;
@@ -240,14 +247,13 @@ namespace JoyEngine
 			const auto data = static_cast<EngineData*>(m_engineDataBuffer->GetPtr());
 			data->cameraWorldPos = m_currentCamera->GetTransform()->GetPosition();
 			data->time = Time::GetTime();
-			data->perspectiveValues = glm::vec4(
-				1.0f / mainCameraProjMatrix[0][0],
-				1.0f / mainCameraProjMatrix[1][1],
-				mainCameraProjMatrix[3][2],
-				mainCameraProjMatrix[2][2]
-			);
 			data->cameraInvProj = glm::inverse(mainCameraProjMatrix);
 			data->cameraInvView = glm::inverse(mainCameraViewMatrix);
+			data->cameraNear = m_currentCamera->GetNear();
+			data->cameraFar = m_currentCamera->GetFar();
+			data->cameraFovRadians = m_currentCamera->GetFovRadians();
+			data->screenWidth = m_width;
+			data->screenHeight = m_height;
 
 			m_engineDataBuffer->Unlock();
 		}
@@ -276,6 +282,8 @@ namespace JoyEngine
 			RenderEntireSceneWithMaterials(commandList, &viewProjectionMatrixData);
 		}
 
+		m_raytracing->ProcessRaytracing(commandList, m_engineDataBuffer->GetView(m_currentFrameIndex));
+
 		// HDR->LDR
 
 		GraphicsUtils::Barrier(commandList,
@@ -296,7 +304,7 @@ namespace JoyEngine
 
 		m_tonemapping->Render(commandList, m_swapchainRenderTargets[m_currentFrameIndex].get());
 
-		m_raytracing->DrawGizmo(commandList, &viewProjectionMatrixData);
+		//m_raytracing->DrawGizmo(commandList, &viewProjectionMatrixData);
 
 		{
 			auto sm = EngineMaterialProvider::Get()->GetGizmoAxisDrawerSharedMaterial();

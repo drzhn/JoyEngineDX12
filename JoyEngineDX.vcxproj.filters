@@ -377,6 +377,9 @@
     <ClInclude Include="JoyEngine\ResourceManager\UAVGpuBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="JoyEngine\RenderManager\IRenderManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="JoyData\shaders\gbufferwrite.hlsl" />
@@ -412,5 +415,6 @@
     <None Include="JoyData\shaders\raytracing\BVHTreeConstructor.hlsl" />
     <None Include="JoyData\shaders\raytracing\BVHAABBMerger.hlsl" />
     <None Include="JoyData\shaders\raytracing\gizmoAABBDrawer.hlsl" />
+    <None Include="JoyData\shaders\raytracing\Raytracing.hlsl" />
   </ItemGroup>
 </Project>

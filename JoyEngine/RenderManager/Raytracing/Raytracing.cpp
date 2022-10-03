@@ -1,7 +1,6 @@
 ﻿#include "Raytracing.h"
 
 #include "Common/HashDefs.h"
-#include "RenderManager/RenderManager.h"
 #include "ResourceManager/ResourceManager.h"
 #include "Utils/GraphicsUtils.h"
 #include "Utils/Log.h"
@@ -66,13 +65,20 @@ namespace JoyEngine
 		return ret;
 	}
 
-	Raytracing::Raytracing()
+	Raytracing::Raytracing(DXGI_FORMAT mainColorFormat, DXGI_FORMAT swapchainFormat, uint32_t width, uint32_t height):
+		m_mainColorFormat(mainColorFormat),
+		m_swapchainFormat(swapchainFormat),
+		m_width(width),
+		m_height(height)
 	{
 		static_assert(sizeof(Triangle) == 128);
 		static_assert(sizeof(AABB) == 32);
 
 		const GUID meshGuid = GUID::StringToGuid("47000776-d056-43a2-bacb-c3e54701294a");
 		m_mesh = ResourceManager::Get()->LoadResource<Mesh>(meshGuid);
+
+		const GUID textureGuid = GUID::StringToGuid("1d451f58-3f84-4b2b-8c6f-fe8e2821d7f0");
+		m_texture = ResourceManager::Get()->LoadResource<Texture>(textureGuid);
 
 		m_keysBuffer = std::make_unique<DataBuffer<uint32_t>>(DATA_ARRAY_COUNT, MAX_UINT);
 		m_triangleIndexBuffer = std::make_unique<DataBuffer<uint32_t>>(DATA_ARRAY_COUNT, MAX_UINT);
@@ -143,15 +149,35 @@ namespace JoyEngine
 			&m_bvhConstructionData
 		);
 
-		Logger::LogFormat("Triangles length %d\n", m_trianglesLength);
+		// Raytracing
+		{
+			m_raytracedTexture = std::make_unique<UAVTexture>(
+				m_width,
+				m_height,
+				m_mainColorFormat,
+				D3D12_RESOURCE_STATE_GENERIC_READ,
+				D3D12_HEAP_TYPE_DEFAULT
+			);
 
+
+			//shaders/raytracing/Raytracing.hlsl
+			const GUID raytracingShaderGuid = GUID::StringToGuid("b24e90ac-fcfa-4754-b0e5-8553b19e27ca");
+			const GUID raytracingPipelineGuid = GUID::Random();
+
+			m_raytracingPipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
+				raytracingPipelineGuid,
+				{
+					raytracingShaderGuid,
+					D3D_SHADER_MODEL_6_5
+				});
+		}
 
 		// Gizmo AABB draw 
 		{
 			const GUID gizmoAABBDrawerShaderGuid = GUID::StringToGuid("a231c467-dc15-4753-a3db-8888efc73c1a"); // shaders/raytracing/gizmoAABBDrawer.hlsl
 			const GUID gizmoAABBDrawerSharedMaterialGuid = GUID::Random();
 
-			m_gizmoAABBDrawerSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, GraphicsPipelineArgs>(
+			m_gizmoAABBDrawerGraphicsPipeline = ResourceManager::Get()->LoadResource<GraphicsPipeline, GraphicsPipelineArgs>(
 				gizmoAABBDrawerSharedMaterialGuid,
 				{
 					gizmoAABBDrawerShaderGuid,
@@ -163,9 +189,9 @@ namespace JoyEngine
 					D3D12_COMPARISON_FUNC_NEVER,
 					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 					{
-						RenderManager::Get()->GetLdrRTVFormat()
+						swapchainFormat
 					},
-					RenderManager::Get()->GetDepthFormat(),
+					DXGI_FORMAT_UNKNOWN,
 					D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE,
 				});
 		}
@@ -173,11 +199,14 @@ namespace JoyEngine
 
 	void Raytracing::PrepareBVH()
 	{
+		Logger::LogFormat("Triangles length %d\n", m_trianglesLength);
+
 		TIME_PERF("Prepare Scene BVH")
 
 		m_bufferSorter->Sort();
 
-		{ // Update keys array. Now we guarantee all the elements are unique
+		{
+			// Update keys array. Now we guarantee all the elements are unique
 			m_keysBuffer->ReadbackGpuData();
 
 			uint32_t* keysArray = m_keysBuffer->GetLocalData();
@@ -228,19 +257,43 @@ namespace JoyEngine
 		//}
 	}
 
+	void Raytracing::ProcessRaytracing(ID3D12GraphicsCommandList* commandList, ResourceView* engineDataResourceView)
+	{
+		// Raytracing process
+		{
+			commandList->SetComputeRootSignature(m_raytracingPipeline->GetRootSignature().Get());
+			commandList->SetPipelineState(m_raytracingPipeline->GetPipelineObject().Get());
+
+
+			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "engineData", engineDataResourceView);
+
+			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "_outputTexture", m_raytracedTexture->GetUAV());
+			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "_meshTexture", m_texture->GetSRV());
+			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "sortedTriangleIndices", m_triangleIndexBuffer->GetSRV());
+			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "triangleAABB", m_triangleAABBBuffer->GetSRV());
+			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "internalNodes", m_bvhInternalNodesBuffer->GetSRV());
+			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "leafNodes", m_bvhLeafNodesBuffer->GetSRV());
+			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "bvhData", m_bvhDataBuffer->GetSRV());
+			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "triangleData", m_triangleDataBuffer->GetSRV());
+			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "linearClampSampler", EngineSamplersProvider::GetLinearClampSampler());
+		}
+
+		commandList->Dispatch((m_width / 32) + 1, (m_height / 32) + 1, 1);
+	}
+
 	void Raytracing::DrawGizmo(ID3D12GraphicsCommandList* commandList, const ViewProjectionMatrixData* viewProjectionMatrixData) const
 	{
-		auto sm = m_gizmoAABBDrawerSharedMaterial;
+		auto sm = m_gizmoAABBDrawerGraphicsPipeline;
 
-		commandList->SetPipelineState(sm->GetGraphicsPipeline()->GetPipelineObject().Get());
-		commandList->SetGraphicsRootSignature(sm->GetGraphicsPipeline()->GetRootSignature().Get());
+		commandList->SetPipelineState(sm->GetPipelineObject().Get());
+		commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
 
 
-		commandList->SetGraphicsRoot32BitConstants(1, 
-			sizeof(ViewProjectionMatrixData) / 4, 
-			viewProjectionMatrixData, 
-			0);
+		commandList->SetGraphicsRoot32BitConstants(1,
+		                                           sizeof(ViewProjectionMatrixData) / 4,
+		                                           viewProjectionMatrixData,
+		                                           0);
 
 		GraphicsUtils::AttachViewToGraphics(commandList, sm, "BVHData", m_bvhDataBuffer->GetSRV());
 

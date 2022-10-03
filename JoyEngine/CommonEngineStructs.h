@@ -127,11 +127,21 @@ struct CubemapConvolutionConstants
 
 struct EngineData
 {
-	VEC4 perspectiveValues;
 	VEC3 cameraWorldPos;
 	float time;
+
 	MAT4 cameraInvProj;
 	MAT4 cameraInvView;
+
+	float cameraNear;
+	float cameraFar;
+	float cameraFovRadians;
+	UINT1 screenWidth;
+
+	UINT1 screenHeight;
+	UINT1 _dummy0;
+	UINT1 _dummy1;
+	UINT1 _dummy2;
 };
 
 struct HDRDownScaleConstants

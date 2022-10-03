@@ -1,10 +1,12 @@
 #ifndef COMPONENT_H
 #define COMPONENT_H
 
-#include "SceneManager/Transform.h"
 #include "Common/Serializable.h"
 
 namespace JoyEngine {
+
+	class Transform;
+
 	class Component : public Serializable {
 	public:
 		Component() = default;

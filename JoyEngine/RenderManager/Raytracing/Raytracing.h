@@ -15,14 +15,26 @@
 
 namespace JoyEngine
 {
+	class IRenderManager;
+
 	class Raytracing
 	{
 	public:
-		Raytracing();
+		Raytracing() = delete;
+		Raytracing(DXGI_FORMAT mainColorFormat, DXGI_FORMAT swapchainFormat, uint32_t width, uint32_t height);
 		void PrepareBVH();
+		void ProcessRaytracing(ID3D12GraphicsCommandList* commandList, ResourceView* engineDataResourceView);
 		void DrawGizmo(ID3D12GraphicsCommandList* commandList, const ViewProjectionMatrixData* viewProjectionMatrixData) const;
 	private:
+		DXGI_FORMAT m_mainColorFormat;
+		DXGI_FORMAT m_swapchainFormat;
+		uint32_t m_width;
+		uint32_t m_height;
+
 		uint32_t m_trianglesLength;
+
+		std::unique_ptr<UAVTexture> m_raytracedTexture;
+
 		std::unique_ptr<DataBuffer<uint32_t>> m_keysBuffer;
 		std::unique_ptr<DataBuffer<uint32_t>> m_triangleIndexBuffer;
 		std::unique_ptr<DataBuffer<Triangle>> m_triangleDataBuffer;
@@ -35,11 +47,15 @@ namespace JoyEngine
 		ConstantCpuBuffer<BVHConstructorData> m_bvhConstructionData;
 
 		ResourceHandle<Mesh> m_mesh;
+		ResourceHandle<Texture> m_texture;
 		std::unique_ptr<BufferSorter> m_bufferSorter;
 		std::unique_ptr<BVHConstructor> m_bvhConstructor;
 		std::unique_ptr<ComputeDispatcher> m_dispatcher;
 
-		ResourceHandle<SharedMaterial> m_gizmoAABBDrawerSharedMaterial;
+		ResourceHandle<ComputePipeline> m_raytracingPipeline;
+		ResourceHandle<GraphicsPipeline> m_raytracedImageApplier;
+
+		ResourceHandle<GraphicsPipeline> m_gizmoAABBDrawerGraphicsPipeline;
 	};
 }
 #endif // RAYTRACING_H

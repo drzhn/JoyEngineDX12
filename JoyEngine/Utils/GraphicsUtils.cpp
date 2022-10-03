@@ -59,7 +59,7 @@ namespace JoyEngine
 
 	void GraphicsUtils::AttachViewToGraphics(
 		ID3D12GraphicsCommandList* commandList,
-		const ResourceHandle<SharedMaterial>& pipeline,
+		const ResourceHandle<GraphicsPipeline>& pipeline,
 		const char* paramName,
 		const ResourceView* view
 	)

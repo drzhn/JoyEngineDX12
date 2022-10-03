@@ -10,6 +10,7 @@
 #include "Components/Camera.h"
 #include "Components/Light.h"
 #include "DataManager/DataManager.h"
+#include "RenderManager/RenderManager.h"
 #include "ResourceManager/MtlBinaryParser.h"
 
 namespace JoyEngine
@@ -67,7 +68,7 @@ namespace JoyEngine
 					}
 					else if (type == "camera")
 					{
-						go->AddComponent(std::make_unique<Camera>());
+						go->AddComponent(std::make_unique<Camera>(RenderManager::Get()));
 					}
 					else if (type == "light")
 					{

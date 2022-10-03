@@ -1,27 +1,37 @@
 #include "Camera.h"
 
-
 #include <glm/gtx/matrix_decompose.hpp>
-#include "RenderManager/RenderManager.h"
+
+#include "RenderManager/IRenderManager.h"
+#include "SceneManager/Transform.h"
+
+#define CAMERA_FOV 60.f
+#define CAMERA_NEAR 0.1f
+#define CAMERA_FAR 1000
 
 namespace JoyEngine
 {
+	Camera::Camera(IRenderManager* manager):
+		m_manager(manager)
+	{
+	}
+
 	void Camera::Enable()
 	{
-		RenderManager::Get()->RegisterCamera(this);
-		m_cameraUnit = CameraUnit(RenderManager::Get()->GetAspect(),
-		                          RenderManager::Get()->GetWidth(),
-		                          RenderManager::Get()->GetHeight(),
-		                          60,
-		                          0.1f,
-		                          1000
+		m_manager->RegisterCamera(this);
+		m_cameraUnit = CameraUnit(m_manager->GetAspect(),
+		                          m_manager->GetWidth(),
+		                          m_manager->GetHeight(),
+		                          CAMERA_FOV,
+		                          CAMERA_NEAR,
+		                          CAMERA_FAR
 		);
 		m_enabled = true;
 	}
 
 	void Camera::Disable()
 	{
-		RenderManager::Get()->UnregisterCamera(this);
+		m_manager->UnregisterCamera(this);
 		m_enabled = false;
 	}
 
@@ -37,5 +47,20 @@ namespace JoyEngine
 	glm::mat4x4 Camera::GetProjMatrix() const
 	{
 		return m_cameraUnit.GetProjMatrix();
+	}
+
+	float Camera::GetFovRadians() const
+	{
+		return glm::radians(CAMERA_FOV);
+	}
+
+	float Camera::GetNear() const
+	{
+		return CAMERA_NEAR;
+	}
+
+	float Camera::GetFar() const
+	{
+		return CAMERA_FAR;
 	}
 }

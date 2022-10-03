@@ -1,8 +1,11 @@
 ﻿#include "CameraBehaviour.h"
 
+#include <glm/ext/quaternion_trigonometric.hpp>
+
 
 #include "Common/Time.h"
 #include "InputManager/InputManager.h"
+#include "SceneManager/Transform.h"
 
 namespace JoyEngine
 {

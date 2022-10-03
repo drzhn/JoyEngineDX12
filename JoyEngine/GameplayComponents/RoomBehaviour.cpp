@@ -8,6 +8,7 @@
 #include <glm/gtc/quaternion.hpp>
 
 #include "Common/Time.h"
+#include "SceneManager/Transform.h"
 
 namespace JoyEngine
 {

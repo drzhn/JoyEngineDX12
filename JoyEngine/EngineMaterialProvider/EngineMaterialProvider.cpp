@@ -20,11 +20,11 @@ namespace JoyEngine
 		TIME_PERF("EngineMaterialProvider init")
 
 		EngineSamplersProvider::InitSamplers();
-		DXGI_FORMAT mainRTVFormat = RenderManager::GetHdrRTVFormat();
-		DXGI_FORMAT swapchainLdrFormat = RenderManager::GetLdrRTVFormat();
-		DXGI_FORMAT mainGBufferFormat = RenderManager::GetGBufferFormat();
-		DXGI_FORMAT mainDSVFormat = RenderManager::GetDepthFormat();
-		DXGI_FORMAT ssaoFormat = RenderManager::GetSSAOFormat();
+		DXGI_FORMAT mainRTVFormat = RenderManager::Get()->GetHdrRTVFormat();
+		DXGI_FORMAT swapchainLdrFormat = RenderManager::Get()->GetLdrRTVFormat();
+		DXGI_FORMAT mainGBufferFormat = RenderManager::Get()->GetGBufferFormat();
+		DXGI_FORMAT mainDSVFormat = RenderManager::Get()->GetDepthFormat();
+		DXGI_FORMAT ssaoFormat = RenderManager::Get()->GetSSAOFormat();
 
 
 		// Standard shared material

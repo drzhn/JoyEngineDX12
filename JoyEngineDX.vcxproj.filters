@@ -171,7 +171,7 @@
     <ClCompile Include="JoyEngine\RenderManager\Raytracing\BVHConstructor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JoyEngine\ResourceManager\UavGpuBuffer.cpp">
+    <ClCompile Include="JoyEngine\ResourceManager\UAVGpuBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -374,7 +374,7 @@
     <ClInclude Include="JoyEngine\RenderManager\Raytracing\BVHConstructor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JoyEngine\ResourceManager\UavGpuBuffer.h">
+    <ClInclude Include="JoyEngine\ResourceManager\UAVGpuBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

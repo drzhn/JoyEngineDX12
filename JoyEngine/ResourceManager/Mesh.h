@@ -30,9 +30,9 @@ namespace JoyEngine
 
 		[[nodiscard]] uint32_t* GetIndices() const noexcept { return m_indicesData; }
 
-		[[nodiscard]] ComPtr<ID3D12Resource> GetVertexBuffer() const noexcept { return m_vertexBuffer->GetBuffer(); }
+		[[nodiscard]] ComPtr<ID3D12Resource> GetVertexBuffer() const noexcept { return m_vertexBuffer->GetBufferResource(); }
 
-		[[nodiscard]] ComPtr<ID3D12Resource> GetIndexBuffer() const noexcept { return m_indexBuffer->GetBuffer(); }
+		[[nodiscard]] ComPtr<ID3D12Resource> GetIndexBuffer() const noexcept { return m_indexBuffer->GetBufferResource(); }
 
 		[[nodiscard]] D3D12_VERTEX_BUFFER_VIEW* GetVertexBufferView() noexcept { return &m_vertexBufferView; }
 

@@ -145,7 +145,7 @@ namespace JoyEngine
 
 
 		D3D12_TEXTURE_COPY_LOCATION src = {
-			m_uploadStagingBuffer->GetBuffer().Get(),
+			m_uploadStagingBuffer->GetBufferResource().Get(),
 			D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT,
 			{
 				footprint
@@ -265,18 +265,18 @@ namespace JoyEngine
 
 		const D3D12_RESOURCE_STATES state = gpuBuffer->GetCurrentResourceState();
 
-		GraphicsUtils::Barrier(commandList, gpuBuffer->GetBuffer().Get(),
+		GraphicsUtils::Barrier(commandList, gpuBuffer->GetBufferResource().Get(),
 			state,
 			D3D12_RESOURCE_STATE_COPY_SOURCE);
 
 		commandList->CopyBufferRegion(
-			m_readbackStagingBuffer->GetBuffer().Get(),
+			m_readbackStagingBuffer->GetBufferResource().Get(),
 			0,
-			gpuBuffer->GetBuffer().Get(),
+			gpuBuffer->GetBufferResource().Get(),
 			0,
 			bufferSize);
 
-		GraphicsUtils::Barrier(commandList, gpuBuffer->GetBuffer().Get(),
+		GraphicsUtils::Barrier(commandList, gpuBuffer->GetBufferResource().Get(),
 			D3D12_RESOURCE_STATE_COPY_SOURCE,
 			state);
 
@@ -391,18 +391,18 @@ namespace JoyEngine
 
 		const D3D12_RESOURCE_STATES state = gpuBuffer->GetCurrentResourceState();
 
-		GraphicsUtils::Barrier(commandList, gpuBuffer->GetBuffer().Get(),
+		GraphicsUtils::Barrier(commandList, gpuBuffer->GetBufferResource().Get(),
 		                       state,
 		                       D3D12_RESOURCE_STATE_COPY_DEST);
 
 		commandList->CopyBufferRegion(
-			gpuBuffer->GetBuffer().Get(),
+			gpuBuffer->GetBufferResource().Get(),
 			0,
-			m_uploadStagingBuffer->GetBuffer().Get(),
+			m_uploadStagingBuffer->GetBufferResource().Get(),
 			0,
 			bufferSize);
 
-		GraphicsUtils::Barrier(commandList, gpuBuffer->GetBuffer().Get(),
+		GraphicsUtils::Barrier(commandList, gpuBuffer->GetBufferResource().Get(),
 		                       D3D12_RESOURCE_STATE_COPY_DEST,
 		                       state);
 

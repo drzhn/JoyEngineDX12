@@ -80,69 +80,14 @@ namespace JoyEngine
 			m_screenWidth / 4,
 			m_screenHeight / 4,
 			hdrRTVFormat,
-			D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+			D3D12_RESOURCE_STATE_GENERIC_READ,
 			D3D12_HEAP_TYPE_DEFAULT
 		);
 
 
-		m_hdrLuminationBuffer = std::make_unique<Buffer>(
-			64 * sizeof(float),
-			D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
-			D3D12_HEAP_TYPE_DEFAULT,
-			D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS
-		);
+		m_hdrLuminationBuffer = std::make_unique<UAVGpuBuffer>(64, sizeof(float));
 
-		D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc;
-
-		uavDesc.Format = DXGI_FORMAT_UNKNOWN;
-		uavDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
-		uavDesc.Buffer = {
-			0,
-			64,
-			sizeof(float),
-			0,
-			D3D12_BUFFER_UAV_FLAG_NONE
-		};
-
-		m_hdrLuminationBufferUAVView = std::make_unique<ResourceView>(
-			uavDesc,
-			m_hdrLuminationBuffer->GetBuffer().Get()
-		);
-
-		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc;
-		srvDesc.Format = DXGI_FORMAT_UNKNOWN;
-		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
-		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-		srvDesc.Buffer = {
-			0,
-			64,
-			sizeof(float),
-			D3D12_BUFFER_SRV_FLAG_NONE
-		};
-		m_hdrLuminationBufferSRVView = std::make_unique<ResourceView>(
-			srvDesc,
-			m_hdrLuminationBuffer->GetBuffer().Get()
-		);
-
-		m_hdrPrevLuminationBuffer = std::make_unique<Buffer>(
-			1 * sizeof(float),
-			D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
-			D3D12_HEAP_TYPE_DEFAULT,
-			D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS
-		);
-		uavDesc.Format = DXGI_FORMAT_UNKNOWN;
-		uavDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
-		uavDesc.Buffer = {
-			0,
-			1,
-			sizeof(float),
-			0,
-			D3D12_BUFFER_UAV_FLAG_NONE
-		};
-		m_hdrPrevLuminationBufferUAVView = std::make_unique<ResourceView>(
-			uavDesc,
-			m_hdrPrevLuminationBuffer->GetBuffer().Get()
-		);
+		m_hdrPrevLuminationBuffer = std::make_unique<UAVGpuBuffer>(1, sizeof(float));
 
 		m_groupSize = static_cast<uint32_t>(m_screenWidth * m_screenHeight / 16.0f / 1024.0f) + 1;
 
@@ -162,6 +107,16 @@ namespace JoyEngine
 	{
 		const auto ldrRTVHandle = currentBackBuffer->GetRTV()->GetCPUHandle();
 
+		GraphicsUtils::Barrier(commandList,
+			m_hdrLuminationBuffer->GetBuffer()->GetBufferResource().Get(),
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+
+		GraphicsUtils::Barrier(commandList,
+			m_hrdDownScaledTexture->GetImage().Get(),
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+
 		// First pass
 		{
 			const auto& sm = m_hdrDownscaleFirstPassComputePipeline;
@@ -169,7 +124,7 @@ namespace JoyEngine
 			commandList->SetPipelineState(sm->GetPipelineObject().Get());
 
 
-			GraphicsUtils::AttachViewToCompute(commandList, sm->GetBindingIndexByHash(strHash("AverageLum")), m_hdrLuminationBufferUAVView.get());
+			GraphicsUtils::AttachViewToCompute(commandList, sm->GetBindingIndexByHash(strHash("AverageLum")), m_hdrLuminationBuffer->GetUAV());
 			GraphicsUtils::AttachViewToCompute(commandList, sm->GetBindingIndexByHash(strHash("HDRDownScale")), m_hrdDownScaledTexture->GetUAV());
 			GraphicsUtils::AttachViewToCompute(commandList, sm->GetBindingIndexByHash(strHash("HDRTex")), m_hdrRenderTarget->GetSRV());
 			GraphicsUtils::AttachViewToCompute(commandList, sm->GetBindingIndexByHash(strHash("Constants")), m_constants->GetView());
@@ -183,15 +138,15 @@ namespace JoyEngine
 			commandList->SetComputeRootSignature(sm->GetRootSignature().Get());
 			commandList->SetPipelineState(sm->GetPipelineObject().Get());
 
-			GraphicsUtils::AttachViewToCompute(commandList, sm->GetBindingIndexByHash(strHash("AverageLum")), m_hdrLuminationBufferUAVView.get());
-			GraphicsUtils::AttachViewToCompute(commandList, sm->GetBindingIndexByHash(strHash("PrevAverageLum")), m_hdrPrevLuminationBufferUAVView.get());
+			GraphicsUtils::AttachViewToCompute(commandList, sm->GetBindingIndexByHash(strHash("AverageLum")), m_hdrLuminationBuffer->GetUAV());
+			GraphicsUtils::AttachViewToCompute(commandList, sm->GetBindingIndexByHash(strHash("PrevAverageLum")), m_hdrPrevLuminationBuffer->GetUAV());
 			GraphicsUtils::AttachViewToCompute(commandList, sm->GetBindingIndexByHash(strHash("Constants")), m_constants->GetView());
 
 			commandList->Dispatch(m_groupSize, 1, 1);
 		}
 
 		GraphicsUtils::Barrier(commandList,
-		                       m_hdrLuminationBuffer->GetBuffer().Get(),
+		                       m_hdrLuminationBuffer->GetBuffer()->GetBufferResource().Get(),
 		                       D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		                       D3D12_RESOURCE_STATE_GENERIC_READ);
 
@@ -209,7 +164,7 @@ namespace JoyEngine
 			commandList->SetGraphicsRootSignature(sm->GetGraphicsPipeline()->GetRootSignature().Get());
 			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-			GraphicsUtils::AttachViewToGraphics(commandList, sm->GetBindingIndexByHash(strHash("AvgLum")), m_hdrLuminationBufferSRVView.get());
+			GraphicsUtils::AttachViewToGraphics(commandList, sm->GetBindingIndexByHash(strHash("AvgLum")), m_hdrLuminationBuffer->GetSRV());
 			GraphicsUtils::AttachViewToGraphics(commandList, sm->GetBindingIndexByHash(strHash("HdrTexture")), m_hdrRenderTarget->GetSRV());
 
 			commandList->DrawInstanced(
@@ -217,15 +172,5 @@ namespace JoyEngine
 				1,
 				0, 0);
 		}
-
-		GraphicsUtils::Barrier(commandList,
-		                       m_hdrLuminationBuffer->GetBuffer().Get(),
-		                       D3D12_RESOURCE_STATE_GENERIC_READ,
-		                       D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
-
-		GraphicsUtils::Barrier(commandList,
-		                       m_hrdDownScaledTexture->GetImage().Get(),
-		                       D3D12_RESOURCE_STATE_GENERIC_READ,
-		                       D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 	}
 }

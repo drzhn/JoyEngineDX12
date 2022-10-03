@@ -31,7 +31,7 @@ namespace JoyEngine
 				);
 
 				D3D12_CONSTANT_BUFFER_VIEW_DESC desc = {
-					m_buffers[i]->GetBuffer()->GetGPUVirtualAddress(),
+					m_buffers[i]->GetBufferResource()->GetGPUVirtualAddress(),
 					m_size
 				};
 				m_resourceViews[i] = std::make_unique<ResourceView>(desc);

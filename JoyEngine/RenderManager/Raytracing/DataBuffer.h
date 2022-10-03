@@ -2,12 +2,12 @@
 #define DATA_BUFFER_H
 
 #include "MemoryManager/MemoryManager.h"
-#include "ResourceManager/UavGpuBuffer.h"
+#include "ResourceManager/UAVGpuBuffer.h"
 
 namespace JoyEngine
 {
 	template <typename T>
-	class DataBuffer : public UavGpuBuffer
+	class DataBuffer : public UAVGpuBuffer
 	{
 	public:
 		DataBuffer() = delete;
@@ -24,7 +24,7 @@ namespace JoyEngine
 		}
 
 		explicit DataBuffer(uint32_t numElements) :
-			UavGpuBuffer(numElements, sizeof(T))
+			UAVGpuBuffer(numElements, sizeof(T))
 		{
 			m_dataArray = static_cast<T*>(malloc(GetSize()));
 		}

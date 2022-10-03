@@ -60,7 +60,7 @@ namespace JoyEngine
 		m_lightDataBuffer = std::make_unique<Buffer>(bufferSize, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD);
 		m_lightDataBufferView = std::make_unique<ResourceView>(
 			D3D12_CONSTANT_BUFFER_VIEW_DESC{
-				m_lightDataBuffer->GetBuffer()->GetGPUVirtualAddress(),
+				m_lightDataBuffer->GetBufferResource()->GetGPUVirtualAddress(),
 				bufferSize
 			}
 		);

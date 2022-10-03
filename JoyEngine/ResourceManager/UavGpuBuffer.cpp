@@ -1,8 +1,8 @@
-﻿#include "UavGpuBuffer.h"
+﻿#include "UAVGpuBuffer.h"
 
 namespace JoyEngine
 {
-	UavGpuBuffer::UavGpuBuffer(uint32_t numElements, size_t stride):
+	UAVGpuBuffer::UAVGpuBuffer(uint32_t numElements, size_t stride):
 		m_numElements(numElements),
 		m_stride(stride)
 	{
@@ -23,7 +23,7 @@ namespace JoyEngine
 				.Flags = D3D12_BUFFER_UAV_FLAG_NONE,
 			}
 		};
-		m_bufferViewUAV = std::make_unique<ResourceView>(unorderedAccessViewDesc, m_gpuBuffer->GetBuffer().Get());
+		m_bufferViewUAV = std::make_unique<ResourceView>(unorderedAccessViewDesc, m_gpuBuffer->GetBufferResource().Get());
 
 
 		D3D12_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc = {
@@ -37,6 +37,6 @@ namespace JoyEngine
 				D3D12_BUFFER_SRV_FLAG_NONE
 			}
 		};
-		m_bufferViewSRV = std::make_unique<ResourceView>(shaderResourceViewDesc, m_gpuBuffer->GetBuffer().Get());
+		m_bufferViewSRV = std::make_unique<ResourceView>(shaderResourceViewDesc, m_gpuBuffer->GetBufferResource().Get());
 	}
 }

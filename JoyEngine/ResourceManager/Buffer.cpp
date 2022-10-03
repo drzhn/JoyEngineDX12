@@ -56,7 +56,7 @@ namespace JoyEngine
 		return GetMappedPtr(0, m_size);
 	}
 
-	ComPtr<ID3D12Resource> Buffer::GetBuffer() const noexcept
+	ComPtr<ID3D12Resource> Buffer::GetBufferResource() const noexcept
 	{
 		return m_buffer;
 	}

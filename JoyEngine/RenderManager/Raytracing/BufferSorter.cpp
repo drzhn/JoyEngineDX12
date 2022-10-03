@@ -127,12 +127,12 @@ namespace JoyEngine
 				commandList->Dispatch(BLOCK_SIZE, 1, 1);
 			}
 
-			GraphicsUtils::UAVBarrier(commandList, m_keys->GetBuffer()->GetBuffer().Get());
-			GraphicsUtils::UAVBarrier(commandList, m_values->GetBuffer()->GetBuffer().Get());
-			GraphicsUtils::UAVBarrier(commandList, m_sortedBlocksKeysData->GetBuffer()->GetBuffer().Get());
-			GraphicsUtils::UAVBarrier(commandList, m_sortedBlocksValuesData->GetBuffer()->GetBuffer().Get());
-			GraphicsUtils::UAVBarrier(commandList, m_offsetsData->GetBuffer()->GetBuffer().Get());
-			GraphicsUtils::UAVBarrier(commandList, m_sizesData->GetBuffer()->GetBuffer().Get());
+			GraphicsUtils::UAVBarrier(commandList, m_keys->GetBuffer()->GetBufferResource().Get());
+			GraphicsUtils::UAVBarrier(commandList, m_values->GetBuffer()->GetBufferResource().Get());
+			GraphicsUtils::UAVBarrier(commandList, m_sortedBlocksKeysData->GetBuffer()->GetBufferResource().Get());
+			GraphicsUtils::UAVBarrier(commandList, m_sortedBlocksValuesData->GetBuffer()->GetBufferResource().Get());
+			GraphicsUtils::UAVBarrier(commandList, m_offsetsData->GetBuffer()->GetBufferResource().Get());
+			GraphicsUtils::UAVBarrier(commandList, m_sizesData->GetBuffer()->GetBufferResource().Get());
 
 			// Pre scan 
 			{
@@ -146,8 +146,8 @@ namespace JoyEngine
 				commandList->Dispatch(BLOCK_SIZE / (THREADS_PER_BLOCK / BUCKET_SIZE), 1, 1);
 			}
 
-			GraphicsUtils::UAVBarrier(commandList, m_sizesData->GetBuffer()->GetBuffer().Get());
-			GraphicsUtils::UAVBarrier(commandList, m_sizesPrefixSumData->GetBuffer()->GetBuffer().Get());
+			GraphicsUtils::UAVBarrier(commandList, m_sizesData->GetBuffer()->GetBufferResource().Get());
+			GraphicsUtils::UAVBarrier(commandList, m_sizesPrefixSumData->GetBuffer()->GetBufferResource().Get());
 
 			// Block sum
 			{
@@ -160,7 +160,7 @@ namespace JoyEngine
 				commandList->Dispatch(1, 1, 1);
 			}
 
-			GraphicsUtils::UAVBarrier(commandList, m_sizesPrefixSumData->GetBuffer()->GetBuffer().Get());
+			GraphicsUtils::UAVBarrier(commandList, m_sizesPrefixSumData->GetBuffer()->GetBufferResource().Get());
 
 			// Global scan
 			{
@@ -174,8 +174,8 @@ namespace JoyEngine
 				commandList->Dispatch(BLOCK_SIZE / (THREADS_PER_BLOCK / BUCKET_SIZE), 1, 1);
 			}
 
-			GraphicsUtils::UAVBarrier(commandList, m_sizesData->GetBuffer()->GetBuffer().Get());
-			GraphicsUtils::UAVBarrier(commandList, m_sizesPrefixSumData->GetBuffer()->GetBuffer().Get());
+			GraphicsUtils::UAVBarrier(commandList, m_sizesData->GetBuffer()->GetBufferResource().Get());
+			GraphicsUtils::UAVBarrier(commandList, m_sizesPrefixSumData->GetBuffer()->GetBufferResource().Get());
 
 			// Global radix sort
 			{

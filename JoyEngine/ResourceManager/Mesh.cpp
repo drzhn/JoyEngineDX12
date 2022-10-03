@@ -75,13 +75,13 @@ namespace JoyEngine
 		MemoryManager::Get()->LoadDataToBuffer((void*)m_indicesData, indexDataSize, m_indexBuffer.get());
 
 		m_vertexBufferView = {
-			m_vertexBuffer->GetBuffer()->GetGPUVirtualAddress(),
+			m_vertexBuffer->GetBufferResource()->GetGPUVirtualAddress(),
 			vertexDataSize,
 			sizeof(Vertex)
 		};
 
 		m_indexBufferView = {
-			m_indexBuffer->GetBuffer()->GetGPUVirtualAddress(),
+			m_indexBuffer->GetBufferResource()->GetGPUVirtualAddress(),
 			indexDataSize,
 			DXGI_FORMAT_R32_UINT,
 		};

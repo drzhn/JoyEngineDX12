@@ -243,7 +243,7 @@
     <ClCompile Include="JoyEngine\ResourceManager\ShaderCompiler.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\SharedMaterial.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\Texture.cpp" />
-    <ClCompile Include="JoyEngine\ResourceManager\UavGpuBuffer.cpp" />
+    <ClCompile Include="JoyEngine\ResourceManager\UAVGpuBuffer.cpp" />
     <ClCompile Include="JoyEngine\SceneManager\GameObject.cpp" />
     <ClCompile Include="JoyEngine\SceneManager\Scene.cpp" />
     <ClCompile Include="JoyEngine\SceneManager\SceneManager.cpp" />
@@ -308,7 +308,7 @@
     <ClInclude Include="JoyEngine\ResourceManager\ShaderCompiler.h" />
     <ClInclude Include="JoyEngine\ResourceManager\SharedMaterial.h" />
     <ClInclude Include="JoyEngine\ResourceManager\Texture.h" />
-    <ClInclude Include="JoyEngine\ResourceManager\UavGpuBuffer.h" />
+    <ClInclude Include="JoyEngine\ResourceManager\UAVGpuBuffer.h" />
     <ClInclude Include="JoyEngine\SceneManager\GameObject.h" />
     <ClInclude Include="JoyEngine\SceneManager\Scene.h" />
     <ClInclude Include="JoyEngine\SceneManager\SceneManager.h" />

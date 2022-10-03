@@ -5,10 +5,10 @@
 
 namespace JoyEngine
 {
-	class UavGpuBuffer
+	class UAVGpuBuffer
 	{
 	public:
-		UavGpuBuffer(uint32_t numElements, size_t stride);
+		UAVGpuBuffer(uint32_t numElements, size_t stride);
 
 		[[nodiscard]] ResourceView* GetUAV() const
 		{

@@ -26,6 +26,10 @@
             "path": "models/Sphere.obj"
         },
         {
+            "guid": "f9685ae2-2293-4662-83c1-69a37d1499fe",
+            "path": "models/HugeSphere.obj"
+        },
+        {
             "guid": "87b5a0a5-e806-40cd-8051-257091065a76",
             "path": "models/ExampleObject2.obj"
         },

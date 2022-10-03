@@ -74,7 +74,7 @@ namespace JoyEngine
 		static_assert(sizeof(Triangle) == 128);
 		static_assert(sizeof(AABB) == 32);
 
-		const GUID meshGuid = GUID::StringToGuid("47000776-d056-43a2-bacb-c3e54701294a");
+		const GUID meshGuid = GUID::StringToGuid("f9685ae2-2293-4662-83c1-69a37d1499fe");
 		m_mesh = ResourceManager::Get()->LoadResource<Mesh>(meshGuid);
 
 		const GUID textureGuid = GUID::StringToGuid("1d451f58-3f84-4b2b-8c6f-fe8e2821d7f0");

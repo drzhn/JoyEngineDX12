@@ -11,13 +11,14 @@ namespace JoyEngine
 {
 	class MeshRenderer;
 
-	enum EngineBindingType
+	enum class EngineBindingType
 	{
-		ModelViewProjection,
-		LightAttachment,
-		EnvironmentCubemap,
-		EnvironmentConvolutedCubemap,
-		EngineData
+		ModelMatrixData,
+		ViewProjectionMatrixData,
+		EngineData,
+		//LightAttachment,
+		//EnvironmentCubemap,
+		//EnvironmentConvolutedCubemap,
 	};
 
 	struct GraphicsPipelineArgs

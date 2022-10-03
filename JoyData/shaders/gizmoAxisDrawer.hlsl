@@ -1,6 +1,6 @@
 #include "CommonEngineStructs.h"
 
-ConstantBuffer<MVP> mvp : register(b0);
+ConstantBuffer<ViewProjectionMatrixData> viewProjectionData : register(b0);
 
 struct PSInput
 {
@@ -31,7 +31,7 @@ PSInput VSMain(uint id : SV_VertexID)
 
 	float4 position = float4(id == 1, id == 3, id == 5, 1);
 
-	float4x4 invView = mvp.view;
+	float4x4 invView = viewProjectionData.view;
 	invView[0][3] = 0;
 	invView[1][3] = 0;
 	invView[2][3] = 0;
@@ -40,7 +40,7 @@ PSInput VSMain(uint id : SV_VertexID)
 
 	position += float4(0, 0, 3, 0);
 
-	input.position = mul(mvp.proj, position);
+	input.position = mul(viewProjectionData.proj, position);
 	input.color = float4((id / 2) % 3 == 0, (id / 2) % 3 == 1, (id / 2) % 3 == 2, 1);
 	return input;
 }

@@ -228,7 +228,7 @@ namespace JoyEngine
 		//}
 	}
 
-	void Raytracing::DrawGizmo(ID3D12GraphicsCommandList* commandList, MVP mvp)
+	void Raytracing::DrawGizmo(ID3D12GraphicsCommandList* commandList, const ViewProjectionMatrixData* viewProjectionMatrixData) const
 	{
 		auto sm = m_gizmoAABBDrawerSharedMaterial;
 
@@ -237,7 +237,10 @@ namespace JoyEngine
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
 
 
-		commandList->SetGraphicsRoot32BitConstants(1, sizeof(::MVP) / 4, &mvp, 0);
+		commandList->SetGraphicsRoot32BitConstants(1, 
+			sizeof(ViewProjectionMatrixData) / 4, 
+			viewProjectionMatrixData, 
+			0);
 
 		GraphicsUtils::AttachViewToGraphics(commandList, sm, "BVHData", m_bvhDataBuffer->GetSRV());
 

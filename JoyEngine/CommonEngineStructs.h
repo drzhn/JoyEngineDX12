@@ -89,9 +89,13 @@ struct Vertex
 	VEC2 texCoord;
 };
 
-struct MVP
+struct ModelMatrixData
 {
 	MAT4 model;
+};
+
+struct ViewProjectionMatrixData
+{
 	MAT4 view;
 	MAT4 proj;
 };

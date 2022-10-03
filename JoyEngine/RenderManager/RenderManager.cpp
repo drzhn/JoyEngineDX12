@@ -23,6 +23,10 @@
 #include "DescriptorManager/DescriptorManager.h"
 #include "GraphicsManager/GraphicsManager.h"
 #include "EngineMaterialProvider/EngineMaterialProvider.h"
+#include "Raytracing/BVHConstructor.h"
+#include "Raytracing/BVHConstructor.h"
+#include "Raytracing/BVHConstructor.h"
+#include "Raytracing/BVHConstructor.h"
 #include "ResourceManager/DynamicCpuBuffer.h"
 
 #include "Utils/GraphicsUtils.h"
@@ -225,10 +229,15 @@ namespace JoyEngine
 		const glm::mat4 mainCameraViewMatrix = m_currentCamera->GetViewMatrix();
 		const glm::mat4 mainCameraProjMatrix = m_currentCamera->GetProjMatrix();
 
+		ViewProjectionMatrixData viewProjectionMatrixData = {
+			.view = mainCameraViewMatrix,
+			.proj = mainCameraProjMatrix
+		};
+
 		{
 			m_engineDataBuffer->Lock(m_currentFrameIndex);
 
-			const auto data = static_cast<::EngineData*>(m_engineDataBuffer->GetPtr());
+			const auto data = static_cast<EngineData*>(m_engineDataBuffer->GetPtr());
 			data->cameraWorldPos = m_currentCamera->GetTransform()->GetPosition();
 			data->time = Time::GetTime();
 			data->perspectiveValues = glm::vec4(
@@ -243,10 +252,18 @@ namespace JoyEngine
 			m_engineDataBuffer->Unlock();
 		}
 
+		ID3D12DescriptorHeap* heaps[2]
+		{
+			DescriptorManager::Get()->GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV),
+			DescriptorManager::Get()->GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER)
+		};
+		commandList->SetDescriptorHeaps(2, heaps);
+
+		// Set main viewport-scissor rects
+		GraphicsUtils::SetViewportAndScissor(commandList, m_width, m_height);
+
 		//Drawing main color
 		{
-			GraphicsUtils::SetViewportAndScissor(commandList, m_width, m_height);
-
 			commandList->OMSetRenderTargets(
 				1,
 				&hdrRTVHandle,
@@ -256,7 +273,7 @@ namespace JoyEngine
 			commandList->ClearRenderTargetView(hdrRTVHandle, clearColor, 0, nullptr);
 			commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
-			RenderEntireSceneWithMaterials(commandList, mainCameraViewMatrix, mainCameraProjMatrix, true);
+			RenderEntireSceneWithMaterials(commandList, &viewProjectionMatrixData);
 		}
 
 		// HDR->LDR
@@ -279,15 +296,7 @@ namespace JoyEngine
 
 		m_tonemapping->Render(commandList, m_swapchainRenderTargets[m_currentFrameIndex].get());
 
-		MVP mvp{
-			glm::identity<glm::mat4>(),
-			mainCameraViewMatrix,
-			mainCameraProjMatrix
-		};
-
-		GraphicsUtils::SetViewportAndScissor(commandList, m_width, m_height);
-
-		m_raytracing->DrawGizmo(commandList, mvp);
+		m_raytracing->DrawGizmo(commandList, &viewProjectionMatrixData);
 
 		{
 			auto sm = EngineMaterialProvider::Get()->GetGizmoAxisDrawerSharedMaterial();
@@ -316,7 +325,7 @@ namespace JoyEngine
 			commandList->RSSetViewports(1, &viewport);
 			commandList->RSSetScissorRects(1, &scissorRect);
 
-			ProcessEngineBindings(commandList, sm->GetGraphicsPipeline()->GetEngineBindings(), &mvp);
+			ProcessEngineBindings(commandList, sm->GetGraphicsPipeline()->GetEngineBindings(), nullptr, &viewProjectionMatrixData);
 
 			commandList->DrawInstanced(
 				6,
@@ -372,7 +381,8 @@ namespace JoyEngine
 	void RenderManager::ProcessEngineBindings(
 		ID3D12GraphicsCommandList* commandList,
 		const std::map<uint32_t, EngineBindingType>& bindings,
-		::MVP* mvp
+		const ModelMatrixData* modelMatrix,
+		const ViewProjectionMatrixData* viewProjectionMatrix
 	) const
 	{
 		for (const auto& pair : bindings)
@@ -382,90 +392,70 @@ namespace JoyEngine
 
 			switch (type)
 			{
-			case ModelViewProjection:
+			case EngineBindingType::ModelMatrixData:
 				{
-					ASSERT(mvp != nullptr)
-					commandList->SetGraphicsRoot32BitConstants(rootIndex, sizeof(::MVP) / 4, mvp, 0);
+					ASSERT(modelMatrix != nullptr);
+					commandList->SetGraphicsRoot32BitConstants(
+						rootIndex,
+						sizeof(ModelMatrixData) / 4,
+						modelMatrix,
+						0);
 					break;
 				}
-			//case LightAttachment:
-			//	{
-			//		if (isDrawingMainColor)
-			//		{
-			//			AttachViewToGraphics(commandList, rootIndex, m_lightingAttachment->GetRTV());
-			//		}
-			//		break;
-			//	}
-			//case EnvironmentCubemap:
-			//	{
-			//		if (isDrawingMainColor)
-			//		{
-			//			AttachViewToGraphics(commandList, rootIndex, m_cubemap->GetCubemapTexture()->GetRTV());
-			//		}
-			//		break;
-			//	}
-			//case EnvironmentConvolutedCubemap:
-			//	{
-			//		if (isDrawingMainColor)
-			//		{
-			//			AttachViewToGraphics(commandList, rootIndex, m_cubemap->GetCubemapConvolutedTexture()->GetRTV());
-			//		}
-			//		break;
-			//	}
-			//case EngineData:
-			//	{
-			//		AttachViewToGraphics(commandList, rootIndex, m_engineDataBufferView.get());
-			//		break;
-			//	}
+			case EngineBindingType::ViewProjectionMatrixData:
+				{
+					commandList->SetGraphicsRoot32BitConstants(
+						rootIndex,
+						sizeof(ViewProjectionMatrixData) / 4,
+						viewProjectionMatrix,
+						0);
+					break;
+				}
+			case EngineBindingType::EngineData:
+				{
+					//AttachViewToGraphics(commandList, rootIndex, m_engineDataBufferView.get());
+					break;
+				}
 			default:
 				ASSERT(false);
 			}
 		}
 	}
 
-	void RenderManager::RenderEntireScene(
-		ID3D12GraphicsCommandList* commandList,
-		glm::mat4 view,
-		glm::mat4 proj
-	) const
-	{
-		for (auto const& s : m_sharedMaterials)
-		{
-			for (const auto& mr : s->GetMeshRenderers())
-			{
-				commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-				commandList->IASetVertexBuffers(0, 1, mr->GetMesh()->GetVertexBufferView());
-				commandList->IASetIndexBuffer(mr->GetMesh()->GetIndexBufferView());
+	//void RenderManager::RenderEntireScene(
+	//	ID3D12GraphicsCommandList* commandList,
+	//	glm::mat4 view,
+	//	glm::mat4 proj
+	//) const
+	//{
+	//	for (auto const& s : m_sharedMaterials)
+	//	{
+	//		for (const auto& mr : s->GetMeshRenderers())
+	//		{
+	//			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//			commandList->IASetVertexBuffers(0, 1, mr->GetMesh()->GetVertexBufferView());
+	//			commandList->IASetIndexBuffer(mr->GetMesh()->GetIndexBufferView());
 
-				::MVP mvp{
-					mr->GetTransform()->GetModelMatrix(),
-					view,
-					proj
-				};
-				uint32_t var = 5;
-				commandList->SetGraphicsRoot32BitConstants(0, sizeof(::MVP) / 4, &mvp, 0);
-				commandList->DrawIndexedInstanced(
-					mr->GetMesh()->GetIndexCount(),
-					1,
-					0, 0, 0);
-			}
-		}
-	}
+	//			::MVP mvp{
+	//				mr->GetTransform()->GetModelMatrix(),
+	//				view,
+	//				proj
+	//			};
+	//			uint32_t var = 5;
+	//			commandList->SetGraphicsRoot32BitConstants(0, sizeof(::MVP) / 4, &mvp, 0);
+	//			commandList->DrawIndexedInstanced(
+	//				mr->GetMesh()->GetIndexCount(),
+	//				1,
+	//				0, 0, 0);
+	//		}
+	//	}
+	//}
 
 	void RenderManager::RenderEntireSceneWithMaterials(
 		ID3D12GraphicsCommandList* commandList,
-		glm::mat4 view,
-		glm::mat4 proj,
-		bool isDrawingMainColor
+		const ViewProjectionMatrixData* viewProjectionData
 	) const
 	{
-		ID3D12DescriptorHeap* heaps[2]
-		{
-			DescriptorManager::Get()->GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV),
-			DescriptorManager::Get()->GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER)
-		};
-		commandList->SetDescriptorHeaps(2, heaps);
-
 		for (auto const& sm : m_sharedMaterials)
 		{
 			commandList->SetPipelineState(sm->GetGraphicsPipeline()->GetPipelineObject().Get());
@@ -477,18 +467,17 @@ namespace JoyEngine
 				commandList->IASetVertexBuffers(0, 1, mr->GetMesh()->GetVertexBufferView());
 				commandList->IASetIndexBuffer(mr->GetMesh()->GetIndexBufferView());
 
-				::MVP mvp{
-					mr->GetTransform()->GetModelMatrix(),
-					view,
-					proj
-				};
 				for (auto param : mr->GetMaterial()->GetRootParams())
 				{
 					const uint32_t index = param.first;
 					GraphicsUtils::AttachViewToGraphics(commandList, index, param.second);
 				}
 
-				ProcessEngineBindings(commandList, sm->GetGraphicsPipeline()->GetEngineBindings(), &mvp);
+				ModelMatrixData modelMatrix = {
+					.model = mr->GetTransform()->GetModelMatrix()
+				};
+
+				ProcessEngineBindings(commandList, sm->GetGraphicsPipeline()->GetEngineBindings(), &modelMatrix, viewProjectionData);
 
 				commandList->DrawIndexedInstanced(
 					mr->GetMesh()->GetIndexCount(),

@@ -20,7 +20,7 @@ namespace JoyEngine
 	public:
 		Raytracing();
 		void PrepareBVH();
-		void DrawGizmo(ID3D12GraphicsCommandList* commandList, MVP mvp);
+		void DrawGizmo(ID3D12GraphicsCommandList* commandList, const ViewProjectionMatrixData* viewProjectionMatrixData) const;
 	private:
 		uint32_t m_trianglesLength;
 		std::unique_ptr<DataBuffer<uint32_t>> m_keysBuffer;

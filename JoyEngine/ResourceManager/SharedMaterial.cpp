@@ -65,14 +65,21 @@ namespace JoyEngine
 				const std::string& name = pair.first;
 				const ShaderInput& input = pair.second;
 
-				if (name == "mvp")
+				if (name == "modelData")
 				{
 					params[paramsIndex].InitAsConstants(
-						sizeof(MVP) / 4, input.BindPoint, input.Space, input.Visibility);
-					m_engineBindings.insert({static_cast<uint32_t>(paramsIndex), ModelViewProjection});
+						sizeof(ModelMatrixData) / 4, input.BindPoint, input.Space, input.Visibility);
+					m_engineBindings.insert({paramsIndex, EngineBindingType::ModelMatrixData});
 					paramsIndex++;
 				}
-				else if (name == "MipMapGenerationData")
+				else if (name == "viewProjectionData")
+				{
+					params[paramsIndex].InitAsConstants(
+						sizeof(ViewProjectionMatrixData) / 4, input.BindPoint, input.Space, input.Visibility);
+					m_engineBindings.insert({paramsIndex, EngineBindingType::ViewProjectionMatrixData});
+					paramsIndex++;
+				}
+				else if (name == "MipMapGenerationData") // TODO REMOVE
 				{
 					params[paramsIndex].InitAsConstants(
 						sizeof(MipMapGenerationData) / 4, input.BindPoint, input.Space, input.Visibility);

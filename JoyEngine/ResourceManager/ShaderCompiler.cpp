@@ -154,7 +154,6 @@ namespace JoyEngine
 			DxcDefine Shader_Macros[] = {{L"SHADER", L"1"}, nullptr, nullptr};
 			IDxcIncludeHandler* includeHandler = m_commonEngineStructsInclude.get();
 
-			uint32_t codePage = CP_UTF8;
 			ComPtr<IDxcBlobEncoding> sourceBlob;
 			ComPtr<IDxcOperationResult> dxcOperationResult;
 
@@ -202,9 +201,9 @@ namespace JoyEngine
 			}
 			ASSERT_SUCC(res);
 
-			ASSERT_SUCC(dxcOperationResult->GetResult((IDxcBlob**)module));
+			ASSERT_SUCC(dxcOperationResult->GetResult(reinterpret_cast<IDxcBlob**>(module)));
 
-			s_validator->Validate((IDxcBlob*)(*module), 0, &dxcOperationResult);
+			s_validator->Validate(reinterpret_cast<IDxcBlob*>(*module), 0, &dxcOperationResult);
 			dxcOperationResult->GetStatus(&res);
 			if (FAILED(res))
 			{
@@ -217,7 +216,7 @@ namespace JoyEngine
 				}
 			}
 
-			ASSERT_SUCC(s_dxcReflection->Load((IDxcBlob*)(* module)));
+			ASSERT_SUCC(s_dxcReflection->Load(reinterpret_cast<IDxcBlob*>(*module)));
 			uint32_t partCount;
 			ASSERT_SUCC(s_dxcReflection->GetPartCount(&partCount));
 

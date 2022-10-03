@@ -22,7 +22,7 @@ using Microsoft::WRL::ComPtr;
 
 namespace JoyEngine
 {
-	enum EngineBindingType;
+	enum class EngineBindingType;
 
 	class CommandQueue;
 	class Light;
@@ -79,23 +79,22 @@ namespace JoyEngine
 		[[nodiscard]] static constexpr DXGI_FORMAT GetSSAOFormat() noexcept { return ssaoFormat; }
 
 	private:
-		void RenderEntireScene(
-			ID3D12GraphicsCommandList* commandList,
-			glm::mat4 view,
-			glm::mat4 proj
-		) const;
+		//void RenderEntireScene(
+		//	ID3D12GraphicsCommandList* commandList,
+		//	glm::mat4 view,
+		//	glm::mat4 proj
+		//) const;
 
 		void RenderEntireSceneWithMaterials(
 			ID3D12GraphicsCommandList* commandList,
-			glm::mat4 view,
-			glm::mat4 proj,
-			bool isDrawingMainColor
+			const ViewProjectionMatrixData* viewProjectionData
 		) const;
 
 		void ProcessEngineBindings(
 			ID3D12GraphicsCommandList* commandList,
 			const std::map<uint32_t, EngineBindingType>& bindings,
-			::MVP* mvp
+			const ModelMatrixData* modelMatrix,
+			const ViewProjectionMatrixData* viewProjectionMatrix
 		) const;
 
 		static void CopyRTVResource(ID3D12GraphicsCommandList* commandList, ID3D12Resource* rtvResource, ID3D12Resource* copyResource);

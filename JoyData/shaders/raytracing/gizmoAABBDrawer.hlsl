@@ -1,6 +1,6 @@
 #include "CommonEngineStructs.h"
 
-ConstantBuffer<MVP> mvp : register(b0);
+ConstantBuffer<ViewProjectionMatrixData> viewProjectionData : register(b0);
 
 StructuredBuffer<AABB> BVHData; // size = THREADS_PER_BLOCK * BLOCK_SIZE - 1
 
@@ -47,8 +47,8 @@ PSInput VSMain(uint id : SV_VertexID, uint instanceId : SV_InstanceID)
 		float4(aabb.max.x, aabb.min.y, aabb.max.z, 1),
 	};
 
-	float4 position = pos[id];
-	float4x4 resMatrix = mul(mvp.proj, mul(mvp.view, mvp.model));
+	const float4 position = pos[id];
+	const float4x4 resMatrix = mul(viewProjectionData.proj, viewProjectionData.view);
 
 	input.position = mul(resMatrix, position);
 	input.color = float4(1, 0, 0, 1);

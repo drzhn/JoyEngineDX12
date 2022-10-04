@@ -106,7 +106,7 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 	const float3 originCamera = float3(0, 0, 0);
 	const float3 dirCamera = float3(
 		-width / 2 + width / engineData.screenWidth * (id.x + 0.5),
-		-height / 2 + height / engineData.screenHeight * (id.y + 0.5),
+		height / 2 - height / engineData.screenHeight * (id.y + 0.5),
 		near
 	);
 

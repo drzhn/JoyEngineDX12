@@ -416,5 +416,6 @@
     <None Include="JoyData\shaders\raytracing\BVHAABBMerger.hlsl" />
     <None Include="JoyData\shaders\raytracing\gizmoAABBDrawer.hlsl" />
     <None Include="JoyData\shaders\raytracing\Raytracing.hlsl" />
+    <None Include="JoyData\shaders\raytracing\debugImageCompose.hlsl" />
   </ItemGroup>
 </Project>

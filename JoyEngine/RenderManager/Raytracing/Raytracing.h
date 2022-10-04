@@ -24,6 +24,7 @@ namespace JoyEngine
 		Raytracing(DXGI_FORMAT mainColorFormat, DXGI_FORMAT swapchainFormat, uint32_t width, uint32_t height);
 		void PrepareBVH();
 		void ProcessRaytracing(ID3D12GraphicsCommandList* commandList, ResourceView* engineDataResourceView);
+		void DebugDrawRaytracedImage(ID3D12GraphicsCommandList* commandList);
 		void DrawGizmo(ID3D12GraphicsCommandList* commandList, const ViewProjectionMatrixData* viewProjectionMatrixData) const;
 	private:
 		DXGI_FORMAT m_mainColorFormat;
@@ -56,6 +57,7 @@ namespace JoyEngine
 		ResourceHandle<GraphicsPipeline> m_raytracedImageApplier;
 
 		ResourceHandle<GraphicsPipeline> m_gizmoAABBDrawerGraphicsPipeline;
+		ResourceHandle<GraphicsPipeline> m_debugRaytracingTextureDrawGraphicsPipeline;
 	};
 }
 #endif // RAYTRACING_H

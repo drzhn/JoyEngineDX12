@@ -30,6 +30,10 @@
             "path": "models/HugeSphere.obj"
         },
         {
+            "guid": "1217dfc4-c38c-47a7-a5ed-9e733243bf92",
+            "path": "models/SponzaCombined.obj"
+        },
+        {
             "guid": "87b5a0a5-e806-40cd-8051-257091065a76",
             "path": "models/ExampleObject2.obj"
         },
@@ -238,6 +242,10 @@
         {
             "guid": "b24e90ac-fcfa-4754-b0e5-8553b19e27ca",
             "path": "shaders/raytracing/Raytracing.hlsl"
+        },
+        {
+            "guid": "cc8de13c-0510-4842-99f5-de2327aa95d4",
+            "path": "shaders/raytracing/debugImageCompose.hlsl"
         },
 
         {

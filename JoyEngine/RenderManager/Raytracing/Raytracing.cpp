@@ -9,8 +9,8 @@
 namespace JoyEngine
 {
 	AABB Whole = {
-		.min = glm::vec3(-15.5f, -15.5f, -15.5f),
-		.max = glm::vec3(15.5f, 15.5f, 15.5f),
+		.min = glm::vec3(-200.5f, -15.5f, -115.5f),
+		.max = glm::vec3(200.5f, 150.5f, 115.5f),
 	};
 
 	uint32_t ExpandBits(uint32_t v)
@@ -74,7 +74,9 @@ namespace JoyEngine
 		static_assert(sizeof(Triangle) == 128);
 		static_assert(sizeof(AABB) == 32);
 
-		const GUID meshGuid = GUID::StringToGuid("f9685ae2-2293-4662-83c1-69a37d1499fe");
+		//const GUID meshGuid = GUID::StringToGuid("f9685ae2-2293-4662-83c1-69a37d1499fe");
+		const GUID meshGuid = GUID::StringToGuid("1217dfc4-c38c-47a7-a5ed-9e733243bf92"); // sponza combined
+
 		m_mesh = ResourceManager::Get()->LoadResource<Mesh>(meshGuid);
 
 		const GUID textureGuid = GUID::StringToGuid("1d451f58-3f84-4b2b-8c6f-fe8e2821d7f0");
@@ -169,6 +171,49 @@ namespace JoyEngine
 				{
 					raytracingShaderGuid,
 					D3D_SHADER_MODEL_6_5
+				});
+		}
+
+		// Draw raytraced texture 
+		{
+			const GUID debugImageComposerShaderGuid = GUID::StringToGuid("cc8de13c-0510-4842-99f5-de2327aa95d4"); // shaders/raytracing/debugImageCompose.hlsl
+			const GUID debugImageComposerSharedMaterialGuid = GUID::Random();
+
+			D3D12_RENDER_TARGET_BLEND_DESC blendDesc = {
+				true,
+				FALSE,
+				D3D12_BLEND_SRC_ALPHA,
+				D3D12_BLEND_INV_SRC_ALPHA,
+				D3D12_BLEND_OP_ADD,
+				D3D12_BLEND_ONE,
+				D3D12_BLEND_ZERO,
+				D3D12_BLEND_OP_ADD,
+				D3D12_LOGIC_OP_NOOP,
+				D3D12_COLOR_WRITE_ENABLE_ALL
+			};
+
+			D3D12_BLEND_DESC blend = {
+				.AlphaToCoverageEnable = false,
+				.IndependentBlendEnable = false,
+			};
+			blend.RenderTarget[0] = blendDesc;
+
+			m_debugRaytracingTextureDrawGraphicsPipeline = ResourceManager::Get()->LoadResource<GraphicsPipeline, GraphicsPipelineArgs>(
+				debugImageComposerSharedMaterialGuid,
+				{
+					debugImageComposerShaderGuid,
+					JoyShaderTypeVertex | JoyShaderTypePixel,
+					false,
+					false,
+					false,
+					D3D12_CULL_MODE_NONE,
+					D3D12_COMPARISON_FUNC_NEVER,
+					CD3DX12_BLEND_DESC(blend),
+					{
+						mainColorFormat
+					},
+					DXGI_FORMAT_UNKNOWN,
+					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 				});
 		}
 
@@ -275,10 +320,24 @@ namespace JoyEngine
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "leafNodes", m_bvhLeafNodesBuffer->GetSRV());
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "bvhData", m_bvhDataBuffer->GetSRV());
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "triangleData", m_triangleDataBuffer->GetSRV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "linearClampSampler", EngineSamplersProvider::GetLinearClampSampler());
+			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "linearClampSampler", EngineSamplersProvider::GetLinearWrapSampler());
+
+			GraphicsUtils::UAVBarrier(commandList, m_raytracedTexture->GetImage().Get());
 		}
 
 		commandList->Dispatch((m_width / 32) + 1, (m_height / 32) + 1, 1);
+	}
+
+	void Raytracing::DebugDrawRaytracedImage(ID3D12GraphicsCommandList* commandList)
+	{
+		auto sm = m_debugRaytracingTextureDrawGraphicsPipeline;
+
+		commandList->SetPipelineState(sm->GetPipelineObject().Get());
+		commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
+		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		GraphicsUtils::AttachViewToGraphics(commandList, sm, "raytracingTexture", m_raytracedTexture->GetSRV());
+		commandList->DrawInstanced(3, 1, 0, 0);
 	}
 
 	void Raytracing::DrawGizmo(ID3D12GraphicsCommandList* commandList, const ViewProjectionMatrixData* viewProjectionMatrixData) const

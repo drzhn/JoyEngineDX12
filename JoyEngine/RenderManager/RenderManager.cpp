@@ -379,6 +379,7 @@ namespace JoyEngine
 		ImGui::SetNextWindowSize({300, 100});
 		{
 			ImGui::Begin("Stats:");
+			ImGui::Text("Screen: %dx%d", m_width, m_height);
 			ImGui::Text("Num triangles %d", m_trianglesCount);
 			const glm::vec3 camPos = m_currentCamera->GetTransform()->GetPosition();
 			ImGui::Text("Camera: %.3f %.3f %.3f", camPos.x, camPos.y, camPos.z);

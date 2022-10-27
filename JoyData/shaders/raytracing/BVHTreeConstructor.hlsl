@@ -3,7 +3,7 @@
 
 ConstantBuffer<BVHConstructorData> data : register(b0);
 
-StructuredBuffer<uint> sortedMortonCodes; // size = THREADS_PER_BLOCK * BLOCK_SIZE
+//StructuredBuffer<uint> sortedMortonCodes; // size = THREADS_PER_BLOCK * BLOCK_SIZE
 
 RWStructuredBuffer<InternalNode> internalNodes; // size = THREADS_PER_BLOCK * BLOCK_SIZE - 1
 RWStructuredBuffer<LeafNode> leafNodes; // size = THREADS_PER_BLOCK * BLOCK_SIZE
@@ -17,8 +17,8 @@ inline int delta(int x, int y, int numObjects)
 {
     if (x >= 0 && x <= numObjects - 1 && y >= 0 && y <= numObjects - 1)
     {
-        const uint x_code = sortedMortonCodes[x];
-        const uint y_code = sortedMortonCodes[y];
+        const uint x_code = x;// sortedMortonCodes[x];
+        const uint y_code = y;// sortedMortonCodes[y];
         // we guarantee that x_code != y_code
         return clz32(x_code ^ y_code);
     }
@@ -48,8 +48,8 @@ inline int FindSplit(int first, int last)
 {
     // Identical Morton codes => split the range in the middle.
 
-    const uint firstCode = sortedMortonCodes[first];
-    const uint lastCode = sortedMortonCodes[last];
+    const uint firstCode = first;// sortedMortonCodes[first];
+    const uint lastCode = last;//  sortedMortonCodes[last];
 
     if (firstCode == lastCode)
         return (first + last) >> 1;
@@ -73,7 +73,7 @@ inline int FindSplit(int first, int last)
 
         if (newSplit < last)
         {
-            const uint splitCode = sortedMortonCodes[newSplit];
+            const uint splitCode = newSplit;//  sortedMortonCodes[newSplit];
             const int splitPrefix = clz32(firstCode ^ splitCode);
             if (splitPrefix > commonPrefix)
                 split = newSplit; // accept proposal

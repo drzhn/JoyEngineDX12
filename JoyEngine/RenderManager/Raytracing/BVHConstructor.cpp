@@ -80,7 +80,7 @@ namespace JoyEngine
 
 			GraphicsUtils::AttachViewToCompute(commandList, m_bvhTreeConstructorPipeline, "data", m_bvhConstructionData->GetView());
 
-			GraphicsUtils::AttachViewToCompute(commandList, m_bvhTreeConstructorPipeline, "sortedMortonCodes", m_sortedMortonCodes->GetSRV());
+			//GraphicsUtils::AttachViewToCompute(commandList, m_bvhTreeConstructorPipeline, "sortedMortonCodes", m_sortedMortonCodes->GetSRV());
 			GraphicsUtils::AttachViewToCompute(commandList, m_bvhTreeConstructorPipeline, "internalNodes", m_internalNodes->GetUAV());
 			GraphicsUtils::AttachViewToCompute(commandList, m_bvhTreeConstructorPipeline, "leafNodes", m_leafNodes->GetUAV());
 		}

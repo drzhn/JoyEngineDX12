@@ -250,32 +250,32 @@ namespace JoyEngine
 
 		m_bufferSorter->Sort();
 
-		{
-			// Update keys array. Now we guarantee all the elements are unique
-			m_keysBuffer->ReadbackGpuData();
+		//{
+		//	// Update keys array. Now we guarantee all the elements are unique
+		//	m_keysBuffer->ReadbackGpuData();
 
-			uint32_t* keysArray = m_keysBuffer->GetLocalData();
+		//	uint32_t* keysArray = m_keysBuffer->GetLocalData();
 
-			uint32_t newCurrentValue = 0;
-			uint32_t oldCurrentValue = keysArray[0];
-			keysArray[0] = newCurrentValue;
+		//	uint32_t newCurrentValue = 0;
+		//	uint32_t oldCurrentValue = keysArray[0];
+		//	keysArray[0] = newCurrentValue;
 
-			for (uint32_t i = 1; i < m_trianglesLength; i++)
-			{
-				newCurrentValue += std::max(keysArray[i] - oldCurrentValue, 1u);
-				oldCurrentValue = keysArray[i];
-				keysArray[i] = newCurrentValue;
-			}
+		//	for (uint32_t i = 1; i < m_trianglesLength; i++)
+		//	{
+		//		newCurrentValue += std::max(keysArray[i] - oldCurrentValue, 1u);
+		//		oldCurrentValue = keysArray[i];
+		//		keysArray[i] = newCurrentValue;
+		//	}
 
-			m_keysBuffer->UploadCpuData();
-		}
+		//	m_keysBuffer->UploadCpuData();
+		//}
 
 		m_bvhConstructor->ConstructTree();
 		m_bvhConstructor->ConstructBVH();
 
-		m_bvhDataBuffer->ReadbackGpuData();
-		m_bvhLeafNodesBuffer->ReadbackGpuData();
-		m_bvhInternalNodesBuffer->ReadbackGpuData();
+		//m_bvhDataBuffer->ReadbackGpuData();
+		//m_bvhLeafNodesBuffer->ReadbackGpuData();
+		//m_bvhInternalNodesBuffer->ReadbackGpuData();
 
 		//for (int i = 0; i < 14; i++)
 		//{

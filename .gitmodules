@@ -7,3 +7,6 @@
 [submodule "ThirdParty/imgui"]
 	path = ThirdParty/imgui
 	url = ../../ocornut/imgui.git
+[submodule "ThirdParty/assimp"]
+	path = ThirdParty/assimp
+	url = ../../assimp/assimp.git

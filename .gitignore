@@ -28,7 +28,9 @@
 *.cache
 
 imgui.ini
+JoyEngineDX_FullDebug.exe
+JoyEngineDX_FullDebug.pdb
 
 .idea/
 .vs/
-Build/
+Temp/

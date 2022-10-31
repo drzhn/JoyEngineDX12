@@ -30,6 +30,10 @@
 imgui.ini
 JoyEngineDX_FullDebug.exe
 JoyEngineDX_FullDebug.pdb
+AssetBuilderLib.dll
+AssetBuilderLib.pdb
+JoyAssetBuilder.exe
+JoyAssetBuilder.exe.config
 
 .idea/
 .vs/

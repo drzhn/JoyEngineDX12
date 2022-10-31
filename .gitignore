@@ -31,6 +31,4 @@ imgui.ini
 
 .idea/
 .vs/
-x64/
-
-Libs/
+Build/

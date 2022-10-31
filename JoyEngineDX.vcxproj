@@ -107,12 +107,18 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)Build\JoyEngine\$(Configuration)\</OutDir>
+    <IntDir>Build\JoyEngine\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Full Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)Build\JoyEngine\$(Configuration)\</OutDir>
+    <IntDir>Build\JoyEngine\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)Build\JoyEngine\$(Configuration)\</OutDir>
+    <IntDir>Build\JoyEngine\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -177,7 +183,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;NOMINMAX;FULL_DEBUG;%(PreprocessorDefinitions);ENGINE</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)JoyEngine;$(SolutionDir)Libs\rapidjson\include;$(SolutionDir)Libs\glm;$(SolutionDir)Libs\DirectXTK12\Inc;$(SolutionDir)Libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)JoyEngine;$(SolutionDir)ThirdParty\rapidjson\include;$(SolutionDir)ThirdParty\glm;$(SolutionDir)ThirdParty\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -251,14 +257,14 @@
     <ClCompile Include="JoyEngine\EngineMaterialProvider\EngineMaterialProvider.cpp" />
     <ClCompile Include="JoyEngine\Utils\GraphicsUtils.cpp" />
     <ClCompile Include="JoyEngine\Utils\Log.cpp" />
-    <ClCompile Include="Libs\imgui\backends\imgui_impl_dx12.cpp" />
-    <ClCompile Include="Libs\imgui\backends\imgui_impl_win32.cpp" />
-    <ClCompile Include="Libs\imgui\imgui.cpp" />
-    <ClCompile Include="Libs\imgui\imgui_demo.cpp" />
-    <ClCompile Include="Libs\imgui\imgui_draw.cpp" />
-    <ClCompile Include="Libs\imgui\imgui_tables.cpp" />
-    <ClCompile Include="Libs\imgui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ThirdParty\imgui\backends\imgui_impl_dx12.cpp" />
+    <ClCompile Include="ThirdParty\imgui\backends\imgui_impl_win32.cpp" />
+    <ClCompile Include="ThirdParty\imgui\imgui.cpp" />
+    <ClCompile Include="ThirdParty\imgui\imgui_demo.cpp" />
+    <ClCompile Include="ThirdParty\imgui\imgui_draw.cpp" />
+    <ClCompile Include="ThirdParty\imgui\imgui_tables.cpp" />
+    <ClCompile Include="ThirdParty\imgui\imgui_widgets.cpp" />
     <ClCompile Include="WindowHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -321,14 +327,14 @@
     <ClInclude Include="JoyEngine\Utils\GUID.h" />
     <ClInclude Include="JoyEngine\Utils\Log.h" />
     <ClInclude Include="JoyEngine\Utils\TimeCounter.h" />
-    <ClInclude Include="Libs\imgui\backends\imgui_impl_dx12.h" />
-    <ClInclude Include="Libs\imgui\backends\imgui_impl_win32.h" />
-    <ClInclude Include="Libs\imgui\imconfig.h" />
-    <ClInclude Include="Libs\imgui\imgui.h" />
-    <ClInclude Include="Libs\imgui\imgui_internal.h" />
-    <ClInclude Include="Libs\imgui\imstb_rectpack.h" />
-    <ClInclude Include="Libs\imgui\imstb_textedit.h" />
-    <ClInclude Include="Libs\imgui\imstb_truetype.h" />
+    <ClInclude Include="ThirdParty\imgui\backends\imgui_impl_dx12.h" />
+    <ClInclude Include="ThirdParty\imgui\backends\imgui_impl_win32.h" />
+    <ClInclude Include="ThirdParty\imgui\imconfig.h" />
+    <ClInclude Include="ThirdParty\imgui\imgui.h" />
+    <ClInclude Include="ThirdParty\imgui\imgui_internal.h" />
+    <ClInclude Include="ThirdParty\imgui\imstb_rectpack.h" />
+    <ClInclude Include="ThirdParty\imgui\imstb_textedit.h" />
+    <ClInclude Include="ThirdParty\imgui\imstb_truetype.h" />
     <ClInclude Include="WindowHandler.h" />
   </ItemGroup>
   <ItemGroup>

@@ -28,12 +28,11 @@
 *.cache
 
 imgui.ini
-JoyEngineDX_FullDebug.exe
-JoyEngineDX_FullDebug.pdb
-AssetBuilderLib.dll
-AssetBuilderLib.pdb
-JoyAssetBuilder.exe
-JoyAssetBuilder.exe.config
+JoyEngineDX_FullDebug.*
+JoyEngineDX_Debug.*
+JoyEngineDX_Release.*
+AssetBuilderLib.*
+JoyAssetBuilder.*
 
 .idea/
 .vs/

@@ -61,6 +61,15 @@ namespace JoyAssetBuilder.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to AssetBuilderLib.dll.
+        /// </summary>
+        internal static string BUILDER_LIB {
+            get {
+                return ResourceManager.GetString("BUILDER_LIB", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap BuildSelection_16x {
@@ -107,6 +116,15 @@ namespace JoyAssetBuilder.Properties {
             get {
                 object obj = ResourceManager.GetObject("CollapseAll_16x", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to JoyData.
+        /// </summary>
+        internal static string DATA_PATH {
+            get {
+                return ResourceManager.GetString("DATA_PATH", resourceCulture);
             }
         }
         
@@ -161,36 +179,12 @@ namespace JoyAssetBuilder.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to layout(set = 2, input_attachment_index = 0, binding = 0) uniform subpassInput inputPosition;
-        ///	layout(set = 2, input_attachment_index = 1, binding = 1) uniform subpassInput inputNormal;.
-        /// </summary>
-        internal static string GBUFFER_TEXTURES {
-            get {
-                return ResourceManager.GetString("GBUFFER_TEXTURES", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap Image_16x {
             get {
                 object obj = ResourceManager.GetObject("Image_16x", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to layout(set = 1, binding = 0) uniform JoyData{
-        ///		vec3 cameraWorldPos;
-        ///		mat4 cameraProjMatrix;
-        ///		float time;
-        ///		float deltaTime;
-        ///	} joyData;.
-        /// </summary>
-        internal static string JOY_VARIABLES {
-            get {
-                return ResourceManager.GetString("JOY_VARIABLES", resourceCulture);
             }
         }
         

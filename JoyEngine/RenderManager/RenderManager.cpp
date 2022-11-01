@@ -282,9 +282,9 @@ namespace JoyEngine
 			RenderEntireSceneWithMaterials(commandList, &viewProjectionMatrixData);
 		}
 
-		m_raytracing->ProcessRaytracing(commandList, m_engineDataBuffer->GetView(m_currentFrameIndex));
+		//m_raytracing->ProcessRaytracing(commandList, m_engineDataBuffer->GetView(m_currentFrameIndex));
 
-		m_raytracing->DebugDrawRaytracedImage(commandList);
+		//m_raytracing->DebugDrawRaytracedImage(commandList);
 
 		// HDR->LDR
 

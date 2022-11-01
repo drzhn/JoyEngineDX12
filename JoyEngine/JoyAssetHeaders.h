@@ -1,8 +1,6 @@
 #ifndef JOY_ASSET_HEADER_H
 #define JOY_ASSET_HEADER_H
 
-#include <vector>
-
 struct Vec3
 {
 	float x;

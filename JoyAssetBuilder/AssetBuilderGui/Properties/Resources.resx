@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="BUILDER_LIB" xml:space="preserve">
+    <value>AssetBuilderLib.dll</value>
+  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="BuildSelection_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\BuildSelection_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -136,6 +139,9 @@
   <data name="Database_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\Database_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="DATA_PATH" xml:space="preserve">
+    <value>JoyData</value>
+  </data>
   <data name="ExpandAll_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\ExpandAll_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -148,20 +154,8 @@
   <data name="FolderClosed_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\FolderClosed_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GBUFFER_TEXTURES" xml:space="preserve">
-    <value>layout(set = 2, input_attachment_index = 0, binding = 0) uniform subpassInput inputPosition;
-	layout(set = 2, input_attachment_index = 1, binding = 1) uniform subpassInput inputNormal;</value>
-  </data>
   <data name="Image_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\Image_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="JOY_VARIABLES" xml:space="preserve">
-    <value>layout(set = 1, binding = 0) uniform JoyData{
-		vec3 cameraWorldPos;
-		mat4 cameraProjMatrix;
-		float time;
-		float deltaTime;
-	} joyData;</value>
   </data>
   <data name="MaterialDiffuse_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\MaterialDiffuse_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

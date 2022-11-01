@@ -6,56 +6,10 @@ namespace JoyAssetBuilder
 {
     public class ModelBuilder
     {
-        #region Dll
-
-        const string dllPath = @"D:\CppProjects\JoyEngine\JoyAssetBuilder\x64\Debug\JoyDataBuilderLib.dll";
-
-        [DllImport(dllPath, CallingConvention = CallingConvention.Cdecl)]
-        static extern unsafe int BuildModel(
-            string modelFileName,
-            IntPtr* vertexPtr,
-            UInt64* vertexSize,
-            IntPtr* indexPtr,
-            UInt64* indexSize,
-            IntPtr* errorMessage);
-
-        static unsafe int BuildModel(string modelFileName,
-            out byte[] vertexBuffer,
-            out byte[] indexBuffer,
-            out string errorMessage)
-        {
-            IntPtr vertexData = IntPtr.Zero;
-            UInt64 vertexDataSize;
-            IntPtr indexData = IntPtr.Zero;
-            UInt64 indexDataSize;
-            IntPtr errorMessagePtr = IntPtr.Zero;
-
-            int result = BuildModel(modelFileName,
-                &vertexData, &vertexDataSize,
-                &indexData, &indexDataSize,
-                &errorMessagePtr);
-            if (result == 0)
-            {
-                vertexBuffer = new byte[vertexDataSize];
-                indexBuffer = new byte[indexDataSize];
-                Marshal.Copy(vertexData, vertexBuffer, 0, (int)vertexDataSize);
-                Marshal.Copy(indexData, indexBuffer, 0, (int)indexDataSize);
-                errorMessage = null;
-            }
-            else
-            {
-                vertexBuffer = null;
-                indexBuffer = null;
-                errorMessage = Marshal.PtrToStringAnsi(errorMessagePtr);
-            }
-
-            return result;
-        }
-        #endregion
-
         public static bool BuildModel(string modelPath, out string resultMessage)
         {
-            int result = BuildModel(modelPath, out var vertexBuffer, out var indexBuffer, out var buidlResult);
+            int result = BuilderFacade.BuildModel(modelPath, out var vertexBuffer, out var indexBuffer,
+                out var buidlResult);
             if (result != 0)
             {
                 resultMessage = Path.GetFileName(modelPath) + ": Error building model\n" + buidlResult +
@@ -72,6 +26,5 @@ namespace JoyAssetBuilder
             resultMessage = Path.GetFileName(modelPath) + ": OK" + Environment.NewLine;
             return true;
         }
-
     }
 }

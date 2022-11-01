@@ -29,20 +29,20 @@ namespace JoyAssetBuilder
 
         private static Dictionary<string, ShaderDefine> defines = new Dictionary<string, ShaderDefine>()
         {
-            {
-                "JOY_VARIABLES", new ShaderDefine()
-                {
-                    ShaderUsage = (uint)(ShaderType.Vertex | ShaderType.Fragment),
-                    DefineString = Properties.Resources.JOY_VARIABLES
-                }
-            },
-            {
-                "GBUFFER_TEXTURES", new ShaderDefine()
-                {
-                    ShaderUsage = (uint)(ShaderType.Fragment),
-                    DefineString = Properties.Resources.GBUFFER_TEXTURES
-                }
-            }
+            //{
+            //    "JOY_VARIABLES", new ShaderDefine()
+            //    {
+            //        ShaderUsage = (uint)(ShaderType.Vertex | ShaderType.Fragment),
+            //        DefineString = Properties.Resources.ii
+            //    }
+            //},
+            //{
+            //    "GBUFFER_TEXTURES", new ShaderDefine()
+            //    {
+            //        ShaderUsage = (uint)(ShaderType.Fragment),
+            //        DefineString = Properties.Resources.jj
+            //    }
+            //}
         };
 
         private const StringSplitOptions noEmpty = StringSplitOptions.RemoveEmptyEntries;

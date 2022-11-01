@@ -13,11 +13,10 @@ namespace JoyAssetBuilder
         private TreeView m_view;
         private TextBox m_logBox;
 
-        private const string m_dataPath = "D:/CppProjects/JoyEngineDX/JoyData";
         private List<IBuildable> m_assetToBuilds = new List<IBuildable>();
         private IBuildable m_currentSelected = null;
 
-        public AssetPanelViewController(TreeView panel, TextBox box)
+        public AssetPanelViewController(TreeView panel, TextBox box, string dataPath)
         {
             m_view = panel;
             m_logBox = box;
@@ -27,8 +26,9 @@ namespace JoyAssetBuilder
             imageList.Images.Add(AssetType.Texture.ToString(), Properties.Resources.Image_16x);
             imageList.Images.Add(AssetType.Shader.ToString(), Properties.Resources.MaterialDiffuse_16x);
             m_view.ImageList = imageList;
-            GetDirsAndFiles(m_dataPath, null);
+            GetDirsAndFiles(dataPath, null);
             m_view.ExpandAll();
+            m_view.Nodes[0].EnsureVisible();
         }
 
         public void ExpandAll()
@@ -80,9 +80,10 @@ namespace JoyAssetBuilder
                     case ".tga":
                         fileItem = new AssetTreeNode(AssetType.Texture, file);
                         break;
-                    case ".shader":
-                        fileItem = new AssetTreeNode(AssetType.Shader, file);
-                        break;
+                    // for now we build shaders in runtime
+                    //case ".shader": 
+                    //    fileItem = new AssetTreeNode(AssetType.Shader, file);
+                    //    break;
                     default:
                         continue;
                 }

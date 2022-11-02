@@ -1,7 +1,7 @@
 #include "Mesh.h"
 
 #include <vector>
-#include "CommonEngineStructs.h"
+#include "JoyAssetHeaders.h"
 #include "DataManager/DataManager.h"
 #include "MemoryManager/MemoryManager.h"
 
@@ -11,17 +11,15 @@ namespace JoyEngine
 	{
 		std::ifstream modelStream = DataManager::Get()->GetFileStream(guid, true);
 
-		uint32_t vertexDataSize;
-		uint32_t indexDataSize;
-		modelStream.read(reinterpret_cast<char*>(&vertexDataSize), sizeof(uint32_t));
-		modelStream.read(reinterpret_cast<char*>(&indexDataSize), sizeof(uint32_t));
+		MeshAssetHeader header;
+		modelStream.read(reinterpret_cast<char*>(&header), sizeof(MeshAssetHeader));
 
 		InitMesh(
-			vertexDataSize,
-			indexDataSize,
+			header.vertexDataSize,
+			header.indexDataSize,
 			modelStream,
-			sizeof(uint32_t) + sizeof(uint32_t),
-			sizeof(uint32_t) + sizeof(uint32_t) + vertexDataSize
+			sizeof(MeshAssetHeader),
+			sizeof(MeshAssetHeader) + header.vertexDataSize
 		);
 		modelStream.close();
 	}

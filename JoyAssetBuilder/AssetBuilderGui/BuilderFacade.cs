@@ -29,33 +29,17 @@ namespace JoyAssetBuilder
             TerminateBuilder();
         }
 
-        public static unsafe int BuildModel(string modelFileName,
-            out byte[] vertexBuffer,
-            out byte[] indexBuffer,
-            out string errorMessage)
+        public static unsafe int BuildModel(string modelFileName, string materialsDir, out string errorMessage)
         {
-            IntPtr vertexData = IntPtr.Zero;
-            UInt64 vertexDataSize;
-            IntPtr indexData = IntPtr.Zero;
-            UInt64 indexDataSize;
             IntPtr errorMessagePtr = IntPtr.Zero;
 
-            int result = BuildModel(modelFileName,
-                &vertexData, &vertexDataSize,
-                &indexData, &indexDataSize,
-                &errorMessagePtr);
+            int result = BuildModel(modelFileName, materialsDir, &errorMessagePtr);
             if (result == 0)
             {
-                vertexBuffer = new byte[vertexDataSize];
-                indexBuffer = new byte[indexDataSize];
-                Marshal.Copy(vertexData, vertexBuffer, 0, (int)vertexDataSize);
-                Marshal.Copy(indexData, indexBuffer, 0, (int)indexDataSize);
                 errorMessage = null;
             }
             else
             {
-                vertexBuffer = null;
-                indexBuffer = null;
                 errorMessage = Marshal.PtrToStringAnsi(errorMessagePtr);
             }
 
@@ -63,13 +47,7 @@ namespace JoyAssetBuilder
         }
 
         [DllImport(m_dllPath, CallingConvention = CallingConvention.Cdecl)]
-        private static extern unsafe int BuildModel(
-            string modelFileName,
-            IntPtr* vertexPtr,
-            UInt64* vertexSize,
-            IntPtr* indexPtr,
-            UInt64* indexSize,
-            IntPtr* errorMessage);
+        private static extern unsafe int BuildModel(string modelFileName, string materialsDir, IntPtr* errorMessage);
 
 
         public static unsafe int BuildTexture(string textureFileName,

@@ -15,13 +15,15 @@ namespace JoyAssetBuilder
     public partial class MainWindow : Form
     {
         private AssetPanelViewController m_panelViewController;
-        private string m_dataPath;
-        private string m_dllPath;
+        private readonly string m_dataPath;
+        private readonly string m_materialsPath; // we need this path for correct generating models data which contain .mtl files
+        private readonly string m_dllPath;
 
         public MainWindow()
         {
             m_dataPath = Path.Combine(Directory.GetCurrentDirectory(), Resources.DATA_PATH);
             m_dllPath = Path.Combine(Directory.GetCurrentDirectory(), Resources.BUILDER_LIB);
+            m_materialsPath = Path.Combine(m_dataPath, Resources.MATERIALS_FOLDER);
             InitializeComponent();
         }
 
@@ -31,7 +33,12 @@ namespace JoyAssetBuilder
             {
                 MessageBox.Show("There is no \"JoyData\" folder in the current directory", "Fatal error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Close();
-            }            
+            }
+            if (!Directory.Exists(m_materialsPath))
+            {
+                MessageBox.Show("There is no \"JoyData/materials\" folder in the current directory", "Fatal error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Close();
+            }
             if (!File.Exists(m_dllPath))
             {
                 MessageBox.Show("There is no AssetBuilderLib.dll in the current directory", "Fatal error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -39,7 +46,7 @@ namespace JoyAssetBuilder
             }
             this.Text = "Joy Asset Builder: " + m_dataPath;
             BuilderFacade.Initialize();
-            m_panelViewController = new AssetPanelViewController(assetTreeView, StatusText, m_dataPath);
+            m_panelViewController = new AssetPanelViewController(assetTreeView, StatusText, m_dataPath, m_materialsPath);
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)

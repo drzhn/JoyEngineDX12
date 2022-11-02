@@ -119,11 +119,11 @@ namespace JoyEngine
 			m_hdrRenderTarget.get(),
 			hdrRTVFormat, ldrRTVFormat, depthFormat);
 
-		m_raytracing = std::make_unique<Raytracing>(
-			GetMainColorFormat(),
-			GetLdrRTVFormat(),
-			m_width,
-			m_height);
+		//m_raytracing = std::make_unique<Raytracing>(
+		//	GetMainColorFormat(),
+		//	GetLdrRTVFormat(),
+		//	m_width,
+		//	m_height);
 
 		{
 			D3D12_CPU_DESCRIPTOR_HANDLE imguiCpuHandle;
@@ -143,7 +143,7 @@ namespace JoyEngine
 	void RenderManager::Start()
 	{
 		m_queue->WaitQueueIdle();
-		m_raytracing->PrepareBVH();
+		//m_raytracing->PrepareBVH();
 	}
 
 
@@ -151,7 +151,7 @@ namespace JoyEngine
 	{
 		m_queue->WaitQueueIdle();
 
-		m_raytracing = nullptr;
+		//m_raytracing = nullptr;
 		m_tonemapping = nullptr;
 		m_queue = nullptr;
 

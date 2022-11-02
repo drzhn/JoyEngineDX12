@@ -1,5 +1,6 @@
 ﻿#include "MtlBinaryParser.h"
 
+#include <JoyAssetHeaders.h>
 
 
 #include "Material.h"
@@ -66,20 +67,20 @@ namespace JoyEngine
 		}
 
 
-		MeshHeader header = {};
-		m_modelStream.read(reinterpret_cast<char*>(&header), sizeof(MeshHeader));
+		MeshAssetHeader header = {};
+		m_modelStream.read(reinterpret_cast<char*>(&header), sizeof(MeshAssetHeader));
 		m_meshStreamData = {
-			static_cast<uint32_t>(header.vertexCount * sizeof(Vertex)),
-			static_cast<uint32_t>(header.indexCount * sizeof(uint32_t)),
-			static_cast<uint32_t>(m_currentStreamPosition + sizeof(MeshHeader)),
-			static_cast<uint32_t>(m_currentStreamPosition + sizeof(MeshHeader) + header.vertexCount * sizeof(Vertex)),
+			header.vertexDataSize,
+			header.indexDataSize,
+			static_cast<uint32_t>(m_currentStreamPosition + sizeof(MeshAssetHeader)),
+			static_cast<uint32_t>(m_currentStreamPosition + sizeof(MeshAssetHeader) + header.vertexDataSize),
 			header.materialIndex
 		};
 
 		m_currentStreamPosition +=
-			sizeof(MeshHeader) +
-			header.indexCount * sizeof(uint32_t) +
-			header.vertexCount * sizeof(Vertex);
+			sizeof(MeshAssetHeader) +
+			header.vertexDataSize +
+			header.indexDataSize;
 
 		return &m_meshStreamData;
 	}

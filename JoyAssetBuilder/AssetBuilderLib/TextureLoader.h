@@ -16,7 +16,7 @@ public:
 	static bool LoadTexture(const std::string& filename, std::vector<unsigned char>& data,
 		uint32_t* width,
 		uint32_t* height,
-		TextureFormat* type)
+		TextureAssetFormat* type)
 	{
 		int texChannels;
 		bool isHdr = stbi_is_hdr(filename.c_str());

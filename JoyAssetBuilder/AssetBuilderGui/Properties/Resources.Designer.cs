@@ -199,6 +199,15 @@ namespace JoyAssetBuilder.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to materials.
+        /// </summary>
+        internal static string MATERIALS_FOLDER {
+            get {
+                return ResourceManager.GetString("MATERIALS_FOLDER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap Model3D_outline_16x {

@@ -16,15 +16,19 @@ namespace JoyAssetBuilder
         private List<IBuildable> m_assetToBuilds = new List<IBuildable>();
         private IBuildable m_currentSelected = null;
 
-        public AssetPanelViewController(TreeView panel, TextBox box, string dataPath)
+        private readonly string m_materialsPath;
+
+        public AssetPanelViewController(TreeView panel, TextBox box, string dataPath, string materialsPath)
         {
             m_view = panel;
             m_logBox = box;
+            m_materialsPath = materialsPath;
             ImageList imageList = new ImageList();
             imageList.Images.Add(AssetType.Folder.ToString(), Properties.Resources.FolderClosed_16x);
             imageList.Images.Add(AssetType.Model.ToString(), Properties.Resources.Model3D_outline_16x);
             imageList.Images.Add(AssetType.Texture.ToString(), Properties.Resources.Image_16x);
             imageList.Images.Add(AssetType.Shader.ToString(), Properties.Resources.MaterialDiffuse_16x);
+            imageList.Images.Add(AssetType.Material.ToString(), Properties.Resources.MaterialDiffuse_16x);
             m_view.ImageList = imageList;
             GetDirsAndFiles(dataPath, null);
             m_view.ExpandAll();
@@ -71,14 +75,17 @@ namespace JoyAssetBuilder
                 switch (Path.GetExtension(file))
                 {
                     case ".obj":
-                        fileItem = new AssetTreeNode(AssetType.Model, file);
+                        fileItem = new AssetTreeNode(AssetType.Model, file, m_materialsPath);
                         break;
                     case ".png":
                     case ".jpg":
                     case ".jpeg":
                     case ".hdr":
                     case ".tga":
-                        fileItem = new AssetTreeNode(AssetType.Texture, file);
+                        fileItem = new AssetTreeNode(AssetType.Texture, file, m_materialsPath);
+                        break;
+                    case ".mtl":
+                        fileItem = new AssetTreeNode(AssetType.Material, file, m_materialsPath);
                         break;
                     // for now we build shaders in runtime
                     //case ".shader": 

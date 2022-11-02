@@ -3,7 +3,7 @@
     "database": [
         {
             "guid": "46bc949d-eacb-4cff-a7f8-07e738bbfb3e",
-            "path": "models/sponza.data"
+            "path": "models/sponza.obj.data"
         },
         {
             "guid": "fc972e06-70d9-4271-8615-825003b43f74",

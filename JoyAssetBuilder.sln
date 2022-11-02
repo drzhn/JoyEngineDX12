@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.1.31911.260
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JoyAssetBuilder", "JoyAssetBuilder\AssetBuilderGui\JoyAssetBuilder.csproj", "{2263DCA1-D3D7-464F-AC94-5604BB8987BC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{24610BCE-CEF1-48BA-AD69-D020E6318C0D} = {24610BCE-CEF1-48BA-AD69-D020E6318C0D}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AssetBuilderLib", "JoyAssetBuilder\AssetBuilderLib\AssetBuilderLib.vcxproj", "{24610BCE-CEF1-48BA-AD69-D020E6318C0D}"
 EndProject

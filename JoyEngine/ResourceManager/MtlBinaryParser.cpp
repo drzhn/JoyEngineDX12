@@ -13,7 +13,7 @@ namespace JoyEngine
 {
 	MtlBinaryParser::MtlBinaryParser(GUID modelGuid, GUID materialGuid)
 	{
-		m_modelStream = DataManager::Get()->GetFileStream(modelGuid, false);
+		m_modelStream = DataManager::Get()->GetFileStream(modelGuid, true);
 		rapidjson::Document json = DataManager::Get()->GetSerializedData(materialGuid, standard_material_list);
 
 		rapidjson::Value& val = json["materials"];
@@ -30,19 +30,6 @@ namespace JoyEngine
 				true
 			));
 		}
-
-		//m_modelStream.seekg(0);
-		//uint32_t pos = 0;
-		//int i = 0;
-		//while (m_modelStream.peek() != EOF)
-		//{
-		//	m_modelStream.clear();
-		//	m_modelStream.seekg(pos);
-		//	MeshHeader header={};
-		//	m_modelStream.read(reinterpret_cast<char*>(&header), sizeof(MeshHeader));
-		//	pos += sizeof(MeshHeader) + header.indexCount * sizeof(uint32_t) + header.vertexCount * sizeof(Vertex);
-		//	i++;
-		//}
 	}
 
 	std::ifstream& MtlBinaryParser::GetModelStream()

@@ -43,7 +43,15 @@ namespace JoyAssetBuilder
             Text = Path.GetFileName(path);
             ImageKey = m_type.ToString();
             SelectedImageKey = m_type.ToString();
-            _mBuilt = File.Exists(m_path + ".data");
+            if (m_type == AssetType.Material)
+            {
+                _mBuilt = File.Exists(m_path + ".json");
+            }
+            else
+            {
+                _mBuilt = File.Exists(m_path + ".data");
+            }
+
             BackColor = _mBuilt ? okColor : errorColor;
         }
 
@@ -66,8 +74,11 @@ namespace JoyAssetBuilder
                 case AssetType.Texture:
                     _mBuilt = TextureBuilder.BuildTexture(m_path, out resultMessage);
                     break;
-                case AssetType.Shader:
-                    _mBuilt = ShaderBuilder.Compile(m_path, out resultMessage);
+                //case AssetType.Shader:
+                //    _mBuilt = ShaderBuilder.Compile(m_path, out resultMessage);
+                //    break;
+                case AssetType.Material:
+                    _mBuilt = MaterialBuilder.BuildMaterial(m_path, out resultMessage);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

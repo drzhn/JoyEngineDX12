@@ -27,6 +27,21 @@ namespace JoyAssetBuilder
         private const string m_databaseFilename = "data.db";
         private readonly DatabaseStorage m_databaseStorage;
 
+        private HashSet<string> m_allowedExtensions = new HashSet<string>()
+        {
+            ".obj",
+
+            ".png",
+            ".jpg",
+            ".jpeg",
+            ".hdr",
+            ".tga",
+            ".dds",
+
+            ".json",
+            ".hlsl"
+        };
+
         public DatabaseBuilder(string dataPath)
         {
             m_dataPath = dataPath;
@@ -49,7 +64,26 @@ namespace JoyAssetBuilder
                 databaseDictionary.Remove(key);
             }
 
+            foreach (var file in Directory.GetFiles(m_dataPath, "*.*", SearchOption.AllDirectories))
+            {
+                if (!m_allowedExtensions.Contains(Path.GetExtension(file))) continue;
+                string relativePath = file.Substring(m_dataPath.Length + 1).Replace('\\', '/');
+                if (!databaseDictionary.ContainsKey(relativePath))
+                {
+                    databaseDictionary.Add(relativePath, Guid.NewGuid().ToString());
+                }
+            }
 
+            m_databaseStorage.database = new List<DatabaseEntry>();
+            foreach (var key in databaseDictionary.Keys)
+            {
+                DatabaseEntry entry = new DatabaseEntry();
+                entry.guid = databaseDictionary[key];
+                entry.path = key;
+                m_databaseStorage.database.Add(entry);
+            }
+
+            File.WriteAllText(m_databasePath, JsonConvert.SerializeObject(m_databaseStorage, Formatting.Indented));
         }
     }
 }

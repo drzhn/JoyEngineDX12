@@ -14,14 +14,14 @@ namespace JoyEngine
 	MtlBinaryParser::MtlBinaryParser(GUID modelGuid, GUID materialGuid)
 	{
 		m_modelStream = DataManager::Get()->GetFileStream(modelGuid, false);
-		rapidjson::Document json = DataManager::Get()->GetSerializedData(materialGuid, mtl_material);
+		rapidjson::Document json = DataManager::Get()->GetSerializedData(materialGuid, standard_material_list);
 
 		rapidjson::Value& val = json["materials"];
 		for (auto& mat : val.GetArray())
 		{
 			std::map<std::string, std::string> bindings{
 				{"diffuse", mat["diffuse"].GetString()},
-				{"normal", mat["normal"].GetString()}
+				//{"normal", mat["normal"].GetString()}
 			};
 			m_materials.emplace_back(ResourceManager::Get()->LoadResource<Material>(
 				GUID::Random(),

@@ -18,6 +18,8 @@ namespace JoyAssetBuilder
 
         private readonly string m_materialsPath;
 
+        private DatabaseBuilder m_databaseBuilder;
+
         public AssetPanelViewController(TreeView panel, TextBox box, string dataPath, string materialsPath)
         {
             m_view = panel;
@@ -33,6 +35,13 @@ namespace JoyAssetBuilder
             GetDirsAndFiles(dataPath, null);
             m_view.ExpandAll();
             m_view.Nodes[0].EnsureVisible();
+
+            m_databaseBuilder = new DatabaseBuilder(dataPath);
+        }
+
+        public void RebuildDatabase()
+        {
+            m_databaseBuilder.RebuildDatabase();
         }
 
         public void ExpandAll()

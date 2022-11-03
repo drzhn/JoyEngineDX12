@@ -47,7 +47,7 @@ namespace JoyAssetBuilder
 
                 if (firstEntry == "map_Kd" && currentMaterialObject != null)
                 {
-                    currentMaterialObject.diffuse = secondEntry;
+                    currentMaterialObject.diffuse = "textures/" + secondEntry; // TODO check path
                 }
             }
 

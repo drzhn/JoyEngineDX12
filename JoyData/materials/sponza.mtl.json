@@ -3,7 +3,7 @@
   "materials": [
     {
       "name": "sponza:Material__25",
-      "diffuse": "lion.tga"
+      "diffuse": "textures/lion.tga"
     },
     {
       "name": "sponza:Material__47",
@@ -11,87 +11,87 @@
     },
     {
       "name": "sponza:Material__298",
-      "diffuse": "background.tga"
+      "diffuse": "textures/background.tga"
     },
     {
       "name": "sponza:arch",
-      "diffuse": "sponza_arch_diff.tga"
+      "diffuse": "textures/sponza_arch_diff.tga"
     },
     {
       "name": "sponza:bricks",
-      "diffuse": "spnza_bricks_a_diff.tga"
+      "diffuse": "textures/spnza_bricks_a_diff.tga"
     },
     {
       "name": "sponza:ceiling",
-      "diffuse": "sponza_ceiling_a_diff.tga"
+      "diffuse": "textures/sponza_ceiling_a_diff.tga"
     },
     {
       "name": "sponza:chain",
-      "diffuse": "chain_texture.tga"
+      "diffuse": "textures/chain_texture.tga"
     },
     {
       "name": "sponza:column_a",
-      "diffuse": "sponza_column_a_diff.tga"
+      "diffuse": "textures/sponza_column_a_diff.tga"
     },
     {
       "name": "sponza:column_b",
-      "diffuse": "sponza_column_b_diff.tga"
+      "diffuse": "textures/sponza_column_b_diff.tga"
     },
     {
       "name": "sponza:column_c",
-      "diffuse": "sponza_column_c_diff.tga"
+      "diffuse": "textures/sponza_column_c_diff.tga"
     },
     {
       "name": "sponza:details",
-      "diffuse": "sponza_details_diff.tga"
+      "diffuse": "textures/sponza_details_diff.tga"
     },
     {
       "name": "sponza:fabric_a",
-      "diffuse": "sponza_fabric_diff.tga"
+      "diffuse": "textures/sponza_fabric_diff.tga"
     },
     {
       "name": "sponza:fabric_c",
-      "diffuse": "sponza_curtain_diff.tga"
+      "diffuse": "textures/sponza_curtain_diff.tga"
     },
     {
       "name": "sponza:fabric_d",
-      "diffuse": "sponza_fabric_blue_diff.tga"
+      "diffuse": "textures/sponza_fabric_blue_diff.tga"
     },
     {
       "name": "sponza:fabric_e",
-      "diffuse": "sponza_fabric_green_diff.tga"
+      "diffuse": "textures/sponza_fabric_green_diff.tga"
     },
     {
       "name": "sponza:fabric_f",
-      "diffuse": "sponza_curtain_green_diff.tga"
+      "diffuse": "textures/sponza_curtain_green_diff.tga"
     },
     {
       "name": "sponza:fabric_g",
-      "diffuse": "sponza_curtain_blue_diff.tga"
+      "diffuse": "textures/sponza_curtain_blue_diff.tga"
     },
     {
       "name": "sponza:flagpole",
-      "diffuse": "sponza_flagpole_diff.tga"
+      "diffuse": "textures/sponza_flagpole_diff.tga"
     },
     {
       "name": "sponza:floor",
-      "diffuse": "sponza_floor_a_diff.tga"
+      "diffuse": "textures/sponza_floor_a_diff.tga"
     },
     {
       "name": "sponza:roof",
-      "diffuse": "sponza_roof_diff.tga"
+      "diffuse": "textures/sponza_roof_diff.tga"
     },
     {
       "name": "sponza:vase",
-      "diffuse": "vase_dif.tga"
+      "diffuse": "textures/vase_dif.tga"
     },
     {
       "name": "sponza:vase_hanging",
-      "diffuse": "vase_hanging.tga"
+      "diffuse": "textures/vase_hanging.tga"
     },
     {
       "name": "sponza:vase_round",
-      "diffuse": "vase_round.tga"
+      "diffuse": "textures/vase_round.tga"
     }
   ]
 }

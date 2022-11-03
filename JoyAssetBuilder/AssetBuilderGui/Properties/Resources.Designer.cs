@@ -216,5 +216,50 @@ namespace JoyAssetBuilder.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to models.
+        /// </summary>
+        internal static string MODELS_FOLDER {
+            get {
+                return ResourceManager.GetString("MODELS_FOLDER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to scenes.
+        /// </summary>
+        internal static string SCENES_FOLDER {
+            get {
+                return ResourceManager.GetString("SCENES_FOLDER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to shaders.
+        /// </summary>
+        internal static string SHADERS_FOLDER {
+            get {
+                return ResourceManager.GetString("SHADERS_FOLDER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to shared_materials.
+        /// </summary>
+        internal static string SHARED_MATERIALS_FOLDER {
+            get {
+                return ResourceManager.GetString("SHARED_MATERIALS_FOLDER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to textures.
+        /// </summary>
+        internal static string TEXTURES_FOLDER {
+            get {
+                return ResourceManager.GetString("TEXTURES_FOLDER", resourceCulture);
+            }
+        }
     }
 }

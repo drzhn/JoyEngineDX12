@@ -56,6 +56,7 @@
     <Compile Include="AssetPanelViewController.cs" />
     <Compile Include="AssetTreeNode.cs" />
     <Compile Include="BuilderFacade.cs" />
+    <Compile Include="DatabaseBuilder.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>
     </Compile>

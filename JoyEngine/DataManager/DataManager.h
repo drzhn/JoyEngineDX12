@@ -24,7 +24,7 @@ namespace JoyEngine
 		texture,
 		shader,
 		material,
-		mtl_material,
+		standard_material_list,
 		sharedMaterial,
 		scene,
 	};

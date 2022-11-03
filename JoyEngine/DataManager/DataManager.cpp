@@ -136,8 +136,8 @@ namespace JoyEngine
 		case scene:
 			s = "scene";
 			break;
-		case mtl_material:
-			s = "mtl_material";
+		case standard_material_list:
+			s = "standard_material_list";
 			break;
 		default:
 			ASSERT(false);

@@ -59,6 +59,10 @@
             "guid": "a254d10b-ba5a-444d-9ef0-4ef7777b918b",
             "path": "materials/sponza.mtl.json"
         },
+        {
+            "guid": "a254d10b-ba5a-444d-9ef0-4ef7777b918a",
+            "path": "materials/sponza.mtldfsdf.json"
+        },
 
 
         {

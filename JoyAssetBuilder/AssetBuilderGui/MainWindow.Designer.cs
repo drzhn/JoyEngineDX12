@@ -37,6 +37,7 @@
             this.buildUnbuilded = new System.Windows.Forms.Button();
             this.StatusText = new System.Windows.Forms.TextBox();
             this.propertiesPanel = new System.Windows.Forms.PropertyGrid();
+            this.RebuildDatabase = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // collapseAll
@@ -132,11 +133,22 @@
             this.propertiesPanel.TabIndex = 8;
             this.propertiesPanel.ToolbarVisible = false;
             // 
+            // RebuildDatabase
+            // 
+            this.RebuildDatabase.Location = new System.Drawing.Point(416, 11);
+            this.RebuildDatabase.Name = "RebuildDatabase";
+            this.RebuildDatabase.Size = new System.Drawing.Size(162, 23);
+            this.RebuildDatabase.TabIndex = 9;
+            this.RebuildDatabase.Text = "Rebuild Database";
+            this.RebuildDatabase.UseVisualStyleBackColor = true;
+            this.RebuildDatabase.Click += new System.EventHandler(this.button1_Click);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(973, 783);
+            this.Controls.Add(this.RebuildDatabase);
             this.Controls.Add(this.propertiesPanel);
             this.Controls.Add(this.StatusText);
             this.Controls.Add(this.buildUnbuilded);
@@ -162,6 +174,7 @@
         private System.Windows.Forms.Button buildUnbuilded;
         private System.Windows.Forms.TextBox StatusText;
         private System.Windows.Forms.PropertyGrid propertiesPanel;
+        private System.Windows.Forms.Button RebuildDatabase;
     }
 }
 

@@ -118,7 +118,7 @@ namespace JoyEngine
 						ASSERT(false);
 					}
 					ranges[rangesIndex].Init(type, input.BindCount, input.BindPoint, input.Space, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
-					params[paramsIndex].InitAsDescriptorTable(input.BindCount, &ranges[rangesIndex], input.Visibility);
+					params[paramsIndex].InitAsDescriptorTable(1, &ranges[rangesIndex], input.Visibility);
 					m_rootIndices.insert({strHash(name.c_str()), paramsIndex});
 					rangesIndex++;
 					paramsIndex++;

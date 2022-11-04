@@ -46,15 +46,10 @@ RaycastResult RayTriangleIntersection(float3 orig, float3 dir, float3 v0, float3
 	const float inv_det = 1 / det;
 	const float3 tvec = orig - v0;
 	const float u = dot(tvec, pvec) * inv_det;
-	if (u < 0 || u > 1)
-	{
-		result.distance = MAX_FLOAT;
-		return result;
-	}
 
 	const float3 qvec = cross(tvec, e1);
 	const float v = dot(dir, qvec) * inv_det;
-	if (v < 0 || u + v > 1)
+	if ((v < 0 || u + v > 1) || (u < 0 || u > 1))
 	{
 		result.distance = MAX_FLOAT;
 		return result;

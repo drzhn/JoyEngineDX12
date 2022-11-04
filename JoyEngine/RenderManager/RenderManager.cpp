@@ -23,10 +23,6 @@
 #include "DescriptorManager/DescriptorManager.h"
 #include "GraphicsManager/GraphicsManager.h"
 #include "EngineMaterialProvider/EngineMaterialProvider.h"
-#include "Raytracing/BVHConstructor.h"
-#include "Raytracing/BVHConstructor.h"
-#include "Raytracing/BVHConstructor.h"
-#include "Raytracing/BVHConstructor.h"
 #include "ResourceManager/DynamicCpuBuffer.h"
 #include "SceneManager/Transform.h"
 
@@ -119,11 +115,11 @@ namespace JoyEngine
 			m_hdrRenderTarget.get(),
 			hdrRTVFormat, ldrRTVFormat, depthFormat);
 
-		//m_raytracing = std::make_unique<Raytracing>(
-		//	GetMainColorFormat(),
-		//	GetLdrRTVFormat(),
-		//	m_width,
-		//	m_height);
+		m_raytracing = std::make_unique<Raytracing>(
+			GetMainColorFormat(),
+			GetLdrRTVFormat(),
+			m_width,
+			m_height);
 
 		{
 			D3D12_CPU_DESCRIPTOR_HANDLE imguiCpuHandle;
@@ -143,7 +139,7 @@ namespace JoyEngine
 	void RenderManager::Start()
 	{
 		m_queue->WaitQueueIdle();
-		//m_raytracing->PrepareBVH();
+		m_raytracing->PrepareBVH();
 	}
 
 
@@ -151,7 +147,7 @@ namespace JoyEngine
 	{
 		m_queue->WaitQueueIdle();
 
-		//m_raytracing = nullptr;
+		m_raytracing = nullptr;
 		m_tonemapping = nullptr;
 		m_queue = nullptr;
 
@@ -432,35 +428,6 @@ namespace JoyEngine
 			}
 		}
 	}
-
-	//void RenderManager::RenderEntireScene(
-	//	ID3D12GraphicsCommandList* commandList,
-	//	glm::mat4 view,
-	//	glm::mat4 proj
-	//) const
-	//{
-	//	for (auto const& s : m_sharedMaterials)
-	//	{
-	//		for (const auto& mr : s->GetMeshRenderers())
-	//		{
-	//			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//			commandList->IASetVertexBuffers(0, 1, mr->GetMesh()->GetVertexBufferView());
-	//			commandList->IASetIndexBuffer(mr->GetMesh()->GetIndexBufferView());
-
-	//			::MVP mvp{
-	//				mr->GetTransform()->GetModelMatrix(),
-	//				view,
-	//				proj
-	//			};
-	//			uint32_t var = 5;
-	//			commandList->SetGraphicsRoot32BitConstants(0, sizeof(::MVP) / 4, &mvp, 0);
-	//			commandList->DrawIndexedInstanced(
-	//				mr->GetMesh()->GetIndexCount(),
-	//				1,
-	//				0, 0, 0);
-	//		}
-	//	}
-	//}
 
 	void RenderManager::RenderEntireSceneWithMaterials(
 		ID3D12GraphicsCommandList* commandList,

@@ -37,7 +37,7 @@ namespace JoyEngine
 		ResourceHandle<SharedMaterial> sharedMaterial,
 		const std::map<std::string, std::string>& bindings,
 		bool bindingsArePaths = false)
-		: Resource(guid), m_sharedMaterial(sharedMaterial)
+		: Resource(guid), m_sharedMaterial(std::move(sharedMaterial))
 	{
 		InitMaterial(bindings, bindingsArePaths);
 	}
@@ -65,7 +65,6 @@ namespace JoyEngine
 					{
 						if (bindingsArePaths)
 						{
-							//Texture* t = ResourceManager::Get()->LoadResource<Texture>(GUID::Random(), data);
 							m_textures.emplace_back(ResourceManager::Get()->LoadResource<Texture>(GUID::Random(), data));
 						}
 						else
@@ -76,6 +75,9 @@ namespace JoyEngine
 							m_sharedMaterial->GetGraphicsPipeline()->GetBindingIndexByName(name),
 							m_textures.back()->GetSRV()
 						});
+					}
+					else
+					{
 					}
 					break;
 				}

@@ -11,7 +11,7 @@ namespace JoyEngine
 	{
 		std::ifstream modelStream = DataManager::Get()->GetFileStream(guid, true);
 
-		MeshAssetHeader header;
+		MeshAssetHeader header = {};
 		modelStream.read(reinterpret_cast<char*>(&header), sizeof(MeshAssetHeader));
 
 		InitMesh(
@@ -25,17 +25,17 @@ namespace JoyEngine
 	}
 
 	Mesh::Mesh(GUID guid,
-	           uint32_t vertexDataSize,
-	           uint32_t indexDataSize,
-	           std::ifstream& modelStream,
-	           uint32_t vertexDataStreamOffset,
-	           uint32_t indexDataStreamOffset) : Resource(guid)
+		uint32_t vertexDataSize,
+		uint32_t indexDataSize,
+		std::ifstream& modelStream,
+		uint32_t vertexDataStreamOffset,
+		uint32_t indexDataStreamOffset) : Resource(guid)
 	{
 		InitMesh(vertexDataSize,
-		         indexDataSize,
-		         modelStream,
-		         vertexDataStreamOffset,
-		         indexDataStreamOffset);
+			indexDataSize,
+			modelStream,
+			vertexDataStreamOffset,
+			indexDataStreamOffset);
 	}
 
 	void Mesh::InitMesh(
@@ -45,8 +45,8 @@ namespace JoyEngine
 		uint32_t vertexDataStreamOffset,
 		uint32_t indexDataStreamOffset)
 	{
-		m_verticesData = reinterpret_cast<Vertex*>(malloc(vertexDataSize));
-		m_indicesData = reinterpret_cast<uint32_t*>(malloc(indexDataSize));
+		m_verticesData = static_cast<Vertex*>(malloc(vertexDataSize));
+		m_indicesData = static_cast<uint32_t*>(malloc(indexDataSize));
 
 		modelStream.clear();
 		modelStream.seekg(vertexDataStreamOffset);

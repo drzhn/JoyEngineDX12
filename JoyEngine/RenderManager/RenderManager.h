@@ -120,7 +120,7 @@ namespace JoyEngine
 
 
 		std::unique_ptr<Tonemapping> m_tonemapping;
-		//std::unique_ptr<Raytracing> m_raytracing;
+		std::unique_ptr<Raytracing> m_raytracing;
 		//std::unique_ptr<Texture> m_renderTargetCopyAttachment;
 
 

@@ -22,17 +22,6 @@ namespace JoyEngine
 	//class Buffer;
 	class SharedMaterial;
 
-	//struct MaterialArgs
-	//{
-	//	GUID sharedMaterial;
-	//	std::map<uint32_t, ID3D12DescriptorHeap*> rootParams;
-
-	//	// material is responsible for storing references to resources
-	//	// TODO combine texture and buffer to some AbstractResource
-	//	std::vector<ResourceHandle<Texture>> textures;
-	//	std::vector<std::shared_ptr<Buffer>> buffers;
-	//};
-
 	class Material final : public Resource
 	{
 	public :

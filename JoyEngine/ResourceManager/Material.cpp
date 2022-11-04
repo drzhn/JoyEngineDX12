@@ -40,7 +40,8 @@ namespace JoyEngine
 		ResourceHandle<SharedMaterial> sharedMaterial,
 		const std::map<std::string, std::string>& bindings,
 		bool bindingsArePaths = false)
-		: Resource(guid), m_materialIndex(++s_currentMaterialIndex),
+		: Resource(guid),
+		m_materialIndex(++s_currentMaterialIndex),
 		m_sharedMaterial(std::move(sharedMaterial))
 	{
 		InitMaterial(bindings, bindingsArePaths);
@@ -122,20 +123,7 @@ namespace JoyEngine
 			}
 		}
 	}
-
-	//Material::Material(GUID guid, MaterialArgs data) :
-	//	Resource(guid),
-	//	m_sharedMaterial(data.sharedMaterial),
-	//	m_rootParams(data.rootParams),
-	//	m_textures(data.textures),
-	//	m_buffers(data.buffers)
-	//{
-	//	//for (const auto& rp : data.rootParams)
-	//	//{
-	//	//	m_heaps.push_back(rp.second);
-	//	//}
-	//}
-
+	
 	SharedMaterial* Material::GetSharedMaterial() const noexcept
 	{
 		return m_sharedMaterial;

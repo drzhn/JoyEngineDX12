@@ -205,6 +205,8 @@ namespace JoyEngine
 
 	void Raytracing::UploadSceneData()
 	{
+		TIME_PERF("Uploading scene data")
+
 		for (auto const& sm : m_sceneSharedMaterials)
 		{
 			for (const auto& mr : sm->GetMeshRenderers())

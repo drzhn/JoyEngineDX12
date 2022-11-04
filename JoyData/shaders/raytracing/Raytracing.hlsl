@@ -8,7 +8,7 @@ StructuredBuffer<InternalNode> internalNodes; // size = THREADS_PER_BLOCK * BLOC
 StructuredBuffer<LeafNode> leafNodes; // size = THREADS_PER_BLOCK * BLOCK_SIZE
 StructuredBuffer<AABB> bvhData; // size = THREADS_PER_BLOCK * BLOCK_SIZE - 1
 StructuredBuffer<Triangle> triangleData; // size = THREADS_PER_BLOCK * BLOCK_SIZE
-Texture2D<float4>_meshTexture ;
+Texture2D<float4>_meshTexture[];
 SamplerState linearClampSampler;
 
 RWTexture2D<float4> _outputTexture;
@@ -175,6 +175,7 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 	const float3 normal = (1 - result.uv.x - result.uv.y) * t.a_normal + result.uv.x * t.b_normal + result.uv.y * t.c_normal;
 	const float3 lightDir = normalize(float3(1, 1, 1));
 
-	float4 color = _meshTexture.SampleLevel(linearClampSampler, uv, 0) * max(0.4, dot(lightDir, normal));
+	float4 color = _meshTexture[0].SampleLevel(linearClampSampler, uv, 0) * max(0.4, dot(lightDir, normal));
+	color += _meshTexture[1].SampleLevel(linearClampSampler, uv, 0) * max(0.4, dot(lightDir, normal));
 	_outputTexture[id.xy] = float4(color.rgb, result.distance != MAX_FLOAT);
 }

@@ -116,6 +116,7 @@ namespace JoyEngine
 			hdrRTVFormat, ldrRTVFormat, depthFormat);
 
 		m_raytracing = std::make_unique<Raytracing>(
+			m_sharedMaterials,
 			GetMainColorFormat(),
 			GetLdrRTVFormat(),
 			m_width,
@@ -136,9 +137,10 @@ namespace JoyEngine
 		}
 	}
 
-	void RenderManager::Start()
+	void RenderManager::Start() const
 	{
 		m_queue->WaitQueueIdle();
+		m_raytracing->UploadSceneData();
 		m_raytracing->PrepareBVH();
 	}
 
@@ -278,9 +280,9 @@ namespace JoyEngine
 			RenderEntireSceneWithMaterials(commandList, &viewProjectionMatrixData);
 		}
 
-		//m_raytracing->ProcessRaytracing(commandList, m_engineDataBuffer->GetView(m_currentFrameIndex));
+		m_raytracing->ProcessRaytracing(commandList, m_engineDataBuffer->GetView(m_currentFrameIndex));
 
-		//m_raytracing->DebugDrawRaytracedImage(commandList);
+		m_raytracing->DebugDrawRaytracedImage(commandList);
 
 		// HDR->LDR
 

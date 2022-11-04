@@ -327,6 +327,7 @@
     <ClInclude Include="JoyEngine\Utils\GraphicsUtils.h" />
     <ClInclude Include="JoyEngine\Utils\GUID.h" />
     <ClInclude Include="JoyEngine\Utils\Log.h" />
+    <ClInclude Include="JoyEngine\Utils\ObjectPool.h" />
     <ClInclude Include="JoyEngine\Utils\TimeCounter.h" />
     <ClInclude Include="ThirdParty\imgui\backends\imgui_impl_dx12.h" />
     <ClInclude Include="ThirdParty\imgui\backends\imgui_impl_win32.h" />

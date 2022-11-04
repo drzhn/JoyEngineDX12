@@ -21,7 +21,8 @@ namespace JoyEngine
 	{
 	public:
 		Raytracing() = delete;
-		Raytracing(DXGI_FORMAT mainColorFormat, DXGI_FORMAT swapchainFormat, uint32_t width, uint32_t height);
+		Raytracing(std::set<SharedMaterial*>& sceneSharedMaterials, DXGI_FORMAT mainColorFormat, DXGI_FORMAT swapchainFormat, uint32_t width, uint32_t height);
+		void UploadSceneData();
 		void PrepareBVH();
 		void ProcessRaytracing(ID3D12GraphicsCommandList* commandList, ResourceView* engineDataResourceView);
 		void DebugDrawRaytracedImage(ID3D12GraphicsCommandList* commandList);
@@ -32,9 +33,10 @@ namespace JoyEngine
 		uint32_t m_width;
 		uint32_t m_height;
 
-		uint32_t m_trianglesLength;
+		uint32_t m_trianglesLength = 0;
 
 		std::unique_ptr<UAVTexture> m_raytracedTexture;
+		std::set<SharedMaterial*>& m_sceneSharedMaterials;
 
 		std::unique_ptr<DataBuffer<uint32_t>> m_keysBuffer;
 		std::unique_ptr<DataBuffer<uint32_t>> m_triangleIndexBuffer;
@@ -47,8 +49,9 @@ namespace JoyEngine
 
 		ConstantCpuBuffer<BVHConstructorData> m_bvhConstructionData;
 
-		ResourceHandle<Mesh> m_mesh;
 		ResourceHandle<Texture> m_texture;
+		std::array<std::unique_ptr<ResourceView>, 2> m_resourceViews;
+
 		std::unique_ptr<BufferSorter> m_bufferSorter;
 		std::unique_ptr<BVHConstructor> m_bvhConstructor;
 		std::unique_ptr<ComputeDispatcher> m_dispatcher;

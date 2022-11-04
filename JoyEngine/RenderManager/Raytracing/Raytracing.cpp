@@ -2,6 +2,7 @@
 
 #include "Common/HashDefs.h"
 #include "ResourceManager/ResourceManager.h"
+#include "Components/MeshRenderer.h"
 #include "Utils/GraphicsUtils.h"
 #include "Utils/Log.h"
 #include "Utils/TimeCounter.h"
@@ -65,22 +66,22 @@ namespace JoyEngine
 		return ret;
 	}
 
-	Raytracing::Raytracing(DXGI_FORMAT mainColorFormat, DXGI_FORMAT swapchainFormat, uint32_t width, uint32_t height):
+	Raytracing::Raytracing(std::set<SharedMaterial*>& sceneSharedMaterials, DXGI_FORMAT mainColorFormat, DXGI_FORMAT swapchainFormat, uint32_t width, uint32_t height) :
 		m_mainColorFormat(mainColorFormat),
 		m_swapchainFormat(swapchainFormat),
 		m_width(width),
-		m_height(height)
+		m_height(height),
+		m_sceneSharedMaterials(sceneSharedMaterials)
 	{
 		static_assert(sizeof(Triangle) == 128);
 		static_assert(sizeof(AABB) == 32);
 
-		//const GUID meshGuid = GUID::StringToGuid("f9685ae2-2293-4662-83c1-69a37d1499fe");
-		const GUID meshGuid = GUID::StringToGuid("1217dfc4-c38c-47a7-a5ed-9e733243bf92"); // sponza combined
-
-		m_mesh = ResourceManager::Get()->LoadResource<Mesh>(meshGuid);
-
 		const GUID textureGuid = GUID::StringToGuid("1d451f58-3f84-4b2b-8c6f-fe8e2821d7f0");
 		m_texture = ResourceManager::Get()->LoadResource<Texture>(textureGuid);
+		for (int i = 0; i < 2; i++)
+		{
+			m_resourceViews[i] = std::make_unique<ResourceView>(m_texture->GetSRV()->GetSrvDesc(), m_texture->GetImage().Get());
+		}
 
 		m_keysBuffer = std::make_unique<DataBuffer<uint32_t>>(DATA_ARRAY_COUNT, MAX_UINT);
 		m_triangleIndexBuffer = std::make_unique<DataBuffer<uint32_t>>(DATA_ARRAY_COUNT, MAX_UINT);
@@ -91,45 +92,6 @@ namespace JoyEngine
 		m_bvhLeafNodesBuffer = std::make_unique<DataBuffer<LeafNode>>(DATA_ARRAY_COUNT);
 		m_bvhInternalNodesBuffer = std::make_unique<DataBuffer<InternalNode>>(DATA_ARRAY_COUNT);
 
-		m_trianglesLength = m_mesh->GetIndexCount() / 3;
-
-		Vertex* vertices = m_mesh->GetVertices();
-		uint32_t* indices = m_mesh->GetIndices();
-
-		for (uint32_t i = 0; i < m_trianglesLength; i++)
-		{
-			glm::vec3 a = vertices[indices[i * 3 + 0]].pos;
-			glm::vec3 b = vertices[indices[i * 3 + 1]].pos;
-			glm::vec3 c = vertices[indices[i * 3 + 2]].pos;
-
-			glm::vec3 centroid;
-			AABB aabb = {};
-
-			GetCentroidAndAABB(a, b, c, &centroid, &aabb);
-			centroid = NormalizeCentroid(centroid);
-			uint32_t mortonCode = Morton3D(centroid.x, centroid.y, centroid.z);
-			m_keysBuffer->GetLocalData()[i] = mortonCode;
-			m_triangleIndexBuffer->GetLocalData()[i] = i;
-			m_triangleDataBuffer->GetLocalData()[i] = Triangle
-			{
-				.a = a,
-				.b = b,
-				.c = c,
-				.a_uv = vertices[indices[i * 3 + 0]].texCoord,
-				.b_uv = vertices[indices[i * 3 + 1]].texCoord,
-				.c_uv = vertices[indices[i * 3 + 2]].texCoord,
-				.a_normal = vertices[indices[i * 3 + 0]].normal,
-				.b_normal = vertices[indices[i * 3 + 1]].normal,
-				.c_normal = vertices[indices[i * 3 + 2]].normal,
-			};
-			m_triangleAABBBuffer->GetLocalData()[i] = aabb;
-		}
-
-		m_keysBuffer->UploadCpuData();
-		m_triangleIndexBuffer->UploadCpuData();
-		m_triangleDataBuffer->UploadCpuData();
-		m_triangleAABBBuffer->UploadCpuData();
-
 		m_dispatcher = std::make_unique<ComputeDispatcher>();
 
 		m_bufferSorter = std::make_unique<BufferSorter>(
@@ -137,8 +99,6 @@ namespace JoyEngine
 			m_keysBuffer.get(),
 			m_triangleIndexBuffer.get(),
 			m_dispatcher.get());
-
-		m_bvhConstructionData.SetData({.trianglesCount = m_trianglesLength});
 
 		m_bvhConstructor = std::make_unique<BVHConstructor>(
 			m_keysBuffer.get(),
@@ -149,7 +109,7 @@ namespace JoyEngine
 			m_bvhDataBuffer.get(),
 			m_dispatcher.get(),
 			&m_bvhConstructionData
-		);
+			);
 
 		// Raytracing
 		{
@@ -159,7 +119,7 @@ namespace JoyEngine
 				m_mainColorFormat,
 				D3D12_RESOURCE_STATE_GENERIC_READ,
 				D3D12_HEAP_TYPE_DEFAULT
-			);
+				);
 
 
 			//shaders/raytracing/Raytracing.hlsl
@@ -242,13 +202,64 @@ namespace JoyEngine
 		}
 	}
 
+	void Raytracing::UploadSceneData()
+	{
+		for (auto const& sm : m_sceneSharedMaterials)
+		{
+			for (const auto& mr : sm->GetMeshRenderers())
+			{
+				if (!mr->IsStatic()) continue;
+
+				const uint32_t meshTrianglesLength = mr->GetMesh()->GetIndexCount() / 3;
+
+				Vertex* vertices = mr->GetMesh()->GetVertices();
+				uint32_t* indices = mr->GetMesh()->GetIndices();
+
+				for (uint32_t i = 0; i < meshTrianglesLength; i++, m_trianglesLength++)
+				{
+					glm::vec3 a = vertices[indices[i * 3 + 0]].pos;
+					glm::vec3 b = vertices[indices[i * 3 + 1]].pos;
+					glm::vec3 c = vertices[indices[i * 3 + 2]].pos;
+
+					glm::vec3 centroid;
+					AABB aabb = {};
+
+					GetCentroidAndAABB(a, b, c, &centroid, &aabb);
+					centroid = NormalizeCentroid(centroid);
+					const uint32_t mortonCode = Morton3D(centroid.x, centroid.y, centroid.z);
+					m_keysBuffer->GetLocalData()[m_trianglesLength] = mortonCode;
+					m_triangleIndexBuffer->GetLocalData()[m_trianglesLength] = m_trianglesLength;
+					m_triangleDataBuffer->GetLocalData()[m_trianglesLength] = Triangle
+					{
+						.a = a,
+						.b = b,
+						.c = c,
+						.a_uv = vertices[indices[i * 3 + 0]].texCoord,
+						.b_uv = vertices[indices[i * 3 + 1]].texCoord,
+						.c_uv = vertices[indices[i * 3 + 2]].texCoord,
+						.a_normal = vertices[indices[i * 3 + 0]].normal,
+						.b_normal = vertices[indices[i * 3 + 1]].normal,
+						.c_normal = vertices[indices[i * 3 + 2]].normal,
+					};
+					m_triangleAABBBuffer->GetLocalData()[m_trianglesLength] = aabb;
+				}
+			}
+		}
+
+		m_keysBuffer->UploadCpuData();
+		m_triangleIndexBuffer->UploadCpuData();
+		m_triangleDataBuffer->UploadCpuData();
+		m_triangleAABBBuffer->UploadCpuData();
+		m_bvhConstructionData.SetData({ .trianglesCount = m_trianglesLength });
+	}
+
 	void Raytracing::PrepareBVH()
 	{
 		Logger::LogFormat("Triangles length %d\n", m_trianglesLength);
 
 		TIME_PERF("Prepare Scene BVH")
 
-		m_bufferSorter->Sort();
+			m_bufferSorter->Sort();
 
 		{
 			// Update keys array. Now we guarantee all the elements are unique
@@ -272,34 +283,6 @@ namespace JoyEngine
 
 		m_bvhConstructor->ConstructTree();
 		m_bvhConstructor->ConstructBVH();
-
-		m_bvhDataBuffer->ReadbackGpuData();
-		m_bvhLeafNodesBuffer->ReadbackGpuData();
-		m_bvhInternalNodesBuffer->ReadbackGpuData();
-
-		//for (int i = 0; i < 14; i++)
-		//{
-		//	AABB data = m_bvhDataBuffer->GetLocalData()[i];
-		//	Logger::LogFormat("%.3f %.3f %.3f %.3f %.3f %.3f \n",
-		//	                  data.min.x,
-		//	                  data.min.y,
-		//	                  data.min.z,
-		//	                  data.max.x,
-		//	                  data.max.y,
-		//	                  data.max.z);
-		//}
-
-		//for (int i = 0; i < 14; i++)
-		//{
-		//	LeafNode data = m_bvhLeafNodesBuffer->GetLocalData()[i];
-		//	Logger::LogFormat("index %d, parent %d\n", data.index, data.parent);
-		//}
-
-		//for (int i = 0; i < 14; i++)
-		//{
-		//	InternalNode data = m_bvhInternalNodesBuffer->GetLocalData()[i];
-		//	Logger::LogFormat("index %d, left %d, right %d, parent %d\n", data.index, data.leftNode, data.rightNode, data.parent);
-		//}
 	}
 
 	void Raytracing::ProcessRaytracing(ID3D12GraphicsCommandList* commandList, ResourceView* engineDataResourceView)
@@ -313,7 +296,7 @@ namespace JoyEngine
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "engineData", engineDataResourceView);
 
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "_outputTexture", m_raytracedTexture->GetUAV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "_meshTexture", m_texture->GetSRV());
+			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "_meshTexture", m_resourceViews[0].get());
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "sortedTriangleIndices", m_triangleIndexBuffer->GetSRV());
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "triangleAABB", m_triangleAABBBuffer->GetSRV());
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "internalNodes", m_bvhInternalNodesBuffer->GetSRV());
@@ -350,9 +333,9 @@ namespace JoyEngine
 
 
 		commandList->SetGraphicsRoot32BitConstants(1,
-		                                           sizeof(ViewProjectionMatrixData) / 4,
-		                                           viewProjectionMatrixData,
-		                                           0);
+			sizeof(ViewProjectionMatrixData) / 4,
+			viewProjectionMatrixData,
+			0);
 
 		GraphicsUtils::AttachViewToGraphics(commandList, sm, "BVHData", m_bvhDataBuffer->GetSRV());
 

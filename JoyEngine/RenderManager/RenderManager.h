@@ -44,7 +44,7 @@ namespace JoyEngine
 
 		void Init();
 
-		void Start();
+		void Start() const;
 
 		void Stop();
 
@@ -135,7 +135,6 @@ namespace JoyEngine
 		std::set<SharedMaterial*> m_sharedMaterials;
 		//std::set<Light*> m_lights;
 		//Light* m_directionLight;
-		//CubemapRenderer* m_cubemap; // TODO add collection of cubemaps
 		Camera* m_currentCamera;
 
 		std::unique_ptr<CommandQueue> m_queue;

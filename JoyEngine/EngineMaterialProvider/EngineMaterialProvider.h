@@ -15,12 +15,6 @@ namespace JoyEngine
 		~EngineMaterialProvider() = default;
 		void Init();
 
-		//[[nodiscard]] ResourceHandle<Material> GetSampleMaterialByName(const std::string& materialName) const noexcept
-		//{
-		//	ASSERT(m_sampleMaterials.find(materialName) != m_sampleMaterials.end());
-		//	return m_sampleMaterials.find(materialName)->second;
-		//}
-
 		[[nodiscard]] ResourceHandle<SharedMaterial> GetStandardSharedMaterial() const noexcept { return m_standardSharedMaterial; }
 
 		[[nodiscard]] ResourceHandle<ComputePipeline> GetMipsGenerationComputePipeline() const noexcept { return m_generateMipsComputePipeline; }

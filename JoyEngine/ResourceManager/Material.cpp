@@ -15,7 +15,10 @@
 
 namespace JoyEngine
 {
-	Material::Material(GUID guid) : Resource(guid)
+	uint32_t Material::s_currentMaterialIndex = 0;
+
+	Material::Material(GUID guid) : Resource(guid),
+		m_materialIndex(++s_currentMaterialIndex)
 	{
 		rapidjson::Document json = DataManager::Get()->GetSerializedData(guid, material);
 		m_sharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial>(GUID::StringToGuid(json["sharedMaterial"].GetString()));
@@ -26,7 +29,7 @@ namespace JoyEngine
 			bindings.insert({
 				bindingJson["name"].GetString(),
 				bindingJson["data"].GetString()
-			});
+				});
 		}
 
 		InitMaterial(bindings, false);
@@ -37,7 +40,8 @@ namespace JoyEngine
 		ResourceHandle<SharedMaterial> sharedMaterial,
 		const std::map<std::string, std::string>& bindings,
 		bool bindingsArePaths = false)
-		: Resource(guid), m_sharedMaterial(std::move(sharedMaterial))
+		: Resource(guid), m_materialIndex(++s_currentMaterialIndex),
+		m_sharedMaterial(std::move(sharedMaterial))
 	{
 		InitMaterial(bindings, bindingsArePaths);
 	}
@@ -56,50 +60,50 @@ namespace JoyEngine
 			switch (shaderInput->Type)
 			{
 			case D3D_SIT_CBUFFER:
-				{
-					break;
-				}
+			{
+				break;
+			}
 			case D3D_SIT_TEXTURE:
+			{
+				if (!data.empty())
 				{
-					if (!data.empty())
+					if (bindingsArePaths)
 					{
-						if (bindingsArePaths)
-						{
-							m_textures.emplace_back(ResourceManager::Get()->LoadResource<Texture>(GUID::Random(), data));
-						}
-						else
-						{
-							m_textures.emplace_back(ResourceManager::Get()->LoadResource<Texture>(GUID::StringToGuid(data)));
-						}
-						m_rootParams.insert({
-							m_sharedMaterial->GetGraphicsPipeline()->GetBindingIndexByName(name),
-							m_textures.back()->GetSRV()
-						});
+						m_textures.emplace_back(ResourceManager::Get()->LoadResource<Texture>(GUID::Random(), data));
 					}
 					else
 					{
+						m_textures.emplace_back(ResourceManager::Get()->LoadResource<Texture>(GUID::StringToGuid(data)));
 					}
-					break;
-				}
-			case D3D_SIT_SAMPLER:
-				{
-					ResourceView* samplerView = nullptr;
-					switch (strHash(data.c_str()))
-					{
-					case strHash("texture"):
-						samplerView = EngineSamplersProvider::GetLinearWrapSampler();
-						break;
-					default:
-						ASSERT(false);
-						break;
-					}
-
 					m_rootParams.insert({
 						m_sharedMaterial->GetGraphicsPipeline()->GetBindingIndexByName(name),
-						samplerView
-					});
+						m_textures.back()->GetSRV()
+						});
+				}
+				else
+				{
+				}
+				break;
+			}
+			case D3D_SIT_SAMPLER:
+			{
+				ResourceView* samplerView = nullptr;
+				switch (strHash(data.c_str()))
+				{
+				case strHash("texture"):
+					samplerView = EngineSamplersProvider::GetLinearWrapSampler();
+					break;
+				default:
+					ASSERT(false);
 					break;
 				}
+
+				m_rootParams.insert({
+					m_sharedMaterial->GetGraphicsPipeline()->GetBindingIndexByName(name),
+					samplerView
+					});
+				break;
+			}
 
 			case D3D_SIT_UAV_RWTYPED:
 			case D3D_SIT_STRUCTURED:

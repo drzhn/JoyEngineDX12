@@ -190,14 +190,19 @@ struct Triangle
 {
 	VEC3 a;
 	float _dummy0;
+
 	VEC3 b;
 	float _dummy1;
+
 	VEC3 c;
 	float _dummy2;
+
 	VEC2 a_uv;
 	VEC2 b_uv;
+
 	VEC2 c_uv;
-	VEC2 _dummy3;
+	UINT1 materialIndex;
+	UINT1 _dummy3;
 
 	VEC3 a_normal;
 	float _dummy4;

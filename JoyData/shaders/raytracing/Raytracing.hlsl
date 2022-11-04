@@ -8,7 +8,7 @@ StructuredBuffer<InternalNode> internalNodes; // size = THREADS_PER_BLOCK * BLOC
 StructuredBuffer<LeafNode> leafNodes; // size = THREADS_PER_BLOCK * BLOCK_SIZE
 StructuredBuffer<AABB> bvhData; // size = THREADS_PER_BLOCK * BLOCK_SIZE - 1
 StructuredBuffer<Triangle> triangleData; // size = THREADS_PER_BLOCK * BLOCK_SIZE
-Texture2D<float4> _meshTexture;
+Texture2D<float4>_meshTexture ;
 SamplerState linearClampSampler;
 
 RWTexture2D<float4> _outputTexture;
@@ -95,29 +95,8 @@ RaycastResult CheckTriangle(uint triangleIndex, Ray ray, RaycastResult result)
 	return result;
 }
 
-[numthreads(32,32,1)]
-void CSMain(uint3 id : SV_DispatchThreadID)
+inline RaycastResult TraceRay(Ray ray)
 {
-	const float near = engineData.cameraNear;
-	const float fov = tan(engineData.cameraFovRadians / 2);
-	const float height = 2 * near * fov;
-	const float width = engineData.screenWidth * height / engineData.screenHeight;
-
-	const float3 originCamera = float3(0, 0, 0);
-	const float3 dirCamera = float3(
-		-width / 2 + width / engineData.screenWidth * (id.x + 0.5),
-		height / 2 - height / engineData.screenHeight * (id.y + 0.5),
-		near
-	);
-
-	const float3 origin = mul(engineData.cameraInvView, float4(originCamera, 1)).xyz;
-	const float3 dir = mul(engineData.cameraInvView, float4(dirCamera, 0)).xyz;
-
-	Ray ray;
-	ray.origin = origin;
-	ray.dir = normalize(dir);
-	ray.inv_dir = 1 / ray.dir;
-
 	RaycastResult result;
 	result.distance = MAX_FLOAT;
 	result.triangleIndex = 0;
@@ -130,7 +109,7 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 
 	while (currentStackIndex != 0)
 	{
-		currentStackIndex --;
+		currentStackIndex--;
 		const uint index = stack[currentStackIndex];
 
 		if (!RayBoxIntersection(bvhData[index], ray))
@@ -159,7 +138,7 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 		if (rightType == INTERNAL_NODE)
 		{
 			stack[currentStackIndex] = rightIndex;
-			currentStackIndex ++;
+			currentStackIndex++;
 		}
 		else
 		{
@@ -167,6 +146,34 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 			result = CheckTriangle(triangleIndex, ray, result);
 		}
 	}
+
+	return result;
+}
+
+[numthreads(32,32,1)]
+void CSMain(uint3 id : SV_DispatchThreadID)
+{
+	const float near = engineData.cameraNear;
+	const float fov = tan(engineData.cameraFovRadians / 2);
+	const float height = 2 * near * fov;
+	const float width = engineData.screenWidth * height / engineData.screenHeight;
+
+	const float3 originCamera = float3(0, 0, 0);
+	const float3 dirCamera = float3(
+		-width / 2 + width / engineData.screenWidth * (id.x + 0.5),
+		height / 2 - height / engineData.screenHeight * (id.y + 0.5),
+		near
+	);
+
+	const float3 origin = mul(engineData.cameraInvView, float4(originCamera, 1)).xyz;
+	const float3 dir = mul(engineData.cameraInvView, float4(dirCamera, 0)).xyz;
+
+	Ray ray;
+	ray.origin = origin;
+	ray.dir = normalize(dir);
+	ray.inv_dir = 1 / ray.dir;
+
+	RaycastResult result = TraceRay(ray);
 
 	const Triangle t = triangleData[result.triangleIndex];
 	const float2 uv = (1 - result.uv.x - result.uv.y) * t.a_uv + result.uv.x * t.b_uv + result.uv.y * t.c_uv;

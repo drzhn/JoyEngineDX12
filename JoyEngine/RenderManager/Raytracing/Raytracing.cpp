@@ -3,6 +3,7 @@
 #include "Common/HashDefs.h"
 #include "ResourceManager/ResourceManager.h"
 #include "Components/MeshRenderer.h"
+#include "ResourceManager/Material.h"
 #include "Utils/GraphicsUtils.h"
 #include "Utils/Log.h"
 #include "Utils/TimeCounter.h"
@@ -212,8 +213,8 @@ namespace JoyEngine
 
 				const uint32_t meshTrianglesLength = mr->GetMesh()->GetIndexCount() / 3;
 
-				Vertex* vertices = mr->GetMesh()->GetVertices();
-				uint32_t* indices = mr->GetMesh()->GetIndices();
+				const Vertex* vertices = mr->GetMesh()->GetVertices();
+				const uint32_t* indices = mr->GetMesh()->GetIndices();
 
 				for (uint32_t i = 0; i < meshTrianglesLength; i++, m_trianglesLength++)
 				{
@@ -237,6 +238,7 @@ namespace JoyEngine
 						.a_uv = vertices[indices[i * 3 + 0]].texCoord,
 						.b_uv = vertices[indices[i * 3 + 1]].texCoord,
 						.c_uv = vertices[indices[i * 3 + 2]].texCoord,
+						.materialIndex = mr->GetMaterial()->GetMaterialIndex(),
 						.a_normal = vertices[indices[i * 3 + 0]].normal,
 						.b_normal = vertices[indices[i * 3 + 1]].normal,
 						.c_normal = vertices[indices[i * 3 + 2]].normal,

@@ -14,11 +14,16 @@ namespace JoyEngine
 	{
 		TIME_PERF("DescriptorManager init")
 
-		for (const auto pair : m_descriptorStorage)
+		for (
+			uint32_t typeIndex = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV; 
+			typeIndex < D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES; 
+			typeIndex ++)
 		{
-			D3D12_DESCRIPTOR_HEAP_TYPE type = pair.first;
-			HeapEntry& entry = m_descriptorStorage[type];
-			// Describe and create a render target view (RTV) descriptor heap.
+			const auto type = static_cast<D3D12_DESCRIPTOR_HEAP_TYPE>(typeIndex);
+
+			auto entry = std::make_unique<HeapEntry>(
+				GraphicsManager::Get()->GetDevice()->GetDescriptorHandleIncrementSize(type));
+
 			D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {
 				type,
 				DESCRIPTORS_COUNT,
@@ -28,12 +33,12 @@ namespace JoyEngine
 				0
 			};
 			ASSERT_SUCC(GraphicsManager::Get()->GetDevice()->
-				CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&entry.heap)));
+				CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&entry->heap)));
 
-			entry.descriptorSize =
-				GraphicsManager::Get()->GetDevice()->GetDescriptorHandleIncrementSize(type);
-			entry.cpuHeapStart = entry.heap->GetCPUDescriptorHandleForHeapStart();
-			entry.gpuHeapStart = entry.heap->GetGPUDescriptorHandleForHeapStart();
+			entry->cpuHeapStart = entry->heap->GetCPUDescriptorHandleForHeapStart();
+			entry->gpuHeapStart = entry->heap->GetGPUDescriptorHandleForHeapStart();
+
+			m_descriptorStorage[type] = std::move(entry);
 		}
 	}
 
@@ -44,15 +49,15 @@ namespace JoyEngine
 		_Out_ D3D12_GPU_DESCRIPTOR_HANDLE& gpuHandle
 	)
 	{
-		HeapEntry& entry = m_descriptorStorage[type];
+		auto entry = m_descriptorStorage[type].get();
 
-		ASSERT(entry.currentDescriptorIndex < DESCRIPTORS_COUNT)
+		ASSERT(entry->currentDescriptorIndex < DESCRIPTORS_COUNT)
 
-		cpuHandle.ptr = entry.cpuHeapStart.ptr + entry.currentDescriptorIndex * entry.descriptorSize;
-		gpuHandle.ptr = entry.gpuHeapStart.ptr + entry.currentDescriptorIndex * entry.descriptorSize;
-		index = entry.currentDescriptorIndex;
+		cpuHandle.ptr = entry->cpuHeapStart.ptr + entry->currentDescriptorIndex * entry->descriptorSize;
+		gpuHandle.ptr = entry->gpuHeapStart.ptr + entry->currentDescriptorIndex * entry->descriptorSize;
+		index = entry->currentDescriptorIndex;
 
-		entry.currentDescriptorIndex++;
+		entry->currentDescriptorIndex++;
 	}
 
 	void DescriptorManager::FreeDescriptor(
@@ -64,6 +69,6 @@ namespace JoyEngine
 
 	ID3D12DescriptorHeap* DescriptorManager::GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE type) const
 	{
-		return m_descriptorStorage.find(type)->second.heap.Get();
+		return m_descriptorStorage[type]->heap.Get();
 	}
 }

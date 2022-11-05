@@ -1,6 +1,7 @@
 #ifndef DESCRIPTOR_MANAGER_H
 #define DESCRIPTOR_MANAGER_H
 
+#include <array>
 #include <map>
 
 #include "Common/Singleton.h"
@@ -8,6 +9,7 @@
 
 #include <d3d12.h>
 #include <dxgi1_6.h>
+#include <memory>
 #include <wrl.h>
 using Microsoft::WRL::ComPtr;
 
@@ -17,7 +19,7 @@ namespace JoyEngine
 {
 	class DescriptorManager : public Singleton<DescriptorManager>
 	{
-	public :
+	public:
 		DescriptorManager() = default;
 		void Init();
 		void AllocateDescriptor(
@@ -34,19 +36,16 @@ namespace JoyEngine
 	private:
 		struct HeapEntry
 		{
-			ComPtr<ID3D12DescriptorHeap> heap;
-			uint32_t descriptorSize;
-			D3D12_CPU_DESCRIPTOR_HANDLE cpuHeapStart;
-			D3D12_GPU_DESCRIPTOR_HANDLE gpuHeapStart;
+			HeapEntry(uint32_t stride) :descriptorSize(stride) {}
+
+			ComPtr<ID3D12DescriptorHeap> heap = nullptr;
+			const uint32_t descriptorSize = 0;
+			D3D12_CPU_DESCRIPTOR_HANDLE cpuHeapStart = {};
+			D3D12_GPU_DESCRIPTOR_HANDLE gpuHeapStart = {};
 			uint32_t currentDescriptorIndex = 0;
 		};
 
-		std::map<D3D12_DESCRIPTOR_HEAP_TYPE, HeapEntry> m_descriptorStorage = {
-			{D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, {}},
-			{D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, {}},
-			{D3D12_DESCRIPTOR_HEAP_TYPE_RTV, {}},
-			{D3D12_DESCRIPTOR_HEAP_TYPE_DSV, {}}
-		};
+		std::array<std::unique_ptr<HeapEntry>, D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES> m_descriptorStorage;
 	};
 }
 

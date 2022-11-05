@@ -11,6 +11,7 @@
 #include "RenderManager/RenderManager.h"
 
 #include "SharedMaterial.h"
+#include "EngineMaterialProvider/EngineMaterialProvider.h"
 #include "ResourceManager/Texture.h"
 
 namespace JoyEngine
@@ -18,10 +19,12 @@ namespace JoyEngine
 	uint32_t Material::s_currentMaterialIndex = 0;
 
 	Material::Material(GUID guid) : Resource(guid),
-		m_materialIndex(++s_currentMaterialIndex)
+		m_materialIndex(s_currentMaterialIndex++)
 	{
 		rapidjson::Document json = DataManager::Get()->GetSerializedData(guid, material);
-		m_sharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial>(GUID::StringToGuid(json["sharedMaterial"].GetString()));
+
+		// We will only use standard material for serialized materials
+		m_sharedMaterial = EngineMaterialProvider::Get()->GetStandardSharedMaterial();
 
 		std::map<std::string, std::string> bindings;
 		for (auto& bindingJson : json["bindings"].GetArray())
@@ -41,7 +44,7 @@ namespace JoyEngine
 		const std::map<std::string, std::string>& bindings,
 		bool bindingsArePaths = false)
 		: Resource(guid),
-		m_materialIndex(++s_currentMaterialIndex),
+		m_materialIndex(s_currentMaterialIndex++),
 		m_sharedMaterial(std::move(sharedMaterial))
 	{
 		InitMaterial(bindings, bindingsArePaths);
@@ -83,6 +86,7 @@ namespace JoyEngine
 				}
 				else
 				{
+					int a = 6;
 				}
 				break;
 			}
@@ -91,8 +95,11 @@ namespace JoyEngine
 				ResourceView* samplerView = nullptr;
 				switch (strHash(data.c_str()))
 				{
-				case strHash("texture"):
+				case strHash("linearWrap"):
 					samplerView = EngineSamplersProvider::GetLinearWrapSampler();
+					break;
+				case strHash("linearClamp"):
+					samplerView = EngineSamplersProvider::GetLinearClampSampler();
 					break;
 				default:
 					ASSERT(false);

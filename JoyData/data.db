@@ -46,12 +46,8 @@
       "path": "shared_materials/standardSharedMaterial.json"
     },
     {
-      "guid": "74eac505-944d-45af-acdf-51bcb04fee30",
-      "path": "shared_materials/vikingSharedMaterial.json"
-    },
-    {
       "guid": "cbab0eb5-74a0-400f-92c2-8aae39175ed7",
-      "path": "materials/vikingMaterial.json"
+      "path": "materials/standardMaterial.json"
     },
     {
       "guid": "a254d10b-ba5a-444d-9ef0-4ef7777b918b",

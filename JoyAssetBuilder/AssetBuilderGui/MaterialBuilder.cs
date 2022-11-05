@@ -12,6 +12,7 @@ namespace JoyAssetBuilder
         {
             public string name;
             public string diffuse;
+            public string textureSampler;
         }
 
         [Serializable]
@@ -43,6 +44,7 @@ namespace JoyAssetBuilder
                     mat.diffuse = "";
                     listObject.materials.Add(mat);
                     currentMaterialObject = mat;
+                    currentMaterialObject.textureSampler = "linearWrap";
                 }
 
                 if (firstEntry == "map_Kd" && currentMaterialObject != null)

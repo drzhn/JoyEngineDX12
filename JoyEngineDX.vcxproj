@@ -107,8 +107,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)Build\JoyEngine\$(Configuration)\</OutDir>
-    <IntDir>Build\JoyEngine\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)</OutDir>
+    <IntDir>Temp\JoyEngine\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_$(Configuration)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='FullDebug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -118,8 +119,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)Build\JoyEngine\$(Configuration)\</OutDir>
-    <IntDir>Build\JoyEngine\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)</OutDir>
+    <IntDir>Temp\JoyEngine\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_$(Configuration)</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

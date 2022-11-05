@@ -167,7 +167,7 @@ namespace JoyEngine
 			// Enable better shader debugging with the graphics debugging tools.
 			LPCWSTR arguments[] = {
 				L"/Od", // D3DCOMPILE_SKIP_OPTIMIZATION 
-				L"/Zi" // D3DCOMPILE_DEBUG
+				L"/Zi", // D3DCOMPILE_DEBUG
 			};
 			uint32_t argCount = 2;
 #else

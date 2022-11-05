@@ -13,7 +13,7 @@ struct PSOutput
 };
 
 Texture2D mainTexture : register(t0);
-SamplerState textureSampler : register(s0);
+SamplerState sampler : register(s0);
 ConstantBuffer<ModelMatrixData> modelData : register(b0);
 ConstantBuffer<ViewProjectionMatrixData> viewProjectionData : register(b1);
 //Texture2D lightAttachment : register(t1);
@@ -41,7 +41,7 @@ PSOutput PSMain(PSInput input) // : SV_TARGET
 {
 	PSOutput output;
 	const float2 screenPosition = (input.clipPos.xy / input.clipPos.w);
-	const float4 mainColor = mainTexture.Sample(textureSampler, input.uv);
+	const float4 mainColor = mainTexture.Sample(sampler, input.uv);
 	//const float4 light = lightAttachment.Load(float3(input.position.xy, 0));// normalTexture.Sample(textureSampler, screenPosition);// mainTexture.Sample(textureSampler, input.uv);
 
 	const float ambient = 0.2f;

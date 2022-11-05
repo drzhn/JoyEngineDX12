@@ -3,95 +3,118 @@
   "materials": [
     {
       "name": "sponza:Material__25",
-      "diffuse": "textures/lion.tga"
+      "diffuse": "textures/lion.tga",
+      "textureSampler": "linearWrap"
     },
     {
       "name": "sponza:Material__47",
-      "diffuse": ""
+      "diffuse": "",
+      "textureSampler": "linearWrap"
     },
     {
       "name": "sponza:Material__298",
-      "diffuse": "textures/background.tga"
+      "diffuse": "textures/background.tga",
+      "textureSampler": "linearWrap"
     },
     {
       "name": "sponza:arch",
-      "diffuse": "textures/sponza_arch_diff.tga"
+      "diffuse": "textures/sponza_arch_diff.tga",
+      "textureSampler": "linearWrap"
     },
     {
       "name": "sponza:bricks",
-      "diffuse": "textures/spnza_bricks_a_diff.tga"
+      "diffuse": "textures/spnza_bricks_a_diff.tga",
+      "textureSampler": "linearWrap"
     },
     {
       "name": "sponza:ceiling",
-      "diffuse": "textures/sponza_ceiling_a_diff.tga"
+      "diffuse": "textures/sponza_ceiling_a_diff.tga",
+      "textureSampler": "linearWrap"
     },
     {
       "name": "sponza:chain",
-      "diffuse": "textures/chain_texture.tga"
+      "diffuse": "textures/chain_texture.tga",
+      "textureSampler": "linearWrap"
     },
     {
       "name": "sponza:column_a",
-      "diffuse": "textures/sponza_column_a_diff.tga"
+      "diffuse": "textures/sponza_column_a_diff.tga",
+      "textureSampler": "linearWrap"
     },
     {
       "name": "sponza:column_b",
-      "diffuse": "textures/sponza_column_b_diff.tga"
+      "diffuse": "textures/sponza_column_b_diff.tga",
+      "textureSampler": "linearWrap"
     },
     {
       "name": "sponza:column_c",
-      "diffuse": "textures/sponza_column_c_diff.tga"
+      "diffuse": "textures/sponza_column_c_diff.tga",
+      "textureSampler": "linearWrap"
     },
     {
       "name": "sponza:details",
-      "diffuse": "textures/sponza_details_diff.tga"
+      "diffuse": "textures/sponza_details_diff.tga",
+      "textureSampler": "linearWrap"
     },
     {
       "name": "sponza:fabric_a",
-      "diffuse": "textures/sponza_fabric_diff.tga"
+      "diffuse": "textures/sponza_fabric_diff.tga",
+      "textureSampler": "linearWrap"
     },
     {
       "name": "sponza:fabric_c",
-      "diffuse": "textures/sponza_curtain_diff.tga"
+      "diffuse": "textures/sponza_curtain_diff.tga",
+      "textureSampler": "linearWrap"
     },
     {
       "name": "sponza:fabric_d",
-      "diffuse": "textures/sponza_fabric_blue_diff.tga"
+      "diffuse": "textures/sponza_fabric_blue_diff.tga",
+      "textureSampler": "linearWrap"
     },
     {
       "name": "sponza:fabric_e",
-      "diffuse": "textures/sponza_fabric_green_diff.tga"
+      "diffuse": "textures/sponza_fabric_green_diff.tga",
+      "textureSampler": "linearWrap"
     },
     {
       "name": "sponza:fabric_f",
-      "diffuse": "textures/sponza_curtain_green_diff.tga"
+      "diffuse": "textures/sponza_curtain_green_diff.tga",
+      "textureSampler": "linearWrap"
     },
     {
       "name": "sponza:fabric_g",
-      "diffuse": "textures/sponza_curtain_blue_diff.tga"
+      "diffuse": "textures/sponza_curtain_blue_diff.tga",
+      "textureSampler": "linearWrap"
     },
     {
       "name": "sponza:flagpole",
-      "diffuse": "textures/sponza_flagpole_diff.tga"
+      "diffuse": "textures/sponza_flagpole_diff.tga",
+      "textureSampler": "linearWrap"
     },
     {
       "name": "sponza:floor",
-      "diffuse": "textures/sponza_floor_a_diff.tga"
+      "diffuse": "textures/sponza_floor_a_diff.tga",
+      "textureSampler": "linearWrap"
     },
     {
       "name": "sponza:roof",
-      "diffuse": "textures/sponza_roof_diff.tga"
+      "diffuse": "textures/sponza_roof_diff.tga",
+      "textureSampler": "linearWrap"
     },
     {
       "name": "sponza:vase",
-      "diffuse": "textures/vase_dif.tga"
+      "diffuse": "textures/vase_dif.tga",
+      "textureSampler": "linearWrap"
     },
     {
       "name": "sponza:vase_hanging",
-      "diffuse": "textures/vase_hanging.tga"
+      "diffuse": "textures/vase_hanging.tga",
+      "textureSampler": "linearWrap"
     },
     {
       "name": "sponza:vase_round",
-      "diffuse": "textures/vase_round.tga"
+      "diffuse": "textures/vase_round.tga",
+      "textureSampler": "linearWrap"
     }
   ]
 }

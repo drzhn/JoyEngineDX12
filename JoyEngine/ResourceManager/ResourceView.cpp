@@ -11,7 +11,7 @@ namespace JoyEngine
 		m_type(D3D12_DESCRIPTOR_HEAP_TYPE_DSV)
 	{
 		m_description.dsvDesc = desc;
-		DescriptorManager::Get()->AllocateDescriptor(m_type, m_descriptorIndex, m_cpuHandle, m_gpuHandle);
+		DescriptorManager::Get()->AllocateDescriptor(DescriptorHeapType::DSV, m_descriptorIndex, m_cpuHandle, m_gpuHandle);
 
 		GraphicsManager::Get()->GetDevice()->CreateDepthStencilView(
 			resource,
@@ -24,7 +24,7 @@ namespace JoyEngine
 	{
 		m_description.samplerDesc = desc;
 
-		DescriptorManager::Get()->AllocateDescriptor(m_type, m_descriptorIndex, m_cpuHandle, m_gpuHandle);
+		DescriptorManager::Get()->AllocateDescriptor(DescriptorHeapType::SAMPLER, m_descriptorIndex, m_cpuHandle, m_gpuHandle);
 
 		GraphicsManager::Get()->GetDevice()->CreateSampler(
 			&desc,
@@ -36,7 +36,7 @@ namespace JoyEngine
 	{
 		m_description.constantBufferDesc = desc;
 
-		DescriptorManager::Get()->AllocateDescriptor(m_type, m_descriptorIndex, m_cpuHandle, m_gpuHandle);
+		DescriptorManager::Get()->AllocateDescriptor(DescriptorHeapType::CBV_UAV, m_descriptorIndex, m_cpuHandle, m_gpuHandle);
 
 		GraphicsManager::Get()->GetDevice()->CreateConstantBufferView(
 			&desc,
@@ -48,7 +48,7 @@ namespace JoyEngine
 	{
 		m_description.uavDesc = desc;
 
-		DescriptorManager::Get()->AllocateDescriptor(m_type, m_descriptorIndex, m_cpuHandle, m_gpuHandle);
+		DescriptorManager::Get()->AllocateDescriptor(DescriptorHeapType::CBV_UAV, m_descriptorIndex, m_cpuHandle, m_gpuHandle);
 
 		GraphicsManager::Get()->GetDevice()->CreateUnorderedAccessView(
 			resource,
@@ -62,7 +62,7 @@ namespace JoyEngine
 	{
 		m_description.rtvDesc = desc;
 
-		DescriptorManager::Get()->AllocateDescriptor(m_type, m_descriptorIndex, m_cpuHandle, m_gpuHandle);
+		DescriptorManager::Get()->AllocateDescriptor(DescriptorHeapType::RTV, m_descriptorIndex, m_cpuHandle, m_gpuHandle);
 
 		GraphicsManager::Get()->GetDevice()->CreateRenderTargetView(
 			resource,
@@ -75,7 +75,7 @@ namespace JoyEngine
 	{
 		m_description.srvDesc = desc;
 
-		DescriptorManager::Get()->AllocateDescriptor(m_type, m_descriptorIndex, m_cpuHandle, m_gpuHandle);
+		DescriptorManager::Get()->AllocateDescriptor(DescriptorHeapType::SRV, m_descriptorIndex, m_cpuHandle, m_gpuHandle);
 
 		GraphicsManager::Get()->GetDevice()->CreateShaderResourceView(
 			resource,

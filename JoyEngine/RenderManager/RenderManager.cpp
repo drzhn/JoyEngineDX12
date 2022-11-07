@@ -126,7 +126,7 @@ namespace JoyEngine
 			D3D12_CPU_DESCRIPTOR_HANDLE imguiCpuHandle;
 			D3D12_GPU_DESCRIPTOR_HANDLE imguiGpuHandle;
 
-			DescriptorManager::Get()->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, m_imguiDescriptorIndex,
+			DescriptorManager::Get()->AllocateDescriptor(DescriptorHeapType::CBV_UAV, m_imguiDescriptorIndex,
 			                                             imguiCpuHandle,
 			                                             imguiGpuHandle);
 
@@ -280,9 +280,9 @@ namespace JoyEngine
 			RenderEntireSceneWithMaterials(commandList, &viewProjectionMatrixData);
 		}
 
-		//m_raytracing->ProcessRaytracing(commandList, m_engineDataBuffer->GetView(m_currentFrameIndex));
+		m_raytracing->ProcessRaytracing(commandList, m_engineDataBuffer->GetView(m_currentFrameIndex));
 
-		//m_raytracing->DebugDrawRaytracedImage(commandList);
+		m_raytracing->DebugDrawRaytracedImage(commandList);
 
 		// HDR->LDR
 

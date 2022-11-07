@@ -137,6 +137,12 @@ struct EngineData
 	UINT1 _dummy2;
 };
 
+struct StandardMaterial
+{
+	UINT1 diffuse;
+	UINT1 normal;
+};
+
 struct HDRDownScaleConstants
 {
 	// Resolution of the down scaled target: x - width, y - height
@@ -148,15 +154,6 @@ struct HDRDownScaleConstants
 	float Adaptation; // Adaptation factor
 	float fBloomThreshold; // Bloom threshold percentage
 };
-
-//struct SSAOData
-//{
-//	VEC4 offsetVectors[14];
-//	VEC2 invRenderTargetSize;
-//	UINT1 isHorizontal;
-//	UINT1 _dummy;
-//	VEC4 blurWeights[3];
-//};
 
 struct MipMapGenerationData
 {

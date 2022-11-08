@@ -25,7 +25,6 @@ namespace JoyEngine
 			};
 			m_materials.emplace_back(ResourceManager::Get()->LoadResource<Material>(
 				GUID::Random(),
-				EngineMaterialProvider::Get()->GetStandardSharedMaterial(),
 				bindings,
 				true
 			));

@@ -4,6 +4,8 @@
 #include "Common/Singleton.h"
 #include "ResourceManager/Material.h"
 #include "ResourceManager/SharedMaterial.h"
+#include "ResourceManager/ResourceView.h"
+#include "ResourceManager/Texture.h"
 #include "Utils/GUID.h"
 
 namespace JoyEngine
@@ -16,9 +18,9 @@ namespace JoyEngine
 		void Init();
 
 		[[nodiscard]] ResourceHandle<SharedMaterial> GetStandardSharedMaterial() const noexcept { return m_standardSharedMaterial; }
-
 		[[nodiscard]] ResourceHandle<ComputePipeline> GetMipsGenerationComputePipeline() const noexcept { return m_generateMipsComputePipeline; }
 		[[nodiscard]] ResourceHandle<SharedMaterial> GetGizmoAxisDrawerSharedMaterial() const noexcept { return m_gizmoAxisDrawerSharedMaterial; }
+		[[nodiscard]] ResourceView* GetNullTextureView() const noexcept { return m_nullTextureView.get(); }
 		//[[nodiscard]] ResourceHandle<SharedMaterial> GetGBufferSharedMaterial() const noexcept { return m_gbufferWriteSharedMaterial; }
 		//[[nodiscard]] ResourceHandle<SharedMaterial> GetLightProcessingSharedMaterial() const noexcept { return m_lightProcessingSharedMaterial; }
 		//[[nodiscard]] ResourceHandle<SharedMaterial> GetDirectionLightProcessingSharedMaterial() const noexcept { return m_directionLightProcessingSharedMaterial; }
@@ -39,12 +41,11 @@ namespace JoyEngine
 	private:
 		ResourceHandle<SharedMaterial> m_standardSharedMaterial;
 
-
-		//ResourceHandle<Texture> m_skyboxTextureHandle;
-
 		ResourceHandle<ComputePipeline> m_generateMipsComputePipeline;
 
 		ResourceHandle<SharedMaterial> m_gizmoAxisDrawerSharedMaterial;
+
+		std::unique_ptr<ResourceView> m_nullTextureView;
 
 		//ResourceHandle<SharedMaterial> m_gbufferWriteSharedMaterial;
 

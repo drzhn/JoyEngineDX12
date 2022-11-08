@@ -29,7 +29,6 @@ namespace JoyEngine
 		explicit Material(GUID);
 		explicit Material(
 			GUID guid, 
-			ResourceHandle<SharedMaterial> sharedMaterial,
 			const std::map<std::string, std::string>& bindings, 
 			bool bindingsArePaths);
 

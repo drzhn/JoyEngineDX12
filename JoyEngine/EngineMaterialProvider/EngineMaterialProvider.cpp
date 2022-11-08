@@ -29,7 +29,7 @@ namespace JoyEngine
 
 		// Standard shared material
 		{
-			const GUID standardSharedMaterialGuid = GUID::StringToGuid("b6316780-7043-4ca5-96da-c8bb84042b78"); 
+			const GUID standardSharedMaterialGuid = GUID::StringToGuid("b6316780-7043-4ca5-96da-c8bb84042b78");
 			m_standardSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial>(standardSharedMaterialGuid);
 		}
 
@@ -68,6 +68,24 @@ namespace JoyEngine
 					D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE,
 				});
 		}
+
+		// Null texture view 
+		{
+			D3D12_SHADER_RESOURCE_VIEW_DESC desc = {
+				.Format = DXGI_FORMAT_R8G8B8A8_UNORM,
+				.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D,
+				.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,
+				.Texture2D = {
+					.MostDetailedMip = 0,
+					.MipLevels = 1,
+					.PlaneSlice = 0,
+					.ResourceMinLODClamp = 0
+				}
+			};
+			m_nullTextureView = std::make_unique<ResourceView>(desc, nullptr);
+			ASSERT(m_nullTextureView->GetDescriptorIndex() == 0)
+		}
+
 
 		//// GBuffer write shader
 		//{

@@ -3,6 +3,8 @@
 #include "Common/HashDefs.h"
 #include "ResourceManager/ResourceManager.h"
 #include "Components/MeshRenderer.h"
+#include "DescriptorManager/DescriptorManager.h"
+#include "EngineMaterialProvider/EngineMaterialProvider.h"
 #include "ResourceManager/Material.h"
 #include "Utils/GraphicsUtils.h"
 #include "Utils/Log.h"
@@ -76,13 +78,6 @@ namespace JoyEngine
 	{
 		static_assert(sizeof(Triangle) == 128);
 		static_assert(sizeof(AABB) == 32);
-
-		const GUID textureGuid = GUID::StringToGuid("1d451f58-3f84-4b2b-8c6f-fe8e2821d7f0");
-		m_texture = ResourceManager::Get()->LoadResource<Texture>(textureGuid);
-		for (int i = 0; i < 2; i++)
-		{
-			m_resourceViews[i] = std::make_unique<ResourceView>(m_texture->GetSRV()->GetSrvDesc(), m_texture->GetImage().Get());
-		}
 
 		m_keysBuffer = std::make_unique<DataBuffer<uint32_t>>(DATA_ARRAY_COUNT, MAX_UINT);
 		m_triangleIndexBuffer = std::make_unique<DataBuffer<uint32_t>>(DATA_ARRAY_COUNT, MAX_UINT);
@@ -300,7 +295,8 @@ namespace JoyEngine
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "engineData", engineDataResourceView);
 
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "_outputTexture", m_raytracedTexture->GetUAV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "_meshTexture", m_resourceViews[0].get());
+			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "textures", DescriptorManager::Get()->GetSRVHeapStartDescriptorHandle());
+			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "materials", EngineMaterialProvider::Get()->GetMaterialsDataView());
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "sortedTriangleIndices", m_triangleIndexBuffer->GetSRV());
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "triangleAABB", m_triangleAABBBuffer->GetSRV());
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "internalNodes", m_bvhInternalNodesBuffer->GetSRV());

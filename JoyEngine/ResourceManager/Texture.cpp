@@ -416,6 +416,7 @@ namespace JoyEngine
 		m_memoryPropertiesFlags = CD3DX12_HEAP_PROPERTIES(heapType);
 
 		CreateImage(true, false, false, 1, 1);
+		m_texture->SetName(L"Manually created render target");
 		CreateImageViews();
 
 		//else
@@ -444,6 +445,7 @@ namespace JoyEngine
 		m_format = format;
 		m_usageFlags = usage;
 		m_memoryPropertiesFlags = CD3DX12_HEAP_PROPERTIES(heapType);
+		externalResource->SetName(L"Swapchain Resource");
 		m_texture = std::move(externalResource);
 
 		CreateImageViews();
@@ -462,7 +464,7 @@ namespace JoyEngine
 			0
 		};
 
-		m_resourceView = std::make_unique<ResourceView>(desc, m_texture.Get());
+		m_resourceView = std::make_unique<ResourceView>(desc, m_texture.Get(), true);
 
 
 		D3D12_RENDER_TARGET_VIEW_DESC rtvDesc;
@@ -507,7 +509,7 @@ namespace JoyEngine
 			0
 		};
 
-		m_resourceView = std::make_unique<ResourceView>(desc, m_texture.Get());
+		m_resourceView = std::make_unique<ResourceView>(desc, m_texture.Get(), true);
 
 		D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
 		depthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
@@ -549,7 +551,7 @@ namespace JoyEngine
 			0,
 			0
 		};
-		m_resourceView = std::make_unique<ResourceView>(desc, m_texture.Get());
+		m_resourceView = std::make_unique<ResourceView>(desc, m_texture.Get(), true);
 
 		D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc;
 		uavDesc.Format = this->GetFormat();

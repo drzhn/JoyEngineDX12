@@ -36,7 +36,7 @@ namespace JoyEngine
 	{
 		m_description.constantBufferDesc = desc;
 
-		DescriptorManager::Get()->AllocateDescriptor(DescriptorHeapType::CBV_UAV, m_descriptorIndex, m_cpuHandle, m_gpuHandle);
+		DescriptorManager::Get()->AllocateDescriptor(DescriptorHeapType::SRV_CBV_UAV, m_descriptorIndex, m_cpuHandle, m_gpuHandle);
 
 		GraphicsManager::Get()->GetDevice()->CreateConstantBufferView(
 			&desc,
@@ -48,7 +48,7 @@ namespace JoyEngine
 	{
 		m_description.uavDesc = desc;
 
-		DescriptorManager::Get()->AllocateDescriptor(DescriptorHeapType::CBV_UAV, m_descriptorIndex, m_cpuHandle, m_gpuHandle);
+		DescriptorManager::Get()->AllocateDescriptor(DescriptorHeapType::SRV_CBV_UAV, m_descriptorIndex, m_cpuHandle, m_gpuHandle);
 
 		GraphicsManager::Get()->GetDevice()->CreateUnorderedAccessView(
 			resource,
@@ -70,12 +70,14 @@ namespace JoyEngine
 			m_cpuHandle);
 	}
 
-	ResourceView::ResourceView(D3D12_SHADER_RESOURCE_VIEW_DESC desc, ID3D12Resource* resource) :
+	ResourceView::ResourceView(D3D12_SHADER_RESOURCE_VIEW_DESC desc, ID3D12Resource* resource, bool isDsvRtvUav) :
 		m_type(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
 	{
 		m_description.srvDesc = desc;
 
-		DescriptorManager::Get()->AllocateDescriptor(DescriptorHeapType::SRV, m_descriptorIndex, m_cpuHandle, m_gpuHandle);
+		const auto descriptorType = isDsvRtvUav ? DescriptorHeapType::SRV_CBV_UAV : DescriptorHeapType::READONLY_TEXTURES;
+
+		DescriptorManager::Get()->AllocateDescriptor(descriptorType, m_descriptorIndex, m_cpuHandle, m_gpuHandle);
 
 		GraphicsManager::Get()->GetDevice()->CreateShaderResourceView(
 			resource,

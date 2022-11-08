@@ -3,6 +3,8 @@
 #include <d3d12.h>
 
 #include "d3dx12.h"
+#include "DescriptorManager/DescriptorManager.h"
+#include "GraphicsManager/GraphicsManager.h"
 #include "RenderManager/RenderManager.h"
 #include "Utils/TimeCounter.h"
 
@@ -84,6 +86,24 @@ namespace JoyEngine
 			};
 			m_nullTextureView = std::make_unique<ResourceView>(desc, nullptr);
 			ASSERT(m_nullTextureView->GetDescriptorIndex() == 0)
+
+
+			for (uint32_t i = 1; i < READONLY_TEXTURES_COUNT; i++)
+			{
+				D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle;
+				D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle;
+				DescriptorManager::Get()->GetDescriptorHandleAtIndex(DescriptorHeapType::READONLY_TEXTURES, i, cpuHandle, gpuHandle);
+
+				GraphicsManager::Get()->GetDevice()->CreateShaderResourceView(
+					nullptr,
+					&desc,
+					cpuHandle);
+			}
+		}
+
+		// Materials data that we will pass to GPU
+		{
+			m_materials = std::make_unique<ConstantCpuBuffer<StandardMaterialData>>();
 		}
 
 
@@ -466,5 +486,15 @@ namespace JoyEngine
 		//			});
 		//	}
 		//}
+	}
+
+	void EngineMaterialProvider::SetMaterialData(uint32_t index, uint32_t diffuseTextureIndex) const
+	{
+		m_materials->Lock();
+
+		StandardMaterialData* dataPtr = m_materials->GetPtr();
+		dataPtr->data[index].diffuseTextureIndex = diffuseTextureIndex;
+
+		m_materials->Unlock();
 	}
 }

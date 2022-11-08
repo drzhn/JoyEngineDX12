@@ -126,7 +126,7 @@ namespace JoyEngine
 			D3D12_CPU_DESCRIPTOR_HANDLE imguiCpuHandle;
 			D3D12_GPU_DESCRIPTOR_HANDLE imguiGpuHandle;
 
-			DescriptorManager::Get()->AllocateDescriptor(DescriptorHeapType::CBV_UAV, m_imguiDescriptorIndex,
+			DescriptorManager::Get()->AllocateDescriptor(DescriptorHeapType::SRV_CBV_UAV, m_imguiDescriptorIndex,
 			                                             imguiCpuHandle,
 			                                             imguiGpuHandle);
 
@@ -211,6 +211,8 @@ namespace JoyEngine
 		m_currentCamera = nullptr;
 	}
 
+
+	bool g_drawRaytracedImage = true;
 	void RenderManager::Update()
 	{
 		m_currentFrameIndex = m_swapChain->GetCurrentBackBufferIndex();
@@ -280,10 +282,12 @@ namespace JoyEngine
 			RenderEntireSceneWithMaterials(commandList, &viewProjectionMatrixData);
 		}
 
-		m_raytracing->ProcessRaytracing(commandList, m_engineDataBuffer->GetView(m_currentFrameIndex));
+		if (g_drawRaytracedImage)
+		{
+			m_raytracing->ProcessRaytracing(commandList, m_engineDataBuffer->GetView(m_currentFrameIndex));
 
-		m_raytracing->DebugDrawRaytracedImage(commandList);
-
+			m_raytracing->DebugDrawRaytracedImage(commandList);
+		}
 		// HDR->LDR
 
 		GraphicsUtils::Barrier(commandList,
@@ -374,13 +378,14 @@ namespace JoyEngine
 		ImGui::NewFrame();
 
 		ImGui::SetNextWindowPos({0, 0});
-		ImGui::SetNextWindowSize({300, 100});
+		ImGui::SetNextWindowSize({300, 150});
 		{
 			ImGui::Begin("Stats:");
 			ImGui::Text("Screen: %dx%d", m_width, m_height);
 			ImGui::Text("Num triangles %d", m_trianglesCount);
 			const glm::vec3 camPos = m_currentCamera->GetTransform()->GetPosition();
 			ImGui::Text("Camera: %.3f %.3f %.3f", camPos.x, camPos.y, camPos.z);
+			ImGui::Checkbox("Draw raytraced image", &g_drawRaytracedImage);
 			ImGui::End();
 		}
 		ImGui::Render();

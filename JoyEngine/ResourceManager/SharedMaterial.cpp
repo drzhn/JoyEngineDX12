@@ -17,6 +17,7 @@
 #include <wrl.h>
 
 #include "Common/HashDefs.h"
+#include "DescriptorManager/DescriptorManager.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -117,7 +118,7 @@ namespace JoyEngine
 					default:
 						ASSERT(false);
 					}
-					ranges[rangesIndex].Init(type, input.BindCount == 0 ? 2 : input.BindCount, input.BindPoint, input.Space, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
+					ranges[rangesIndex].Init(type, input.BindCount == 0 ? READONLY_TEXTURES_COUNT : input.BindCount, input.BindPoint, input.Space, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
 					params[paramsIndex].InitAsDescriptorTable(1, &ranges[rangesIndex], input.Visibility);
 					m_rootIndices.insert({strHash(name.c_str()), paramsIndex});
 					rangesIndex++;

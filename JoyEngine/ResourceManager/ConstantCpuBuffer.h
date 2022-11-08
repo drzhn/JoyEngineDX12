@@ -23,10 +23,14 @@ namespace JoyEngine
 			);
 
 			D3D12_CONSTANT_BUFFER_VIEW_DESC desc = {
-				m_buffer.get()->GetBufferResource()->GetGPUVirtualAddress(),
+				m_buffer->GetBufferResource()->GetGPUVirtualAddress(),
 				m_size
 			};
 			m_resourceView = std::make_unique<ResourceView>(desc);
+
+			const auto mappedPtr = m_buffer->GetMappedPtr();
+			const auto ptr = static_cast<T*>(mappedPtr->GetMappedPtr());
+			memset(ptr, 0, sizeof(T));
 		}
 
 		explicit ConstantCpuBuffer(const T* data) : ConstantCpuBuffer()
@@ -46,10 +50,10 @@ namespace JoyEngine
 			m_currentLockedArea = std::move(m_buffer->GetMappedPtr(0, m_size));
 		}
 
-		[[nodiscard]] void* GetPtr() const
+		[[nodiscard]] T* GetPtr() const
 		{
 			ASSERT(m_currentLockedArea != nullptr);
-			return m_currentLockedArea.get()->GetMappedPtr();
+			return static_cast<T*>(m_currentLockedArea->GetMappedPtr());
 		}
 
 		void Unlock()

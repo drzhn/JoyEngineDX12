@@ -82,6 +82,8 @@ namespace JoyEngine
 						m_sharedMaterial->GetGraphicsPipeline()->GetBindingIndexByName(name),
 						srv
 					});
+					EngineMaterialProvider::Get()->SetMaterialData(m_materialIndex, srv->GetDescriptorIndex());
+
 					break;
 				}
 			case D3D_SIT_SAMPLER:

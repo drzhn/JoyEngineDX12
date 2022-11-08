@@ -14,15 +14,15 @@
 using Microsoft::WRL::ComPtr;
 
 #define DESCRIPTORS_COUNT 512
-#define SRV_COUNT 256
+#define READONLY_TEXTURES_COUNT 256
 
 namespace JoyEngine
 {
 	enum class DescriptorHeapType: uint32_t
 	{
-		SRV = 0,
-		CBV_UAV = SRV + 1,
-		SAMPLER = CBV_UAV + 1,
+		READONLY_TEXTURES = 0,
+		SRV_CBV_UAV = READONLY_TEXTURES + 1,
+		SAMPLER = SRV_CBV_UAV + 1,
 		RTV = SAMPLER + 1,
 		DSV = RTV + 1,
 		NUM_TYPES = DSV + 1
@@ -38,12 +38,17 @@ namespace JoyEngine
 			uint32_t& index,
 			D3D12_CPU_DESCRIPTOR_HANDLE& cpuHandle,
 			D3D12_GPU_DESCRIPTOR_HANDLE& gpuHandle);
+		void GetDescriptorHandleAtIndex(
+			const DescriptorHeapType type, 
+			const uint32_t index, 
+			D3D12_CPU_DESCRIPTOR_HANDLE& cpuHandle, 
+			D3D12_GPU_DESCRIPTOR_HANDLE& gpuHandle);
 		void FreeDescriptor(
 			DescriptorHeapType type,
 			uint32_t index);
 
 		[[nodiscard]] ID3D12DescriptorHeap* GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE) const;
-
+		[[nodiscard]] D3D12_GPU_DESCRIPTOR_HANDLE GetSRVHeapStartDescriptorHandle() const;
 	private:
 		struct HeapEntry
 		{

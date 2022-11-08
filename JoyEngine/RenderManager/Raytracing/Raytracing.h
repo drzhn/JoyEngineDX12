@@ -49,9 +49,6 @@ namespace JoyEngine
 
 		ConstantCpuBuffer<BVHConstructorData> m_bvhConstructionData;
 
-		ResourceHandle<Texture> m_texture;
-		std::array<std::unique_ptr<ResourceView>, 2> m_resourceViews;
-
 		std::unique_ptr<BufferSorter> m_bufferSorter;
 		std::unique_ptr<BVHConstructor> m_bvhConstructor;
 		std::unique_ptr<ComputeDispatcher> m_dispatcher;

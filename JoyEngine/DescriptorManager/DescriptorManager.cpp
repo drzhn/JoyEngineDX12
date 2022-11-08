@@ -14,8 +14,8 @@ namespace JoyEngine
 	{
 		switch (type)
 		{
-		case DescriptorHeapType::SRV:
-		case DescriptorHeapType::CBV_UAV:
+		case DescriptorHeapType::READONLY_TEXTURES:
+		case DescriptorHeapType::SRV_CBV_UAV:
 			return D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 			break;
 		case DescriptorHeapType::SAMPLER:
@@ -66,18 +66,18 @@ namespace JoyEngine
 			D3D12_GPU_DESCRIPTOR_HANDLE gpuHeapStart = m_heaps[nativeType]->GetGPUDescriptorHandleForHeapStart();
 
 			// separate area in descriptor heap for srv and for cbv-uav.
-			// [----SRV (SRV_COUNT)----][-----CBV_UAV(DESCRIPTORS_COUNT-SRV_COUNT)----]
+			// <heap start>[----READONLY_TEXTURES (READONLY_TEXTURES_COUNT)----][-----SRV_CBV_UAV(DESCRIPTORS_COUNT-READONLY_TEXTURES_COUNT)----]<heap end>
 			uint32_t count = DESCRIPTORS_COUNT;
-			if (type == DescriptorHeapType::SRV)
+			if (type == DescriptorHeapType::READONLY_TEXTURES)
 			{
-				count = SRV_COUNT;
+				count = READONLY_TEXTURES_COUNT;
 			}
-			if (type == DescriptorHeapType::CBV_UAV)
+			if (type == DescriptorHeapType::SRV_CBV_UAV)
 			{
-				count = DESCRIPTORS_COUNT - SRV_COUNT;
+				count = DESCRIPTORS_COUNT - READONLY_TEXTURES_COUNT;
 
-				cpuHeapStart.ptr += SRV_COUNT * descriptorSize;
-				gpuHeapStart.ptr += SRV_COUNT * descriptorSize;
+				cpuHeapStart.ptr += READONLY_TEXTURES_COUNT * descriptorSize;
+				gpuHeapStart.ptr += READONLY_TEXTURES_COUNT * descriptorSize;
 			}
 
 			auto entry = std::make_unique<HeapEntry>(
@@ -109,6 +109,21 @@ namespace JoyEngine
 		entry->m_currentDescriptorIndex++;
 	}
 
+	void DescriptorManager::GetDescriptorHandleAtIndex(
+		const DescriptorHeapType type,
+		const uint32_t index,
+		_Out_ D3D12_CPU_DESCRIPTOR_HANDLE& cpuHandle,
+		_Out_ D3D12_GPU_DESCRIPTOR_HANDLE& gpuHandle
+	)
+	{
+		const auto entry = m_descriptorStorage[type].get();
+
+		ASSERT((entry->m_currentDescriptorIndex + 1) < entry->m_descriptorsCount)
+
+		cpuHandle.ptr = entry->m_cpuHeapStart.ptr + index * entry->m_descriptorSize;
+		gpuHandle.ptr = entry->m_gpuHeapStart.ptr + index * entry->m_descriptorSize;
+	}
+
 	void DescriptorManager::FreeDescriptor(
 		DescriptorHeapType type,
 		uint32_t index)
@@ -119,5 +134,10 @@ namespace JoyEngine
 	ID3D12DescriptorHeap* DescriptorManager::GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE nativeType) const
 	{
 		return m_heaps[nativeType].Get();
+	}
+
+	D3D12_GPU_DESCRIPTOR_HANDLE DescriptorManager::GetSRVHeapStartDescriptorHandle() const
+	{
+		return m_descriptorStorage.at(DescriptorHeapType::READONLY_TEXTURES).get()->m_gpuHeapStart;
 	}
 }

@@ -50,6 +50,16 @@ namespace JoyEngine
 	void GraphicsUtils::AttachViewToGraphics(
 		ID3D12GraphicsCommandList* commandList,
 		uint32_t rootParameterIndex,
+		D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle
+	)
+	{
+		commandList->SetGraphicsRootDescriptorTable(
+			rootParameterIndex, gpuHandle);
+	}
+
+	void GraphicsUtils::AttachViewToGraphics(
+		ID3D12GraphicsCommandList* commandList,
+		uint32_t rootParameterIndex,
 		const ResourceView* view
 	)
 	{
@@ -71,12 +81,33 @@ namespace JoyEngine
 	void GraphicsUtils::AttachViewToCompute(
 		ID3D12GraphicsCommandList* commandList,
 		uint32_t rootParameterIndex,
+		D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle
+	)
+	{
+		commandList->SetComputeRootDescriptorTable(
+			rootParameterIndex, gpuHandle);
+	}
+
+	void GraphicsUtils::AttachViewToCompute(
+		ID3D12GraphicsCommandList* commandList,
+		uint32_t rootParameterIndex,
 		const ResourceView* view
 	)
 	{
 		commandList->SetComputeRootDescriptorTable(
 			rootParameterIndex, view->GetGPUHandle());
 	}
+
+	void GraphicsUtils::AttachViewToCompute(
+		ID3D12GraphicsCommandList* commandList,
+		const ResourceHandle<ComputePipeline>& pipeline,
+		const char* paramName,
+		D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle)
+	{
+		commandList->SetComputeRootDescriptorTable(
+			pipeline->GetBindingIndexByHash(strHash(paramName)), gpuHandle);
+	}
+
 
 	void GraphicsUtils::AttachViewToCompute(
 		ID3D12GraphicsCommandList* commandList, 

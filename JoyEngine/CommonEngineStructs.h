@@ -27,6 +27,26 @@
 #define UINT3 uint3
 #endif
 
+// ========= COMMON DEFINES ========
+
+#define RADIX 8
+#define BUCKET_SIZE 256 // 2 ^ RADIX
+#define BLOCK_SIZE 512
+#define THREADS_PER_BLOCK 1024
+#define WARP_SIZE 32
+#define ELEM_PER_THREAD  1
+
+#define DATA_ARRAY_COUNT ELEM_PER_THREAD*THREADS_PER_BLOCK*BLOCK_SIZE // 1*512*1024 = 524288
+
+#define MAX_FLOAT 0x7F7FFFFF // just a big float
+#define MAX_UINT 0xFFFFFFFF
+
+#define INTERNAL_NODE 0
+#define LEAF_NODE 1
+
+#define MATERIAL_SIZE 512
+
+// ========= CONTEXT DEPENDENT STRUCTS =========
 
 #ifdef ENGINE
 inline glm::vec3 shadowTransformsForward[6]
@@ -56,23 +76,13 @@ enum LightType
 	Capsule = 2,
 	Direction = 3
 };
+#elif SHADER
+
+
+
 #endif
 
-
-#define RADIX 8
-#define BUCKET_SIZE 256 // 2 ^ RADIX
-#define BLOCK_SIZE 512
-#define THREADS_PER_BLOCK 1024
-#define WARP_SIZE 32
-#define ELEM_PER_THREAD  1
-
-#define DATA_ARRAY_COUNT ELEM_PER_THREAD*THREADS_PER_BLOCK*BLOCK_SIZE // 1*512*1024 = 524288
-
-#define MAX_FLOAT 0x7F7FFFFF // just a big float
-#define MAX_UINT 0xFFFFFFFF
-
-#define INTERNAL_NODE 0
-#define LEAF_NODE 1
+// ========= COMMON STRUCTS =========
 
 struct Vertex
 {
@@ -139,8 +149,15 @@ struct EngineData
 
 struct StandardMaterial
 {
-	UINT1 diffuse;
-	UINT1 normal;
+	UINT1 diffuseTextureIndex;
+	UINT1 normalTextureIndex;
+	UINT1 _dummy0;
+	UINT1 _dummy1;
+};
+
+struct StandardMaterialData
+{
+	StandardMaterial data[MATERIAL_SIZE];
 };
 
 struct HDRDownScaleConstants

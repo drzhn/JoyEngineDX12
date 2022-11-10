@@ -13,7 +13,9 @@ ConstantBuffer<StandardMaterialData> materials;
 Texture2D<float4> textures[];
 SamplerState linearClampSampler;
 
-RWTexture2D<float4> _outputTexture;
+RWTexture2D<float4> colorTexture;
+RWTexture2D<float4> positionsTexture;
+RWTexture2D<float4> normalsTexture;
 
 struct Ray
 {
@@ -175,9 +177,12 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 	const Triangle t = triangleData[result.triangleIndex];
 	const float2 uv = (1 - result.uv.x - result.uv.y) * t.a_uv + result.uv.x * t.b_uv + result.uv.y * t.c_uv;
 	const float3 normal = (1 - result.uv.x - result.uv.y) * t.a_normal + result.uv.x * t.b_normal + result.uv.y * t.c_normal;
-	const float3 lightDir = normalize(float3(1, 1, 1));
 	const uint materialIndex = t.materialIndex;
 
+	const float hasResult = result.distance != MAX_FLOAT;
+
 	float4 color = textures[materials.data[materialIndex].diffuseTextureIndex].SampleLevel(linearClampSampler, uv,0);
-	_outputTexture[id.xy] = float4(color.rgb, result.distance != MAX_FLOAT);
+	colorTexture[id.xy] = float4(color.rgb, hasResult);
+	positionsTexture[id.xy] = float4((engineData.cameraWorldPos + ray.dir * result.distance) * hasResult, 1);
+	normalsTexture[id.xy] = float4(normal * hasResult, 1);
 }

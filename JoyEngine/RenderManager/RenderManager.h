@@ -74,7 +74,7 @@ namespace JoyEngine
 		[[nodiscard]] uint32_t GetFrameCount() noexcept { return frameCount; }
 		[[nodiscard]] DXGI_FORMAT GetMainColorFormat() noexcept { return hdrRTVFormat; };
 		[[nodiscard]] DXGI_FORMAT GetHdrRTVFormat() noexcept { return hdrRTVFormat; }
-		[[nodiscard]] DXGI_FORMAT GetLdrRTVFormat() noexcept { return ldrRTVFormat; }
+		[[nodiscard]] DXGI_FORMAT GetSwapchainFormat() noexcept { return swapchainFormat; }
 		[[nodiscard]] DXGI_FORMAT GetGBufferFormat() noexcept { return gBufferFormat; }
 		[[nodiscard]] DXGI_FORMAT GetDepthFormat() noexcept { return depthFormat; }
 		[[nodiscard]] DXGI_FORMAT GetSSAOFormat() noexcept { return ssaoFormat; }
@@ -105,7 +105,7 @@ namespace JoyEngine
 
 
 		static constexpr DXGI_FORMAT hdrRTVFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
-		static constexpr DXGI_FORMAT ldrRTVFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+		static constexpr DXGI_FORMAT swapchainFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 		static constexpr DXGI_FORMAT gBufferFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
 		static constexpr DXGI_FORMAT depthFormat = DXGI_FORMAT_D32_FLOAT;
 		static constexpr DXGI_FORMAT ssaoFormat = DXGI_FORMAT_R16_FLOAT;

@@ -23,7 +23,7 @@ namespace JoyEngine
 
 		EngineSamplersProvider::InitSamplers();
 		DXGI_FORMAT mainRTVFormat = RenderManager::Get()->GetHdrRTVFormat();
-		DXGI_FORMAT swapchainLdrFormat = RenderManager::Get()->GetLdrRTVFormat();
+		DXGI_FORMAT swapchainLdrFormat = RenderManager::Get()->GetSwapchainFormat();
 		DXGI_FORMAT mainGBufferFormat = RenderManager::Get()->GetGBufferFormat();
 		DXGI_FORMAT mainDSVFormat = RenderManager::Get()->GetDepthFormat();
 		DXGI_FORMAT ssaoFormat = RenderManager::Get()->GetSSAOFormat();

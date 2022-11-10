@@ -86,7 +86,7 @@ namespace JoyEngine
 				swapchainResource,
 				m_width,
 				m_height,
-				ldrRTVFormat,
+				swapchainFormat,
 				D3D12_RESOURCE_STATE_PRESENT,
 				D3D12_HEAP_TYPE_DEFAULT);
 		}
@@ -113,12 +113,14 @@ namespace JoyEngine
 		m_tonemapping = std::make_unique<Tonemapping>(
 			m_width, m_height,
 			m_hdrRenderTarget.get(),
-			hdrRTVFormat, ldrRTVFormat, depthFormat);
+			hdrRTVFormat, swapchainFormat, depthFormat);
 
 		m_raytracing = std::make_unique<Raytracing>(
 			m_sharedMaterials,
 			GetMainColorFormat(),
-			GetLdrRTVFormat(),
+			GetGBufferFormat(),
+			GetGBufferFormat(),
+			GetSwapchainFormat(),
 			m_width,
 			m_height);
 
@@ -131,7 +133,7 @@ namespace JoyEngine
 			                                             imguiGpuHandle);
 
 			ImGui_ImplDX12_Init(GraphicsManager::Get()->GetDevice(), frameCount,
-			                    ldrRTVFormat, DescriptorManager::Get()->GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV),
+			                    swapchainFormat, DescriptorManager::Get()->GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV),
 			                    imguiCpuHandle,
 			                    imguiGpuHandle);
 		}

@@ -14,8 +14,8 @@
 namespace JoyEngine
 {
 	AABB Whole = {
-		.min = glm::vec3(-200.5f, -15.5f, -115.5f),
-		.max = glm::vec3(200.5f, 150.5f, 115.5f),
+		.min = glm::vec3(-40.5f, -3.5f, -25.5f),
+		.max = glm::vec3(40.5f, 30.5f, 25.5f),
 	};
 
 	uint32_t ExpandBits(uint32_t v)

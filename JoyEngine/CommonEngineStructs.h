@@ -5,9 +5,7 @@
 #include <cstdint>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#endif
 
-#ifdef ENGINE
 #define VEC2 glm::vec2
 #define VEC3 glm::vec3
 #define VEC4 glm::vec4
@@ -46,6 +44,8 @@
 
 #define MATERIAL_SIZE 512
 #define OBJECT_SIZE 512
+
+#define DDGI_RAYS_COUNT 192
 
 // ========= CONTEXT DEPENDENT STRUCTS =========
 

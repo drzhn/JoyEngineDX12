@@ -6,7 +6,7 @@
             "name": "camera",
             "type": "obj_simple",
             "transform": {
-                "localPosition": [ -60.0, 20.0, -4.0 ],
+                "localPosition": [ -15.0, 9.0, -1.0 ],
                 "localRotation": [ 0.0, 90.0, 0.0 ],
                 "localScale": [ 1.0, 1.0, 1.0 ]
             },
@@ -18,7 +18,7 @@
                     "type": "component",
                     "component": "CameraBehaviour",
                     "fields": {
-                        "m_speed": 15.0
+                        "m_speed": 8.0
                     }
                 }
             ]

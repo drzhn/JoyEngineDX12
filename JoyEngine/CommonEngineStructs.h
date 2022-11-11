@@ -45,6 +45,7 @@
 #define LEAF_NODE 1
 
 #define MATERIAL_SIZE 512
+#define OBJECT_SIZE 512
 
 // ========= CONTEXT DEPENDENT STRUCTS =========
 
@@ -79,7 +80,6 @@ enum LightType
 #elif SHADER
 
 
-
 #endif
 
 // ========= COMMON STRUCTS =========
@@ -90,11 +90,6 @@ struct Vertex
 	VEC3 color;
 	VEC3 normal;
 	VEC2 texCoord;
-};
-
-struct ModelMatrixData
-{
-	MAT4 model;
 };
 
 struct ViewProjectionMatrixData
@@ -160,6 +155,16 @@ struct StandardMaterialData
 	StandardMaterial data[MATERIAL_SIZE];
 };
 
+struct ObjectIndexData
+{
+	UINT1 data;
+};
+
+struct ObjectMatricesData
+{
+	MAT4 data[OBJECT_SIZE];
+};
+
 struct HDRDownScaleConstants
 {
 	// Resolution of the down scaled target: x - width, y - height
@@ -216,7 +221,7 @@ struct Triangle
 
 	VEC2 c_uv;
 	UINT1 materialIndex;
-	UINT1 _dummy3;
+	UINT1 objectIndex;
 
 	VEC3 a_normal;
 	float _dummy4;

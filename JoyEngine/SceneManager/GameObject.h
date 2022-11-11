@@ -10,33 +10,40 @@
 #include "Components/MeshRenderer.h"
 #include "Utils/GUID.h"
 
-namespace JoyEngine {
-    class GameObject {
-    public:
-        explicit GameObject() : GameObject("GameObject") {}
+namespace JoyEngine
+{
+	class GameObject
+	{
+	public:
+		explicit GameObject() : GameObject("GameObject")
+		{
+		}
 
-        explicit GameObject(const char *name) {
-            m_name = name;
-            m_transform = Transform();
-        }
+		explicit GameObject(const char* name):
+			m_transform(Transform()),
+			m_name(name)
+		{
+		}
 
-        ~GameObject() {
-            for (auto &component: m_components) {
-                component->Disable();
-            }
-        }
+		~GameObject()
+		{
+			for (auto& component : m_components)
+			{
+				component->Disable();
+			}
+		}
 
-        void Update();
+		void Update();
 
-        Transform *GetTransform() { return &m_transform; }
+		Transform* GetTransform() { return &m_transform; }
 
-        void AddComponent(std::unique_ptr<Component> component);
+		void AddComponent(std::unique_ptr<Component> component);
 
-    private:
-        Transform m_transform;
-        std::string m_name;
-        std::vector<std::unique_ptr<Component>> m_components;
-    };
+	private:
+		Transform m_transform;
+		std::string m_name;
+		std::vector<std::unique_ptr<Component>> m_components;
+	};
 }
 
 

@@ -45,7 +45,7 @@ namespace JoyEngine
 			return m_resourceView.get();
 		}
 
-		void Lock()
+		void Map()
 		{
 			m_currentLockedArea = std::move(m_buffer->GetMappedPtr(0, m_size));
 		}
@@ -56,16 +56,16 @@ namespace JoyEngine
 			return static_cast<T*>(m_currentLockedArea->GetMappedPtr());
 		}
 
-		void Unlock()
+		void Unmap()
 		{
 			m_currentLockedArea = nullptr;
 		}
 
 		void SetData(T data)
 		{
-			Lock();
+			Map();
 			memcpy(GetPtr(), &data, sizeof(T));
-			Unlock();
+			Unmap();
 		}
 
 		~ConstantCpuBuffer() = default;

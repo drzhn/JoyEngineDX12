@@ -215,6 +215,7 @@ namespace JoyEngine
 
 
 	bool g_drawRaytracedImage = true;
+
 	void RenderManager::Update()
 	{
 		m_currentFrameIndex = m_swapChain->GetCurrentBackBufferIndex();
@@ -259,6 +260,8 @@ namespace JoyEngine
 
 			m_engineDataBuffer->Unlock();
 		}
+
+		UpdateObjectMatrices();
 
 		ID3D12DescriptorHeap* heaps[2]
 		{
@@ -397,7 +400,7 @@ namespace JoyEngine
 	void RenderManager::ProcessEngineBindings(
 		ID3D12GraphicsCommandList* commandList,
 		const std::map<uint32_t, EngineBindingType>& bindings,
-		const ModelMatrixData* modelMatrix,
+		const uint32_t* modelIndex,
 		const ViewProjectionMatrixData* viewProjectionMatrix
 	) const
 	{
@@ -408,14 +411,22 @@ namespace JoyEngine
 
 			switch (type)
 			{
-			case EngineBindingType::ModelMatrixData:
+			case EngineBindingType::ObjectIndexData:
 				{
-					ASSERT(modelMatrix != nullptr);
+					ASSERT(modelIndex != nullptr);
 					commandList->SetGraphicsRoot32BitConstants(
 						rootIndex,
-						sizeof(ModelMatrixData) / 4,
-						modelMatrix,
+						sizeof(uint32_t) / 4,
+						modelIndex,
 						0);
+					break;
+				}
+			case EngineBindingType::ModelMatrixData:
+				{
+					commandList->SetGraphicsRootDescriptorTable(
+						rootIndex,
+						EngineMaterialProvider::Get()->GetObjectMatricesDataView(m_currentFrameIndex)->GetGPUHandle()
+					);
 					break;
 				}
 			case EngineBindingType::ViewProjectionMatrixData:
@@ -438,6 +449,23 @@ namespace JoyEngine
 		}
 	}
 
+
+	void RenderManager::UpdateObjectMatrices() const
+	{
+		DynamicCpuBuffer<ObjectMatricesData>* objectMatrices = EngineMaterialProvider::Get()->GetObjectMatricesDataBuffer();
+		objectMatrices->Lock(m_currentFrameIndex);
+		ObjectMatricesData* data = objectMatrices->GetPtr();
+		for (auto const& sm : m_sharedMaterials)
+		{
+			for (const auto& mr : sm->GetMeshRenderers())
+			{
+				data->data[*mr->GetTransform()->GetIndex()] = mr->GetTransform()->GetModelMatrix();
+			}
+		}
+
+		objectMatrices->Unlock();
+	}
+
 	void RenderManager::RenderEntireSceneWithMaterials(
 		ID3D12GraphicsCommandList* commandList,
 		const ViewProjectionMatrixData* viewProjectionData
@@ -454,17 +482,13 @@ namespace JoyEngine
 				commandList->IASetVertexBuffers(0, 1, mr->GetMesh()->GetVertexBufferView());
 				commandList->IASetIndexBuffer(mr->GetMesh()->GetIndexBufferView());
 
-				for (auto param : mr->GetMaterial()->GetRootParams())
+				for (const auto param : mr->GetMaterial()->GetRootParams())
 				{
 					const uint32_t index = param.first;
 					GraphicsUtils::AttachViewToGraphics(commandList, index, param.second);
 				}
 
-				ModelMatrixData modelMatrix = {
-					.model = mr->GetTransform()->GetModelMatrix()
-				};
-
-				ProcessEngineBindings(commandList, sm->GetGraphicsPipeline()->GetEngineBindings(), &modelMatrix, viewProjectionData);
+				ProcessEngineBindings(commandList, sm->GetGraphicsPipeline()->GetEngineBindings(), mr->GetTransform()->GetIndex(), viewProjectionData);
 
 				commandList->DrawIndexedInstanced(
 					mr->GetMesh()->GetIndexCount(),

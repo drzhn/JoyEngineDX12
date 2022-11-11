@@ -6,6 +6,7 @@
 #include "DescriptorManager/DescriptorManager.h"
 #include "EngineMaterialProvider/EngineMaterialProvider.h"
 #include "ResourceManager/Material.h"
+#include "SceneManager/Transform.h"
 #include "Utils/GraphicsUtils.h"
 #include "Utils/Log.h"
 #include "Utils/TimeCounter.h"
@@ -260,6 +261,7 @@ namespace JoyEngine
 						.b_uv = vertices[indices[i * 3 + 1]].texCoord,
 						.c_uv = vertices[indices[i * 3 + 2]].texCoord,
 						.materialIndex = mr->GetMaterial()->GetMaterialIndex(),
+						.objectIndex = *mr->GetTransform()->GetIndex(),
 						.a_normal = vertices[indices[i * 3 + 0]].normal,
 						.b_normal = vertices[indices[i * 3 + 1]].normal,
 						.c_normal = vertices[indices[i * 3 + 2]].normal,

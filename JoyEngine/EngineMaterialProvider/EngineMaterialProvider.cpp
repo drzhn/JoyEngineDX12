@@ -106,6 +106,11 @@ namespace JoyEngine
 			m_materials = std::make_unique<ConstantCpuBuffer<StandardMaterialData>>();
 		}
 
+		// Object matrices data that we will pass to GPU
+		{
+			m_objectMatrices = std::make_unique<DynamicCpuBuffer<ObjectMatricesData>>(3);
+		}
+
 
 		//// GBuffer write shader
 		//{
@@ -490,11 +495,11 @@ namespace JoyEngine
 
 	void EngineMaterialProvider::SetMaterialData(uint32_t index, uint32_t diffuseTextureIndex) const
 	{
-		m_materials->Lock();
+		m_materials->Map();
 
 		StandardMaterialData* dataPtr = m_materials->GetPtr();
 		dataPtr->data[index].diffuseTextureIndex = diffuseTextureIndex;
 
-		m_materials->Unlock();
+		m_materials->Unmap();
 	}
 }

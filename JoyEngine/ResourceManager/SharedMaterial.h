@@ -13,6 +13,7 @@ namespace JoyEngine
 
 	enum class EngineBindingType
 	{
+		ObjectIndexData,
 		ModelMatrixData,
 		ViewProjectionMatrixData,
 		EngineData,

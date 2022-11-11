@@ -2,14 +2,14 @@
 #define TRANSFORM_H
 
 #include <glm/glm.hpp>
-#include <glm/gtc/quaternion.hpp> 
+#include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
 
 
 namespace JoyEngine
 {
-
-	class Transform {
+	class Transform
+	{
 	public:
 		Transform();
 
@@ -23,19 +23,21 @@ namespace JoyEngine
 		[[nodiscard]] glm::vec3 GetPosition() const noexcept;
 		[[nodiscard]] glm::quat GetRotation() const noexcept;
 		[[nodiscard]] glm::vec3 GetScale() const noexcept;
-		[[nodiscard]] glm::mat4 GetModelMatrix() const;
 		[[nodiscard]] glm::vec3 GetForward() const noexcept;
 		[[nodiscard]] glm::vec3 GetUp() const noexcept;
 		[[nodiscard]] glm::vec3 GetRight() const noexcept;
 
-	private:
-		void UpdateModelMatrix();
+		[[nodiscard]] uint32_t const* GetIndex() const noexcept;
+
+		[[nodiscard]] glm::mat4 GetModelMatrix() const noexcept;
 	private:
 		glm::vec3 m_localPosition;
 		glm::quat m_localRotation;
 		glm::vec3 m_localScale;
 
-		glm::mat4 m_modelMatrix;
+		const uint32_t m_index = 0;
+
+		static uint32_t m_currentIndex; // TODO: Index constantly increasing. Make object pool
 	};
 }
 

@@ -3,8 +3,9 @@
 Texture2D diffuse : register(t0);
 Texture2D normal : register(t1);
 SamplerState textureSampler : register(s0);
-ConstantBuffer<ModelMatrixData> modelData : register(b0);
+ConstantBuffer<ObjectIndexData> objectIndex : register(b0);
 ConstantBuffer<ViewProjectionMatrixData> viewProjectionData : register(b1);
+ConstantBuffer<ObjectMatricesData> objectMatricesData : register(b2);
 
 
 struct PSInput
@@ -30,7 +31,7 @@ inline float4 ComputeNonStereoScreenPos(float4 pos)
 PSInput VSMain(float3 position : POSITION, float3 color : COLOR, float3 normal: NORMAL, float2 uv : TEXCOORD)
 {
 	PSInput result;
-	float4x4 resMatrix = mul(viewProjectionData.proj, mul(viewProjectionData.view, modelData.model));
+	const float4x4 resMatrix = mul(viewProjectionData.proj, mul(viewProjectionData.view, objectMatricesData.data[objectIndex.data]));
 	result.position = mul(resMatrix, float4(position, 1));
 	result.clipPos = ComputeNonStereoScreenPos(result.position);
 	//result.clipPos.xy /= result.clipPos.w;

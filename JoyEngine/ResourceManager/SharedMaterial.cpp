@@ -66,11 +66,11 @@ namespace JoyEngine
 				const std::string& name = pair.first;
 				const ShaderInput& input = pair.second;
 
-				if (name == "modelData")
+				if (name == "objectIndex")
 				{
 					params[paramsIndex].InitAsConstants(
-						sizeof(ModelMatrixData) / 4, input.BindPoint, input.Space, input.Visibility);
-					m_engineBindings.insert({paramsIndex, EngineBindingType::ModelMatrixData});
+						sizeof(uint32_t) / 4, input.BindPoint, input.Space, input.Visibility);
+					m_engineBindings.insert({paramsIndex, EngineBindingType::ObjectIndexData});
 					paramsIndex++;
 				}
 				else if (name == "viewProjectionData")
@@ -86,6 +86,14 @@ namespace JoyEngine
 						sizeof(MipMapGenerationData) / 4, input.BindPoint, input.Space, input.Visibility);
 					//m_engineBindings.insert({ static_cast<uint32_t>(paramsIndex), ModelViewProjection });
 					m_rootIndices.insert({strHash(name.c_str()), paramsIndex});
+					paramsIndex++;
+				}
+				else if (name == "objectMatricesData") 
+				{
+					ranges[rangesIndex].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, input.BindPoint, input.Space, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
+					params[paramsIndex].InitAsDescriptorTable(1, &ranges[rangesIndex], input.Visibility);
+					m_engineBindings.insert({ paramsIndex, EngineBindingType::ModelMatrixData });
+					rangesIndex++;
 					paramsIndex++;
 				}
 				else

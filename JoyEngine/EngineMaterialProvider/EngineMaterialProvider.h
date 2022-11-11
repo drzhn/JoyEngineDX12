@@ -22,6 +22,9 @@ namespace JoyEngine
 		[[nodiscard]] ResourceHandle<SharedMaterial> GetGizmoAxisDrawerSharedMaterial() const noexcept { return m_gizmoAxisDrawerSharedMaterial; }
 		[[nodiscard]] ResourceView* GetNullTextureView() const noexcept { return m_nullTextureView.get(); }
 		[[nodiscard]] ResourceView* GetMaterialsDataView() const noexcept { return m_materials->GetView(); }
+		[[nodiscard]] ResourceView* GetObjectMatricesDataView(uint32_t index) const noexcept { return m_objectMatrices->GetView(index); }
+
+		DynamicCpuBuffer<ObjectMatricesData>* GetObjectMatricesDataBuffer() const noexcept { return m_objectMatrices.get(); }
 
 		void SetMaterialData(uint32_t index, uint32_t diffuseTextureIndex) const;
 
@@ -51,8 +54,9 @@ namespace JoyEngine
 
 		std::unique_ptr<ResourceView> m_nullTextureView;
 
-		// TODO this is temporary solution, I need to decide where to store textures, materials etc
-		std::unique_ptr<ConstantCpuBuffer<StandardMaterialData>> m_materials; 
+		std::unique_ptr<ConstantCpuBuffer<StandardMaterialData>> m_materials;
+
+		std::unique_ptr<DynamicCpuBuffer<ObjectMatricesData>> m_objectMatrices;
 
 		//ResourceHandle<SharedMaterial> m_gbufferWriteSharedMaterial;
 

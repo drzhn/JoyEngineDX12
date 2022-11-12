@@ -280,6 +280,7 @@
     <ClInclude Include="JoyEngine\d3dx12.h" />
     <ClInclude Include="JoyEngine\GameplayComponents\CameraBehaviour.h" />
     <ClInclude Include="JoyEngine\GameplayComponents\RoomBehaviour.h" />
+    <ClInclude Include="JoyEngine\JoyAssetHeaders.h" />
     <ClInclude Include="JoyEngine\MemoryManager\DeviceLinearAllocator.h" />
     <ClInclude Include="JoyEngine\RenderManager\ComputeDispatcher.h" />
     <ClInclude Include="JoyEngine\RenderManager\IRenderManager.h" />

@@ -156,6 +156,7 @@
     <ClCompile Include="..\..\ThirdParty\tinyobjloader\tiny_obj_loader.cc" />
     <ClCompile Include="EntryPoint.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
+    <ClCompile Include="TextureLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ModelLoader.h" />

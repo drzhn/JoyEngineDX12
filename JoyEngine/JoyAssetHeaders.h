@@ -11,6 +11,7 @@ struct MeshAssetHeader
 enum TextureAssetFormat
 {
 	RGBA8,
+	RGBA32
 };
 
 struct TextureAssetHeader
@@ -18,7 +19,7 @@ struct TextureAssetHeader
 	uint32_t width;
 	uint32_t height;
 	TextureAssetFormat format;
-	unsigned char* data;
+	uint32_t dataSize;
 };
 
 #endif // JOY_ASSET_HEADER_H

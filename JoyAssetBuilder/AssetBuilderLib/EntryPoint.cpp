@@ -4,11 +4,15 @@
 #include "ModelLoader.h"
 #include "TextureLoader.h"
 
+std::string errorMessage;
+
 ModelLoader* modelLoader = nullptr;
+TextureLoader* textureLoader = nullptr;
 
 extern "C" __declspec(dllexport) int __cdecl InitializeBuilder()
 {
 	modelLoader = new ModelLoader();
+	textureLoader = new TextureLoader();
 
 	std::cout << "Builder initialized" << std::endl;
 	return 0;
@@ -22,9 +26,6 @@ extern "C" __declspec(dllexport) int __cdecl TerminateBuilder()
 	return 0;
 }
 
-std::string errorMessage;
-
-std::vector<unsigned char> textureData;
 
 extern "C" __declspec(dllexport) int __cdecl BuildModel(
 	const char* modelFileName,
@@ -52,27 +53,22 @@ extern "C" __declspec(dllexport) int __cdecl BuildModel(
 
 extern "C" __declspec(dllexport) int __cdecl BuildTexture(
 	const char* textureFileName,
-	const void** textureDataPtr,
-	unsigned long long* textureDataSize,
-	uint32_t* textureWidth,
-	uint32_t* textureHeight,
-	uint32_t* textureType,
 	const char** errorMessageCStr)
 {
-	const std::string filename = std::string(textureFileName);
-	bool res = TextureLoader::LoadTexture(
-		filename,
-		textureData,
-		textureWidth,
-		textureHeight,
-		reinterpret_cast<TextureAssetFormat*>(textureType));
-	if (!res)
+	const std::string textureFilename = std::string(textureFileName);
+	const std::string dataFilename = textureFilename + ".data";
+
+	if (!textureLoader->LoadTexture(textureFilename, errorMessage))
 	{
 		*errorMessageCStr = errorMessage.c_str();
 		return 1;
 	}
-	*textureDataPtr = textureData.data();
-	*textureDataSize = textureData.size();
+
+	if (!textureLoader->WriteData(dataFilename, errorMessage))
+	{
+		*errorMessageCStr = errorMessage.c_str();
+		return 1;
+	}
 
 	return 0;
 }

@@ -54,9 +54,9 @@ namespace JoyAssetBuilder
             m_view.CollapseAll();
         }
 
-        private void GetDirsAndFiles(string path, TreeNode parentNode)
+        private void GetDirsAndFiles(string path, AssetTreeNode parentNode)
         {
-            TreeNode dirItem = new TreeNode(Path.GetFileName(path));
+            AssetTreeNode dirItem = new AssetTreeNode(AssetType.Folder, Path.GetFileName(path), m_materialsPath);
             //rootItem.SelectedImageKey = "Folder";
             dirItem.ImageKey = "Folder";
             if (parentNode == null)
@@ -91,7 +91,7 @@ namespace JoyAssetBuilder
                     case ".jpeg":
                     case ".hdr":
                     case ".tga":
-                    case ".dds":
+                    //case ".dds":
                         fileItem = new AssetTreeNode(AssetType.Texture, file, m_materialsPath);
                         break;
                     case ".mtl":
@@ -113,8 +113,10 @@ namespace JoyAssetBuilder
         public void BuildSelection()
         {
             if (m_currentSelected == null) return;
-            m_currentSelected.Build(out string resultMessage);
-            m_logBox.AppendText(resultMessage);
+            foreach (string resultMessage in m_currentSelected.Build())
+            {
+                m_logBox.AppendText(resultMessage);
+            }
         }
 
         public void SetSelection(TreeNode node)
@@ -127,8 +129,10 @@ namespace JoyAssetBuilder
             m_assetToBuilds.ForEach(x =>
             {
                 if (x.Built) return;
-                x.Build(out string resultMessage);
-                m_logBox.AppendText(resultMessage);
+                foreach (string resultMessage in x.Build())
+                {
+                    m_logBox.AppendText(resultMessage);
+                }
             });
         }
 
@@ -136,8 +140,10 @@ namespace JoyAssetBuilder
         {
             m_assetToBuilds.ForEach(x =>
             {
-                x.Build(out string resultMessage);
-                m_logBox.AppendText(resultMessage);
+                foreach (string resultMessage in x.Build())
+                {
+                    m_logBox.AppendText(resultMessage);
+                }
             });
         }
     }

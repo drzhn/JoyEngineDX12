@@ -11,7 +11,7 @@ namespace JoyAssetBuilder
 {
     interface IBuildable
     {
-        void Build(out string resultMessage);
+        IEnumerable<string> Build();
         bool Built { get; }
     }
 
@@ -52,7 +52,10 @@ namespace JoyAssetBuilder
                 _mBuilt = File.Exists(m_path + ".data");
             }
 
-            BackColor = _mBuilt ? okColor : errorColor;
+            if (m_type != AssetType.Folder)
+            {
+                BackColor = _mBuilt ? okColor : errorColor;
+            }
         }
 
         private void SetImage()
@@ -61,30 +64,47 @@ namespace JoyAssetBuilder
             SelectedImageKey = m_type.ToString();
         }
 
-        void IBuildable.Build(out string resultMessage)
+        public IEnumerable<string> Build()
         {
-            resultMessage = ""; // TODO remove later
+            string resultMessage;
             switch (m_type)
             {
                 case AssetType.Folder:
+
+                    foreach (TreeNode node in this.Nodes)
+                    {
+                        var buildable = node as IBuildable;
+                        if (buildable == null) continue;
+
+                        foreach (string result in buildable.Build())
+                        {
+                            yield return result;
+                        }
+                    }
                     break;
                 case AssetType.Model:
                     _mBuilt = ModelBuilder.BuildModel(m_path, m_materialsPath, out resultMessage);
+                    yield return resultMessage;
                     break;
                 case AssetType.Texture:
-                    _mBuilt = TextureBuilder.BuildTexture(m_path, out resultMessage);
+                    _mBuilt = TextureBuilder.BuildTexture(m_path, out  resultMessage);
+                    yield return resultMessage;
                     break;
                 //case AssetType.Shader:
                 //    _mBuilt = ShaderBuilder.Compile(m_path, out resultMessage);
                 //    break;
                 case AssetType.Material:
-                    _mBuilt = MaterialBuilder.BuildMaterial(m_path, out resultMessage);
+                    _mBuilt = MaterialBuilder.BuildMaterial(m_path, out  resultMessage);
+                    yield return resultMessage;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
-            BackColor = _mBuilt ? okColor : errorColor;
+            if (m_type != AssetType.Folder)
+            {
+                BackColor = _mBuilt ? okColor : errorColor;
+            }
         }
     }
 }

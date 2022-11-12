@@ -383,6 +383,9 @@
     <ClInclude Include="JoyEngine\Utils\ObjectPool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="JoyEngine\JoyAssetHeaders.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="JoyData\shaders\gbufferwrite.hlsl" />

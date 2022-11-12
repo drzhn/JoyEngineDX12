@@ -16,12 +16,6 @@ using Microsoft::WRL::ComPtr;
 
 namespace JoyEngine
 {
-	enum TextureType
-	{
-		RGBA_UNORM = 0,
-		RGB_FLOAT = 1
-	};
-
 	class EngineSamplersProvider
 	{
 	public:

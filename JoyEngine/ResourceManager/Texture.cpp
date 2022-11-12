@@ -9,6 +9,7 @@
 #include "MemoryManager/MemoryManager.h"
 #include "Utils/Assert.h"
 #include "DDS.h"
+#include "JoyAssetHeaders.h"
 #include "JoyEngine.h"
 
 using namespace DirectX;
@@ -236,12 +237,14 @@ namespace JoyEngine
 
 	void Texture::InitTextureFromFile(std::ifstream& textureStream) // TODO make this DDS compatible
 	{
-		TextureType type;
+		TextureAssetHeader header = {};
 
 		textureStream.seekg(0);
-		textureStream.read(reinterpret_cast<char*>(&m_width), sizeof(uint32_t));
-		textureStream.read(reinterpret_cast<char*>(&m_height), sizeof(uint32_t));
-		textureStream.read(reinterpret_cast<char*>(&type), sizeof(uint32_t));
+		textureStream.read(reinterpret_cast<char*>(&header), sizeof(TextureAssetHeader));
+
+		m_width = header.width;
+		m_height = header.height;
+		const auto type = header.format;
 
 		uint32_t mipWidth = m_width, mipHeight = m_height;
 
@@ -262,11 +265,11 @@ namespace JoyEngine
 
 		switch (type)
 		{
-		case RGBA_UNORM:
+		case RGBA8:
 			m_format = DXGI_FORMAT_R8G8B8A8_UNORM;
 			break;
-		case RGB_FLOAT:
-			m_format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+		case RGBA32:
+			m_format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 			break;
 		default:
 			ASSERT(false);
@@ -276,7 +279,7 @@ namespace JoyEngine
 		CreateImageViews();
 		MemoryManager::Get()->LoadDataToImage(
 			textureStream,
-			sizeof(uint32_t) + sizeof(uint32_t),
+			sizeof(TextureAssetHeader),
 			this,
 			m_mipLevels);
 	}

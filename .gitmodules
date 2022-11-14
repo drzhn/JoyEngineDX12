@@ -13,6 +13,3 @@
 [submodule "ThirdParty/tinyobjloader"]
 	path = ThirdParty/tinyobjloader
 	url = ../../tinyobjloader/tinyobjloader.git
-[submodule "ThirdParty/DirectXTex"]
-	path = ThirdParty/DirectXTex
-	url = ../../microsoft/DirectXTex.git

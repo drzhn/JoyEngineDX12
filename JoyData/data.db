@@ -74,22 +74,6 @@
       "path": "textures/DDSSample.dds"
     },
     {
-      "guid": "797b0023-1f05-4b37-a331-835903cfc005",
-      "path": "textures/Std_Skin_Head_Diffuse.jpg"
-    },
-    {
-      "guid": "028b0f63-ff0c-4c39-aee5-e13afb20e747",
-      "path": "textures/Std_Skin_Head_Normal.jpg"
-    },
-    {
-      "guid": "17a24dcb-72ae-4a6a-b4d6-5ddac79c77ff",
-      "path": "textures/Std_Skin_Head_SpecMask_invert.jpg"
-    },
-    {
-      "guid": "cd13654b-102a-4e8c-8f2a-d720b2ca0903",
-      "path": "textures/Std_Skin_Head_roughness.jpg"
-    },
-    {
       "guid": "9694ff4a-d639-4488-a421-c58494d6c56b",
       "path": "textures/Barce_Rooftop_C_8k.jpg"
     },

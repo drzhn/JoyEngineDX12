@@ -9,7 +9,7 @@
 class TextureLoader
 {
 public:
-	[[nodiscard]] bool LoadTexture(const std::string& filename, std::string& errorMessage);
+	[[nodiscard]] bool LoadTexture(const std::string& filePath, std::string& errorMessage);
 	[[nodiscard]] bool WriteData(const std::string& dataFilename, std::string& errorMessage) const;
 private:
 	struct TextureData

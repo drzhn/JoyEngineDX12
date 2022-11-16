@@ -8,7 +8,7 @@
 # Compiled Dynamic libraries
 *.so
 *.dylib
-*.dll
+# *.dll
 
 # Fortran module files
 *.mod
@@ -21,7 +21,7 @@
 *.lib
 
 # Executables
-*.exe
+# *.exe
 *.out
 *.app
 
@@ -33,8 +33,10 @@ JoyEngineDX_Debug.*
 JoyEngineDX_Release.*
 AssetBuilderLib.*
 JoyAssetBuilder.*
+Newtonsoft.Json.dll
 
 .idea/
 .vs/
 Temp/
+packages/
 JoyAssetBuilder/AssetBuilderGui/obj

@@ -40,8 +40,7 @@ namespace JoyEngine
 		void LoadDataToImage(
 			std::ifstream& stream,
 			uint64_t offset,
-			Texture* gpuImage,
-			uint32_t mipMapsCount = 1) const;
+			Texture* gpuImage) const;
 
 		void ReadbackDataFromBuffer(
 			void* ptr,

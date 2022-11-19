@@ -44,7 +44,7 @@ namespace JoyEngine
 
 		[[nodiscard]] DXGI_FORMAT GetFormat() const noexcept { return m_format; }
 	protected:
-		void CreateImage(bool allowRenderTarget, bool isDepthTarget, bool allowUnorderedAccess, uint32_t arraySize, uint32_t mipLevels = 1);
+		void CreateImageResource(bool allowRenderTarget, bool isDepthTarget, bool allowUnorderedAccess, uint32_t arraySize, uint32_t mipLevels = 1);
 
 	protected:
 		uint32_t m_width = 0;

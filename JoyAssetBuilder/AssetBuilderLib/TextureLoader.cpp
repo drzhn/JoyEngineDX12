@@ -40,12 +40,12 @@ bool TextureLoader::LoadTexture(const std::string& filePath, std::string& errorM
 	if (isHdr)
 	{
 		m_currentTextureData.m_header.format = BC6H_UF16;
-		command = "texconv.exe " + fullPath.generic_string() + " -m 0 -f BC6H_UF16 -y";
+		command = "texconv.exe " + fullPath.generic_string() + " -m 0 -f BC6H_UF16 -y ";
 	}
 	else
 	{
 		m_currentTextureData.m_header.format = BC1_UNORM;
-		command = "texconv.exe " + fullPath.generic_string() + " -m 0 -f BC1_UNORM -y";
+		command = "texconv.exe " + fullPath.generic_string() + " -m 0 -f BC1_UNORM -y ";
 	}
 
 	std::string output = exec(command.c_str());
@@ -79,8 +79,16 @@ bool TextureLoader::LoadTexture(const std::string& filePath, std::string& errorM
 	auto spacePos = info.find_first_of(' ');
 
 	m_currentTextureData.m_header.width = std::stoul(info.substr(0, xpos));
-	m_currentTextureData.m_header.height = std::stoul(info.substr(xpos + 1, commaPos - xpos));
-	m_currentTextureData.m_header.mipCount = std::stoul(info.substr(commaPos + 1, spacePos - commaPos));
+	if (commaPos != -1)
+	{
+		m_currentTextureData.m_header.height = std::stoul(info.substr(xpos + 1, commaPos - xpos));
+		m_currentTextureData.m_header.mipCount = std::stoul(info.substr(commaPos + 1, spacePos - commaPos));
+	}
+	else
+	{
+		m_currentTextureData.m_header.height = std::stoul(info.substr(xpos + 1, spacePos - xpos));
+		m_currentTextureData.m_header.mipCount = 1;
+	}
 	file.close();
 
 	if (!std::filesystem::remove(generatedFile))

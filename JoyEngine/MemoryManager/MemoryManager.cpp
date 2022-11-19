@@ -23,11 +23,11 @@
 #include "Utils/TimeCounter.h"
 
 #define GPU_BUFFER_ALLOCATION_SIZE 256*1024*1024 // 256 MB
-#define GPU_TEXTURE_ALLOCATION_SIZE 512*1024*1024 // 256 MB
+#define GPU_TEXTURE_ALLOCATION_SIZE 64*1024*1024 // 64 MB
 #define GPU_RT_DS_ALLOCATION_SIZE 32*1024*1024 // 128 MB
 
-#define CPU_UPLOAD_ALLOCATION_SIZE 256*1024*1024 // 64 MB
-#define CPU_READBACK_ALLOCATION_SIZE 256*1024*1024 // 64 MB
+#define CPU_UPLOAD_ALLOCATION_SIZE 256*1024*1024 // 256 MB
+#define CPU_READBACK_ALLOCATION_SIZE 256*1024*1024 // 256 MB
 
 
 namespace JoyEngine
@@ -110,60 +110,89 @@ namespace JoyEngine
 	void MemoryManager::LoadDataToImage(
 		std::ifstream& stream,
 		uint64_t offset,
-		Texture* gpuImage,
-		uint32_t mipMapsCount) const
+		Texture* gpuImage) const
 	{
-		uint64_t resourceSize = 0;
-		uint64_t rowSize = 0;
+		uint64_t resourceSize;
 		D3D12_RESOURCE_DESC resourceDesc = gpuImage->GetImage().Get()->GetDesc();
-		D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint;
+		std::array<D3D12_PLACED_SUBRESOURCE_FOOTPRINT, 24> footprints;
 		GraphicsManager::Get()->GetDevice()->GetCopyableFootprints(
 			&resourceDesc,
 			0,
-			1,
+			resourceDesc.MipLevels,
 			0,
-			&footprint,
+			footprints.data(),
 			nullptr,
-			&rowSize,
+			nullptr,
 			&resourceSize);
-
 		if (resourceSize > g_maxResourceSizeAllocated)
 		{
 			g_maxResourceSizeAllocated = resourceSize;
 		}
 
+		uint32_t bytesPer4x4Block = 16;
+
+		switch (resourceDesc.Format)
+		{
+		case DXGI_FORMAT_BC1_UNORM:
+		case DXGI_FORMAT_BC1_UNORM_SRGB:
+		case DXGI_FORMAT_BC1_TYPELESS:
+			bytesPer4x4Block = 8;
+			break;
+
+		case DXGI_FORMAT_BC6H_UF16:
+		case DXGI_FORMAT_BC6H_SF16:
+		case DXGI_FORMAT_BC6H_TYPELESS:
+			bytesPer4x4Block = 16;
+			break;
+		default:
+			ASSERT(false);
+		}
 
 		std::unique_ptr<BufferMappedPtr> ptr = m_uploadStagingBuffer->GetMappedPtr(0, resourceSize);
 		stream.clear();
 
 		stream.seekg(offset);
-		stream.read(static_cast<char*>(ptr->GetMappedPtr()), resourceSize);
+
+		for (uint32_t i = 0; i < resourceDesc.MipLevels; i++)
+		{
+			uint32_t mipDataOffset = footprints[i].Offset;
+
+			for (uint32_t y = 0; y < footprints[i].Footprint.Height / 4; y++)
+			{
+				uint32_t rowSize = footprints[i].Footprint.Width / 4 * bytesPer4x4Block;
+				stream.read(static_cast<char*>(ptr->GetMappedPtr()) + mipDataOffset, rowSize);
+				mipDataOffset += std::max(rowSize, footprints[i].Footprint.RowPitch);
+			}
+		}
 
 		m_queue->ResetForFrame();
 
 		const auto commandList = m_queue->GetCommandList(0);
 
+		for (uint32_t i = 0; i < resourceDesc.MipLevels; i++)
+		{
+			D3D12_TEXTURE_COPY_LOCATION src = {
+				m_uploadStagingBuffer->GetBufferResource().Get(),
+				D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT,
+				{
+					footprints[i]
+				}
+			};
 
-		D3D12_TEXTURE_COPY_LOCATION src = {
-			m_uploadStagingBuffer->GetBufferResource().Get(),
-			D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT,
-			{
-				footprint
-			}
-		};
 
+			D3D12_TEXTURE_COPY_LOCATION dst = {
+				gpuImage->GetImage().Get(),
+				D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX,
+				i
+			};
 
-		D3D12_TEXTURE_COPY_LOCATION dst = {
-			gpuImage->GetImage().Get(),
-			D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX,
-			0
-		};
+			commandList->CopyTextureRegion(
+				&dst,
+				0, 0, 0,
+				&src,
+				nullptr);
+		}
 
-		commandList->CopyTextureRegion(
-			&dst,
-			0, 0, 0,
-			&src,
-			nullptr);
 
 		CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
 			gpuImage->GetImage().Get(),
@@ -172,81 +201,6 @@ namespace JoyEngine
 		);
 		commandList->ResourceBarrier(1, &barrier);
 
-		ID3D12DescriptorHeap* heaps[2]
-		{
-			DescriptorManager::Get()->GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV),
-			DescriptorManager::Get()->GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER)
-		};
-		commandList->SetDescriptorHeaps(2, heaps);
-
-
-		if (mipMapsCount > 1)
-		{
-			std::vector<ResourceView> mipViews(4);
-
-			ResourceHandle<ComputePipeline> mipMapGenerationPipeline = EngineMaterialProvider::Get()->GetMipsGenerationComputePipeline();
-
-			commandList->SetComputeRootSignature(mipMapGenerationPipeline->GetRootSignature().Get());
-			commandList->SetPipelineState(mipMapGenerationPipeline->GetPipelineObject().Get());
-
-
-			GraphicsUtils::AttachViewToCompute(
-				commandList,
-				mipMapGenerationPipeline->GetBindingIndexByHash(strHash("SrcMip")),
-				gpuImage->GetSRV());
-
-			GraphicsUtils::AttachViewToCompute(
-				commandList,
-				mipMapGenerationPipeline->GetBindingIndexByHash(strHash("BilinearClamp")),
-				EngineSamplersProvider::GetLinearClampSampler());
-
-			uint32_t dispatchCount = ((mipMapsCount - 1) + 3) / 4;
-
-			for (uint32_t dispatchIndex = 0; dispatchIndex < dispatchCount; dispatchIndex++)
-			{
-				uint32_t mipLevelsToGenerate = (mipMapsCount - 1) - dispatchIndex * 4;
-				if (mipLevelsToGenerate > 4) mipLevelsToGenerate = 4;
-
-				for (uint32_t i = 0; i < mipLevelsToGenerate; i++)
-				{
-					uint32_t mipIndex = dispatchIndex * 4 + i + 1;
-					D3D12_UNORDERED_ACCESS_VIEW_DESC desc;
-					desc.Format = gpuImage->GetFormat();
-					desc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
-					desc.Texture2D = {
-						mipIndex,
-						0
-					};
-					mipViews.emplace(mipViews.begin() + i, desc, gpuImage->GetImage().Get());
-
-					GraphicsUtils::AttachViewToCompute(
-						commandList,
-						mipMapGenerationPipeline->GetBindingIndexByName("OutMip" + std::to_string(i + 1)), // I do not sorry
-						&mipViews[i]);
-				}
-
-
-				MipMapGenerationData generationData{
-					{gpuImage->GetWidth() >> (1 + (dispatchIndex * 4)), gpuImage->GetHeight() >> (1 + (dispatchIndex * 4))},
-					dispatchIndex * 4,
-					mipLevelsToGenerate
-				};
-
-				commandList->SetComputeRoot32BitConstants(
-					mipMapGenerationPipeline->GetBindingIndexByHash(strHash("MipMapGenerationData")),
-					sizeof(MipMapGenerationData) / 4,
-					&generationData,
-					0);
-
-				commandList->Dispatch(
-					(gpuImage->GetWidth() >> (1 + (dispatchIndex * 4))) / 8,
-					(gpuImage->GetHeight() >> (1 + (dispatchIndex * 4))) / 8,
-					1);
-
-				barrier = CD3DX12_RESOURCE_BARRIER::UAV(gpuImage->GetImage().Get());
-				commandList->ResourceBarrier(1, &barrier);
-			}
-		}
 		ASSERT_SUCC(commandList->Close());
 
 		m_queue->Execute(0);
@@ -255,8 +209,8 @@ namespace JoyEngine
 	}
 
 	void MemoryManager::ReadbackDataFromBuffer(
-		void* ptr, 
-		uint64_t bufferSize, 
+		void* ptr,
+		uint64_t bufferSize,
 		const Buffer* gpuBuffer) const
 	{
 		m_queue->ResetForFrame();
@@ -266,8 +220,8 @@ namespace JoyEngine
 		const D3D12_RESOURCE_STATES state = gpuBuffer->GetCurrentResourceState();
 
 		GraphicsUtils::Barrier(commandList, gpuBuffer->GetBufferResource().Get(),
-			state,
-			D3D12_RESOURCE_STATE_COPY_SOURCE);
+		                       state,
+		                       D3D12_RESOURCE_STATE_COPY_SOURCE);
 
 		commandList->CopyBufferRegion(
 			m_readbackStagingBuffer->GetBufferResource().Get(),
@@ -277,8 +231,8 @@ namespace JoyEngine
 			bufferSize);
 
 		GraphicsUtils::Barrier(commandList, gpuBuffer->GetBufferResource().Get(),
-			D3D12_RESOURCE_STATE_COPY_SOURCE,
-			state);
+		                       D3D12_RESOURCE_STATE_COPY_SOURCE,
+		                       state);
 
 		ASSERT_SUCC(commandList->Close());
 
@@ -348,7 +302,7 @@ namespace JoyEngine
 
 		return resource;
 	}
-	
+
 
 	void MemoryManager::LoadDataToBuffer(
 		std::ifstream& stream,

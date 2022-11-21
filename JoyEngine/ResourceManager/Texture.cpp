@@ -181,46 +181,6 @@ namespace JoyEngine
 		bool hasRawData = DataManager::Get()->HasRawData(guid);
 		auto textureStream = DataManager::Get()->GetFileStream(guid, hasRawData);
 
-		//textureStream.seekg(0);
-		//uint32_t ddsMagicNumber = 0;
-		//textureStream.read(reinterpret_cast<char*>(&ddsMagicNumber), sizeof(uint32_t));
-		//DDS_HEADER a = {};
-		//if (ddsMagicNumber == DDS_MAGIC)
-		//{
-		//	//DDS_HEADER header = {};
-		//	//textureStream.read(reinterpret_cast<char*>(&header), sizeof(DDS_HEADER));
-		//	//m_width = header.width;
-		//	//m_height = header.height;
-		//	//m_format = DXGI_FORMAT_BC1_UNORM;
-		//	////CreateImageResource(false, false, false, 1, 1);
-		//	//ID3D12Resource* resource = nullptr; // = m_texture.Get();
-		//	//uint32_t pitch = header.pitchOrLinearSize;
-		//	//// yes, i know i unload data two times.
-		//	//// TODO make special d3d12heap for intermediate data and allocate data there
-		//	//std::vector<char> data = DataManager::Get()->GetData(guid, false, 0);
-		//	//std::vector<D3D12_SUBRESOURCE_DATA> subresource;
-		//	//LoadDDSTextureFromMemory(
-		//	//	GraphicsManager::Get()->GetDevice(),
-		//	//	reinterpret_cast<uint8_t*>(data.data()),
-		//	//	data.size(),
-		//	//	&resource,
-		//	//	subresource
-		//	//);
-		//	//m_texture = resource;
-
-		//	//Texture::CreateImageViews();
-
-		//	//MemoryManager::Get()->LoadDataToImage(
-		//	//	textureStream,
-		//	//	sizeof(uint32_t) + sizeof(DDS_HEADER),
-		//	//	this,
-		//	//	m_mipLevels);
-		//}
-		//else
-		//{
-		//	InitTextureFromFile(textureStream);
-		//}
-
 		InitTextureFromFile(textureStream);
 	}
 
@@ -240,19 +200,33 @@ namespace JoyEngine
 
 	void Texture::InitTextureFromFile(std::ifstream& textureStream) // TODO make this DDS compatible
 	{
-		TextureAssetHeader header = {};
-
+		TextureAssetHeader textureAssetHeader = {};
 		textureStream.seekg(0);
-		textureStream.read(reinterpret_cast<char*>(&header), sizeof(TextureAssetHeader));
+		textureStream.read(reinterpret_cast<char*>(&textureAssetHeader), sizeof(TextureAssetHeader));
+		uint32_t offset = sizeof(TextureAssetHeader);
+		uint32_t ddsMagic = 0;
+		textureStream.read(reinterpret_cast<char*>(&ddsMagic), sizeof(uint32_t));
+		if (ddsMagic == DDS_MAGIC)
+		{
+			DDS_HEADER ddsHeader = {};
+			textureStream.read(reinterpret_cast<char*>(&ddsHeader), sizeof(DDS_HEADER));
+			offset += sizeof(uint32_t) + sizeof(DDS_HEADER);
+			if ((ddsHeader.ddspf.flags & DDS_FOURCC) && (MAKEFOURCC('D', 'X', '1', '0') == ddsHeader.ddspf.fourCC))
+			{
+				DDS_HEADER_DXT10 ddsHeaderDxt10 = {};
+				textureStream.read(reinterpret_cast<char*>(&ddsHeaderDxt10), sizeof(DDS_HEADER_DXT10));
+				offset += sizeof(DDS_HEADER_DXT10);
+			}
+		}
 
-		m_width = header.width;
-		m_height = header.height;
+		m_width = textureAssetHeader.width;
+		m_height = textureAssetHeader.height;
 		ASSERT((m_width & (m_width - 1)) == 0)
 		ASSERT((m_height & (m_height - 1)) == 0)
 
-		m_mipLevels = header.mipCount;
+		m_mipLevels = textureAssetHeader.mipCount;
 
-		switch (header.format)
+		switch (textureAssetHeader.format)
 		{
 		case RGBA8:
 			m_format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -272,8 +246,6 @@ namespace JoyEngine
 
 		CreateImageResource(false, false, false, 1, m_mipLevels);
 		CreateImageViews();
-
-		uint32_t offset = sizeof(TextureAssetHeader) + sizeof(uint32_t) + sizeof(DDS_HEADER);
 
 		MemoryManager::Get()->LoadDataToImage(
 			textureStream,

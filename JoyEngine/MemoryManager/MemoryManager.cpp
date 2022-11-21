@@ -32,7 +32,9 @@
 
 namespace JoyEngine
 {
-	uint64_t g_maxResourceSizeAllocated = 0;
+	uint64_t g_debugMaxResourceSizeAllocated = 0;
+
+	D3D12_PLACED_SUBRESOURCE_FOOTPRINT g_subresourceFootprints[24];
 
 	std::string ParseByteNumber(uint64_t bytes)
 	{
@@ -99,7 +101,7 @@ namespace JoyEngine
 
 	void MemoryManager::PrintStats() const
 	{
-		OutputDebugStringA(("Biggest resource allocated: " + ParseByteNumber(g_maxResourceSizeAllocated) + "\n").c_str());
+		OutputDebugStringA(("Biggest resource allocated: " + ParseByteNumber(g_debugMaxResourceSizeAllocated) + "\n").c_str());
 		OutputDebugStringA(("GPU buffer allocator: " + ParseAllocatorStats(m_allocators[DeviceAllocatorTypeGpuBuffer].get())).c_str());
 		OutputDebugStringA(("GPU textures allocator: " + ParseAllocatorStats(m_allocators[DeviceAllocatorTypeTextures].get())).c_str());
 		OutputDebugStringA(("GPU RT DS textures allocator: " + ParseAllocatorStats(m_allocators[DeviceAllocatorTypeRtDsTextures].get())).c_str());
@@ -114,19 +116,18 @@ namespace JoyEngine
 	{
 		uint64_t resourceSize;
 		D3D12_RESOURCE_DESC resourceDesc = gpuImage->GetImage().Get()->GetDesc();
-		std::array<D3D12_PLACED_SUBRESOURCE_FOOTPRINT, 24> footprints;
 		GraphicsManager::Get()->GetDevice()->GetCopyableFootprints(
 			&resourceDesc,
 			0,
 			resourceDesc.MipLevels,
 			0,
-			footprints.data(),
+			g_subresourceFootprints,
 			nullptr,
 			nullptr,
 			&resourceSize);
-		if (resourceSize > g_maxResourceSizeAllocated)
+		if (resourceSize > g_debugMaxResourceSizeAllocated)
 		{
-			g_maxResourceSizeAllocated = resourceSize;
+			g_debugMaxResourceSizeAllocated = resourceSize;
 		}
 
 		uint32_t bytesPer4x4Block = 16;
@@ -145,7 +146,7 @@ namespace JoyEngine
 			bytesPer4x4Block = 16;
 			break;
 		default:
-			ASSERT(false);
+			ASSERT(false); // TODO later maybe never
 		}
 
 		std::unique_ptr<BufferMappedPtr> ptr = m_uploadStagingBuffer->GetMappedPtr(0, resourceSize);
@@ -155,13 +156,13 @@ namespace JoyEngine
 
 		for (uint32_t i = 0; i < resourceDesc.MipLevels; i++)
 		{
-			uint32_t mipDataOffset = footprints[i].Offset;
+			uint64_t mipDataOffset = g_subresourceFootprints[i].Offset;
 
-			for (uint32_t y = 0; y < footprints[i].Footprint.Height / 4; y++)
+			for (uint32_t y = 0; y < g_subresourceFootprints[i].Footprint.Height / 4; y++)
 			{
-				uint32_t rowSize = footprints[i].Footprint.Width / 4 * bytesPer4x4Block;
+				uint32_t rowSize = g_subresourceFootprints[i].Footprint.Width / 4 * bytesPer4x4Block;
 				stream.read(static_cast<char*>(ptr->GetMappedPtr()) + mipDataOffset, rowSize);
-				mipDataOffset += std::max(rowSize, footprints[i].Footprint.RowPitch);
+				mipDataOffset += std::max(rowSize, g_subresourceFootprints[i].Footprint.RowPitch);
 			}
 		}
 
@@ -175,7 +176,7 @@ namespace JoyEngine
 				m_uploadStagingBuffer->GetBufferResource().Get(),
 				D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT,
 				{
-					footprints[i]
+					g_subresourceFootprints[i]
 				}
 			};
 
@@ -334,9 +335,9 @@ namespace JoyEngine
 		uint64_t bufferSize,
 		const Buffer* gpuBuffer) const
 	{
-		if (bufferSize > g_maxResourceSizeAllocated)
+		if (bufferSize > g_debugMaxResourceSizeAllocated)
 		{
-			g_maxResourceSizeAllocated = bufferSize;
+			g_debugMaxResourceSizeAllocated = bufferSize;
 		}
 
 		m_queue->ResetForFrame();

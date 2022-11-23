@@ -2,11 +2,12 @@
 #define DUMMY_MATERIAL_PROVIDER_H
 
 #include "Common/Singleton.h"
-#include "ResourceManager/Material.h"
+
+#include "CommonEngineStructs.h"
+#include "ResourceManager/ConstantCpuBuffer.h"
+#include "ResourceManager/DynamicCpuBuffer.h"
 #include "ResourceManager/SharedMaterial.h"
 #include "ResourceManager/ResourceView.h"
-#include "ResourceManager/Texture.h"
-#include "Utils/GUID.h"
 
 namespace JoyEngine
 {
@@ -24,7 +25,7 @@ namespace JoyEngine
 		[[nodiscard]] ResourceView* GetMaterialsDataView() const noexcept { return m_materials->GetView(); }
 		[[nodiscard]] ResourceView* GetObjectMatricesDataView(uint32_t index) const noexcept { return m_objectMatrices->GetView(index); }
 
-		DynamicCpuBuffer<ObjectMatricesData>* GetObjectMatricesDataBuffer() const noexcept { return m_objectMatrices.get(); }
+		[[nodiscard]] DynamicCpuBuffer<ObjectMatricesData>* GetObjectMatricesDataBuffer() const noexcept { return m_objectMatrices.get(); }
 
 		void SetMaterialData(uint32_t index, uint32_t diffuseTextureIndex) const;
 

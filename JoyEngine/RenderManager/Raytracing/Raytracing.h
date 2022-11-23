@@ -10,6 +10,7 @@
 #include "BufferSorter.h"
 #include "BVHConstructor.h"
 #include "RenderManager/ComputeDispatcher.h"
+#include "RenderManager/GBuffer.h"
 #include "ResourceManager/Mesh.h"
 #include "ResourceManager/ResourceHandle.h"
 
@@ -44,9 +45,7 @@ namespace JoyEngine
 
 		uint32_t m_trianglesLength = 0;
 
-		std::unique_ptr<UAVTexture> m_colorTexture;
-		std::unique_ptr<UAVTexture> m_positionsTexture;
-		std::unique_ptr<UAVTexture> m_normalsTexture;
+		std::unique_ptr<UAVGbuffer> m_gbuffer;
 		std::set<SharedMaterial*>& m_sceneSharedMaterials;
 
 		std::unique_ptr<DataBuffer<uint32_t>> m_keysBuffer;

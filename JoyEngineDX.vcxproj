@@ -225,6 +225,7 @@
     <ClCompile Include="JoyEngine\GameplayComponents\RoomBehaviour.cpp" />
     <ClCompile Include="JoyEngine\MemoryManager\DeviceLinearAllocator.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\ComputeDispatcher.cpp" />
+    <ClCompile Include="JoyEngine\RenderManager\GBuffer.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\Raytracing\BufferSorter.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\Raytracing\BVHConstructor.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\Raytracing\Raytracing.cpp" />
@@ -283,6 +284,7 @@
     <ClInclude Include="JoyEngine\JoyAssetHeaders.h" />
     <ClInclude Include="JoyEngine\MemoryManager\DeviceLinearAllocator.h" />
     <ClInclude Include="JoyEngine\RenderManager\ComputeDispatcher.h" />
+    <ClInclude Include="JoyEngine\RenderManager\GBuffer.h" />
     <ClInclude Include="JoyEngine\RenderManager\IRenderManager.h" />
     <ClInclude Include="JoyEngine\RenderManager\Raytracing\BufferSorter.h" />
     <ClInclude Include="JoyEngine\RenderManager\Raytracing\BVHConstructor.h" />

@@ -7,11 +7,10 @@
 #include "GraphicsManager/GraphicsManager.h"
 #include "RenderManager/RenderManager.h"
 #include "Utils/TimeCounter.h"
-
-using Microsoft::WRL::ComPtr;
-
 #include "ResourceManager/ResourceManager.h"
 #include "ResourceManager/SharedMaterial.h"
+
+using Microsoft::WRL::ComPtr;
 
 namespace JoyEngine
 {
@@ -86,7 +85,6 @@ namespace JoyEngine
 			};
 			m_nullTextureView = std::make_unique<ResourceView>(desc, nullptr);
 			ASSERT(m_nullTextureView->GetDescriptorIndex() == 0)
-
 
 			for (uint32_t i = 1; i < READONLY_TEXTURES_COUNT; i++)
 			{

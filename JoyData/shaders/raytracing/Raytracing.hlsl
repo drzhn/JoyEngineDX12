@@ -14,8 +14,8 @@ Texture2D<float4> textures[];
 SamplerState linearClampSampler;
 
 RWTexture2D<float4> colorTexture;
-RWTexture2D<float4> positionsTexture;
 RWTexture2D<float4> normalsTexture;
+RWTexture2D<float> depthTexture;
 
 struct Ray
 {
@@ -149,6 +149,17 @@ inline RaycastResult TraceRay(Ray ray)
 	return result;
 }
 
+inline float LinearEyeToDepth(float distance)
+{
+	const float zNear = engineData.cameraNear;
+	const float zFar = engineData.cameraFar;
+	const float x = 1 - zFar / zNear;
+	const float y = zFar / zNear;
+	const float z = x / zFar;
+	const float w = y / zFar;
+	return ((1.0 / distance) - w) / z;
+}
+
 [numthreads(32,32,1)]
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
@@ -181,8 +192,8 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 
 	const float hasResult = result.distance != MAX_FLOAT;
 
-	float4 color = textures[materials.data[materialIndex].diffuseTextureIndex].SampleLevel(linearClampSampler, uv,0);
+	float4 color = textures[materials.data[materialIndex].diffuseTextureIndex].SampleLevel(linearClampSampler, uv, 0);
 	colorTexture[id.xy] = float4(color.rgb, hasResult);
-	positionsTexture[id.xy] = float4((engineData.cameraWorldPos + ray.dir * result.distance) * hasResult, 1);
+	depthTexture[id.xy] = LinearEyeToDepth(result.distance);
 	normalsTexture[id.xy] = float4(normal * hasResult, 1);
 }

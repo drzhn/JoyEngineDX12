@@ -2,7 +2,6 @@
 #define MATERIAL_H
 
 #include <map>
-#include <string>
 #include <memory>
 #include <vector>
 
@@ -10,11 +9,9 @@
 #include "ResourceManager/Buffer.h"
 
 #include "ResourceManager/ResourceManager.h"
-#include "Utils/GUID.h"
+#include "ResourceView.h"
 
-#include <d3d12.h>
-#include "RenderManager/RenderManager.h"
-using Microsoft::WRL::ComPtr;
+#include "Utils/GUID.h"
 
 namespace JoyEngine
 {

@@ -1,6 +1,6 @@
 #include "Material.h"
-#include <vector>
 
+#include <vector>
 
 #include <rapidjson/document.h>
 

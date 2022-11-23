@@ -24,6 +24,7 @@
 #include "GraphicsManager/GraphicsManager.h"
 #include "EngineMaterialProvider/EngineMaterialProvider.h"
 #include "ResourceManager/DynamicCpuBuffer.h"
+#include "ResourceManager/Material.h"
 #include "SceneManager/Transform.h"
 
 #include "Utils/GraphicsUtils.h"

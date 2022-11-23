@@ -18,8 +18,8 @@
       "path": "models/male_head.obj"
     },
     {
-      "guid": "c1496bff-f383-4f46-97cc-bc9955f7f4cf",
-      "path": "models/Cube.obj"
+      "guid": "854767e3-9417-4303-ab5d-56de6a335128",
+      "path": "models/DefaultCube.obj"
     },
     {
       "guid": "47000776-d056-43a2-bacb-c3e54701294a",
@@ -400,6 +400,10 @@
     {
       "guid": "7c23ddc7-4f4d-4ce0-b3be-f1a308515e77",
       "path": "textures/vase_round_ddn.tga"
+    },
+    {
+      "guid": "b7d27f1a-006b-41fa-b10b-01b212ebfebe",
+      "path": "models/DefaultSphere.obj"
     }
   ]
 }

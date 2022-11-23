@@ -118,30 +118,7 @@ namespace JoyEngine
 
 		// Raytracing
 		{
-			m_colorTexture = std::make_unique<UAVTexture>(
-				m_width,
-				m_height,
-				m_mainColorFormat,
-				D3D12_RESOURCE_STATE_GENERIC_READ,
-				D3D12_HEAP_TYPE_DEFAULT
-			);
-
-			m_positionsTexture = std::make_unique<UAVTexture>(
-				m_width,
-				m_height,
-				m_mainColorFormat,
-				D3D12_RESOURCE_STATE_GENERIC_READ,
-				D3D12_HEAP_TYPE_DEFAULT
-			);
-
-			m_normalsTexture = std::make_unique<UAVTexture>(
-				m_width,
-				m_height,
-				m_mainColorFormat,
-				D3D12_RESOURCE_STATE_GENERIC_READ,
-				D3D12_HEAP_TYPE_DEFAULT
-			);
-
+			m_gbuffer = std::make_unique<UAVGbuffer>(m_width, m_height);
 
 			//shaders/raytracing/Raytracing.hlsl
 			const GUID raytracingShaderGuid = GUID::StringToGuid("b24e90ac-fcfa-4754-b0e5-8553b19e27ca");
@@ -320,9 +297,9 @@ namespace JoyEngine
 
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "engineData", engineDataResourceView);
 
-			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "colorTexture", m_colorTexture->GetUAV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "positionsTexture", m_positionsTexture->GetUAV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "normalsTexture", m_normalsTexture->GetUAV());
+			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "colorTexture", m_gbuffer->GetColorUAV());
+			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "normalsTexture", m_gbuffer->GetNormalsUAV());
+			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "depthTexture", m_gbuffer->GetDepthUAV());
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "textures", DescriptorManager::Get()->GetSRVHeapStartDescriptorHandle());
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "materials", EngineMaterialProvider::Get()->GetMaterialsDataView());
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "sortedTriangleIndices", m_triangleIndexBuffer->GetSRV());
@@ -333,7 +310,7 @@ namespace JoyEngine
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "triangleData", m_triangleDataBuffer->GetSRV());
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "linearClampSampler", EngineSamplersProvider::GetLinearWrapSampler());
 
-			GraphicsUtils::UAVBarrier(commandList, m_colorTexture->GetImage().Get());
+			m_gbuffer->BarrierToRead(commandList);
 		}
 
 		commandList->Dispatch((m_width / 32) + 1, (m_height / 32) + 1, 1);
@@ -347,7 +324,7 @@ namespace JoyEngine
 		commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		GraphicsUtils::AttachViewToGraphics(commandList, sm, "raytracingTexture", m_colorTexture->GetSRV());
+		GraphicsUtils::AttachViewToGraphics(commandList, sm, "raytracingTexture", m_gbuffer->GetColorSRV());
 		commandList->DrawInstanced(3, 1, 0, 0);
 	}
 

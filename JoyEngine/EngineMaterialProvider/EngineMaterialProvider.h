@@ -21,6 +21,9 @@ namespace JoyEngine
 		[[nodiscard]] ResourceHandle<SharedMaterial> GetStandardSharedMaterial() const noexcept { return m_standardSharedMaterial; }
 		[[nodiscard]] ResourceHandle<ComputePipeline> GetMipsGenerationComputePipeline() const noexcept { return m_generateMipsComputePipeline; }
 		[[nodiscard]] ResourceHandle<SharedMaterial> GetGizmoAxisDrawerSharedMaterial() const noexcept { return m_gizmoAxisDrawerSharedMaterial; }
+		[[nodiscard]] ResourceHandle<SharedMaterial> GetGBufferWriteSharedMaterial() const noexcept { return m_gbufferWriteSharedMaterial; }
+		[[nodiscard]] ResourceHandle<SharedMaterial> GetDeferredShadingProcessorSharedMaterial() const noexcept { return m_deferredShadingProcessorSharedMaterial; }
+
 		[[nodiscard]] ResourceView* GetNullTextureView() const noexcept { return m_nullTextureView.get(); }
 		[[nodiscard]] ResourceView* GetMaterialsDataView() const noexcept { return m_materials->GetView(); }
 		[[nodiscard]] ResourceView* GetObjectMatricesDataView(uint32_t index) const noexcept { return m_objectMatrices->GetView(index); }
@@ -29,7 +32,6 @@ namespace JoyEngine
 
 		void SetMaterialData(uint32_t index, uint32_t diffuseTextureIndex) const;
 
-		//[[nodiscard]] ResourceHandle<SharedMaterial> GetGBufferSharedMaterial() const noexcept { return m_gbufferWriteSharedMaterial; }
 		//[[nodiscard]] ResourceHandle<SharedMaterial> GetLightProcessingSharedMaterial() const noexcept { return m_lightProcessingSharedMaterial; }
 		//[[nodiscard]] ResourceHandle<SharedMaterial> GetDirectionLightProcessingSharedMaterial() const noexcept { return m_directionLightProcessingSharedMaterial; }
 		//[[nodiscard]] ResourceHandle<SharedMaterial> GetShadowProcessingSharedMaterial() const noexcept { return m_shadowProcessingSharedMaterial; }
@@ -53,13 +55,16 @@ namespace JoyEngine
 
 		ResourceHandle<SharedMaterial> m_gizmoAxisDrawerSharedMaterial;
 
+		ResourceHandle<SharedMaterial> m_gbufferWriteSharedMaterial;
+
+		ResourceHandle<SharedMaterial> m_deferredShadingProcessorSharedMaterial;
+
 		std::unique_ptr<ResourceView> m_nullTextureView;
 
 		std::unique_ptr<ConstantCpuBuffer<StandardMaterialData>> m_materials;
 
 		std::unique_ptr<DynamicCpuBuffer<ObjectMatricesData>> m_objectMatrices;
 
-		//ResourceHandle<SharedMaterial> m_gbufferWriteSharedMaterial;
 
 		//ResourceHandle<SharedMaterial> m_shadowProcessingSharedMaterial;
 
@@ -91,7 +96,6 @@ namespace JoyEngine
 		//ResourceHandle<SharedMaterial> m_ssaoAppendSharedMaterial;
 
 		//ResourceHandle<SharedMaterial> m_sslrPostProcessSharedMaterial;
-
 	};
 }
 

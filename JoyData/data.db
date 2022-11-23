@@ -404,6 +404,10 @@
     {
       "guid": "b7d27f1a-006b-41fa-b10b-01b212ebfebe",
       "path": "models/DefaultSphere.obj"
+    },
+    {
+      "guid": "e8f0a9b4-ddd9-4171-b78f-80a0fb474263",
+      "path": "shaders/deferredshadingprocessor.hlsl"
     }
   ]
 }

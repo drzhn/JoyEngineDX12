@@ -1,30 +1,43 @@
 #include "CommonEngineStructs.h"
 
+Texture2D diffuse : register(t0);
+Texture2D normal : register(t1);
+SamplerState textureSampler : register(s0);
+ConstantBuffer<ObjectIndexData> objectIndex : register(b0);
+ConstantBuffer<ViewProjectionMatrixData> viewProjectionData : register(b1);
+ConstantBuffer<ObjectMatricesData> objectMatricesData : register(b2);
+
+
 struct PSInput
 {
 	float4 position : SV_POSITION;
-	float4 worldPos: COLOR1;
-	float4 worldNormal: COLOR2;
-	float4 viewNormal: COLOR3;
+	float2 uv : TEXCOORD0;
+	float4 normal : COLOR1;
 };
 
 struct PSOutput
 {
-	float4 Position: SV_Target0;
-	float4 WordlNormal: SV_Target1;
-	float4 ViewNormal: SV_Target2;
+	float4 Color: SV_Target0;
+	float4 Normal: SV_Target1;
 };
 
-ConstantBuffer<MVP> mvp : register(b0);
+inline float4 ComputeNonStereoScreenPos(float4 pos)
+{
+	float4 o = pos * 0.5f;
+	o.xy = float2(o.x, o.y * -1) + o.w;
+	o.zw = pos.zw;
+	return o;
+}
 
-PSInput VSMain(float3 position : POSITION, float3 color : COLOR, float3 normal: NORMAL, float2 uv : TEXCOORD)
+PSInput VSMain(float3 position : POSITION, float3 color : COLOR, float3 normal : NORMAL, float2 uv : TEXCOORD)
 {
 	PSInput result;
-	float4x4 resMatrix = mul(mvp.projection, mul(mvp.view, mvp.model));
+
+	const float4x4 resMatrix = mul(viewProjectionData.proj, mul(viewProjectionData.view, objectMatricesData.data[objectIndex.data]));
+
 	result.position = mul(resMatrix, float4(position, 1));
-	result.worldPos = mul(mvp.model, float4(position, 1));
-	result.worldNormal = normalize(mul(mvp.model, float4(normal, 0)));
-	result.viewNormal = normalize(mul(mvp.view, mul(mvp.model, float4(normal, 0))));
+	result.normal = mul(resMatrix, float4(normal, 0));
+	result.uv = uv;
 
 	return result;
 }
@@ -32,8 +45,9 @@ PSInput VSMain(float3 position : POSITION, float3 color : COLOR, float3 normal: 
 PSOutput PSMain(PSInput input)
 {
 	PSOutput output;
-	output.Position = input.worldPos;
-	output.WordlNormal = float4(input.worldNormal.rgb, 1);
-	output.ViewNormal = float4(input.viewNormal.rgb, 1);
+
+	output.Color = diffuse.Sample(textureSampler, input.uv);
+	output.Normal = input.normal;
+
 	return output;
 }

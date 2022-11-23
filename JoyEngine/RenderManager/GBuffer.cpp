@@ -19,7 +19,7 @@ namespace JoyEngine
 			RenderManager::GetGBufferFormat(),
 			D3D12_RESOURCE_STATE_GENERIC_READ,
 			D3D12_HEAP_TYPE_DEFAULT
-			);
+		);
 
 		m_normalsTexture = std::make_unique<UAVTexture>(
 			m_width,
@@ -27,7 +27,7 @@ namespace JoyEngine
 			RenderManager::GetGBufferFormat(),
 			D3D12_RESOURCE_STATE_GENERIC_READ,
 			D3D12_HEAP_TYPE_DEFAULT
-			);
+		);
 
 		m_depthTexture = std::make_unique<UAVTexture>(
 			m_width,
@@ -35,7 +35,7 @@ namespace JoyEngine
 			RenderManager::GetDepthUAVFormat(),
 			D3D12_RESOURCE_STATE_GENERIC_READ,
 			D3D12_HEAP_TYPE_DEFAULT
-			);
+		);
 	}
 
 	void UAVGbuffer::BarrierToRead(ID3D12GraphicsCommandList* commandList)
@@ -47,6 +47,9 @@ namespace JoyEngine
 
 	void UAVGbuffer::BarrierToWrite(ID3D12GraphicsCommandList* commandList)
 	{
+		GraphicsUtils::UAVBarrier(commandList, m_colorTexture->GetImage().Get());
+		GraphicsUtils::UAVBarrier(commandList, m_normalsTexture->GetImage().Get());
+		GraphicsUtils::UAVBarrier(commandList, m_depthTexture->GetImage().Get());
 	}
 
 	RTVGbuffer::RTVGbuffer(uint32_t width, uint32_t height) : AbstractGBuffer(width, height)
@@ -57,7 +60,7 @@ namespace JoyEngine
 			RenderManager::GetGBufferFormat(),
 			D3D12_RESOURCE_STATE_GENERIC_READ,
 			D3D12_HEAP_TYPE_DEFAULT
-			);
+		);
 
 		m_normalsTexture = std::make_unique<RenderTexture>(
 			m_width,
@@ -65,7 +68,7 @@ namespace JoyEngine
 			RenderManager::GetGBufferFormat(),
 			D3D12_RESOURCE_STATE_GENERIC_READ,
 			D3D12_HEAP_TYPE_DEFAULT
-			);
+		);
 
 		m_depthTexture = std::make_unique<DepthTexture>(
 			m_width,
@@ -73,14 +76,26 @@ namespace JoyEngine
 			RenderManager::GetDepthFormat(),
 			D3D12_RESOURCE_STATE_GENERIC_READ,
 			D3D12_HEAP_TYPE_DEFAULT
-			);
+		);
 	}
 
 	void RTVGbuffer::BarrierToRead(ID3D12GraphicsCommandList* commandList)
 	{
+		GraphicsUtils::Barrier(commandList, m_colorTexture->GetImage().Get(),
+		                       D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
+		GraphicsUtils::Barrier(commandList, m_normalsTexture->GetImage().Get(),
+		                       D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
+		GraphicsUtils::Barrier(commandList, m_depthTexture->GetImage().Get(),
+		                       D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_GENERIC_READ);
 	}
 
 	void RTVGbuffer::BarrierToWrite(ID3D12GraphicsCommandList* commandList)
 	{
+		GraphicsUtils::Barrier(commandList, m_colorTexture->GetImage().Get(),
+		                       D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		GraphicsUtils::Barrier(commandList, m_normalsTexture->GetImage().Get(),
+		                       D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		GraphicsUtils::Barrier(commandList, m_depthTexture->GetImage().Get(),
+		                       D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_DEPTH_WRITE);
 	}
 }

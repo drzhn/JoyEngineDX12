@@ -77,7 +77,6 @@ namespace JoyEngine
 
 		//m_currentFrameIndex = m_swapChain->GetCurrentBackBufferIndex();
 
-		// Create a RTV and a command allocator for each frame.
 		for (UINT n = 0; n < frameCount; n++)
 		{
 			ComPtr<ID3D12Resource> swapchainResource;
@@ -92,7 +91,7 @@ namespace JoyEngine
 				D3D12_HEAP_TYPE_DEFAULT);
 		}
 
-		m_hdrRenderTarget = std::make_unique<RenderTexture>(
+		m_mainColorRenderTarget = std::make_unique<RenderTexture>(
 			m_width,
 			m_height,
 			hdrRTVFormat,
@@ -100,20 +99,13 @@ namespace JoyEngine
 			D3D12_HEAP_TYPE_DEFAULT
 		);
 
-		m_depthAttachment = std::make_unique<DepthTexture>(
-			m_width,
-			m_height,
-			DXGI_FORMAT_R32_TYPELESS,
-			D3D12_RESOURCE_STATE_DEPTH_WRITE,
-			D3D12_HEAP_TYPE_DEFAULT);
-
+		m_gbuffer = std::make_unique<RTVGbuffer>(m_width, m_height);
 
 		m_engineDataBuffer = std::make_unique<DynamicCpuBuffer<EngineData>>(frameCount);
 
-
 		m_tonemapping = std::make_unique<Tonemapping>(
 			m_width, m_height,
-			m_hdrRenderTarget.get(),
+			m_mainColorRenderTarget.get(),
 			hdrRTVFormat, swapchainFormat, depthFormat);
 
 		m_raytracing = std::make_unique<Raytracing>(
@@ -225,22 +217,19 @@ namespace JoyEngine
 
 		m_queue->ResetForFrame(m_currentFrameIndex);
 
-
 		const auto commandList = m_queue->GetCommandList(m_currentFrameIndex);
 
 		auto swapchainResource = m_swapchainRenderTargets[m_currentFrameIndex]->GetImage().Get();
-		auto hdrRTVResource = m_hdrRenderTarget->GetImage().Get();
-		auto depthResource = m_depthAttachment->GetImage().Get();
+		auto hdrRTVResource = m_mainColorRenderTarget->GetImage().Get();
 
-		auto dsvHandle = m_depthAttachment->GetDSV()->GetCPUHandle();
-		auto ldrRTVHandle = m_swapchainRenderTargets[m_currentFrameIndex]->GetRTV()->GetCPUHandle();
-		auto hdrRTVHandle = m_hdrRenderTarget->GetRTV()->GetCPUHandle();
+		auto swapchainRTVHandle = m_swapchainRenderTargets[m_currentFrameIndex]->GetRTV()->GetCPUHandle();
+		auto hdrRTVHandle = m_mainColorRenderTarget->GetRTV()->GetCPUHandle();
 
 		ASSERT(m_currentCamera != nullptr);
 		const glm::mat4 mainCameraViewMatrix = m_currentCamera->GetViewMatrix();
 		const glm::mat4 mainCameraProjMatrix = m_currentCamera->GetProjMatrix();
 
-		ViewProjectionMatrixData viewProjectionMatrixData = {
+		ViewProjectionMatrixData mainCameraMatrixVP = {
 			.view = mainCameraViewMatrix,
 			.proj = mainCameraProjMatrix
 		};
@@ -274,18 +263,53 @@ namespace JoyEngine
 		// Set main viewport-scissor rects
 		GraphicsUtils::SetViewportAndScissor(commandList, m_width, m_height);
 
-		//Drawing main color
+		//Drawing G-Buffer
+		{
+			m_gbuffer->BarrierToWrite(commandList);
+
+			D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[2] = {
+				m_gbuffer->GetColorRTV()->GetCPUHandle(),
+				m_gbuffer->GetNormalsRTV()->GetCPUHandle(),
+			};
+			auto dsvHandle = m_gbuffer->GetDepthDSV()->GetCPUHandle();
+
+			commandList->OMSetRenderTargets(
+				2,
+				rtvHandles,
+				FALSE, &dsvHandle);
+
+			constexpr float clearColor[] = {0.0f, 0.0f, 0.0f, 0.0f};
+			commandList->ClearRenderTargetView(rtvHandles[0], clearColor, 0, nullptr);
+			commandList->ClearRenderTargetView(rtvHandles[1], clearColor, 0, nullptr);
+			commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+
+			RenderSceneForSharedMaterial(commandList, &mainCameraMatrixVP, EngineMaterialProvider::Get()->GetGBufferWriteSharedMaterial());
+
+			m_gbuffer->BarrierToRead(commandList);
+		}
+
+		// Deferred shading 
 		{
 			commandList->OMSetRenderTargets(
 				1,
 				&hdrRTVHandle,
-				FALSE, &dsvHandle);
+				FALSE, nullptr);
 
-			constexpr float clearColor[] = {0.0f, 0.2f, 0.4f, 1.0f};
-			commandList->ClearRenderTargetView(hdrRTVHandle, clearColor, 0, nullptr);
-			commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+			const auto& sm = EngineMaterialProvider::Get()->GetDeferredShadingProcessorSharedMaterial();
 
-			RenderEntireSceneWithMaterials(commandList, &viewProjectionMatrixData);
+			commandList->SetPipelineState(sm->GetGraphicsPipeline()->GetPipelineObject().Get());
+			commandList->SetGraphicsRootSignature(sm->GetGraphicsPipeline()->GetRootSignature().Get());
+
+			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+			GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "colorTexture", m_gbuffer->GetColorSRV());
+			GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "normalsTexture", m_gbuffer->GetNormalsSRV());
+			//GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "depthTexture", m_gbuffer->GetDepthSRV());
+
+			commandList->DrawIndexedInstanced(
+				3,
+				1,
+				0, 0, 0);
 		}
 
 		if (g_drawRaytracedImage)
@@ -294,28 +318,57 @@ namespace JoyEngine
 
 			m_raytracing->DebugDrawRaytracedImage(commandList);
 		}
+
 		// HDR->LDR
+		{
+			GraphicsUtils::Barrier(commandList,
+			                       hdrRTVResource,
+			                       D3D12_RESOURCE_STATE_RENDER_TARGET,
+			                       D3D12_RESOURCE_STATE_GENERIC_READ);
+			GraphicsUtils::Barrier(commandList,
+			                       swapchainResource,
+			                       D3D12_RESOURCE_STATE_PRESENT,
+			                       D3D12_RESOURCE_STATE_RENDER_TARGET);
 
-		GraphicsUtils::Barrier(commandList,
-		                       hdrRTVResource,
-		                       D3D12_RESOURCE_STATE_RENDER_TARGET,
-		                       D3D12_RESOURCE_STATE_GENERIC_READ);
-		GraphicsUtils::Barrier(commandList,
-		                       swapchainResource,
-		                       D3D12_RESOURCE_STATE_PRESENT,
-		                       D3D12_RESOURCE_STATE_RENDER_TARGET);
+			GraphicsUtils::SetViewportAndScissor(commandList, m_width, m_height);
 
-		GraphicsUtils::SetViewportAndScissor(commandList, m_width, m_height);
+			commandList->OMSetRenderTargets(
+				1,
+				&swapchainRTVHandle,
+				FALSE, nullptr);
 
-		commandList->OMSetRenderTargets(
-			1,
-			&ldrRTVHandle,
-			FALSE, nullptr);
+			m_tonemapping->Render(commandList, m_swapchainRenderTargets[m_currentFrameIndex].get());
 
-		m_tonemapping->Render(commandList, m_swapchainRenderTargets[m_currentFrameIndex].get());
 
-		//m_raytracing->DrawGizmo(commandList, &viewProjectionMatrixData);
+			DrawGui(commandList, &mainCameraMatrixVP);
 
+
+			GraphicsUtils::Barrier(commandList,
+			                       swapchainResource,
+			                       D3D12_RESOURCE_STATE_RENDER_TARGET,
+			                       D3D12_RESOURCE_STATE_PRESENT);
+			GraphicsUtils::Barrier(commandList,
+			                       hdrRTVResource,
+			                       D3D12_RESOURCE_STATE_GENERIC_READ,
+			                       D3D12_RESOURCE_STATE_RENDER_TARGET);
+		}
+
+
+		ASSERT_SUCC(commandList->Close());
+
+		m_queue->Execute(m_currentFrameIndex);
+
+		UINT presentFlags = GraphicsManager::Get()->GetTearingSupport() ? DXGI_PRESENT_ALLOW_TEARING : 0;
+
+		// Present the frame.
+		ASSERT_SUCC(m_swapChain->Present(0, presentFlags));
+
+		m_trianglesCount = 0;
+	}
+
+	void RenderManager::DrawGui(ID3D12GraphicsCommandList* commandList, const ViewProjectionMatrixData* viewProjectionData) const
+	{
+		// Draw axis gizmo
 		{
 			auto sm = EngineMaterialProvider::Get()->GetGizmoAxisDrawerSharedMaterial();
 
@@ -343,7 +396,7 @@ namespace JoyEngine
 			commandList->RSSetViewports(1, &viewport);
 			commandList->RSSetScissorRects(1, &scissorRect);
 
-			ProcessEngineBindings(commandList, sm->GetGraphicsPipeline()->GetEngineBindings(), nullptr, &viewProjectionMatrixData);
+			ProcessEngineBindings(commandList, sm->GetGraphicsPipeline()->GetEngineBindings(), nullptr, viewProjectionData);
 
 			commandList->DrawInstanced(
 				6,
@@ -352,33 +405,6 @@ namespace JoyEngine
 		}
 
 
-		DrawGui(commandList);
-
-
-		GraphicsUtils::Barrier(commandList,
-		                       swapchainResource,
-		                       D3D12_RESOURCE_STATE_RENDER_TARGET,
-		                       D3D12_RESOURCE_STATE_PRESENT);
-		GraphicsUtils::Barrier(commandList,
-		                       hdrRTVResource,
-		                       D3D12_RESOURCE_STATE_GENERIC_READ,
-		                       D3D12_RESOURCE_STATE_RENDER_TARGET);
-
-
-		ASSERT_SUCC(commandList->Close());
-
-		m_queue->Execute(m_currentFrameIndex);
-
-		UINT presentFlags = GraphicsManager::Get()->GetTearingSupport() ? DXGI_PRESENT_ALLOW_TEARING : 0;
-
-		// Present the frame.
-		ASSERT_SUCC(m_swapChain->Present(0, presentFlags));
-
-		m_trianglesCount = 0;
-	}
-
-	void RenderManager::DrawGui(ID3D12GraphicsCommandList* commandList) const
-	{
 		ImGui_ImplDX12_NewFrame();
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
@@ -497,6 +523,37 @@ namespace JoyEngine
 					0, 0, 0);
 				m_trianglesCount += mr->GetMesh()->GetIndexCount() / 3;
 			}
+		}
+	}
+
+	void RenderManager::RenderSceneForSharedMaterial(
+		ID3D12GraphicsCommandList* commandList,
+		const ViewProjectionMatrixData* viewProjectionData,
+		SharedMaterial* sharedMaterial
+	) const
+	{
+		commandList->SetPipelineState(sharedMaterial->GetGraphicsPipeline()->GetPipelineObject().Get());
+		commandList->SetGraphicsRootSignature(sharedMaterial->GetGraphicsPipeline()->GetRootSignature().Get());
+
+		for (const auto& mr : sharedMaterial->GetMeshRenderers())
+		{
+			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			commandList->IASetVertexBuffers(0, 1, mr->GetMesh()->GetVertexBufferView());
+			commandList->IASetIndexBuffer(mr->GetMesh()->GetIndexBufferView());
+
+			for (const auto param : mr->GetMaterial()->GetRootParams())
+			{
+				const uint32_t index = param.first;
+				GraphicsUtils::AttachViewToGraphics(commandList, index, param.second);
+			}
+
+			ProcessEngineBindings(commandList, sharedMaterial->GetGraphicsPipeline()->GetEngineBindings(), mr->GetTransform()->GetIndex(), viewProjectionData);
+
+			commandList->DrawIndexedInstanced(
+				mr->GetMesh()->GetIndexCount(),
+				1,
+				0, 0, 0);
+			m_trianglesCount += mr->GetMesh()->GetIndexCount() / 3;
 		}
 	}
 

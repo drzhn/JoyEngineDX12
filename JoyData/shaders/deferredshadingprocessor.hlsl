@@ -13,5 +13,10 @@ float4 VSMain(uint id : SV_VertexID) : SV_POSITION
 
 float4 PSMain(float4 position : SV_POSITION) : SV_Target
 {
-	return colorTexture.Load(float3(position.xy, 0));
+	float4 color =  colorTexture.Load(float3(position.xy, 0));
+	float3 worldNormal = normalsTexture.Load(float3(position.xy, 0)).rgb;
+	float3 lightDirection = float3(1, 1, 1);
+	color *= max(0.4, dot(worldNormal, lightDirection));
+
+	return color;
 }

@@ -67,6 +67,11 @@ namespace JoyEngine
 			return m_ptr;
 		}
 
+		T* Get() const
+		{
+			return m_ptr;
+		}
+
 		[[nodiscard]] bool Empty() const { return m_ptr == nullptr; }
 
 	private:

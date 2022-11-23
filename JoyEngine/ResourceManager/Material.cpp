@@ -21,7 +21,7 @@ namespace JoyEngine
 	Material::Material(GUID guid) :
 		Resource(guid),
 		m_materialIndex(s_currentMaterialIndex++),
-		m_sharedMaterial(EngineMaterialProvider::Get()->GetStandardSharedMaterial()) // We will only use standard material for serialized materials
+		m_sharedMaterial(EngineMaterialProvider::Get()->GetGBufferWriteSharedMaterial()) // We will only use standard material for serialized materials
 	{
 		rapidjson::Document json = DataManager::Get()->GetSerializedData(guid, material);
 
@@ -40,7 +40,7 @@ namespace JoyEngine
 	Material::Material(GUID guid, const std::map<std::string, std::string>& bindings, bool bindingsArePaths = false) :
 		Resource(guid),
 		m_materialIndex(s_currentMaterialIndex++),
-		m_sharedMaterial(EngineMaterialProvider::Get()->GetStandardSharedMaterial())
+		m_sharedMaterial(EngineMaterialProvider::Get()->GetGBufferWriteSharedMaterial())
 	{
 		InitMaterial(bindings, bindingsArePaths);
 	}

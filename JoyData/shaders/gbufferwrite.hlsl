@@ -36,7 +36,7 @@ PSInput VSMain(float3 position : POSITION, float3 color : COLOR, float3 normal :
 	const float4x4 resMatrix = mul(viewProjectionData.proj, mul(viewProjectionData.view, objectMatricesData.data[objectIndex.data]));
 
 	result.position = mul(resMatrix, float4(position, 1));
-	result.normal = mul(resMatrix, float4(normal, 0));
+	result.normal = normalize(mul(objectMatricesData.data[objectIndex.data], float4(normal, 0)));
 	result.uv = uv;
 
 	return result;

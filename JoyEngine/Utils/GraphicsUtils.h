@@ -16,6 +16,7 @@ namespace JoyEngine
 		static void AttachViewToGraphics(ID3D12GraphicsCommandList* commandList, uint32_t rootParameterIndex, D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle);
 		static void AttachViewToGraphics(ID3D12GraphicsCommandList* commandList, uint32_t rootParameterIndex, const ResourceView* view);
 		static void AttachViewToGraphics(ID3D12GraphicsCommandList* commandList, const ResourceHandle<GraphicsPipeline>& pipeline, const char* paramName, const ResourceView* view);
+		static void AttachViewToGraphics(ID3D12GraphicsCommandList* commandList, const GraphicsPipeline* pipeline, const char* paramName, const ResourceView* view);
 		static void AttachViewToCompute(ID3D12GraphicsCommandList* commandList, uint32_t rootParameterIndex, D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle);
 		static void AttachViewToCompute(ID3D12GraphicsCommandList* commandList, uint32_t rootParameterIndex, const ResourceView* view);
 		static void AttachViewToCompute(ID3D12GraphicsCommandList* commandList, const ResourceHandle<ComputePipeline>& pipeline, const char* paramName, D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle);

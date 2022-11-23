@@ -50,7 +50,7 @@ namespace JoyEngine
 
 		void Update();
 
-		void DrawGui(ID3D12GraphicsCommandList* commandList) const;
+		void DrawGui(ID3D12GraphicsCommandList* commandList, const ViewProjectionMatrixData* viewProjectionData) const;
 
 		void RegisterSharedMaterial(SharedMaterial*) override;
 
@@ -92,6 +92,7 @@ namespace JoyEngine
 			ID3D12GraphicsCommandList* commandList,
 			const ViewProjectionMatrixData* viewProjectionData
 		) const;
+		void RenderSceneForSharedMaterial(ID3D12GraphicsCommandList* commandList, const ViewProjectionMatrixData* viewProjectionData, SharedMaterial* sharedMaterial) const;
 
 		void ProcessEngineBindings(
 			ID3D12GraphicsCommandList* commandList,
@@ -119,26 +120,18 @@ namespace JoyEngine
 
 		std::array<std::unique_ptr<RenderTexture>, frameCount> m_swapchainRenderTargets;
 
-		std::unique_ptr<DepthTexture> m_depthAttachment;
-		std::unique_ptr<RenderTexture> m_hdrRenderTarget;
+		std::unique_ptr<RTVGbuffer> m_gbuffer;
+
+		std::unique_ptr<RenderTexture> m_mainColorRenderTarget;
 
 
 		std::unique_ptr<Tonemapping> m_tonemapping;
 		std::unique_ptr<Raytracing> m_raytracing;
-		//std::unique_ptr<Texture> m_renderTargetCopyAttachment;
-
-
-		//std::unique_ptr<RenderTexture> m_positionAttachment;
-		//std::unique_ptr<RenderTexture> m_worldNormalAttachment;
-		//std::unique_ptr<RenderTexture> m_viewNormalAttachment;
-		//std::unique_ptr<RenderTexture> m_lightingAttachment;
 
 		std::unique_ptr<DynamicCpuBuffer<EngineData>> m_engineDataBuffer;
 
-		//std::set<ParticleSystem*> m_particleSystems;
 		std::set<SharedMaterial*> m_sharedMaterials;
-		//std::set<Light*> m_lights;
-		//Light* m_directionLight;
+
 		Camera* m_currentCamera;
 
 		std::unique_ptr<CommandQueue> m_queue;
@@ -148,7 +141,7 @@ namespace JoyEngine
 		uint32_t m_height;
 
 		uint32_t m_imguiDescriptorIndex;
-		mutable  uint32_t m_trianglesCount = 0;
+		mutable uint32_t m_trianglesCount = 0;
 	};
 }
 

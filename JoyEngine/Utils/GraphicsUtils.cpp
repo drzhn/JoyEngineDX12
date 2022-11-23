@@ -78,6 +78,17 @@ namespace JoyEngine
 			pipeline->GetBindingIndexByHash(strHash(paramName)), view->GetGPUHandle());
 	}
 
+	void GraphicsUtils::AttachViewToGraphics(
+		ID3D12GraphicsCommandList* commandList,
+		const GraphicsPipeline* pipeline,
+		const char* paramName,
+		const ResourceView* view
+	)
+	{
+		commandList->SetGraphicsRootDescriptorTable(
+			pipeline->GetBindingIndexByHash(strHash(paramName)), view->GetGPUHandle());
+	}
+
 	void GraphicsUtils::AttachViewToCompute(
 		ID3D12GraphicsCommandList* commandList,
 		uint32_t rootParameterIndex,

@@ -135,7 +135,7 @@ namespace JoyEngine
 				});
 		}
 
-		// GBuffer write shader
+		// Deferred shading processing
 		{
 			const GUID deferredShadingProcessorShaderGuid = GUID::StringToGuid("e8f0a9b4-ddd9-4171-b78f-80a0fb474263"); //shaders/deferredshadingprocessor.hlsl
 			const GUID deferredShadingProcessorSharedMaterialGuid = GUID::Random();

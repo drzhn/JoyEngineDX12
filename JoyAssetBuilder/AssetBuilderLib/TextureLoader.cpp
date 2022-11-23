@@ -40,12 +40,12 @@ bool TextureLoader::LoadTexture(const std::string& filePath, std::string& errorM
 	if (isHdr)
 	{
 		m_currentTextureData.m_header.format = BC6H_UF16;
-		command = "texconv.exe " + fullPath.generic_string() + " -m 0 -f BC6H_UF16 -y ";
+		command = "texconv.exe " + fullPath.generic_string() + " -m 0 -f BC6H_UF16 -y -pow2";
 	}
 	else
 	{
 		m_currentTextureData.m_header.format = BC1_UNORM;
-		command = "texconv.exe " + fullPath.generic_string() + " -m 0 -f BC1_UNORM -y ";
+		command = "texconv.exe " + fullPath.generic_string() + " -m 0 -f BC1_UNORM -y -pow2";
 	}
 
 	std::string output = exec(command.c_str());

@@ -408,6 +408,18 @@
     {
       "guid": "e8f0a9b4-ddd9-4171-b78f-80a0fb474263",
       "path": "shaders/deferredshadingprocessor.hlsl"
+    },
+    {
+      "guid": "17663088-100d-4e78-8305-17b5818256db",
+      "path": "textures/sunset2.hdr"
+    },
+    {
+      "guid": "ea629227-9da1-45e7-99f7-cd4869dd775b",
+      "path": "textures/sunset3.hdr"
+    },
+    {
+      "guid": "7e43e76d-9d5f-4fc8-a8f1-c8ec0dce95ef",
+      "path": "shaders/skybox.hlsl"
     }
   ]
 }

@@ -177,6 +177,9 @@
     <ClCompile Include="JoyEngine\RenderManager\GBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="JoyEngine\RenderManager\Skybox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="JoyEngine\JoyEngine.h">
@@ -392,6 +395,9 @@
     <ClInclude Include="JoyEngine\RenderManager\GBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="JoyEngine\RenderManager\Skybox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="JoyData\shaders\gbufferwrite.hlsl" />
@@ -430,5 +436,6 @@
     <None Include="JoyData\shaders\raytracing\Raytracing.hlsl" />
     <None Include="JoyData\shaders\raytracing\debugImageCompose.hlsl" />
     <None Include="JoyData\shaders\deferredshadingprocessor.hlsl" />
+    <None Include="JoyData\shaders\skybox.hlsl" />
   </ItemGroup>
 </Project>

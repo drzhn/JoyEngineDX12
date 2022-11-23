@@ -13,6 +13,7 @@
 
 #include "CommonEngineStructs.h"
 #include "IRenderManager.h"
+#include "Skybox.h"
 #include "Common/Singleton.h"
 #include "ResourceManager/DynamicCpuBuffer.h"
 
@@ -82,24 +83,18 @@ namespace JoyEngine
 		[[nodiscard]] static DXGI_FORMAT GetSSAOFormat() noexcept { return ssaoFormat; }
 
 	private:
-		//void RenderEntireScene(
-		//	ID3D12GraphicsCommandList* commandList,
-		//	glm::mat4 view,
-		//	glm::mat4 proj
-		//) const;
 
 		void RenderEntireSceneWithMaterials(
 			ID3D12GraphicsCommandList* commandList,
 			const ViewProjectionMatrixData* viewProjectionData
 		) const;
-		void RenderSceneForSharedMaterial(ID3D12GraphicsCommandList* commandList, const ViewProjectionMatrixData* viewProjectionData, SharedMaterial* sharedMaterial) const;
 
-		void ProcessEngineBindings(
-			ID3D12GraphicsCommandList* commandList,
-			const std::map<uint32_t, EngineBindingType>& bindings,
-			const uint32_t* modelIndex,
-			const ViewProjectionMatrixData* viewProjectionMatrix
+		void RenderSceneForSharedMaterial(
+			ID3D12GraphicsCommandList* commandList, 
+			const ViewProjectionMatrixData* viewProjectionData, 
+			SharedMaterial* sharedMaterial
 		) const;
+
 		void UpdateObjectMatrices() const;
 
 		static void CopyRTVResource(ID3D12GraphicsCommandList* commandList, ID3D12Resource* rtvResource, ID3D12Resource* copyResource);
@@ -121,7 +116,7 @@ namespace JoyEngine
 		std::array<std::unique_ptr<RenderTexture>, frameCount> m_swapchainRenderTargets;
 
 		std::unique_ptr<RTVGbuffer> m_gbuffer;
-
+		std::unique_ptr<Skybox> m_skybox;
 		std::unique_ptr<RenderTexture> m_mainColorRenderTarget;
 
 

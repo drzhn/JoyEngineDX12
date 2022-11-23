@@ -1,6 +1,8 @@
 ﻿#include "GraphicsUtils.h"
 
+#include "CommonEngineStructs.h"
 #include "Common/HashDefs.h"
+#include "EngineMaterialProvider/EngineMaterialProvider.h"
 #include "ResourceManager/ResourceView.h"
 
 namespace JoyEngine
@@ -151,5 +153,58 @@ namespace JoyEngine
 		};
 		commandList->RSSetViewports(1, &viewport);
 		commandList->RSSetScissorRects(1, &scissorRect);
+	}
+
+	void GraphicsUtils::ProcessEngineBindings(
+		ID3D12GraphicsCommandList* commandList,
+		uint32_t frameIndex,
+		const std::map<uint32_t, EngineBindingType>& bindings,
+		const uint32_t* modelIndex,
+		const ViewProjectionMatrixData* viewProjectionMatrix
+	)
+	{
+		for (const auto& pair : bindings)
+		{
+			const auto type = pair.second;
+			const auto rootIndex = pair.first;
+
+			switch (type)
+			{
+			case EngineBindingType::ObjectIndexData:
+			{
+				ASSERT(modelIndex != nullptr);
+				commandList->SetGraphicsRoot32BitConstants(
+					rootIndex,
+					sizeof(uint32_t) / 4,
+					modelIndex,
+					0);
+				break;
+			}
+			case EngineBindingType::ModelMatrixData:
+			{
+				commandList->SetGraphicsRootDescriptorTable(
+					rootIndex,
+					EngineMaterialProvider::Get()->GetObjectMatricesDataView(frameIndex)->GetGPUHandle()
+				);
+				break;
+			}
+			case EngineBindingType::ViewProjectionMatrixData:
+			{
+				commandList->SetGraphicsRoot32BitConstants(
+					rootIndex,
+					sizeof(ViewProjectionMatrixData) / 4,
+					viewProjectionMatrix,
+					0);
+				break;
+			}
+			case EngineBindingType::EngineData:
+			{
+				//AttachViewToGraphics(commandList, rootIndex, m_engineDataBufferView.get());
+				break;
+			}
+			default:
+				ASSERT(false);
+			}
+		}
 	}
 }

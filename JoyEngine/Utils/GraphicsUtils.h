@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <d3d12.h>
 
+#include "CommonEngineStructs.h"
 #include "ResourceManager/SharedMaterial.h"
 
 namespace JoyEngine
@@ -24,6 +25,7 @@ namespace JoyEngine
 		static void Barrier(ID3D12GraphicsCommandList* commandList, ID3D12Resource* pResource, D3D12_RESOURCE_STATES stateBefore, D3D12_RESOURCE_STATES stateAfter);
 		static void UAVBarrier(ID3D12GraphicsCommandList* commandList, ID3D12Resource* pResource);
 		static void SetViewportAndScissor(ID3D12GraphicsCommandList* commandList, uint32_t width, uint32_t height);
+		static void ProcessEngineBindings(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, const std::map<uint32_t, EngineBindingType>& bindings, const uint32_t* modelIndex, const ViewProjectionMatrixData* viewProjectionMatrix);
 	};
 }
 #endif // GRAPHICS_UTILS_H

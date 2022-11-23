@@ -101,6 +101,8 @@ namespace JoyEngine
 
 		m_gbuffer = std::make_unique<RTVGbuffer>(m_width, m_height);
 
+		m_skybox = std::make_unique<Skybox>(m_gbuffer->GetColorSRV());
+
 		m_engineDataBuffer = std::make_unique<DynamicCpuBuffer<EngineData>>(frameCount);
 
 		m_tonemapping = std::make_unique<Tonemapping>(
@@ -310,6 +312,9 @@ namespace JoyEngine
 				3,
 				1,
 				0, 0, 0);
+
+			m_skybox->DrawSky(commandList, m_currentFrameIndex, &mainCameraMatrixVP);
+
 		}
 
 		if (g_drawRaytracedImage)
@@ -396,7 +401,7 @@ namespace JoyEngine
 			commandList->RSSetViewports(1, &viewport);
 			commandList->RSSetScissorRects(1, &scissorRect);
 
-			ProcessEngineBindings(commandList, sm->GetGraphicsPipeline()->GetEngineBindings(), nullptr, viewProjectionData);
+			GraphicsUtils::ProcessEngineBindings(commandList, m_currentFrameIndex, sm->GetGraphicsPipeline()->GetEngineBindings(), nullptr, viewProjectionData);
 
 			commandList->DrawInstanced(
 				6,
@@ -423,59 +428,6 @@ namespace JoyEngine
 		ImGui::Render();
 		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
 	}
-
-	void RenderManager::ProcessEngineBindings(
-		ID3D12GraphicsCommandList* commandList,
-		const std::map<uint32_t, EngineBindingType>& bindings,
-		const uint32_t* modelIndex,
-		const ViewProjectionMatrixData* viewProjectionMatrix
-	) const
-	{
-		for (const auto& pair : bindings)
-		{
-			const auto type = pair.second;
-			const auto rootIndex = pair.first;
-
-			switch (type)
-			{
-			case EngineBindingType::ObjectIndexData:
-				{
-					ASSERT(modelIndex != nullptr);
-					commandList->SetGraphicsRoot32BitConstants(
-						rootIndex,
-						sizeof(uint32_t) / 4,
-						modelIndex,
-						0);
-					break;
-				}
-			case EngineBindingType::ModelMatrixData:
-				{
-					commandList->SetGraphicsRootDescriptorTable(
-						rootIndex,
-						EngineMaterialProvider::Get()->GetObjectMatricesDataView(m_currentFrameIndex)->GetGPUHandle()
-					);
-					break;
-				}
-			case EngineBindingType::ViewProjectionMatrixData:
-				{
-					commandList->SetGraphicsRoot32BitConstants(
-						rootIndex,
-						sizeof(ViewProjectionMatrixData) / 4,
-						viewProjectionMatrix,
-						0);
-					break;
-				}
-			case EngineBindingType::EngineData:
-				{
-					//AttachViewToGraphics(commandList, rootIndex, m_engineDataBufferView.get());
-					break;
-				}
-			default:
-				ASSERT(false);
-			}
-		}
-	}
-
 
 	void RenderManager::UpdateObjectMatrices() const
 	{
@@ -515,7 +467,12 @@ namespace JoyEngine
 					GraphicsUtils::AttachViewToGraphics(commandList, index, param.second);
 				}
 
-				ProcessEngineBindings(commandList, sm->GetGraphicsPipeline()->GetEngineBindings(), mr->GetTransform()->GetIndex(), viewProjectionData);
+				GraphicsUtils::ProcessEngineBindings(
+					commandList,
+					m_currentFrameIndex,
+					sm->GetGraphicsPipeline()->GetEngineBindings(),
+					mr->GetTransform()->GetIndex(),
+					viewProjectionData);
 
 				commandList->DrawIndexedInstanced(
 					mr->GetMesh()->GetIndexCount(),
@@ -547,7 +504,12 @@ namespace JoyEngine
 				GraphicsUtils::AttachViewToGraphics(commandList, index, param.second);
 			}
 
-			ProcessEngineBindings(commandList, sharedMaterial->GetGraphicsPipeline()->GetEngineBindings(), mr->GetTransform()->GetIndex(), viewProjectionData);
+			GraphicsUtils::ProcessEngineBindings(
+				commandList, 
+				m_currentFrameIndex, 
+				sharedMaterial->GetGraphicsPipeline()->GetEngineBindings(), 
+				mr->GetTransform()->GetIndex(), 
+				viewProjectionData);
 
 			commandList->DrawIndexedInstanced(
 				mr->GetMesh()->GetIndexCount(),

@@ -8,8 +8,7 @@ namespace JoyEngine
 {
 	// we cannot use depth testing for paint skybox pixels because we cannot use UAVgbuffer.m_depthTexture as a depth target
 	// so we paint all pixels where color.a == 0;
-	Skybox::Skybox(ResourceView* colorTextureSRV):
-		m_colorTextureSRV(colorTextureSRV)
+	Skybox::Skybox()
 	{
 		m_skyboxTexture = ResourceManager::Get()->LoadResource<Texture>(GUID::StringToGuid("17663088-100d-4e78-8305-17b5818256db"));
 		m_skyboxMesh = ResourceManager::Get()->LoadResource<Mesh>(GUID::StringToGuid("b7d27f1a-006b-41fa-b10b-01b212ebfebe")); // DefaultSphere
@@ -36,7 +35,7 @@ namespace JoyEngine
 			});
 	}
 
-	void Skybox::DrawSky(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, const ViewProjectionMatrixData* viewProjectionData) const
+	void Skybox::DrawSky(ID3D12GraphicsCommandList* commandList, const ResourceView* colorTextureSrv, uint32_t frameIndex, const ViewProjectionMatrixData* viewProjectionData) const
 	{
 		commandList->SetPipelineState(m_skyboxPipeline->GetPipelineObject().Get());
 		commandList->SetGraphicsRootSignature(m_skyboxPipeline->GetRootSignature().Get());
@@ -54,7 +53,7 @@ namespace JoyEngine
 			viewProjectionData);
 
 		GraphicsUtils::AttachViewToGraphics(commandList, m_skyboxPipeline, "skyboxTexture", m_skyboxTexture->GetSRV());
-		GraphicsUtils::AttachViewToGraphics(commandList, m_skyboxPipeline, "gBufferColorTexture", m_colorTextureSRV);
+		GraphicsUtils::AttachViewToGraphics(commandList, m_skyboxPipeline, "gBufferColorTexture", colorTextureSrv);
 		GraphicsUtils::AttachViewToGraphics(commandList, m_skyboxPipeline, "textureSampler", EngineSamplersProvider::GetLinearClampSampler());
 
 		commandList->DrawIndexedInstanced(

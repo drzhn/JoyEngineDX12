@@ -101,7 +101,7 @@ namespace JoyEngine
 
 		m_gbuffer = std::make_unique<RTVGbuffer>(m_width, m_height);
 
-		m_skybox = std::make_unique<Skybox>(m_gbuffer->GetColorSRV());
+		m_skybox = std::make_unique<Skybox>();
 
 		m_engineDataBuffer = std::make_unique<DynamicCpuBuffer<EngineData>>(frameCount);
 
@@ -313,7 +313,7 @@ namespace JoyEngine
 				1,
 				0, 0, 0);
 
-			m_skybox->DrawSky(commandList, m_currentFrameIndex, &mainCameraMatrixVP);
+			m_skybox->DrawSky(commandList, m_gbuffer->GetColorSRV(), m_currentFrameIndex, &mainCameraMatrixVP);
 
 		}
 

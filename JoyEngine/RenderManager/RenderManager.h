@@ -69,10 +69,15 @@ namespace JoyEngine
 
 		void UnregisterCamera(Camera* camera) override;
 
-		float GetAspect() const noexcept override;
-		float GetWidth() const noexcept override;
-		float GetHeight() const noexcept override;
-		[[nodiscard]] uint32_t GetFrameCount() noexcept { return frameCount; }
+		[[nodiscard]] float GetAspect() const noexcept override;
+
+		[[nodiscard]] float GetWidth_f() const noexcept override;
+		[[nodiscard]] float GetHeight_f() const noexcept override;
+
+		[[nodiscard]] uint32_t GetWidth() const noexcept override;
+		[[nodiscard]] uint32_t GetHeight() const noexcept override;
+
+		[[nodiscard]] uint32_t GetFrameCount() const noexcept override { return frameCount; }
 
 		[[nodiscard]] static DXGI_FORMAT GetMainColorFormat() noexcept { return hdrRTVFormat; };
 		[[nodiscard]] static DXGI_FORMAT GetHdrRTVFormat() noexcept { return hdrRTVFormat; }
@@ -83,15 +88,14 @@ namespace JoyEngine
 		[[nodiscard]] static DXGI_FORMAT GetSSAOFormat() noexcept { return ssaoFormat; }
 
 	private:
-
 		void RenderEntireSceneWithMaterials(
 			ID3D12GraphicsCommandList* commandList,
 			const ViewProjectionMatrixData* viewProjectionData
 		) const;
 
 		void RenderSceneForSharedMaterial(
-			ID3D12GraphicsCommandList* commandList, 
-			const ViewProjectionMatrixData* viewProjectionData, 
+			ID3D12GraphicsCommandList* commandList,
+			const ViewProjectionMatrixData* viewProjectionData,
 			SharedMaterial* sharedMaterial
 		) const;
 

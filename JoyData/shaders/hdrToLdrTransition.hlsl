@@ -1,16 +1,16 @@
-Texture2D<float4> HdrTexture : register(t0);
-StructuredBuffer<float> AvgLum : register(t1);
+#include "CommonEngineStructs.h"
 
-static const float4 LUM_FACTOR = float4(0.299, 0.587, 0.114, 0);
-static const float MiddleGrey = 3.0f;
-static const float LumWhiteSqr = 9.0f;
+ConstantBuffer<HDRDownScaleConstants> Constants;
+Texture2D<float4> HdrTexture;
+StructuredBuffer<float> AvgLum;
+
 
 float4 ToneMapping(float4 HDRColor)
 {
 	// Find the luminance scale for the current pixel
-	float LScale = dot(HDRColor, LUM_FACTOR);
-	LScale *= MiddleGrey / AvgLum[0];
-	LScale = (LScale + LScale * LScale / LumWhiteSqr) / (1.0 + LScale);
+	float LScale = dot(HDRColor.rgb, Constants.LumFactor);
+	LScale *= Constants.MiddleGrey / AvgLum[0];
+	LScale = (LScale + LScale * LScale / Constants.LumWhiteSqr) / (1.0 + LScale);
 	// Apply the luminance scale to the pixels color
 	return HDRColor * LScale;
 }
@@ -47,11 +47,16 @@ float4 PSMain(PSInput input) : SV_Target
 
 	//color += BloomScale * BloomTexture.Sample(LinearSampler, screenPosition);
 
-	//float gamma = 2.2;
-	//color.rgb = pow(color.rgb, float3(1, 1, 1) * (1.0 / gamma));
+	if (Constants.UseSrgbConversion)
+	{
+		float gamma = 2.2;
+		color.rgb = pow(color.rgb, float3(1, 1, 1) * (1.0 / gamma));
+	}
 
-	color = ToneMapping(color);
-
+	if (Constants.UseTonemapping)
+	{
+		color = ToneMapping(color);
+	}
 
 	return color;
 }

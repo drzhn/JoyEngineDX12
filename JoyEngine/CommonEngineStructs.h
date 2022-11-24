@@ -173,8 +173,14 @@ struct HDRDownScaleConstants
 	UINT1 Domain;
 	// Number of groups dispached on the first pass
 	UINT1 GroupSize;
-	float Adaptation; // Adaptation factor
-	float fBloomThreshold; // Bloom threshold percentage
+
+	float AdaptationSpeed; // AdaptationSpeed factor
+	UINT1 UseSrgbConversion;
+	float MiddleGrey; // = 3.0f;
+	float LumWhiteSqr; // = 9.0f;
+
+	VEC3 LumFactor;
+	UINT1 UseTonemapping;
 };
 
 struct MipMapGenerationData

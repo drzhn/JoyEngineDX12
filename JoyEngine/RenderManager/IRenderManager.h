@@ -19,9 +19,13 @@ namespace JoyEngine
 		virtual void UnregisterDirectionLight(Light*) = 0;
 		virtual void RegisterCamera(Camera* camera) = 0;
 		virtual void UnregisterCamera(Camera* camera) = 0;
-		virtual float GetAspect() const noexcept = 0;
-		virtual float GetWidth() const noexcept = 0;
-		virtual float GetHeight() const noexcept = 0;
+		[[nodiscard]]virtual float GetAspect() const noexcept = 0;
+		[[nodiscard]]virtual float GetWidth_f() const noexcept = 0;
+		[[nodiscard]]virtual float GetHeight_f() const noexcept = 0;
+		[[nodiscard]]virtual uint32_t GetWidth() const noexcept = 0;
+		[[nodiscard]]virtual uint32_t GetHeight() const noexcept = 0;
+		[[nodiscard]]virtual uint32_t GetFrameCount() const noexcept = 0;
+
 	};
 }
 #endif // IRENDERMANAGER_H

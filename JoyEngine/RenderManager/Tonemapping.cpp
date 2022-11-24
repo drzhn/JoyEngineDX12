@@ -1,5 +1,6 @@
 ﻿#include "Tonemapping.h"
 
+#include "IRenderManager.h"
 #include "Common/HashDefs.h"
 #include "EngineMaterialProvider/EngineMaterialProvider.h"
 #include "ResourceManager/ResourceManager.h"
@@ -14,8 +15,7 @@
 namespace JoyEngine
 {
 	Tonemapping::Tonemapping(
-		uint32_t screenWidth,
-		uint32_t screenHeight,
+		IRenderManager* renderManager,
 		RenderTexture* hdrRenderTarget,
 		DXGI_FORMAT hdrRTVFormat,
 		DXGI_FORMAT ldrRTVFormat,
@@ -24,8 +24,8 @@ namespace JoyEngine
 		m_hdrRTVFormat(hdrRTVFormat),
 		m_ldrRTVFormat(ldrRTVFormat),
 		m_depthFormat(depthFormat),
-		m_screenWidth(screenWidth),
-		m_screenHeight(screenHeight),
+		m_screenWidth(renderManager->GetWidth()),
+		m_screenHeight(renderManager->GetHeight()),
 		m_hdrRenderTarget(hdrRenderTarget)
 	{
 		// Downscaling first pass
@@ -92,21 +92,27 @@ namespace JoyEngine
 		m_groupSize = static_cast<uint32_t>(m_screenWidth * m_screenHeight / 16.0f / 1024.0f) + 1;
 
 
-		const ::HDRDownScaleConstants downScaleConstants = {
-			glm::uvec2(m_screenWidth / 4, m_screenHeight / 4),
-			m_screenWidth * m_screenHeight / 16,
-			m_groupSize,
-			0.01f,
-			0.2f
+		m_constantsValues = {
+			.Res = glm::uvec2(m_screenWidth / 4, m_screenHeight / 4),
+			.Domain = m_screenWidth * m_screenHeight / 16,
+			.GroupSize = m_groupSize,
+			.AdaptationSpeed = 0.2f,
+			.UseSrgbConversion = false,
+			.MiddleGrey = 3.0f,
+			.LumWhiteSqr = 9.0f,
+			.LumFactor = glm::vec3(0.299f, 0.587f, 0.114f),
+			.UseTonemapping = true
 		};
 
-		m_constants = std::make_unique<ConstantCpuBuffer<::HDRDownScaleConstants>>(&downScaleConstants);
+		m_constantsBuffer = std::make_unique<DynamicCpuBuffer<HDRDownScaleConstants>>(renderManager->GetFrameCount());
+		for (uint32_t i = 0; i < renderManager->GetFrameCount(); i++)
+		{
+			UpdateConstants(i);
+		}
 	}
 
-	void Tonemapping::Render(ID3D12GraphicsCommandList* commandList, const RenderTexture* currentBackBuffer)
+	void Tonemapping::Render(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, const RenderTexture* currentBackBuffer) const
 	{
-		const auto ldrRTVHandle = currentBackBuffer->GetRTV()->GetCPUHandle();
-
 		GraphicsUtils::Barrier(commandList,
 			m_hdrLuminationBuffer->GetBuffer()->GetBufferResource().Get(),
 			D3D12_RESOURCE_STATE_GENERIC_READ,
@@ -127,7 +133,7 @@ namespace JoyEngine
 			GraphicsUtils::AttachViewToCompute(commandList, sm->GetBindingIndexByHash(strHash("AverageLum")), m_hdrLuminationBuffer->GetUAV());
 			GraphicsUtils::AttachViewToCompute(commandList, sm->GetBindingIndexByHash(strHash("HDRDownScale")), m_hrdDownScaledTexture->GetUAV());
 			GraphicsUtils::AttachViewToCompute(commandList, sm->GetBindingIndexByHash(strHash("HDRTex")), m_hdrRenderTarget->GetSRV());
-			GraphicsUtils::AttachViewToCompute(commandList, sm->GetBindingIndexByHash(strHash("Constants")), m_constants->GetView());
+			GraphicsUtils::AttachViewToCompute(commandList, sm->GetBindingIndexByHash(strHash("Constants")), m_constantsBuffer->GetView(frameIndex));
 
 			commandList->Dispatch(m_groupSize, 1, 1);
 		}
@@ -140,7 +146,7 @@ namespace JoyEngine
 
 			GraphicsUtils::AttachViewToCompute(commandList, sm->GetBindingIndexByHash(strHash("AverageLum")), m_hdrLuminationBuffer->GetUAV());
 			GraphicsUtils::AttachViewToCompute(commandList, sm->GetBindingIndexByHash(strHash("PrevAverageLum")), m_hdrPrevLuminationBuffer->GetUAV());
-			GraphicsUtils::AttachViewToCompute(commandList, sm->GetBindingIndexByHash(strHash("Constants")), m_constants->GetView());
+			GraphicsUtils::AttachViewToCompute(commandList, sm->GetBindingIndexByHash(strHash("Constants")), m_constantsBuffer->GetView(frameIndex));
 
 			commandList->Dispatch(m_groupSize, 1, 1);
 		}
@@ -166,11 +172,20 @@ namespace JoyEngine
 
 			GraphicsUtils::AttachViewToGraphics(commandList, sm->GetBindingIndexByHash(strHash("AvgLum")), m_hdrLuminationBuffer->GetSRV());
 			GraphicsUtils::AttachViewToGraphics(commandList, sm->GetBindingIndexByHash(strHash("HdrTexture")), m_hdrRenderTarget->GetSRV());
+			GraphicsUtils::AttachViewToGraphics(commandList, sm->GetBindingIndexByHash(strHash("Constants")), m_constantsBuffer->GetView(frameIndex));
 
 			commandList->DrawInstanced(
 				3,
 				1,
 				0, 0);
 		}
+	}
+
+	void Tonemapping::UpdateConstants(uint32_t frameIndex) const
+	{
+		m_constantsBuffer->Lock(frameIndex);
+		HDRDownScaleConstants* ptr = m_constantsBuffer->GetPtr();
+		*ptr = m_constantsValues;
+		m_constantsBuffer->Unlock();
 	}
 }

@@ -20,8 +20,8 @@ namespace JoyEngine
 	{
 		m_manager->RegisterCamera(this);
 		m_cameraUnit = CameraUnit(m_manager->GetAspect(),
-		                          m_manager->GetWidth(),
-		                          m_manager->GetHeight(),
+		                          m_manager->GetWidth_f(),
+		                          m_manager->GetHeight_f(),
 		                          CAMERA_FOV,
 		                          CAMERA_NEAR,
 		                          CAMERA_FAR

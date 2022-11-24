@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "CommonEngineStructs.h"
-#include "ResourceManager/ConstantCpuBuffer.h"
 #include "ResourceManager/DynamicCpuBuffer.h"
 #include "ResourceManager/ResourceHandle.h"
 #include "ResourceManager/SharedMaterial.h"
@@ -14,6 +13,7 @@
 
 namespace JoyEngine
 {
+	class IRenderManager;
 	class RenderTexture;
 	class ComputePipeline;
 	class SharedMaterial;
@@ -27,17 +27,17 @@ namespace JoyEngine
 	public:
 		Tonemapping() = delete;
 		explicit Tonemapping(
-			uint32_t screenWidth, 
-			uint32_t screenHeight, 
+			IRenderManager* renderManager,
 			RenderTexture* hdrRenderTarget,
-			DXGI_FORMAT hdrRTVFormat, 
-			DXGI_FORMAT ldrRTVFormat, 
+			DXGI_FORMAT hdrRTVFormat,
+			DXGI_FORMAT ldrRTVFormat,
 			DXGI_FORMAT depthFormat
 		);
 		~Tonemapping() = default;
 
-		void Render(ID3D12GraphicsCommandList* commandList, const RenderTexture* currentBackBuffer);
-
+		void Render(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, const RenderTexture* currentBackBuffer) const;
+		HDRDownScaleConstants* GetConstantsPtr() noexcept { return &m_constantsValues; }
+		void UpdateConstants(uint32_t frameIndex) const;
 	private:
 		ResourceHandle<ComputePipeline> m_hdrDownscaleFirstPassComputePipeline;
 		ResourceHandle<ComputePipeline> m_hdrDownscaleSecondPassComputePipeline;
@@ -47,7 +47,8 @@ namespace JoyEngine
 		std::unique_ptr<UAVGpuBuffer> m_hdrLuminationBuffer;
 		std::unique_ptr<UAVGpuBuffer> m_hdrPrevLuminationBuffer;
 
-		std::unique_ptr<ConstantCpuBuffer<HDRDownScaleConstants>> m_constants;
+		HDRDownScaleConstants m_constantsValues;
+		std::unique_ptr<DynamicCpuBuffer<HDRDownScaleConstants>> m_constantsBuffer;
 
 		DXGI_FORMAT m_hdrRTVFormat;
 		DXGI_FORMAT m_ldrRTVFormat;

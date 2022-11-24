@@ -60,7 +60,7 @@ void CSMain(uint3 groupId : SV_GroupID, uint3
 
 
 		// Calculate the adaptive luminance
-		float fAdaptedAverageLum = lerp(PrevAverageLum[0], fFinalLumValue, Constants.Adaptation);
+		float fAdaptedAverageLum = lerp(PrevAverageLum[0], fFinalLumValue, Constants.AdaptationSpeed);
 		// Store the final value
 		AverageLum[0] = fAdaptedAverageLum; // max(fAdaptedAverageLum, 0.0001);
 		PrevAverageLum[0] = fAdaptedAverageLum;

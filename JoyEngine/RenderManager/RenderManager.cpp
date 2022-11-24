@@ -106,7 +106,7 @@ namespace JoyEngine
 		m_engineDataBuffer = std::make_unique<DynamicCpuBuffer<EngineData>>(frameCount);
 
 		m_tonemapping = std::make_unique<Tonemapping>(
-			m_width, m_height,
+			this,
 			m_mainColorRenderTarget.get(),
 			hdrRTVFormat, swapchainFormat, depthFormat);
 
@@ -342,7 +342,7 @@ namespace JoyEngine
 				&swapchainRTVHandle,
 				FALSE, nullptr);
 
-			m_tonemapping->Render(commandList, m_swapchainRenderTargets[m_currentFrameIndex].get());
+			m_tonemapping->Render(commandList, m_currentFrameIndex, m_swapchainRenderTargets[m_currentFrameIndex].get());
 
 
 			DrawGui(commandList, &mainCameraMatrixVP);
@@ -424,6 +424,17 @@ namespace JoyEngine
 			ImGui::Text("Camera: %.3f %.3f %.3f", camPos.x, camPos.y, camPos.z);
 			ImGui::Checkbox("Draw raytraced image", &g_drawRaytracedImage);
 			ImGui::End();
+		}
+		ImGui::SetNextWindowPos({ 0, 150 });
+		{
+			HDRDownScaleConstants* constants = m_tonemapping->GetConstantsPtr();
+			ImGui::Begin("Tonemapping:");
+			ImGui::Checkbox("Use tonemapping", reinterpret_cast<bool*>(& (constants->UseTonemapping)));
+			ImGui::Checkbox("Use SRGB conversion", reinterpret_cast<bool*>(&(constants->UseSrgbConversion)));
+			ImGui::SliderFloat("MiddleGrey", &constants->MiddleGrey, 0.f, 10.f);
+			ImGui::SliderFloat("LumWhiteSqr", &constants->LumWhiteSqr, 0.f, 20.f);
+			ImGui::End();
+			m_tonemapping->UpdateConstants(m_currentFrameIndex);
 		}
 		ImGui::Render();
 		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
@@ -549,13 +560,23 @@ namespace JoyEngine
 		return static_cast<float>(m_width) / static_cast<float>(m_height);
 	}
 
-	float RenderManager::GetWidth() const noexcept
+	float RenderManager::GetWidth_f() const noexcept
 	{
 		return static_cast<float>(m_width);
 	}
 
-	float RenderManager::GetHeight() const noexcept
+	float RenderManager::GetHeight_f() const noexcept
 	{
 		return static_cast<float>(m_height);
+	}
+
+	uint32_t RenderManager::GetWidth() const noexcept
+	{
+		return m_width;
+	}
+
+	uint32_t RenderManager::GetHeight() const noexcept
+	{
+		return m_height;
 	}
 }

@@ -432,7 +432,7 @@ namespace JoyEngine
 			ImGui::Checkbox("Use tonemapping", reinterpret_cast<bool*>(& (constants->UseTonemapping)));
 			ImGui::Checkbox("Use SRGB conversion", reinterpret_cast<bool*>(&(constants->UseSrgbConversion)));
 			ImGui::SliderFloat("MiddleGrey", &constants->MiddleGrey, 0.f, 10.f);
-			ImGui::SliderFloat("LumWhiteSqr", &constants->LumWhiteSqr, 0.f, 20.f);
+			ImGui::SliderFloat("LumWhiteSqr", &constants->LumWhiteSqr, 0.f, 40.f);
 			ImGui::End();
 			m_tonemapping->UpdateConstants(m_currentFrameIndex);
 		}

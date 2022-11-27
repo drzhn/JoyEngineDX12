@@ -63,7 +63,11 @@ namespace JoyEngine
 
 			auto descriptorSize = GraphicsManager::Get()->GetDevice()->GetDescriptorHandleIncrementSize(nativeType);
 			D3D12_CPU_DESCRIPTOR_HANDLE cpuHeapStart = m_heaps[nativeType]->GetCPUDescriptorHandleForHeapStart();
-			D3D12_GPU_DESCRIPTOR_HANDLE gpuHeapStart = m_heaps[nativeType]->GetGPUDescriptorHandleForHeapStart();
+			D3D12_GPU_DESCRIPTOR_HANDLE gpuHeapStart = {};
+			if (nativeType != D3D12_DESCRIPTOR_HEAP_TYPE_RTV && nativeType != D3D12_DESCRIPTOR_HEAP_TYPE_DSV)
+			{
+				gpuHeapStart = m_heaps[nativeType]->GetGPUDescriptorHandleForHeapStart();
+			}
 
 			// separate area in descriptor heap for srv and for cbv-uav.
 			// <heap start>[----READONLY_TEXTURES (READONLY_TEXTURES_COUNT)----][-----SRV_CBV_UAV(DESCRIPTORS_COUNT-READONLY_TEXTURES_COUNT)----]<heap end>

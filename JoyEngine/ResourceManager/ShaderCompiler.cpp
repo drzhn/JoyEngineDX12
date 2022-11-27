@@ -68,7 +68,7 @@ namespace JoyEngine
 	{
 		if (dxil_module == nullptr)
 		{
-			dxil_module = LoadLibrary(L"C:/Program Files (x86)/Windows Kits/10/bin/10.0.19041.0/x64/dxil.dll");
+			dxil_module = LoadLibrary(L"dxil.dll");
 			ASSERT(dxil_module != nullptr);
 			dxil_create_func = (DxcCreateInstanceProc)GetProcAddress(dxil_module, "DxcCreateInstance");
 			ASSERT(dxil_create_func != nullptr);
@@ -76,7 +76,7 @@ namespace JoyEngine
 
 		if (dxc_module == nullptr)
 		{
-			dxc_module = LoadLibrary(L"C:/Program Files (x86)/Windows Kits/10/bin/10.0.19041.0/x64/dxcompiler.dll");
+			dxc_module = LoadLibrary(L"dxcompiler.dll");
 			ASSERT(dxc_module != nullptr);
 			dxc_create_func = (DxcCreateInstanceProc)GetProcAddress(dxc_module, "DxcCreateInstance");
 			ASSERT(dxc_create_func != nullptr);

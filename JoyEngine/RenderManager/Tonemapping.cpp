@@ -97,9 +97,9 @@ namespace JoyEngine
 			.Domain = m_screenWidth * m_screenHeight / 16,
 			.GroupSize = m_groupSize,
 			.AdaptationSpeed = 0.2f,
-			.UseSrgbConversion = false,
-			.MiddleGrey = 3.0f,
-			.LumWhiteSqr = 9.0f,
+			.UseGammaCorrection = true,
+			.MiddleGrey = 0.9f,
+			.LumWhiteSqr = 40.0f,
 			.LumFactor = glm::vec3(0.299f, 0.587f, 0.114f),
 			.UseTonemapping = true
 		};

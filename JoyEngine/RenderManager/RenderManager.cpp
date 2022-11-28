@@ -430,7 +430,7 @@ namespace JoyEngine
 			HDRDownScaleConstants* constants = m_tonemapping->GetConstantsPtr();
 			ImGui::Begin("Tonemapping:");
 			ImGui::Checkbox("Use tonemapping", reinterpret_cast<bool*>(& (constants->UseTonemapping)));
-			ImGui::Checkbox("Use SRGB conversion", reinterpret_cast<bool*>(&(constants->UseSrgbConversion)));
+			ImGui::Checkbox("Use gamma correction", reinterpret_cast<bool*>(&(constants->UseGammaCorrection)));
 			ImGui::SliderFloat("MiddleGrey", &constants->MiddleGrey, 0.f, 10.f);
 			ImGui::SliderFloat("LumWhiteSqr", &constants->LumWhiteSqr, 0.f, 40.f);
 			ImGui::End();

@@ -47,7 +47,7 @@ float4 PSMain(PSInput input) : SV_Target
 
 	//color += BloomScale * BloomTexture.Sample(LinearSampler, screenPosition);
 
-	if (Constants.UseSrgbConversion)
+	if (Constants.UseGammaCorrection)
 	{
 		float gamma = 2.2;
 		color.rgb = pow(color.rgb, float3(1, 1, 1) * (1.0 / gamma));

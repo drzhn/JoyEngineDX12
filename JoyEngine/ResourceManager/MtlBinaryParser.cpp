@@ -22,6 +22,7 @@ namespace JoyEngine
 			std::map<std::string, std::string> bindings{
 				{"diffuse", mat["diffuse"].GetString()},
 				//{"normal", mat["normal"].GetString()}
+				{"textureSampler", mat["textureSampler"].GetString()}
 			};
 			m_materials.emplace_back(ResourceManager::Get()->LoadResource<Material>(
 				GUID::Random(),

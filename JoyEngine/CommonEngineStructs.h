@@ -175,7 +175,7 @@ struct HDRDownScaleConstants
 	UINT1 GroupSize;
 
 	float AdaptationSpeed; // AdaptationSpeed factor
-	UINT1 UseSrgbConversion;
+	UINT1 UseGammaCorrection;
 	float MiddleGrey; // = 3.0f;
 	float LumWhiteSqr; // = 9.0f;
 

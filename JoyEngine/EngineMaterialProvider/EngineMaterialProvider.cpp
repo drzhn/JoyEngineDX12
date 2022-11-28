@@ -160,26 +160,27 @@ namespace JoyEngine
 		}
 
 
-		//// Shadow map for spot light creation 
-		//{
-		//	const GUID shadowProcessingShaderGuid = GUID::StringToGuid("9ee0a40a-c055-4b2c-93db-bc19def8e8cc"); //shaders/shadowprocessing.hlsl
-		//	const GUID shadowProcessingSharedMaterialGuid = GUID::Random();
-		//	m_shadowProcessingSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, GraphicsPipelineArgs>(
-		//		shadowProcessingSharedMaterialGuid,
-		//		{
-		//			shadowProcessingShaderGuid,
-		//			JoyShaderTypeVertex | JoyShaderTypePixel,
-		//			true,
-		//			true,
-		//			true,
-		//			D3D12_CULL_MODE_NONE,
-		//			D3D12_COMPARISON_FUNC_LESS_EQUAL,
-		//			CD3DX12_BLEND_DESC(D3D12_DEFAULT),
-		//			{}, // no rtv, only depth
-		//			mainDSVFormat,
-		//			D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
-		//		});
-		//}
+		// Shadow map for spot light creation 
+		{
+			const GUID shadowProcessingShaderGuid = GUID::StringToGuid("9ee0a40a-c055-4b2c-93db-bc19def8e8cc"); //shaders/shadowprocessing.hlsl
+			const GUID shadowProcessingSharedMaterialGuid = GUID::Random();
+			m_shadowProcessingSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, GraphicsPipelineArgs>(
+				shadowProcessingSharedMaterialGuid,
+				{
+					shadowProcessingShaderGuid,
+					JoyShaderTypeVertex | JoyShaderTypePixel,
+					true,
+					true,
+					true,
+					D3D12_CULL_MODE_NONE,
+					D3D12_COMPARISON_FUNC_LESS_EQUAL,
+					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
+					{}, // no rtv, only depth
+					mainDSVFormat,
+					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
+				});
+		}
+
 		//// Shadow map for point map creation 
 		//{
 		//	const GUID shadowPointProcessingShaderGuid = GUID::StringToGuid("9d678808-8c11-4ff3-9ee1-dd1b7fc5f691"); //shaders/shadowpointprocessing.hlsl

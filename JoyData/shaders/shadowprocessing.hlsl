@@ -3,28 +3,28 @@
 struct PSInput
 {
 	float4 position : SV_POSITION;
-	//float2 uv : TEXCOORD0;
-	//float4 clipPos : TEXCOORD1;
 };
 
 struct PSOutput
 {
-	//float4 Color: SV_Target;
 };
 
-ConstantBuffer<MVP> mvp : register(b0);
+ConstantBuffer<ObjectIndexData> objectIndex : register(b0);
+ConstantBuffer<ViewProjectionMatrixData> viewProjectionData : register(b1);
+ConstantBuffer<ObjectMatricesData> objectMatricesData : register(b2);
 
-PSInput VSMain(float3 position : POSITION, float3 color : COLOR, float3 normal: NORMAL, float2 uv : TEXCOORD)
+PSInput VSMain(float3 position : POSITION)
 {
 	PSInput result;
-	float4x4 resMatrix = mul(mvp.projection, mul(mvp.view, mvp.model));
+
+	const float4x4 resMatrix = mul(viewProjectionData.proj, mul(viewProjectionData.view, objectMatricesData.data[objectIndex.data]));
+
 	result.position = mul(resMatrix, float4(position, 1));
 	return result;
 }
 
-PSOutput PSMain(PSInput input) // : SV_TARGET
+PSOutput PSMain(PSInput input)
 {
 	PSOutput output;
-	//output.Color = float4(1, 1, 1, 1);
 	return output;
 }

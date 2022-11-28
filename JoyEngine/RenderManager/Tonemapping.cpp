@@ -113,16 +113,6 @@ namespace JoyEngine
 
 	void Tonemapping::Render(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, const RenderTexture* currentBackBuffer) const
 	{
-		GraphicsUtils::Barrier(commandList,
-			m_hdrLuminationBuffer->GetBuffer()->GetBufferResource().Get(),
-			D3D12_RESOURCE_STATE_GENERIC_READ,
-			D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
-
-		GraphicsUtils::Barrier(commandList,
-			m_hrdDownScaledTexture->GetImage().Get(),
-			D3D12_RESOURCE_STATE_GENERIC_READ,
-			D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
-
 		// First pass
 		{
 			const auto& sm = m_hdrDownscaleFirstPassComputePipeline;
@@ -138,6 +128,8 @@ namespace JoyEngine
 			commandList->Dispatch(m_groupSize, 1, 1);
 		}
 
+		GraphicsUtils::UAVBarrier(commandList, m_hdrLuminationBuffer->GetBuffer()->GetBufferResource().Get());
+
 		// Second pass
 		{
 			const auto& sm = m_hdrDownscaleSecondPassComputePipeline;
@@ -150,17 +142,8 @@ namespace JoyEngine
 
 			commandList->Dispatch(m_groupSize, 1, 1);
 		}
-
-		GraphicsUtils::Barrier(commandList,
-		                       m_hdrLuminationBuffer->GetBuffer()->GetBufferResource().Get(),
-		                       D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
-		                       D3D12_RESOURCE_STATE_GENERIC_READ);
-
-		GraphicsUtils::Barrier(commandList,
-		                       m_hrdDownScaledTexture->GetImage().Get(),
-		                       D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
-		                       D3D12_RESOURCE_STATE_GENERIC_READ);
-
+		
+		GraphicsUtils::UAVBarrier(commandList, m_hdrLuminationBuffer->GetBuffer()->GetBufferResource().Get());
 
 		// Transition
 		{

@@ -7,8 +7,6 @@ RWTexture2D<float4> HDRDownScale : register(u1);
 
 groupshared float SharedPositions[1024];
 
-static const float4 LUM_FACTOR = float4(0.299, 0.587, 0.114, 0);
-
 float DownScale4x4(uint2 CurPixel, uint groupThreadId)
 {
 	float avgLum = 0.0;
@@ -29,7 +27,7 @@ float DownScale4x4(uint2 CurPixel, uint groupThreadId)
 		}
 		downScaled /= 16.0; // Average
 		HDRDownScale[CurPixel.xy] = downScaled; // Store the qurter resolution image
-		avgLum = dot(downScaled, LUM_FACTOR); // Calculate the lumenace value for this pixel
+		avgLum = dot(downScaled.rgb, Constants.LumFactor); // Calculate the lumenace value for this pixel
 		// Write the result to the shared memory
 		SharedPositions[groupThreadId] = avgLum;
 	}

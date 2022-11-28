@@ -151,6 +151,11 @@ namespace JoyEngine
 		else if (allowRenderTarget)
 		{
 			flags |= D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+			optimizedClearValue.Format = m_format;
+			optimizedClearValue.Color[0] = 0.f;
+			optimizedClearValue.Color[1] = 0.f;
+			optimizedClearValue.Color[2] = 0.f;
+			optimizedClearValue.Color[3] = 0.f;
 		}
 
 		D3D12_RESOURCE_DESC textureDesc = {};
@@ -168,7 +173,7 @@ namespace JoyEngine
 			m_memoryPropertiesFlags.Type,
 			&textureDesc,
 			m_usageFlags,
-			isDepthTarget ? &optimizedClearValue : nullptr);
+			isDepthTarget || allowRenderTarget ? &optimizedClearValue : nullptr);
 	}
 
 

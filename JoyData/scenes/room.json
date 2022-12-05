@@ -24,6 +24,23 @@
             ]
         },
         {
+            "name": "directional_light",
+            "type": "obj_simple",
+            "transform": {
+                "localPosition": [ -5.0, 40.0, 45.0 ],
+                "localRotation": [ 30.0, 180.0, 0.0 ],
+                "localScale": [ 1.0, 1.0, 1.0 ]
+            },
+            "components": [
+                {
+                    "type": "light",
+                    "lightType": "direction",
+                    "intensity": 1.0,
+                    "ambient": 0.1
+                }
+            ]
+        },
+        {
             "name": "head2",
             "type": "obj_simple",
             "transform": {

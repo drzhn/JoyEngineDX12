@@ -164,7 +164,7 @@ namespace JoyEngine
 		}
 
 
-		// Shadow map for spot light creation 
+		// Shadow map for spot and directional light creation 
 		{
 			const GUID shadowProcessingShaderGuid = GUID::StringToGuid("9ee0a40a-c055-4b2c-93db-bc19def8e8cc"); //shaders/shadowprocessing.hlsl
 			const GUID shadowProcessingSharedMaterialGuid = GUID::Random();
@@ -176,7 +176,7 @@ namespace JoyEngine
 					true,
 					true,
 					true,
-					D3D12_CULL_MODE_NONE,
+					D3D12_CULL_MODE_BACK,
 					D3D12_COMPARISON_FUNC_LESS_EQUAL,
 					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 					{}, // no rtv, only depth

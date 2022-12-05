@@ -14,19 +14,26 @@ namespace JoyEngine
 	class Texture;
 	class DepthTexture;
 
-	template<typename LightDataT>
+	template <typename LightDataT>
 	class Light : public Component
 	{
 	public:
 		Light() = delete;
 
+		// TODO I still do not have option how to get list of z-write geometry from scene,
+		// So I just pass gbuffer shared material to this method bc it contains all of mesh renderers 
+		virtual void RenderShadows(
+			ID3D12GraphicsCommandList* commandList,
+			uint32_t frameIndex,
+			SharedMaterial* gBufferSharedMaterial) = 0; 
+
 	protected:
 		explicit Light(IRenderManager* renderManager):
-		m_renderManager(renderManager),
+			m_renderManager(renderManager),
 			m_lightDataBuffer(std::make_unique<DynamicCpuBuffer<LightDataT>>(renderManager->GetFrameCount()))
 		{
-			
-		};
+		}
+
 		IRenderManager* m_renderManager;
 		std::unique_ptr<DepthTexture> m_shadowmap;
 
@@ -44,6 +51,9 @@ namespace JoyEngine
 		void Disable() override;
 
 		void Update() override;
+
+		void RenderShadows(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex,
+			SharedMaterial* gBufferSharedMaterial) override;
 	private:
 		CameraUnit m_cameraUnit;
 	};

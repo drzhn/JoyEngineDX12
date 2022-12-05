@@ -295,8 +295,6 @@ namespace JoyEngine
 			commandList->SetPipelineState(m_raytracingPipeline->GetPipelineObject().Get());
 
 
-			//GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "engineData", engineDataResourceView);
-
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "colorTexture", m_gbuffer->GetColorUAV());
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "normalsTexture", m_gbuffer->GetNormalsUAV());
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "depthTexture", m_gbuffer->GetDepthUAV());

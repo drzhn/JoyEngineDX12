@@ -72,7 +72,9 @@ namespace JoyEngine
 			&swapChain
 		));
 
-		ASSERT_SUCC(GraphicsManager::Get()->GetFactory()->MakeWindowAssociation(GraphicsManager::Get()->GetHWND(), DXGI_MWA_NO_ALT_ENTER));
+		ASSERT_SUCC(
+			GraphicsManager::Get()->GetFactory()->MakeWindowAssociation(GraphicsManager::Get()->GetHWND(),
+				DXGI_MWA_NO_ALT_ENTER));
 		ASSERT_SUCC(swapChain.As(&m_swapChain));
 
 		//m_currentFrameIndex = m_swapChain->GetCurrentBackBufferIndex();
@@ -126,7 +128,8 @@ namespace JoyEngine
 			                                             imguiGpuHandle);
 
 			ImGui_ImplDX12_Init(GraphicsManager::Get()->GetDevice(), frameCount,
-			                    swapchainFormat, DescriptorManager::Get()->GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV),
+			                    swapchainFormat,
+			                    DescriptorManager::Get()->GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV),
 			                    imguiCpuHandle,
 			                    imguiGpuHandle);
 		}
@@ -184,14 +187,14 @@ namespace JoyEngine
 
 	void RenderManager::RegisterDirectionLight(DirectionalLight* light)
 	{
-		//ASSERT(light->GetLightType() == Direction);
-		//m_directionLight = light;
+		ASSERT(m_directionLight == nullptr);
+		m_directionLight = light;
 	}
 
 	void RenderManager::UnregisterDirectionLight(DirectionalLight* light)
 	{
-		//ASSERT(m_directionLight == light);
-		//m_directionLight = nullptr;
+		ASSERT(m_directionLight != nullptr);
+		m_directionLight = nullptr;
 	}
 
 	void RenderManager::RegisterCamera(Camera* camera)
@@ -262,6 +265,14 @@ namespace JoyEngine
 		};
 		commandList->SetDescriptorHeaps(2, heaps);
 
+		// Drawing shadows
+		{
+			m_directionLight->RenderShadows(
+				commandList,
+				m_currentFrameIndex,
+				EngineMaterialProvider::Get()->GetGBufferWriteSharedMaterial());
+		}
+
 		// Set main viewport-scissor rects
 		GraphicsUtils::SetViewportAndScissor(commandList, m_width, m_height);
 
@@ -285,7 +296,8 @@ namespace JoyEngine
 			commandList->ClearRenderTargetView(rtvHandles[1], clearColor, 0, nullptr);
 			commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
-			RenderSceneForSharedMaterial(commandList, &mainCameraMatrixVP, EngineMaterialProvider::Get()->GetGBufferWriteSharedMaterial());
+			RenderSceneForSharedMaterial(commandList, &mainCameraMatrixVP,
+			                             EngineMaterialProvider::Get()->GetGBufferWriteSharedMaterial());
 
 			m_gbuffer->BarrierToRead(commandList);
 		}
@@ -304,8 +316,10 @@ namespace JoyEngine
 
 			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-			GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "colorTexture", m_gbuffer->GetColorSRV());
-			GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "normalsTexture", m_gbuffer->GetNormalsSRV());
+			GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "colorTexture",
+			                                    m_gbuffer->GetColorSRV());
+			GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "normalsTexture",
+			                                    m_gbuffer->GetNormalsSRV());
 			//GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "depthTexture", m_gbuffer->GetDepthSRV());
 
 			commandList->DrawIndexedInstanced(
@@ -314,7 +328,6 @@ namespace JoyEngine
 				0, 0, 0);
 
 			m_skybox->DrawSky(commandList, m_gbuffer->GetColorSRV(), m_currentFrameIndex, &mainCameraMatrixVP);
-
 		}
 
 		if (g_drawRaytracedImage)
@@ -342,7 +355,8 @@ namespace JoyEngine
 				&swapchainRTVHandle,
 				FALSE, nullptr);
 
-			m_tonemapping->Render(commandList, m_currentFrameIndex, m_swapchainRenderTargets[m_currentFrameIndex].get());
+			m_tonemapping->Render(commandList, m_currentFrameIndex,
+			                      m_swapchainRenderTargets[m_currentFrameIndex].get());
 
 
 			DrawGui(commandList, &mainCameraMatrixVP);
@@ -371,7 +385,8 @@ namespace JoyEngine
 		m_trianglesCount = 0;
 	}
 
-	void RenderManager::DrawGui(ID3D12GraphicsCommandList* commandList, const ViewProjectionMatrixData* viewProjectionData) const
+	void RenderManager::DrawGui(ID3D12GraphicsCommandList* commandList,
+	                            const ViewProjectionMatrixData* viewProjectionData) const
 	{
 		// Draw axis gizmo
 		{
@@ -401,7 +416,9 @@ namespace JoyEngine
 			commandList->RSSetViewports(1, &viewport);
 			commandList->RSSetScissorRects(1, &scissorRect);
 
-			GraphicsUtils::ProcessEngineBindings(commandList, m_currentFrameIndex, sm->GetGraphicsPipeline()->GetEngineBindings(), nullptr, viewProjectionData);
+			GraphicsUtils::ProcessEngineBindings(commandList, m_currentFrameIndex,
+			                                     sm->GetGraphicsPipeline()->GetEngineBindings(), nullptr,
+			                                     viewProjectionData);
 
 			commandList->DrawInstanced(
 				6,
@@ -425,11 +442,11 @@ namespace JoyEngine
 			ImGui::Checkbox("Draw raytraced image", &g_drawRaytracedImage);
 			ImGui::End();
 		}
-		ImGui::SetNextWindowPos({ 0, 150 });
+		ImGui::SetNextWindowPos({0, 150});
 		{
 			HDRDownScaleConstants* constants = m_tonemapping->GetConstantsPtr();
 			ImGui::Begin("Tonemapping:");
-			ImGui::Checkbox("Use tonemapping", reinterpret_cast<bool*>(& (constants->UseTonemapping)));
+			ImGui::Checkbox("Use tonemapping", reinterpret_cast<bool*>(&(constants->UseTonemapping)));
 			ImGui::Checkbox("Use gamma correction", reinterpret_cast<bool*>(&(constants->UseGammaCorrection)));
 			ImGui::SliderFloat("MiddleGrey", &constants->MiddleGrey, 0.f, 10.f);
 			ImGui::SliderFloat("LumWhiteSqr", &constants->LumWhiteSqr, 0.f, 40.f);
@@ -442,7 +459,8 @@ namespace JoyEngine
 
 	void RenderManager::UpdateObjectMatrices() const
 	{
-		DynamicCpuBuffer<ObjectMatricesData>* objectMatrices = EngineMaterialProvider::Get()->GetObjectMatricesDataBuffer();
+		DynamicCpuBuffer<ObjectMatricesData>* objectMatrices = EngineMaterialProvider::Get()->
+			GetObjectMatricesDataBuffer();
 		objectMatrices->Lock(m_currentFrameIndex);
 		ObjectMatricesData* data = objectMatrices->GetPtr();
 		for (auto const& sm : m_sharedMaterials)
@@ -516,10 +534,10 @@ namespace JoyEngine
 			}
 
 			GraphicsUtils::ProcessEngineBindings(
-				commandList, 
-				m_currentFrameIndex, 
-				sharedMaterial->GetGraphicsPipeline()->GetEngineBindings(), 
-				mr->GetTransform()->GetIndex(), 
+				commandList,
+				m_currentFrameIndex,
+				sharedMaterial->GetGraphicsPipeline()->GetEngineBindings(),
+				mr->GetTransform()->GetIndex(),
 				viewProjectionData);
 
 			commandList->DrawIndexedInstanced(

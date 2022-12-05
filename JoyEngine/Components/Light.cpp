@@ -1,10 +1,14 @@
 ﻿#include "Light.h"
 
 
+#include "MeshRenderer.h"
+#include "DataManager/DataManager.h"
+#include "EngineMaterialProvider/EngineMaterialProvider.h"
 #include "ResourceManager/Texture.h"
 #include "RenderManager/RenderManager.h"
 #include "glm/gtc/type_ptr.hpp"
 #include "SceneManager/Transform.h"
+#include "Utils/GraphicsUtils.h"
 
 
 namespace JoyEngine
@@ -138,7 +142,7 @@ namespace JoyEngine
 
 	DirectionalLight::DirectionalLight(IRenderManager* renderManager, float intensity, float ambient)
 		: Light(renderManager),
-		  m_cameraUnit(renderManager->GetAspect(), 50, 0.001f, 1000.0f)
+		  m_cameraUnit(1, 50, 0.001f, 1000.0f)
 	{
 		m_lightData.ambient = ambient;
 		m_lightData.intensity = intensity;
@@ -147,7 +151,7 @@ namespace JoyEngine
 			2048,
 			2048,
 			DXGI_FORMAT_R32_TYPELESS,
-			D3D12_RESOURCE_STATE_GENERIC_READ,
+			D3D12_RESOURCE_STATE_DEPTH_WRITE,
 			D3D12_HEAP_TYPE_DEFAULT);
 	}
 
@@ -167,5 +171,52 @@ namespace JoyEngine
 		m_lightData.direction = GetTransform()->GetForward();
 		m_lightData.proj = m_cameraUnit.GetProjMatrix();
 		m_lightData.view = m_cameraUnit.GetViewMatrix(GetTransform()->GetPosition(), GetTransform()->GetRotation());
+	}
+
+	void DirectionalLight::RenderShadows(
+		ID3D12GraphicsCommandList* commandList,
+		uint32_t frameIndex,
+		SharedMaterial* gBufferSharedMaterial)
+	{
+		m_lightDataBuffer->SetData(&m_lightData, frameIndex);
+
+		GraphicsUtils::SetViewportAndScissor(commandList, m_shadowmap->GetWidth(), m_shadowmap->GetHeight());
+
+		const auto shadowMapHandle = m_shadowmap->GetDSV()->GetCPUHandle();
+
+		commandList->OMSetRenderTargets(
+			0,
+			nullptr,
+			FALSE, &shadowMapHandle);
+
+		commandList->ClearDepthStencilView(shadowMapHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+
+		const auto sm = EngineMaterialProvider::Get()->GetShadowProcessingSharedMaterial();
+		commandList->SetPipelineState(sm->GetGraphicsPipeline()->GetPipelineObject().Get());
+		commandList->SetGraphicsRootSignature(sm->GetGraphicsPipeline()->GetRootSignature().Get());
+
+		const ViewProjectionMatrixData viewProjectionMatrixData = {
+			.view = m_lightData.view,
+			.proj = m_lightData.proj,
+		};
+
+		for (const auto& mr : gBufferSharedMaterial->GetMeshRenderers())
+		{
+			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			commandList->IASetVertexBuffers(0, 1, mr->GetMesh()->GetVertexBufferView());
+			commandList->IASetIndexBuffer(mr->GetMesh()->GetIndexBufferView());
+
+			GraphicsUtils::ProcessEngineBindings(
+				commandList,
+				frameIndex,
+				sm->GetGraphicsPipeline()->GetEngineBindings(),
+				mr->GetTransform()->GetIndex(),
+				&viewProjectionMatrixData);
+
+			commandList->DrawIndexedInstanced(
+				mr->GetMesh()->GetIndexCount(),
+				1,
+				0, 0, 0);
+		}
 	}
 }

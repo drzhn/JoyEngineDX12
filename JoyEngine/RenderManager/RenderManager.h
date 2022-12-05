@@ -130,6 +130,7 @@ namespace JoyEngine
 		std::set<SharedMaterial*> m_sharedMaterials;
 
 		Camera* m_currentCamera;
+		DirectionalLight* m_directionLight;
 
 		std::unique_ptr<CommandQueue> m_queue;
 		uint32_t m_currentFrameIndex;

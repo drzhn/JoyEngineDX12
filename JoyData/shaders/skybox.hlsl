@@ -40,7 +40,8 @@ PSOutput PSMain(PSInput input) // : SV_TARGET
 	PSOutput output;
 
 	const float4 skyboxColor = skyboxTexture.Sample(textureSampler, input.uv);
-	const float4 mainColor = gBufferColorTexture.Load(float3(input.position.xy, 0));
-	output.Color = lerp(skyboxColor, mainColor, mainColor.a);
+	const float4 gBufferColor = gBufferColorTexture.Load(float3(input.position.xy, 0));
+	output.Color = float4(skyboxColor.rgb, 1-gBufferColor.a);
+
 	return output;
 }

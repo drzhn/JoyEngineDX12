@@ -10,11 +10,33 @@ namespace JoyEngine
 	// so we paint all pixels where color.a == 0;
 	Skybox::Skybox()
 	{
-		m_skyboxTexture = ResourceManager::Get()->LoadResource<Texture>(GUID::StringToGuid("17663088-100d-4e78-8305-17b5818256db"));
-		m_skyboxMesh = ResourceManager::Get()->LoadResource<Mesh>(GUID::StringToGuid("b7d27f1a-006b-41fa-b10b-01b212ebfebe")); // DefaultSphere
+		m_skyboxTexture = ResourceManager::Get()->LoadResource<Texture>(
+			GUID::StringToGuid("17663088-100d-4e78-8305-17b5818256db"));
+		m_skyboxMesh = ResourceManager::Get()->LoadResource<Mesh>(
+			GUID::StringToGuid("b7d27f1a-006b-41fa-b10b-01b212ebfebe")); // DefaultSphere
 
 		const GUID skyboxShaderGuid = GUID::StringToGuid("7e43e76d-9d5f-4fc8-a8f1-c8ec0dce95ef"); //shaders/skybox.hlsl
 		const GUID skyboxSharedMaterialGuid = GUID::Random();
+
+
+		const D3D12_RENDER_TARGET_BLEND_DESC blendDesc = {
+			true,
+			FALSE,
+			D3D12_BLEND_SRC_ALPHA,
+			D3D12_BLEND_INV_SRC_ALPHA,
+			D3D12_BLEND_OP_ADD,
+			D3D12_BLEND_ONE,
+			D3D12_BLEND_ZERO,
+			D3D12_BLEND_OP_ADD,
+			D3D12_LOGIC_OP_NOOP,
+			D3D12_COLOR_WRITE_ENABLE_ALL
+		};
+
+		D3D12_BLEND_DESC blend = {
+			.AlphaToCoverageEnable = false,
+			.IndependentBlendEnable = false,
+		};
+		blend.RenderTarget[0] = blendDesc;
 
 		m_skyboxPipeline = ResourceManager::Get()->LoadResource<GraphicsPipeline, GraphicsPipelineArgs>(
 			skyboxSharedMaterialGuid,
@@ -26,7 +48,7 @@ namespace JoyEngine
 				false,
 				D3D12_CULL_MODE_FRONT,
 				D3D12_COMPARISON_FUNC_GREATER_EQUAL,
-				CD3DX12_BLEND_DESC(D3D12_DEFAULT),
+				CD3DX12_BLEND_DESC(blend),
 				{
 					RenderManager::GetMainColorFormat(),
 				},
@@ -35,7 +57,8 @@ namespace JoyEngine
 			});
 	}
 
-	void Skybox::DrawSky(ID3D12GraphicsCommandList* commandList, const ResourceView* colorTextureSrv, uint32_t frameIndex, const ViewProjectionMatrixData* viewProjectionData) const
+	void Skybox::DrawSky(ID3D12GraphicsCommandList* commandList, const ResourceView* colorTextureSrv,
+		uint32_t frameIndex, const ViewProjectionMatrixData* viewProjectionData) const
 	{
 		commandList->SetPipelineState(m_skyboxPipeline->GetPipelineObject().Get());
 		commandList->SetGraphicsRootSignature(m_skyboxPipeline->GetRootSignature().Get());
@@ -48,13 +71,14 @@ namespace JoyEngine
 		GraphicsUtils::ProcessEngineBindings(
 			commandList,
 			frameIndex,
-			m_skyboxPipeline ->GetEngineBindings(),
+			m_skyboxPipeline->GetEngineBindings(),
 			nullptr,
 			viewProjectionData);
 
 		GraphicsUtils::AttachViewToGraphics(commandList, m_skyboxPipeline, "skyboxTexture", m_skyboxTexture->GetSRV());
 		GraphicsUtils::AttachViewToGraphics(commandList, m_skyboxPipeline, "gBufferColorTexture", colorTextureSrv);
-		GraphicsUtils::AttachViewToGraphics(commandList, m_skyboxPipeline, "textureSampler", EngineSamplersProvider::GetLinearClampSampler());
+		GraphicsUtils::AttachViewToGraphics(commandList, m_skyboxPipeline, "textureSampler",
+			EngineSamplersProvider::GetLinearClampSampler());
 
 		commandList->DrawIndexedInstanced(
 			m_skyboxMesh->GetIndexCount(),

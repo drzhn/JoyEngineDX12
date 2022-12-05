@@ -103,8 +103,6 @@ namespace JoyEngine
 
 		m_skybox = std::make_unique<Skybox>();
 
-		m_engineDataBuffer = std::make_unique<DynamicCpuBuffer<EngineData>>(frameCount);
-
 		m_tonemapping = std::make_unique<Tonemapping>(
 			this,
 			m_mainColorRenderTarget.get(),
@@ -169,28 +167,28 @@ namespace JoyEngine
 		m_sharedMaterials.erase(sm);
 	}
 
-	void RenderManager::RegisterLight(Light* light)
-	{
-		//ASSERT(light->GetLightType() != Direction);
-		//m_lights.insert(light);
-	}
+	//void RenderManager::RegisterLight(Light* light)
+	//{
+	//	//ASSERT(light->GetLightType() != Direction);
+	//	//m_lights.insert(light);
+	//}
 
-	void RenderManager::UnregisterLight(Light* light)
-	{
-		//if (m_lights.find(light) == m_lights.end())
-		//{
-		//	ASSERT(false);
-		//}
-		//m_lights.erase(light);
-	}
+	//void RenderManager::UnregisterLight(Light* light)
+	//{
+	//	//if (m_lights.find(light) == m_lights.end())
+	//	//{
+	//	//	ASSERT(false);
+	//	//}
+	//	//m_lights.erase(light);
+	//}
 
-	void RenderManager::RegisterDirectionLight(Light* light)
+	void RenderManager::RegisterDirectionLight(DirectionalLight* light)
 	{
 		//ASSERT(light->GetLightType() == Direction);
 		//m_directionLight = light;
 	}
 
-	void RenderManager::UnregisterDirectionLight(Light* light)
+	void RenderManager::UnregisterDirectionLight(DirectionalLight* light)
 	{
 		//ASSERT(m_directionLight == light);
 		//m_directionLight = nullptr;
@@ -236,10 +234,12 @@ namespace JoyEngine
 			.proj = mainCameraProjMatrix
 		};
 
-		{
-			m_engineDataBuffer->Lock(m_currentFrameIndex);
+		DynamicCpuBuffer<EngineData>* engineDataBuffer = EngineMaterialProvider::Get()->GetEngineDataBuffer();
 
-			const auto data = static_cast<EngineData*>(m_engineDataBuffer->GetPtr());
+		{
+			engineDataBuffer->Lock(m_currentFrameIndex);
+
+			const auto data = static_cast<EngineData*>(engineDataBuffer->GetPtr());
 			data->cameraWorldPos = m_currentCamera->GetTransform()->GetPosition();
 			data->time = Time::GetTime();
 			data->cameraInvProj = glm::inverse(mainCameraProjMatrix);
@@ -250,7 +250,7 @@ namespace JoyEngine
 			data->screenWidth = m_width;
 			data->screenHeight = m_height;
 
-			m_engineDataBuffer->Unlock();
+			engineDataBuffer->Unlock();
 		}
 
 		UpdateObjectMatrices();
@@ -319,7 +319,7 @@ namespace JoyEngine
 
 		if (g_drawRaytracedImage)
 		{
-			m_raytracing->ProcessRaytracing(commandList, m_engineDataBuffer->GetView(m_currentFrameIndex));
+			m_raytracing->ProcessRaytracing(commandList, m_currentFrameIndex);
 
 			m_raytracing->DebugDrawRaytracedImage(commandList);
 		}

@@ -123,9 +123,9 @@ namespace JoyEngine
 
 
 	void GraphicsUtils::AttachViewToCompute(
-		ID3D12GraphicsCommandList* commandList, 
+		ID3D12GraphicsCommandList* commandList,
 		const ResourceHandle<ComputePipeline>& pipeline,
-		const char* paramName, 
+		const char* paramName,
 		const ResourceView* view)
 	{
 		commandList->SetComputeRootDescriptorTable(
@@ -171,37 +171,44 @@ namespace JoyEngine
 			switch (type)
 			{
 			case EngineBindingType::ObjectIndexData:
-			{
-				ASSERT(modelIndex != nullptr);
-				commandList->SetGraphicsRoot32BitConstants(
-					rootIndex,
-					sizeof(uint32_t) / 4,
-					modelIndex,
-					0);
-				break;
-			}
+				{
+					ASSERT(modelIndex != nullptr);
+					commandList->SetGraphicsRoot32BitConstants(
+						rootIndex,
+						sizeof(uint32_t) / 4,
+						modelIndex,
+						0);
+					break;
+				}
 			case EngineBindingType::ModelMatrixData:
-			{
-				commandList->SetGraphicsRootDescriptorTable(
-					rootIndex,
-					EngineMaterialProvider::Get()->GetObjectMatricesDataView(frameIndex)->GetGPUHandle()
-				);
-				break;
-			}
+				{
+					commandList->SetGraphicsRootDescriptorTable(
+						rootIndex,
+						EngineMaterialProvider::Get()->GetObjectMatricesDataView(frameIndex)->GetGPUHandle()
+					);
+					break;
+				}
 			case EngineBindingType::ViewProjectionMatrixData:
-			{
-				commandList->SetGraphicsRoot32BitConstants(
-					rootIndex,
-					sizeof(ViewProjectionMatrixData) / 4,
-					viewProjectionMatrix,
-					0);
-				break;
-			}
-			case EngineBindingType::EngineData:
-			{
-				//AttachViewToGraphics(commandList, rootIndex, m_engineDataBufferView.get());
-				break;
-			}
+				{
+					commandList->SetGraphicsRoot32BitConstants(
+						rootIndex,
+						sizeof(ViewProjectionMatrixData) / 4,
+						viewProjectionMatrix,
+						0);
+					break;
+				}
+			case EngineBindingType::EngineDataGraphics:
+				{
+					AttachViewToGraphics(commandList, rootIndex,
+					                     EngineMaterialProvider::Get()->GetEngineDataView(frameIndex));
+					break;
+				}
+			case EngineBindingType::EngineDataCompute:
+				{
+					AttachViewToCompute(commandList, rootIndex,
+					                    EngineMaterialProvider::Get()->GetEngineDataView(frameIndex));
+					break;
+				}
 			default:
 				ASSERT(false);
 			}

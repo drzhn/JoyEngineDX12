@@ -72,43 +72,45 @@ namespace JoyEngine
 					}
 					else if (type == "light")
 					{
-						std::unique_ptr<Light> light;
 						std::string lightTypeStr = std::string(component["lightType"].GetString());
-						if (lightTypeStr == "point")
-						{
-							float intensity = component["intensity"].GetFloat();
-							float radius = component["radius"].GetFloat();
 
-							light = std::make_unique<Light>(LightType::Point, intensity, radius, 0.0f, 0.0f, 0.0f);
-						}
-						else if (lightTypeStr == "capsule")
-						{
-							float intensity = component["intensity"].GetFloat();
-							float radius = component["radius"].GetFloat();
-							float height = component["height"].GetFloat();
+						//std::unique_ptr<Light> light;
+						//if (lightTypeStr == "point")
+						//{
+						//	float intensity = component["intensity"].GetFloat();
+						//	float radius = component["radius"].GetFloat();
 
-							light = std::make_unique<Light>(LightType::Capsule, intensity, radius, height, 0.0f, 0.0f);
-						}
-						else if (lightTypeStr == "spot")
-						{
-							float intensity = component["intensity"].GetFloat();
-							float angle = component["angle"].GetFloat();
-							float height = component["height"].GetFloat();
+						//	light = std::make_unique<Light>(LightType::Point, intensity, radius, 0.0f, 0.0f, 0.0f);
+						//}
+						//else if (lightTypeStr == "capsule")
+						//{
+						//	float intensity = component["intensity"].GetFloat();
+						//	float radius = component["radius"].GetFloat();
+						//	float height = component["height"].GetFloat();
 
-							light = std::make_unique<Light>(LightType::Spot, intensity, 0.0f, height, angle, 0.0f);
-						}
-						else if (lightTypeStr == "direction")
+						//	light = std::make_unique<Light>(LightType::Capsule, intensity, radius, height, 0.0f, 0.0f);
+						//}
+						//else if (lightTypeStr == "spot")
+						//{
+						//	float intensity = component["intensity"].GetFloat();
+						//	float angle = component["angle"].GetFloat();
+						//	float height = component["height"].GetFloat();
+
+						//	light = std::make_unique<Light>(LightType::Spot, intensity, 0.0f, height, angle, 0.0f);
+						//}
+						//else 
+						if (lightTypeStr == "direction")
 						{
 							float intensity = component["intensity"].GetFloat();
 							float ambient = component["ambient"].GetFloat();
 
-							light = std::make_unique<Light>(LightType::Direction, intensity, 0.0f, 0.0f, 0.0f, ambient);
+							std::unique_ptr<DirectionalLight> light = std::make_unique<DirectionalLight>(RenderManager::Get(),intensity, ambient);
+							go->AddComponent(std::move(light));
 						}
 						else
 						{
 							ASSERT(false);
 						}
-						go->AddComponent(std::move(light));
 					}
 					//else if (type == "particle_system")
 					//{
@@ -134,7 +136,8 @@ namespace JoyEngine
 				int objectIndex = 0;
 				while (data != nullptr)
 				{
-					std::unique_ptr<GameObject> go = std::make_unique<GameObject>(obj["name"].GetString() + objectIndex);
+					std::unique_ptr<GameObject> go = std::make_unique<
+						GameObject>(obj["name"].GetString() + objectIndex);
 
 					rapidjson::Value& transformValue = obj["transform"];
 					ParseTransform(go, transformValue);

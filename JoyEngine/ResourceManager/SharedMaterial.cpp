@@ -48,6 +48,11 @@ namespace JoyEngine
 		return m_rootIndices.find(hash)->second;
 	}
 
+	std::map<uint32_t, EngineBindingType>& AbstractPipelineObject::GetEngineBindings()
+	{
+		return m_engineBindings;
+	}
+
 	void AbstractPipelineObject::CreateShaderAndRootSignature(GUID shaderGuid, ShaderTypeFlags shaderTypes)
 	{
 		CD3DX12_DESCRIPTOR_RANGE1 ranges[DESCRIPTOR_ARRAY_SIZE];
@@ -56,10 +61,7 @@ namespace JoyEngine
 		CD3DX12_ROOT_PARAMETER1 params[DESCRIPTOR_ARRAY_SIZE];
 		uint32_t paramsIndex = 0;
 		{
-			m_shader = ResourceManager::Get()->LoadResource<Shader>(
-				shaderGuid,
-				shaderTypes
-			);
+			m_shader = ResourceManager::Get()->LoadResource<Shader>(shaderGuid, shaderTypes);
 
 			for (const auto& pair : m_shader->GetInputMap())
 			{
@@ -80,19 +82,28 @@ namespace JoyEngine
 					m_engineBindings.insert({paramsIndex, EngineBindingType::ViewProjectionMatrixData});
 					paramsIndex++;
 				}
-				else if (name == "MipMapGenerationData") // TODO REMOVE
+				else if (name == "objectMatricesData")
 				{
-					params[paramsIndex].InitAsConstants(
-						sizeof(MipMapGenerationData) / 4, input.BindPoint, input.Space, input.Visibility);
-					//m_engineBindings.insert({ static_cast<uint32_t>(paramsIndex), ModelViewProjection });
-					m_rootIndices.insert({strHash(name.c_str()), paramsIndex});
+					ranges[rangesIndex].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, input.BindPoint, input.Space,
+					                         D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
+					params[paramsIndex].InitAsDescriptorTable(1, &ranges[rangesIndex], input.Visibility);
+					m_engineBindings.insert({paramsIndex, EngineBindingType::ModelMatrixData});
+					rangesIndex++;
 					paramsIndex++;
 				}
-				else if (name == "objectMatricesData") 
+				else if (name == "engineData")
 				{
-					ranges[rangesIndex].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, input.BindPoint, input.Space, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
+					ranges[rangesIndex].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, input.BindPoint, input.Space,
+					                         D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
 					params[paramsIndex].InitAsDescriptorTable(1, &ranges[rangesIndex], input.Visibility);
-					m_engineBindings.insert({ paramsIndex, EngineBindingType::ModelMatrixData });
+					if (shaderTypes & JoyShaderTypeCompute || shaderTypes & JoyShaderTypeCompute6_5)
+					{
+						m_engineBindings.insert({paramsIndex, EngineBindingType::EngineDataCompute});
+					}
+					else
+					{
+						m_engineBindings.insert({paramsIndex, EngineBindingType::EngineDataGraphics});
+					}
 					rangesIndex++;
 					paramsIndex++;
 				}
@@ -126,7 +137,8 @@ namespace JoyEngine
 					default:
 						ASSERT(false);
 					}
-					ranges[rangesIndex].Init(type, input.BindCount == 0 ? READONLY_TEXTURES_COUNT : input.BindCount, input.BindPoint, input.Space, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
+					ranges[rangesIndex].Init(type, input.BindCount == 0 ? READONLY_TEXTURES_COUNT : input.BindCount,
+					                         input.BindPoint, input.Space, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
 					params[paramsIndex].InitAsDescriptorTable(1, &ranges[rangesIndex], input.Visibility);
 					m_rootIndices.insert({strHash(name.c_str()), paramsIndex});
 					rangesIndex++;
@@ -164,7 +176,8 @@ namespace JoyEngine
 
 		ComPtr<ID3DBlob> signature;
 		ComPtr<ID3DBlob> error;
-		HRESULT result = D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, featureData.HighestVersion, &signature, &error);
+		HRESULT result = D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, featureData.HighestVersion,
+		                                                       &signature, &error);
 		if (FAILED(result) && error != nullptr)
 		{
 			const char* errorMsg = static_cast<const char*>(error->GetBufferPointer());
@@ -183,7 +196,10 @@ namespace JoyEngine
 	ComputePipeline::ComputePipeline(GUID guid, ComputePipelineArgs args) :
 		Resource(guid)
 	{
-		CreateShaderAndRootSignature(args.computeShaderGuid, args.shaderModel == D3D_SHADER_MODEL_6_5 ? JoyShaderTypeCompute6_5 : JoyShaderTypeCompute);
+		CreateShaderAndRootSignature(args.computeShaderGuid,
+		                             args.shaderModel == D3D_SHADER_MODEL_6_5
+			                             ? JoyShaderTypeCompute6_5
+			                             : JoyShaderTypeCompute);
 		CreateComputePipeline();
 	}
 
@@ -196,7 +212,9 @@ namespace JoyEngine
 			{},
 			D3D12_PIPELINE_STATE_FLAG_NONE
 		};
-		ASSERT_SUCC(GraphicsManager::Get()->GetDevice()->CreateComputePipelineState(&computePipelineStateDesc, IID_PPV_ARGS(&m_pipelineState)));
+		ASSERT_SUCC(
+			GraphicsManager::Get()->GetDevice()->CreateComputePipelineState(&computePipelineStateDesc, IID_PPV_ARGS(&
+				m_pipelineState)));
 	}
 
 	// =============================== SHARED MATERIAL =================================
@@ -263,7 +281,8 @@ namespace JoyEngine
 
 		std::vector<DXGI_FORMAT> renderTargetsFormats
 		{
-			RenderManager::Get()->GetMainColorFormat() // materials created form GUIDs can only write to one main color rtv
+			RenderManager::Get()->GetMainColorFormat()
+			// materials created form GUIDs can only write to one main color rtv
 		};
 
 		// Shader creation
@@ -404,11 +423,17 @@ namespace JoyEngine
 
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc = {
 			m_rootSignature.Get(),
-			m_shader->GetShaderType() & JoyShaderTypeVertex ? CD3DX12_SHADER_BYTECODE(m_shader->GetVertexShadeModule().Get()) : emptyBytecode,
-			m_shader->GetShaderType() & JoyShaderTypeVertex ? CD3DX12_SHADER_BYTECODE(m_shader->GetFragmentShadeModule().Get()) : emptyBytecode,
+			m_shader->GetShaderType() & JoyShaderTypeVertex
+				? CD3DX12_SHADER_BYTECODE(m_shader->GetVertexShadeModule().Get())
+				: emptyBytecode,
+			m_shader->GetShaderType() & JoyShaderTypeVertex
+				? CD3DX12_SHADER_BYTECODE(m_shader->GetFragmentShadeModule().Get())
+				: emptyBytecode,
 			{},
 			{},
-			m_shader->GetShaderType() & JoyShaderTypeGeometry ? CD3DX12_SHADER_BYTECODE(m_shader->GetGeometryShadeModule().Get()) : emptyBytecode,
+			m_shader->GetShaderType() & JoyShaderTypeGeometry
+				? CD3DX12_SHADER_BYTECODE(m_shader->GetGeometryShadeModule().Get())
+				: emptyBytecode,
 			{},
 			blendDesc,
 			UINT_MAX,
@@ -448,12 +473,11 @@ namespace JoyEngine
 			D3D12_PIPELINE_STATE_FLAG_NONE
 		};
 
-		ASSERT_SUCC(GraphicsManager::Get()->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&m_pipelineState)));
+		ASSERT_SUCC(
+			GraphicsManager::Get()->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&
+				m_pipelineState)));
 	}
 
 
-	std::map<uint32_t, EngineBindingType>& GraphicsPipeline::GetEngineBindings()
-	{
-		return m_engineBindings;
-	}
+
 }

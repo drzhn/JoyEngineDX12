@@ -16,10 +16,8 @@ namespace JoyEngine
 		ObjectIndexData,
 		ModelMatrixData,
 		ViewProjectionMatrixData,
-		EngineData,
-		//LightAttachment,
-		//EnvironmentCubemap,
-		//EnvironmentConvolutedCubemap,
+		EngineDataGraphics,
+		EngineDataCompute,
 	};
 
 	struct GraphicsPipelineArgs
@@ -51,6 +49,7 @@ namespace JoyEngine
 		[[nodiscard]] ShaderInput const* GetShaderInputByName(const std::string&) const;
 		[[nodiscard]] uint32_t GetBindingIndexByName(const std::string&) const;
 		[[nodiscard]] uint32_t GetBindingIndexByHash(const uint32_t hash) const;
+		[[nodiscard]] std::map<uint32_t, EngineBindingType>& GetEngineBindings();
 
 	protected:
 		ComPtr<ID3D12RootSignature> m_rootSignature;
@@ -81,7 +80,6 @@ namespace JoyEngine
 		explicit GraphicsPipeline(GUID, const GraphicsPipelineArgs&);
 		[[nodiscard]] D3D12_PRIMITIVE_TOPOLOGY_TYPE GetTopology() const { return m_topology; }
 		[[nodiscard]] bool IsLoaded() const noexcept override { return true; }
-		[[nodiscard]] std::map<uint32_t, EngineBindingType>& GetEngineBindings();
 
 	private:
 		void CreateGraphicsPipeline(const std::vector<DXGI_FORMAT>& renderTargetsFormats, CD3DX12_BLEND_DESC blendDesc, DXGI_FORMAT depthFormat, D3D12_PRIMITIVE_TOPOLOGY_TYPE topology);

@@ -287,7 +287,7 @@ namespace JoyEngine
 		m_bvhConstructor->ConstructBVH();
 	}
 
-	void Raytracing::ProcessRaytracing(ID3D12GraphicsCommandList* commandList, ResourceView* engineDataResourceView)
+	void Raytracing::ProcessRaytracing(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex)
 	{
 		// Raytracing process
 		{
@@ -295,7 +295,7 @@ namespace JoyEngine
 			commandList->SetPipelineState(m_raytracingPipeline->GetPipelineObject().Get());
 
 
-			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "engineData", engineDataResourceView);
+			//GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "engineData", engineDataResourceView);
 
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "colorTexture", m_gbuffer->GetColorUAV());
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "normalsTexture", m_gbuffer->GetNormalsUAV());
@@ -309,6 +309,8 @@ namespace JoyEngine
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "bvhData", m_bvhDataBuffer->GetSRV());
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "triangleData", m_triangleDataBuffer->GetSRV());
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "linearClampSampler", EngineSamplersProvider::GetLinearWrapSampler());
+
+			GraphicsUtils::ProcessEngineBindings(commandList, frameIndex, m_raytracingPipeline->GetEngineBindings(), nullptr, nullptr);
 
 			m_gbuffer->BarrierToRead(commandList);
 		}

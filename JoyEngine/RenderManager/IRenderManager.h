@@ -4,7 +4,7 @@
 namespace JoyEngine
 {
 	class Camera;
-	class Light;
+	class DirectionalLight;
 	class SharedMaterial;
 
 	class IRenderManager
@@ -13,10 +13,10 @@ namespace JoyEngine
 		virtual ~IRenderManager() = default;
 		virtual void RegisterSharedMaterial(SharedMaterial*) = 0;
 		virtual void UnregisterSharedMaterial(SharedMaterial*) = 0;
-		virtual void RegisterLight(Light*) = 0;
-		virtual void UnregisterLight(Light*) = 0;
-		virtual void RegisterDirectionLight(Light*) = 0;
-		virtual void UnregisterDirectionLight(Light*) = 0;
+		//virtual void RegisterLight(Light*) = 0;
+		//virtual void UnregisterLight(Light*) = 0;
+		virtual void RegisterDirectionLight(DirectionalLight*) = 0;
+		virtual void UnregisterDirectionLight(DirectionalLight*) = 0;
 		virtual void RegisterCamera(Camera* camera) = 0;
 		virtual void UnregisterCamera(Camera* camera) = 0;
 		[[nodiscard]]virtual float GetAspect() const noexcept = 0;

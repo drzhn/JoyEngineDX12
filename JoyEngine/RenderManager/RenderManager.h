@@ -27,7 +27,7 @@ namespace JoyEngine
 	enum class EngineBindingType;
 
 	class CommandQueue;
-	class Light;
+	//class Light;
 	class Mesh;
 	class Camera;
 	class SharedMaterial;
@@ -57,13 +57,13 @@ namespace JoyEngine
 
 		void UnregisterSharedMaterial(SharedMaterial*) override;
 
-		void RegisterLight(Light*) override;
+		//void RegisterLight(Light*) override;
 
-		void UnregisterLight(Light*) override;
+		//void UnregisterLight(Light*) override;
 
-		void RegisterDirectionLight(Light*) override;
+		void RegisterDirectionLight(DirectionalLight*) override;
 
-		void UnregisterDirectionLight(Light*) override;
+		void UnregisterDirectionLight(DirectionalLight*) override;
 
 		void RegisterCamera(Camera* camera) override;
 
@@ -126,8 +126,6 @@ namespace JoyEngine
 
 		std::unique_ptr<Tonemapping> m_tonemapping;
 		std::unique_ptr<Raytracing> m_raytracing;
-
-		std::unique_ptr<DynamicCpuBuffer<EngineData>> m_engineDataBuffer;
 
 		std::set<SharedMaterial*> m_sharedMaterials;
 

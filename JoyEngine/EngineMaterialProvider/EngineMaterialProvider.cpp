@@ -109,6 +109,10 @@ namespace JoyEngine
 			m_objectMatrices = std::make_unique<DynamicCpuBuffer<ObjectMatricesData>>(3);
 		}
 
+		{
+			m_engineDataBuffer = std::make_unique<DynamicCpuBuffer<EngineData>>(RenderManager::Get()->GetFrameCount());
+		}
+
 
 		// GBuffer write shader
 		{

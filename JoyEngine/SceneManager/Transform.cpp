@@ -45,6 +45,11 @@ namespace JoyEngine
 
 	glm::quat Transform::GetRotation() const noexcept { return m_localRotation; }
 
+	glm::vec3 Transform::GetEulerRotation() const noexcept
+	{
+		return glm::eulerAngles(m_localRotation);
+	}
+
 	glm::vec3 Transform::GetScale() const noexcept { return m_localScale; }
 
 	glm::mat4 Transform::GetModelMatrix() const noexcept

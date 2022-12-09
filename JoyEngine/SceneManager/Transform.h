@@ -22,6 +22,7 @@ namespace JoyEngine
 
 		[[nodiscard]] glm::vec3 GetPosition() const noexcept;
 		[[nodiscard]] glm::quat GetRotation() const noexcept;
+		[[nodiscard]] glm::vec3 GetEulerRotation() const noexcept;
 		[[nodiscard]] glm::vec3 GetScale() const noexcept;
 		[[nodiscard]] glm::vec3 GetForward() const noexcept;
 		[[nodiscard]] glm::vec3 GetUp() const noexcept;

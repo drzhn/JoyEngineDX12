@@ -405,7 +405,7 @@ namespace JoyEngine
 		//}
 		//m_renderTargetView = std::make_unique<ResourceView>(
 		//	desc,
-		//	this->GetImage().Get()
+		//	this->GetImageResource().Get()
 		//);
 	}
 

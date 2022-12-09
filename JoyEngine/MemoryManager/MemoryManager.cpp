@@ -115,7 +115,7 @@ namespace JoyEngine
 		Texture* gpuImage) const
 	{
 		uint64_t resourceSize;
-		D3D12_RESOURCE_DESC resourceDesc = gpuImage->GetImage().Get()->GetDesc();
+		D3D12_RESOURCE_DESC resourceDesc = gpuImage->GetImageResource().Get()->GetDesc();
 		GraphicsManager::Get()->GetDevice()->GetCopyableFootprints(
 			&resourceDesc,
 			0,
@@ -182,7 +182,7 @@ namespace JoyEngine
 
 
 			D3D12_TEXTURE_COPY_LOCATION dst = {
-				gpuImage->GetImage().Get(),
+				gpuImage->GetImageResource().Get(),
 				D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX,
 				i
 			};
@@ -196,7 +196,7 @@ namespace JoyEngine
 
 
 		CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-			gpuImage->GetImage().Get(),
+			gpuImage->GetImageResource().Get(),
 			D3D12_RESOURCE_STATE_COPY_DEST,
 			D3D12_RESOURCE_STATE_GENERIC_READ
 		);

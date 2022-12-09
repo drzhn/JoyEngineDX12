@@ -8,6 +8,7 @@
 #include "ResourceManager/Buffer.h"
 #include "ResourceManager/DynamicCpuBuffer.h"
 #include "ResourceManager/ResourceView.h"
+#include "ResourceManager/Texture.h"
 
 namespace JoyEngine
 {
@@ -25,7 +26,17 @@ namespace JoyEngine
 		virtual void RenderShadows(
 			ID3D12GraphicsCommandList* commandList,
 			uint32_t frameIndex,
-			SharedMaterial* gBufferSharedMaterial) = 0; 
+			SharedMaterial* gBufferSharedMaterial) = 0;
+
+		ResourceView* GetLightDataView(uint32_t frameIndex) const
+		{
+			return m_lightDataBuffer->GetView(frameIndex);
+		}
+
+		ResourceView* GetShadowmapView() const
+		{
+			return m_shadowmap->GetSRV();
+		}
 
 	protected:
 		explicit Light(IRenderManager* renderManager):
@@ -53,9 +64,14 @@ namespace JoyEngine
 		void Update() override;
 
 		void RenderShadows(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex,
-			SharedMaterial* gBufferSharedMaterial) override;
+		                   SharedMaterial* gBufferSharedMaterial) override;
+
+		float* GetCurrentAnglePtr() { return &m_currentAngle; }
+		DirectionLightData* GetLightDataPtr() { return &m_lightData; }
+
 	private:
 		CameraUnit m_cameraUnit;
+		float m_currentAngle = 0;
 	};
 
 	//class Light : public Component

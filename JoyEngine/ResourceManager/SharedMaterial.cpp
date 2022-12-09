@@ -18,6 +18,7 @@
 
 #include "Common/HashDefs.h"
 #include "DescriptorManager/DescriptorManager.h"
+#include "Utils/Log.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -44,7 +45,11 @@ namespace JoyEngine
 
 	uint32_t AbstractPipelineObject::GetBindingIndexByHash(const uint32_t hash) const
 	{
-		ASSERT(m_rootIndices.find(hash) != m_rootIndices.end());
+		if(!m_rootIndices.contains(hash))
+		{
+			Logger::LogFormat("Warning: pipline doesn't contain hash %d", hash);
+			return -1;
+		}
 		return m_rootIndices.find(hash)->second;
 	}
 

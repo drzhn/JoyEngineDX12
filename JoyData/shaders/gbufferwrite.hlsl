@@ -13,12 +13,14 @@ struct PSInput
 	float4 position : SV_POSITION;
 	float2 uv : TEXCOORD0;
 	float4 normal : COLOR1;
+	float4 worldPosition : COLOR2;
 };
 
 struct PSOutput
 {
 	float4 Color: SV_Target0;
 	float4 Normal: SV_Target1;
+	float4 Position: SV_Target2;
 };
 
 inline float4 ComputeNonStereoScreenPos(float4 pos)
@@ -37,6 +39,7 @@ PSInput VSMain(float3 position : POSITION, float3 normal : NORMAL, float2 uv : T
 
 	result.position = mul(resMatrix, float4(position, 1));
 	result.normal = normalize(mul(objectMatricesData.data[objectIndex.data], float4(normal, 0)));
+	result.worldPosition = mul(objectMatricesData.data[objectIndex.data], float4(position, 1));
 	result.uv = uv;
 
 	return result;
@@ -48,6 +51,7 @@ PSOutput PSMain(PSInput input)
 
 	output.Color = diffuse.Sample(textureSampler, input.uv);
 	output.Normal = input.normal;
+	output.Position = input.worldPosition;
 
 	return output;
 }

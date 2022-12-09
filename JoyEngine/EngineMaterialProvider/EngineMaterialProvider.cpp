@@ -176,7 +176,7 @@ namespace JoyEngine
 					true,
 					true,
 					true,
-					D3D12_CULL_MODE_BACK,
+					D3D12_CULL_MODE_NONE,
 					D3D12_COMPARISON_FUNC_LESS_EQUAL,
 					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 					{}, // no rtv, only depth

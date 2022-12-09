@@ -222,8 +222,8 @@ namespace JoyEngine
 
 		const auto commandList = m_queue->GetCommandList(m_currentFrameIndex);
 
-		auto swapchainResource = m_swapchainRenderTargets[m_currentFrameIndex]->GetImage().Get();
-		auto hdrRTVResource = m_mainColorRenderTarget->GetImage().Get();
+		auto swapchainResource = m_swapchainRenderTargets[m_currentFrameIndex]->GetImageResource().Get();
+		auto hdrRTVResource = m_mainColorRenderTarget->GetImageResource().Get();
 
 		auto swapchainRTVHandle = m_swapchainRenderTargets[m_currentFrameIndex]->GetRTV()->GetCPUHandle();
 		auto hdrRTVHandle = m_mainColorRenderTarget->GetRTV()->GetCPUHandle();
@@ -320,7 +320,22 @@ namespace JoyEngine
 			                                    m_gbuffer->GetColorSRV());
 			GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "normalsTexture",
 			                                    m_gbuffer->GetNormalsSRV());
-			//GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "depthTexture", m_gbuffer->GetDepthSRV());
+			//GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "positionsTexture",
+			//                                    m_gbuffer->GetPositionsSRV());
+			GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "depthTexture",
+			                                    m_gbuffer->GetDepthSRV());
+			GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "directionalLightData",
+			                                    m_directionLight->GetLightDataView(m_currentFrameIndex));
+			GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "directionalLightShadowmap",
+			                                    m_directionLight->GetShadowmapView());
+			GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "PCFSampler",
+			                                    EngineSamplersProvider::GetDepthPCFSampler());
+			//GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "textureSampler",
+			//                                    EngineSamplersProvider::GetLinearClampSampler());
+
+			GraphicsUtils::ProcessEngineBindings(commandList, m_currentFrameIndex,
+			                                     sm->GetGraphicsPipeline()->GetEngineBindings(), nullptr,
+			                                     &mainCameraMatrixVP);
 
 			commandList->DrawIndexedInstanced(
 				3,
@@ -450,6 +465,16 @@ namespace JoyEngine
 			ImGui::Checkbox("Use gamma correction", reinterpret_cast<bool*>(&(constants->UseGammaCorrection)));
 			ImGui::SliderFloat("MiddleGrey", &constants->MiddleGrey, 0.f, 10.f);
 			ImGui::SliderFloat("LumWhiteSqr", &constants->LumWhiteSqr, 0.f, 40.f);
+			ImGui::End();
+			m_tonemapping->UpdateConstants(m_currentFrameIndex);
+		}
+		ImGui::SetNextWindowPos({0, 300});
+		{
+			HDRDownScaleConstants* constants = m_tonemapping->GetConstantsPtr();
+			ImGui::Begin("Directional Light:");
+			ImGui::SliderFloat("Angle", m_directionLight->GetCurrentAnglePtr(), 0.f, 90.f);
+			ImGui::SliderFloat("Ambient", &m_directionLight->GetLightDataPtr()->ambient, 0.f, 1.f);
+			ImGui::SliderFloat("Bias", &m_directionLight->GetLightDataPtr()->bias, 0.f, 0.002f);
 			ImGui::End();
 			m_tonemapping->UpdateConstants(m_currentFrameIndex);
 		}

@@ -142,16 +142,17 @@ namespace JoyEngine
 
 	DirectionalLight::DirectionalLight(IRenderManager* renderManager, float intensity, float ambient)
 		: Light(renderManager),
-		  m_cameraUnit(1, 50, 0.001f, 1000.0f)
+		  m_cameraUnit(1, 50, 0.1f, 1000.0f)
 	{
 		m_lightData.ambient = ambient;
 		m_lightData.intensity = intensity;
+		m_lightData.bias = 0.001f;
 
 		m_shadowmap = std::make_unique<DepthTexture>(
 			2048,
 			2048,
 			DXGI_FORMAT_R32_TYPELESS,
-			D3D12_RESOURCE_STATE_DEPTH_WRITE,
+			D3D12_RESOURCE_STATE_GENERIC_READ,
 			D3D12_HEAP_TYPE_DEFAULT);
 	}
 
@@ -159,6 +160,7 @@ namespace JoyEngine
 	void DirectionalLight::Enable()
 	{
 		m_renderManager->RegisterDirectionLight(this);
+		m_currentAngle = 30;
 	}
 
 	void DirectionalLight::Disable()
@@ -168,6 +170,11 @@ namespace JoyEngine
 
 	void DirectionalLight::Update()
 	{
+		GetTransform()->SetRotation(glm::vec3(m_currentAngle, 180, 0));
+		GetTransform()->SetPosition(glm::vec3(
+			0,
+			70 * glm::cos(glm::radians(90 - m_currentAngle)),
+			70 * glm::sin(glm::radians(90 - m_currentAngle))));
 		m_lightData.direction = GetTransform()->GetForward();
 		m_lightData.proj = m_cameraUnit.GetProjMatrix();
 		m_lightData.view = m_cameraUnit.GetViewMatrix(GetTransform()->GetPosition(), GetTransform()->GetRotation());
@@ -179,6 +186,9 @@ namespace JoyEngine
 		SharedMaterial* gBufferSharedMaterial)
 	{
 		m_lightDataBuffer->SetData(&m_lightData, frameIndex);
+
+		GraphicsUtils::Barrier(commandList, m_shadowmap->GetImageResource().Get(), D3D12_RESOURCE_STATE_GENERIC_READ,
+		                       D3D12_RESOURCE_STATE_DEPTH_WRITE);
 
 		GraphicsUtils::SetViewportAndScissor(commandList, m_shadowmap->GetWidth(), m_shadowmap->GetHeight());
 
@@ -218,5 +228,8 @@ namespace JoyEngine
 				1,
 				0, 0, 0);
 		}
+
+		GraphicsUtils::Barrier(commandList, m_shadowmap->GetImageResource().Get(), D3D12_RESOURCE_STATE_DEPTH_WRITE,
+		                       D3D12_RESOURCE_STATE_GENERIC_READ);
 	}
 }

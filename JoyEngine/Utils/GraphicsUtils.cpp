@@ -87,8 +87,9 @@ namespace JoyEngine
 		const ResourceView* view
 	)
 	{
-		commandList->SetGraphicsRootDescriptorTable(
-			pipeline->GetBindingIndexByHash(strHash(paramName)), view->GetGPUHandle());
+		const uint32_t rootParamIndex = pipeline->GetBindingIndexByHash(strHash(paramName));
+		if (rootParamIndex == -1) return;
+		commandList->SetGraphicsRootDescriptorTable(rootParamIndex, view->GetGPUHandle());
 	}
 
 	void GraphicsUtils::AttachViewToCompute(

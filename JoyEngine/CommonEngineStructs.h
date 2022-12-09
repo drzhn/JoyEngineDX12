@@ -102,10 +102,14 @@ struct DirectionLightData
 {
 	VEC3 direction;
 	float intensity;
-	float ambient;
 
 	MAT4 view;
 	MAT4 proj;
+
+	float ambient;
+	float bias;
+	float _dummy1;
+	float _dummy2;
 };
 
 struct LightData

@@ -36,7 +36,7 @@ namespace JoyEngine
 	class AbstractTextureResource
 	{
 	public :
-		[[nodiscard]] ComPtr<ID3D12Resource> GetImage() const noexcept { return m_texture; }
+		[[nodiscard]] ComPtr<ID3D12Resource> GetImageResource() const noexcept { return m_texture; }
 
 		[[nodiscard]] uint32_t GetWidth() const noexcept { return m_width; }
 

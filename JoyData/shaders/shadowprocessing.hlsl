@@ -11,6 +11,7 @@ struct PSOutput
 
 ConstantBuffer<ObjectIndexData> objectIndex : register(b0);
 ConstantBuffer<ViewProjectionMatrixData> viewProjectionData : register(b1);
+
 ConstantBuffer<ObjectMatricesData> objectMatricesData : register(b2);
 
 PSInput VSMain(float3 position : POSITION)

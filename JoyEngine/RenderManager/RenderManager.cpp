@@ -309,36 +309,7 @@ namespace JoyEngine
 				&hdrRTVHandle,
 				FALSE, nullptr);
 
-			const auto& sm = EngineMaterialProvider::Get()->GetDeferredShadingProcessorSharedMaterial();
-
-			commandList->SetPipelineState(sm->GetGraphicsPipeline()->GetPipelineObject().Get());
-			commandList->SetGraphicsRootSignature(sm->GetGraphicsPipeline()->GetRootSignature().Get());
-
-			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-			GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "colorTexture",
-			                                    m_gbuffer->GetColorSRV());
-			GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "normalsTexture",
-			                                    m_gbuffer->GetNormalsSRV());
-			GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "depthTexture",
-			                                    m_gbuffer->GetDepthSRV());
-			GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "directionalLightData",
-			                                    m_directionLight->GetLightDataView(m_currentFrameIndex));
-			GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "directionalLightShadowmap",
-			                                    m_directionLight->GetShadowmapView());
-			GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "PCFSampler",
-			                                    EngineSamplersProvider::GetDepthPCFSampler());
-
-			GraphicsUtils::ProcessEngineBindings(commandList, m_currentFrameIndex,
-			                                     sm->GetGraphicsPipeline()->GetEngineBindings(), nullptr,
-			                                     &mainCameraMatrixVP);
-
-			commandList->DrawIndexedInstanced(
-				3,
-				1,
-				0, 0, 0);
-
-			m_skybox->DrawSky(commandList, m_gbuffer->GetColorSRV(), m_currentFrameIndex, &mainCameraMatrixVP);
+			RenderDeferredShading(commandList, m_gbuffer.get(), &mainCameraMatrixVP);
 		}
 
 		if (g_drawRaytracedImage)
@@ -567,6 +538,40 @@ namespace JoyEngine
 				0, 0, 0);
 			m_trianglesCount += mr->GetMesh()->GetIndexCount() / 3;
 		}
+	}
+
+	void RenderManager::RenderDeferredShading(ID3D12GraphicsCommandList* commandList, const AbstractGBuffer* gBuffer, const ViewProjectionMatrixData* cameraVP) const
+	{
+		const auto& sm = EngineMaterialProvider::Get()->GetDeferredShadingProcessorSharedMaterial();
+
+		commandList->SetPipelineState(sm->GetGraphicsPipeline()->GetPipelineObject().Get());
+		commandList->SetGraphicsRootSignature(sm->GetGraphicsPipeline()->GetRootSignature().Get());
+
+		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "colorTexture",
+			gBuffer->GetColorSRV());
+		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "normalsTexture",
+			gBuffer->GetNormalsSRV());
+		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "depthTexture",
+			gBuffer->GetDepthSRV());
+		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "directionalLightData",
+			m_directionLight->GetLightDataView(m_currentFrameIndex));
+		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "directionalLightShadowmap",
+			m_directionLight->GetShadowmapView());
+		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "PCFSampler",
+			EngineSamplersProvider::GetDepthPCFSampler());
+
+		GraphicsUtils::ProcessEngineBindings(commandList, m_currentFrameIndex,
+			sm->GetGraphicsPipeline()->GetEngineBindings(), nullptr,
+			cameraVP);
+
+		commandList->DrawIndexedInstanced(
+			3,
+			1,
+			0, 0, 0);
+
+		m_skybox->DrawSky(commandList, m_gbuffer->GetColorSRV(), m_currentFrameIndex, cameraVP);
 	}
 
 	void RenderManager::CopyRTVResource(

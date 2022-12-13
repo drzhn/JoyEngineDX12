@@ -20,7 +20,6 @@ struct PSOutput
 {
 	float4 Color: SV_Target0;
 	float4 Normal: SV_Target1;
-	float4 Position: SV_Target2;
 };
 
 inline float4 ComputeNonStereoScreenPos(float4 pos)
@@ -51,7 +50,6 @@ PSOutput PSMain(PSInput input)
 
 	output.Color = diffuse.Sample(textureSampler, input.uv);
 	output.Normal = input.normal;
-	output.Position = input.worldPosition;
 
 	return output;
 }

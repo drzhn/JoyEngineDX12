@@ -99,9 +99,15 @@ namespace JoyEngine
 			SharedMaterial* sharedMaterial
 		) const;
 
+		void RenderDeferredShading(
+			ID3D12GraphicsCommandList* commandList,
+			const AbstractGBuffer* gBuffer, const ViewProjectionMatrixData* cameraVP
+		) const;
+
 		void UpdateObjectMatrices() const;
 
-		static void CopyRTVResource(ID3D12GraphicsCommandList* commandList, ID3D12Resource* rtvResource, ID3D12Resource* copyResource);
+		static void CopyRTVResource(ID3D12GraphicsCommandList* commandList, ID3D12Resource* rtvResource,
+		                            ID3D12Resource* copyResource);
 
 	private:
 		static constexpr uint32_t frameCount = 3;

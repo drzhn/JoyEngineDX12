@@ -128,34 +128,104 @@ namespace JoyEngine
 	}
 
 
-	void AbstractTextureResource::CreateImageResource(bool allowRenderTarget, bool isDepthTarget, bool allowUnorderedAccess, uint32_t arraySize, uint32_t mipLevels)
+	class TextureUtils
+	{
+	public:
+		static std::unique_ptr<ResourceView> CreateSRV(DXGI_FORMAT format, uint32_t mipLevels, ID3D12Resource* resource,
+		                                               bool nonReadonly = true)
+		{
+			D3D12_SHADER_RESOURCE_VIEW_DESC desc;
+			desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+			desc.Format = format;
+			desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+			desc.Texture2D = {
+				0,
+				mipLevels,
+				0,
+				0
+			};
+			return std::move(std::make_unique<ResourceView>(desc, resource, nonReadonly));
+		}
+
+		static std::unique_ptr<ResourceView> CreateRTV(DXGI_FORMAT format, ID3D12Resource* resource)
+		{
+			D3D12_RENDER_TARGET_VIEW_DESC rtvDesc;
+			rtvDesc.Format = format;
+			rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+			rtvDesc.Texture2D.MipSlice = 0;
+			rtvDesc.Texture2D.PlaneSlice = 0;
+
+			return std::move(std::make_unique<ResourceView>(rtvDesc, resource));
+		}
+
+		static std::unique_ptr<ResourceView> CreateUAV(DXGI_FORMAT format, ID3D12Resource* resource)
+		{
+			D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc;
+			uavDesc.Format = format;
+			uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
+			uavDesc.Texture2D = {
+				0,
+				0
+			};
+
+			return std::move(std::make_unique<ResourceView>(uavDesc, resource));
+		}
+
+		static std::unique_ptr<ResourceView> CreateDSV(DXGI_FORMAT format, uint32_t arraySize, ID3D12Resource* resource)
+		{
+			D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
+			depthStencilViewDesc.Format = format;
+			depthStencilViewDesc.ViewDimension = arraySize == 1
+				                                     ? D3D12_DSV_DIMENSION_TEXTURE2D
+				                                     : D3D12_DSV_DIMENSION_TEXTURE2DARRAY;
+			if (arraySize == 1)
+			{
+				depthStencilViewDesc.Texture2D.MipSlice = 0;
+			}
+			else
+			{
+				depthStencilViewDesc.Texture2DArray.ArraySize = arraySize;
+			}
+			depthStencilViewDesc.Flags = D3D12_DSV_FLAG_NONE;
+
+			return std::move(std::make_unique<ResourceView>(depthStencilViewDesc, resource));
+		}
+	};
+
+	void AbstractTextureResource::CreateImageResource(
+		bool allowRenderTarget,
+		bool isDepthTarget,
+		bool allowUnorderedAccess, uint32_t arraySize, uint32_t mipLevels)
 	{
 		D3D12_CLEAR_VALUE optimizedClearValue = {};
 		D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE;
 
-		ASSERT(!(allowRenderTarget && isDepthTarget ));
-		ASSERT(!(allowRenderTarget && allowUnorderedAccess));
+		ASSERT(!(isDepthTarget && allowRenderTarget));
 		ASSERT(!(isDepthTarget && allowUnorderedAccess));
 		ASSERT(arraySize >= 1);
 
-		if (allowUnorderedAccess)
-		{
-			flags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
-		}
-		else if (isDepthTarget)
+
+		if (isDepthTarget)
 		{
 			flags |= D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
 			optimizedClearValue.Format = DXGI_FORMAT_D32_FLOAT;
 			optimizedClearValue.DepthStencil = {1.0f, 0};
 		}
-		else if (allowRenderTarget)
+		else
 		{
-			flags |= D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
-			optimizedClearValue.Format = m_format;
-			optimizedClearValue.Color[0] = 0.f;
-			optimizedClearValue.Color[1] = 0.f;
-			optimizedClearValue.Color[2] = 0.f;
-			optimizedClearValue.Color[3] = 0.f;
+			if (allowUnorderedAccess)
+			{
+				flags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+			}
+			if (allowRenderTarget)
+			{
+				flags |= D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+				optimizedClearValue.Format = m_format;
+				optimizedClearValue.Color[0] = 0.f;
+				optimizedClearValue.Color[1] = 0.f;
+				optimizedClearValue.Color[2] = 0.f;
+				optimizedClearValue.Color[3] = 0.f;
+			}
 		}
 
 		D3D12_RESOURCE_DESC textureDesc = {};
@@ -203,7 +273,7 @@ namespace JoyEngine
 		InitTextureFromFile(textureStream);
 	}
 
-	void Texture::InitTextureFromFile(std::ifstream& textureStream) // TODO make this DDS compatible
+	void Texture::InitTextureFromFile(std::ifstream& textureStream)
 	{
 		TextureAssetHeader textureAssetHeader = {};
 		textureStream.seekg(0);
@@ -278,17 +348,7 @@ namespace JoyEngine
 
 	void Texture::CreateImageViews()
 	{
-		D3D12_SHADER_RESOURCE_VIEW_DESC desc;
-		desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-		desc.Format = m_format;
-		desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-		desc.Texture2D = {
-			0,
-			m_mipLevels,
-			0,
-			0
-		};
-		m_resourceView = std::make_unique<ResourceView>(desc, m_texture.Get());
+		m_resourceView = TextureUtils::CreateSRV(m_format, m_mipLevels, m_texture.Get(), false);
 	}
 
 	//void Texture::CreateImageViews(bool allowRenderTarget, bool isDepthTarget, bool allowUnorderedAccess, uint32_t arraySize)
@@ -297,7 +357,6 @@ namespace JoyEngine
 	//	ASSERT(!(allowRenderTarget && allowUnorderedAccess));
 	//	ASSERT(!(isDepthTarget && allowUnorderedAccess));
 	//	ASSERT(arraySize >= 1);
-
 	//	if (allowRenderTarget)
 	//	{
 	//		D3D12_RENDER_TARGET_VIEW_DESC desc;
@@ -320,7 +379,6 @@ namespace JoyEngine
 	//				desc.Texture2DArray.PlaneSlice = 0;
 	//				m_resourceViewArray[i] = std::make_unique<ResourceView>(desc, m_texture.Get());
 	//			}
-
 	//			desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2DARRAY;
 	//			desc.Texture2DArray.ArraySize = arraySize;
 	//			desc.Texture2DArray.FirstArraySlice = 0;
@@ -347,7 +405,6 @@ namespace JoyEngine
 	//			depthStencilViewDesc.Texture2DArray.ArraySize = arraySize;
 	//		}
 	//		depthStencilViewDesc.Flags = D3D12_DSV_FLAG_NONE;
-
 	//		m_resourceView = std::make_unique<ResourceView>(depthStencilViewDesc, m_texture.Get());
 	//	}
 	//	else if (allowUnorderedAccess)
@@ -393,20 +450,7 @@ namespace JoyEngine
 		m_memoryPropertiesFlags = CD3DX12_HEAP_PROPERTIES(heapType);
 
 		CreateImageResource(true, false, false, 1, 1);
-		m_texture->SetName(L"Manually created render target");
 		CreateImageViews();
-
-		//else
-		//{
-		//	desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
-		//	desc.TextureCube.MipLevels = 1;
-		//	desc.TextureCube.MostDetailedMip = 0;
-		//	desc.TextureCube.ResourceMinLODClamp = 0.0f;
-		//}
-		//m_renderTargetView = std::make_unique<ResourceView>(
-		//	desc,
-		//	this->GetImageResource().Get()
-		//);
 	}
 
 	RenderTexture::RenderTexture(
@@ -430,27 +474,48 @@ namespace JoyEngine
 
 	void RenderTexture::CreateImageViews()
 	{
-		D3D12_SHADER_RESOURCE_VIEW_DESC desc;
-		desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-		desc.Format = m_format;
-		desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-		desc.Texture2D = {
-			0,
-			1,
-			0,
-			0
-		};
-
-		m_resourceView = std::make_unique<ResourceView>(desc, m_texture.Get(), true);
+		m_resourceView = TextureUtils::CreateSRV(m_format, 1, m_texture.Get());
+		m_renderTargetView = TextureUtils::CreateRTV(m_format, m_texture.Get());
+	}
 
 
-		D3D12_RENDER_TARGET_VIEW_DESC rtvDesc;
-		rtvDesc.Format = m_format;
-		rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
-		rtvDesc.Texture2D.MipSlice = 0;
-		rtvDesc.Texture2D.PlaneSlice = 0;
+	UAVTexture::UAVTexture(uint32_t width, uint32_t height, DXGI_FORMAT format, D3D12_RESOURCE_STATES usage,
+	                       D3D12_HEAP_TYPE heapType)
+	{
+		m_width = width;
+		m_height = height;
+		m_format = format;
+		m_usageFlags = usage;
+		m_memoryPropertiesFlags = CD3DX12_HEAP_PROPERTIES(heapType);
 
-		m_renderTargetView = std::make_unique<ResourceView>(rtvDesc, m_texture.Get());
+		CreateImageResource(false, false, true, 1, 1);
+		CreateImageViews();
+	}
+
+	void UAVTexture::CreateImageViews()
+	{
+		m_resourceView = TextureUtils::CreateSRV(m_format, 1, m_texture.Get());
+		m_unorderedAccessView = TextureUtils::CreateUAV(m_format, m_texture.Get());
+	}
+
+	UAVRenderTexture::UAVRenderTexture(uint32_t width, uint32_t height, DXGI_FORMAT format, D3D12_RESOURCE_STATES usage,
+		D3D12_HEAP_TYPE heapType)
+	{
+		m_width = width;
+		m_height = height;
+		m_format = format;
+		m_usageFlags = usage;
+		m_memoryPropertiesFlags = CD3DX12_HEAP_PROPERTIES(heapType);
+
+		CreateImageResource(true, false, true, 1, 1);
+		CreateImageViews();
+	}
+
+	void UAVRenderTexture::CreateImageViews()
+	{
+		m_resourceView = TextureUtils::CreateSRV(m_format, 1, m_texture.Get());
+		m_renderTargetView = TextureUtils::CreateRTV(m_format, m_texture.Get());
+		m_unorderedAccessView = TextureUtils::CreateUAV(m_format, m_texture.Get());
 	}
 
 
@@ -475,69 +540,7 @@ namespace JoyEngine
 
 	void DepthTexture::CreateImageViews()
 	{
-		D3D12_SHADER_RESOURCE_VIEW_DESC desc;
-		desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-		desc.Format = DXGI_FORMAT_R32_FLOAT;
-		desc.ViewDimension = m_arraySize == 1 ? D3D12_SRV_DIMENSION_TEXTURE2D : D3D12_SRV_DIMENSION_TEXTURECUBE;
-		desc.Texture2D = {
-			0,
-			1,
-			0,
-			0
-		};
-
-		m_resourceView = std::make_unique<ResourceView>(desc, m_texture.Get(), true);
-
-		D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
-		depthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
-		depthStencilViewDesc.ViewDimension = m_arraySize == 1 ? D3D12_DSV_DIMENSION_TEXTURE2D : D3D12_DSV_DIMENSION_TEXTURE2DARRAY;
-		if (m_arraySize == 1)
-		{
-			depthStencilViewDesc.Texture2D.MipSlice = 0;
-		}
-		else
-		{
-			depthStencilViewDesc.Texture2DArray.ArraySize = m_arraySize;
-		}
-		depthStencilViewDesc.Flags = D3D12_DSV_FLAG_NONE;
-
-		m_depthStencilView = std::make_unique<ResourceView>(depthStencilViewDesc, m_texture.Get());
-	}
-
-	UAVTexture::UAVTexture(uint32_t width, uint32_t height, DXGI_FORMAT format, D3D12_RESOURCE_STATES usage, D3D12_HEAP_TYPE heapType)
-	{
-		m_width = width;
-		m_height = height;
-		m_format = format;
-		m_usageFlags = usage;
-		m_memoryPropertiesFlags = CD3DX12_HEAP_PROPERTIES(heapType);
-
-		CreateImageResource(false, false, true, 1, 1);
-		CreateImageViews();
-	}
-
-	void UAVTexture::CreateImageViews()
-	{
-		D3D12_SHADER_RESOURCE_VIEW_DESC desc;
-		desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-		desc.Format = this->GetFormat();
-		desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-		desc.Texture2D = {
-			0,
-			1,
-			0,
-			0
-		};
-		m_resourceView = std::make_unique<ResourceView>(desc, m_texture.Get(), true);
-
-		D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc;
-		uavDesc.Format = this->GetFormat();
-		uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
-		uavDesc.Texture2D = {
-			0,
-			0
-		};
-
-		m_unorderedAccessView = std::make_unique<ResourceView>(uavDesc, m_texture.Get());
+		m_resourceView = TextureUtils::CreateSRV(DXGI_FORMAT_R32_FLOAT, 1, m_texture.Get());
+		m_depthStencilView = TextureUtils::CreateDSV(DXGI_FORMAT_D32_FLOAT, m_arraySize, m_texture.Get());
 	}
 }

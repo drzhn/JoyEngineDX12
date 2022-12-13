@@ -138,6 +138,43 @@ namespace JoyEngine
 	private:
 		std::unique_ptr<ResourceView> m_renderTargetView;
 	};
+	
+	class UAVTexture final : public AbstractSingleTexture
+	{
+	public:
+		explicit UAVTexture(
+			uint32_t width,
+			uint32_t height,
+			DXGI_FORMAT format,
+			D3D12_RESOURCE_STATES usage,
+			D3D12_HEAP_TYPE heapType
+		);
+		[[nodiscard]] ResourceView* GetUAV() const noexcept { return m_unorderedAccessView.get(); }
+	protected:
+		void CreateImageViews() override;
+	private:
+		std::unique_ptr<ResourceView> m_unorderedAccessView;
+	};
+
+	// I don't like idea of diamond inheritance
+	class UAVRenderTexture final : public AbstractSingleTexture
+	{
+	public:
+		explicit UAVRenderTexture(
+			uint32_t width,
+			uint32_t height,
+			DXGI_FORMAT format,
+			D3D12_RESOURCE_STATES usage,
+			D3D12_HEAP_TYPE heapType
+		);
+		[[nodiscard]] ResourceView* GetUAV() const noexcept { return m_unorderedAccessView.get(); }
+		[[nodiscard]] ResourceView* GetRTV() const noexcept { return m_renderTargetView.get(); }
+	protected:
+		void CreateImageViews() override;
+	private:
+		std::unique_ptr<ResourceView> m_renderTargetView;
+		std::unique_ptr<ResourceView> m_unorderedAccessView;
+	};
 
 	class DepthTexture final : public AbstractSingleTexture
 	{
@@ -157,23 +194,6 @@ namespace JoyEngine
 	private:
 		uint32_t m_arraySize; // we will use depth array texture as single view for rendering
 		std::unique_ptr<ResourceView> m_depthStencilView;
-	};
-
-	class UAVTexture final : public AbstractSingleTexture
-	{
-	public:
-		explicit UAVTexture(
-			uint32_t width,
-			uint32_t height,
-			DXGI_FORMAT format,
-			D3D12_RESOURCE_STATES usage,
-			D3D12_HEAP_TYPE heapType
-		);
-		[[nodiscard]] ResourceView* GetUAV() const noexcept { return m_unorderedAccessView.get(); }
-	protected:
-		void CreateImageViews() override;
-	private:
-		std::unique_ptr<ResourceView> m_unorderedAccessView;
 	};
 }
 

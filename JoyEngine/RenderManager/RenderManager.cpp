@@ -320,8 +320,6 @@ namespace JoyEngine
 			                                    m_gbuffer->GetColorSRV());
 			GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "normalsTexture",
 			                                    m_gbuffer->GetNormalsSRV());
-			//GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "positionsTexture",
-			//                                    m_gbuffer->GetPositionsSRV());
 			GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "depthTexture",
 			                                    m_gbuffer->GetDepthSRV());
 			GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "directionalLightData",
@@ -330,8 +328,6 @@ namespace JoyEngine
 			                                    m_directionLight->GetShadowmapView());
 			GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "PCFSampler",
 			                                    EngineSamplersProvider::GetDepthPCFSampler());
-			//GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "textureSampler",
-			//                                    EngineSamplersProvider::GetLinearClampSampler());
 
 			GraphicsUtils::ProcessEngineBindings(commandList, m_currentFrameIndex,
 			                                     sm->GetGraphicsPipeline()->GetEngineBindings(), nullptr,

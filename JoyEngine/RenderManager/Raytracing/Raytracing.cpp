@@ -119,7 +119,11 @@ namespace JoyEngine
 		// Raytracing
 		{
 			m_gbuffer = std::make_unique<UAVGbuffer>(m_width, m_height);
-
+			m_shadedRenderTexture = std::make_unique<RenderTexture>(
+				m_width, m_height,
+				m_mainColorFormat,
+				D3D12_RESOURCE_STATE_GENERIC_READ,
+				D3D12_HEAP_TYPE_DEFAULT);
 			//shaders/raytracing/Raytracing.hlsl
 			const GUID raytracingShaderGuid = GUID::StringToGuid("b24e90ac-fcfa-4754-b0e5-8553b19e27ca");
 			const GUID raytracingPipelineGuid = GUID::Random();
@@ -134,7 +138,8 @@ namespace JoyEngine
 
 		// Draw raytraced texture 
 		{
-			const GUID debugImageComposerShaderGuid = GUID::StringToGuid("cc8de13c-0510-4842-99f5-de2327aa95d4"); // shaders/raytracing/debugImageCompose.hlsl
+			const GUID debugImageComposerShaderGuid = GUID::StringToGuid("cc8de13c-0510-4842-99f5-de2327aa95d4");
+			// shaders/raytracing/debugImageCompose.hlsl
 			const GUID debugImageComposerSharedMaterialGuid = GUID::Random();
 
 			const D3D12_RENDER_TARGET_BLEND_DESC blendDesc = {
@@ -156,7 +161,8 @@ namespace JoyEngine
 			};
 			blend.RenderTarget[0] = blendDesc;
 
-			m_debugRaytracingTextureDrawGraphicsPipeline = ResourceManager::Get()->LoadResource<GraphicsPipeline, GraphicsPipelineArgs>(
+			m_debugRaytracingTextureDrawGraphicsPipeline = ResourceManager::Get()->LoadResource<
+				GraphicsPipeline, GraphicsPipelineArgs>(
 				debugImageComposerSharedMaterialGuid,
 				{
 					debugImageComposerShaderGuid,
@@ -177,10 +183,12 @@ namespace JoyEngine
 
 		// Gizmo AABB draw 
 		{
-			const GUID gizmoAABBDrawerShaderGuid = GUID::StringToGuid("a231c467-dc15-4753-a3db-8888efc73c1a"); // shaders/raytracing/gizmoAABBDrawer.hlsl
+			const GUID gizmoAABBDrawerShaderGuid = GUID::StringToGuid("a231c467-dc15-4753-a3db-8888efc73c1a");
+			// shaders/raytracing/gizmoAABBDrawer.hlsl
 			const GUID gizmoAABBDrawerSharedMaterialGuid = GUID::Random();
 
-			m_gizmoAABBDrawerGraphicsPipeline = ResourceManager::Get()->LoadResource<GraphicsPipeline, GraphicsPipelineArgs>(
+			m_gizmoAABBDrawerGraphicsPipeline = ResourceManager::Get()->LoadResource<
+				GraphicsPipeline, GraphicsPipelineArgs>(
 				gizmoAABBDrawerSharedMaterialGuid,
 				{
 					gizmoAABBDrawerShaderGuid,
@@ -295,25 +303,37 @@ namespace JoyEngine
 			commandList->SetPipelineState(m_raytracingPipeline->GetPipelineObject().Get());
 
 
-			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "colorTexture", m_gbuffer->GetColorUAV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "normalsTexture", m_gbuffer->GetNormalsUAV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "depthTexture", m_gbuffer->GetDepthUAV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "textures", DescriptorManager::Get()->GetSRVHeapStartDescriptorHandle());
-			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "materials", EngineMaterialProvider::Get()->GetMaterialsDataView());
-			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "sortedTriangleIndices", m_triangleIndexBuffer->GetSRV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "triangleAABB", m_triangleAABBBuffer->GetSRV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "internalNodes", m_bvhInternalNodesBuffer->GetSRV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "leafNodes", m_bvhLeafNodesBuffer->GetSRV());
+			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "colorTexture",
+			                                   m_gbuffer->GetColorUAV());
+			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "normalsTexture",
+			                                   m_gbuffer->GetNormalsUAV());
+			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "depthTexture",
+			                                   m_gbuffer->GetDepthUAV());
+			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "textures",
+			                                   DescriptorManager::Get()->GetSRVHeapStartDescriptorHandle());
+			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "materials",
+			                                   EngineMaterialProvider::Get()->GetMaterialsDataView());
+			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "sortedTriangleIndices",
+			                                   m_triangleIndexBuffer->GetSRV());
+			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "triangleAABB",
+			                                   m_triangleAABBBuffer->GetSRV());
+			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "internalNodes",
+			                                   m_bvhInternalNodesBuffer->GetSRV());
+			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "leafNodes",
+			                                   m_bvhLeafNodesBuffer->GetSRV());
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "bvhData", m_bvhDataBuffer->GetSRV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "triangleData", m_triangleDataBuffer->GetSRV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "linearClampSampler", EngineSamplersProvider::GetLinearWrapSampler());
+			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "triangleData",
+			                                   m_triangleDataBuffer->GetSRV());
+			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "linearClampSampler",
+			                                   EngineSamplersProvider::GetLinearWrapSampler());
 
-			GraphicsUtils::ProcessEngineBindings(commandList, frameIndex, m_raytracingPipeline->GetEngineBindings(), nullptr, nullptr);
-
-			m_gbuffer->BarrierToRead(commandList);
+			GraphicsUtils::ProcessEngineBindings(commandList, frameIndex, m_raytracingPipeline->GetEngineBindings(),
+			                                     nullptr, nullptr);
 		}
 
 		commandList->Dispatch((m_width / 32) + 1, (m_height / 32) + 1, 1);
+
+		m_gbuffer->BarrierToRead(commandList);
 	}
 
 	void Raytracing::DebugDrawRaytracedImage(ID3D12GraphicsCommandList* commandList)
@@ -328,7 +348,8 @@ namespace JoyEngine
 		commandList->DrawInstanced(3, 1, 0, 0);
 	}
 
-	void Raytracing::DrawGizmo(ID3D12GraphicsCommandList* commandList, const ViewProjectionMatrixData* viewProjectionMatrixData) const
+	void Raytracing::DrawGizmo(ID3D12GraphicsCommandList* commandList,
+	                           const ViewProjectionMatrixData* viewProjectionMatrixData) const
 	{
 		auto sm = m_gizmoAABBDrawerGraphicsPipeline;
 

@@ -194,6 +194,6 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 
 	float4 color = textures[materials.data[materialIndex].diffuseTextureIndex].SampleLevel(linearClampSampler, uv, 0);
 	colorTexture[id.xy] = float4(color.rgb, hasResult);
-	depthTexture[id.xy] = max(1, LinearEyeToDepth(result.distance));
+	depthTexture[id.xy] = min(1, LinearEyeToDepth(result.distance));
 	normalsTexture[id.xy] = float4(normal * hasResult, 1);
 }

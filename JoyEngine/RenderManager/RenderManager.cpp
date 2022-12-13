@@ -316,7 +316,22 @@ namespace JoyEngine
 		{
 			m_raytracing->ProcessRaytracing(commandList, m_currentFrameIndex);
 
-			m_raytracing->DebugDrawRaytracedImage(commandList);
+			auto raytracedRTVHandle = m_raytracing->GetShadedRenderTexture()->GetRTV()->GetCPUHandle();
+
+			GraphicsUtils::Barrier(commandList, m_raytracing->GetShadedRenderTexture()->GetImageResource().Get(),
+			                       D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
+
+			commandList->OMSetRenderTargets(
+				1,
+				&raytracedRTVHandle,
+				FALSE, nullptr);
+
+			RenderDeferredShading(commandList, m_raytracing->GetGBuffer(), &mainCameraMatrixVP);
+
+			GraphicsUtils::Barrier(commandList, m_raytracing->GetShadedRenderTexture()->GetImageResource().Get(),
+			                       D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
+
+			//m_raytracing->DebugDrawRaytracedImage(commandList);
 		}
 
 		// HDR->LDR
@@ -550,28 +565,28 @@ namespace JoyEngine
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "colorTexture",
-			gBuffer->GetColorSRV());
+		                                    gBuffer->GetColorSRV());
 		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "normalsTexture",
-			gBuffer->GetNormalsSRV());
+		                                    gBuffer->GetNormalsSRV());
 		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "depthTexture",
-			gBuffer->GetDepthSRV());
+		                                    gBuffer->GetDepthSRV());
 		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "directionalLightData",
-			m_directionLight->GetLightDataView(m_currentFrameIndex));
+		                                    m_directionLight->GetLightDataView(m_currentFrameIndex));
 		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "directionalLightShadowmap",
-			m_directionLight->GetShadowmapView());
+		                                    m_directionLight->GetShadowmapView());
 		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "PCFSampler",
-			EngineSamplersProvider::GetDepthPCFSampler());
+		                                    EngineSamplersProvider::GetDepthPCFSampler());
 
 		GraphicsUtils::ProcessEngineBindings(commandList, m_currentFrameIndex,
-			sm->GetGraphicsPipeline()->GetEngineBindings(), nullptr,
-			cameraVP);
+		                                     sm->GetGraphicsPipeline()->GetEngineBindings(), nullptr,
+		                                     cameraVP);
 
 		commandList->DrawIndexedInstanced(
 			3,
 			1,
 			0, 0, 0);
 
-		m_skybox->DrawSky(commandList, m_gbuffer->GetColorSRV(), m_currentFrameIndex, cameraVP);
+		m_skybox->DrawSky(commandList, gBuffer->GetColorSRV(), m_currentFrameIndex, cameraVP);
 	}
 
 	void RenderManager::CopyRTVResource(

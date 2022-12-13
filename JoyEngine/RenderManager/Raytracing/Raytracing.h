@@ -23,18 +23,21 @@ namespace JoyEngine
 	public:
 		Raytracing() = delete;
 		Raytracing(
-			std::set<SharedMaterial*>& sceneSharedMaterials, 
-			DXGI_FORMAT mainColorFormat, 
-			DXGI_FORMAT gBufferPositionsFormat, 
-			DXGI_FORMAT gBufferNormalsFormat, 
-			DXGI_FORMAT swapchainFormat, 
-			uint32_t width, 
+			std::set<SharedMaterial*>& sceneSharedMaterials,
+			DXGI_FORMAT mainColorFormat,
+			DXGI_FORMAT gBufferPositionsFormat,
+			DXGI_FORMAT gBufferNormalsFormat,
+			DXGI_FORMAT swapchainFormat,
+			uint32_t width,
 			uint32_t height);
 		void UploadSceneData();
 		void PrepareBVH();
 		void ProcessRaytracing(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex);
 		void DebugDrawRaytracedImage(ID3D12GraphicsCommandList* commandList);
 		void DrawGizmo(ID3D12GraphicsCommandList* commandList, const ViewProjectionMatrixData* viewProjectionMatrixData) const;
+		[[nodiscard]] UAVGbuffer* GetGBuffer() const { return m_gbuffer.get(); }
+		[[nodiscard]] RenderTexture* GetShadedRenderTexture() const { return m_shadedRenderTexture.get(); }
+
 	private:
 		DXGI_FORMAT m_mainColorFormat;
 		DXGI_FORMAT m_gBufferPositionsFormat;
@@ -46,6 +49,7 @@ namespace JoyEngine
 		uint32_t m_trianglesLength = 0;
 
 		std::unique_ptr<UAVGbuffer> m_gbuffer;
+		std::unique_ptr<RenderTexture> m_shadedRenderTexture;
 		std::set<SharedMaterial*>& m_sceneSharedMaterials;
 
 		std::unique_ptr<DataBuffer<uint32_t>> m_keysBuffer;

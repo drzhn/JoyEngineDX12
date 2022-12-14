@@ -288,8 +288,8 @@ namespace JoyEngine
 			                                   m_gbuffer->GetColorUAV());
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "normalsTexture",
 			                                   m_gbuffer->GetNormalsUAV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "depthTexture",
-			                                   m_gbuffer->GetDepthUAV());
+			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "positionTexture",
+			                                   m_gbuffer->GetPositionUAV());
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "textures",
 			                                   DescriptorManager::Get()->GetSRVHeapStartDescriptorHandle());
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "materials",

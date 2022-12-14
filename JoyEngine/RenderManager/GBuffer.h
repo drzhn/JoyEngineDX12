@@ -22,6 +22,7 @@ namespace JoyEngine
 
 		[[nodiscard]] ResourceView* GetColorSRV() const noexcept { return m_colorTexture->GetSRV(); }
 		[[nodiscard]] ResourceView* GetNormalsSRV() const noexcept { return m_normalsTexture->GetSRV(); }
+		[[nodiscard]] ResourceView* GetPositionSRV() const noexcept { return m_positionTexture->GetSRV(); }
 		[[nodiscard]] ResourceView* GetDepthSRV() const noexcept { return m_depthTexture->GetSRV(); }
 	protected:
 		uint32_t m_width = 0;
@@ -29,6 +30,7 @@ namespace JoyEngine
 
 		std::unique_ptr<AbstractSingleTexture> m_colorTexture;
 		std::unique_ptr<AbstractSingleTexture> m_normalsTexture;
+		std::unique_ptr<AbstractSingleTexture> m_positionTexture;
 		std::unique_ptr<AbstractSingleTexture> m_depthTexture;
 	};
 
@@ -44,6 +46,7 @@ namespace JoyEngine
 
 		[[nodiscard]] ResourceView* GetColorUAV() const noexcept { return reinterpret_cast<UAVTexture*>(m_colorTexture.get())->GetUAV(); }
 		[[nodiscard]] ResourceView* GetNormalsUAV() const noexcept { return reinterpret_cast<UAVTexture*>(m_normalsTexture.get())->GetUAV(); }
+		[[nodiscard]] ResourceView* GetPositionUAV() const noexcept { return reinterpret_cast<UAVTexture*>(m_positionTexture.get())->GetUAV(); }
 		[[nodiscard]] ResourceView* GetDepthUAV() const noexcept { return reinterpret_cast<UAVTexture*>(m_depthTexture.get())->GetUAV(); }
 	private:
 	};
@@ -61,6 +64,7 @@ namespace JoyEngine
 
 		[[nodiscard]] ResourceView* GetColorRTV() const noexcept { return reinterpret_cast<RenderTexture*>(m_colorTexture.get())->GetRTV(); }
 		[[nodiscard]] ResourceView* GetNormalsRTV() const noexcept { return reinterpret_cast<RenderTexture*>(m_normalsTexture.get())->GetRTV(); }
+		[[nodiscard]] ResourceView* GetPositionRTV() const noexcept { return reinterpret_cast<RenderTexture*>(m_positionTexture.get())->GetRTV(); }
 		[[nodiscard]] ResourceView* GetDepthDSV() const noexcept { return reinterpret_cast<DepthTexture*>(m_depthTexture.get())->GetDSV(); }
 	private:
 	};

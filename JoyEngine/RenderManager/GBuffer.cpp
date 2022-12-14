@@ -29,6 +29,14 @@ namespace JoyEngine
 			D3D12_HEAP_TYPE_DEFAULT
 		);
 
+		m_positionTexture = std::make_unique<UAVTexture>(
+			m_width,
+			m_height,
+			RenderManager::GetGBufferFormat(),
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			D3D12_HEAP_TYPE_DEFAULT
+		);
+
 
 		m_depthTexture = std::make_unique<UAVTexture>(
 			m_width,
@@ -43,6 +51,7 @@ namespace JoyEngine
 	{
 		GraphicsUtils::UAVBarrier(commandList, m_colorTexture->GetImageResource().Get());
 		GraphicsUtils::UAVBarrier(commandList, m_normalsTexture->GetImageResource().Get());
+		GraphicsUtils::UAVBarrier(commandList, m_positionTexture->GetImageResource().Get());
 		GraphicsUtils::UAVBarrier(commandList, m_depthTexture->GetImageResource().Get());
 	}
 
@@ -50,6 +59,7 @@ namespace JoyEngine
 	{
 		GraphicsUtils::UAVBarrier(commandList, m_colorTexture->GetImageResource().Get());
 		GraphicsUtils::UAVBarrier(commandList, m_normalsTexture->GetImageResource().Get());
+		GraphicsUtils::UAVBarrier(commandList, m_positionTexture->GetImageResource().Get());
 		GraphicsUtils::UAVBarrier(commandList, m_depthTexture->GetImageResource().Get());
 	}
 
@@ -64,6 +74,14 @@ namespace JoyEngine
 		);
 
 		m_normalsTexture = std::make_unique<RenderTexture>(
+			m_width,
+			m_height,
+			RenderManager::GetGBufferFormat(),
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			D3D12_HEAP_TYPE_DEFAULT
+		);
+
+		m_positionTexture = std::make_unique<RenderTexture>(
 			m_width,
 			m_height,
 			RenderManager::GetGBufferFormat(),
@@ -86,6 +104,8 @@ namespace JoyEngine
 		                       D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
 		GraphicsUtils::Barrier(commandList, m_normalsTexture->GetImageResource().Get(),
 		                       D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
+		GraphicsUtils::Barrier(commandList, m_positionTexture->GetImageResource().Get(),
+		                       D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
 		GraphicsUtils::Barrier(commandList, m_depthTexture->GetImageResource().Get(),
 		                       D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_GENERIC_READ);
 	}
@@ -95,6 +115,8 @@ namespace JoyEngine
 		GraphicsUtils::Barrier(commandList, m_colorTexture->GetImageResource().Get(),
 		                       D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
 		GraphicsUtils::Barrier(commandList, m_normalsTexture->GetImageResource().Get(),
+		                       D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		GraphicsUtils::Barrier(commandList, m_positionTexture->GetImageResource().Get(),
 		                       D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
 		GraphicsUtils::Barrier(commandList, m_depthTexture->GetImageResource().Get(),
 		                       D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_DEPTH_WRITE);

@@ -10,7 +10,7 @@ ConstantBuffer<EngineData> engineData;
 
 Texture2D<float4> colorTexture;
 Texture2D<float4> normalsTexture;
-Texture2D<float> depthTexture;
+Texture2D<float4> positionTexture;
 
 ConstantBuffer<DirectionLightData> directionalLightData;
 Texture2D<float> directionalLightShadowmap;
@@ -59,9 +59,7 @@ float4 PSMain(PSInput input) : SV_Target
 
 	const float4 color = colorTexture.Load(float3(input.position.xy, 0));
 	const float3 worldNormal = normalsTexture.Load(float3(input.position.xy, 0)).rgb;
-	const float depth = depthTexture.Load(float3(input.position.xy, 0)).r;
-
-	const float3 worldPosition = WorldPosFromDepth(depth, screenPosition);
+	const float3 worldPosition = positionTexture.Load(float3(input.position.xy, 0)).rgb;
 
 	const float4x4 resMatrix = mul(directionalLightData.proj, directionalLightData.view);
 	float4 posShadowMap = mul(resMatrix, float4(worldPosition, 1.0));

@@ -133,6 +133,7 @@ namespace JoyEngine
 					{
 						mainGBufferFormat,
 						mainGBufferFormat,
+						mainGBufferFormat,
 					},
 					mainDSVFormat,
 					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,

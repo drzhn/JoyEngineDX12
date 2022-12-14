@@ -17,7 +17,7 @@ SamplerState linearClampSampler;
 
 RWTexture2D<float4> colorTexture;
 RWTexture2D<float4> normalsTexture;
-RWTexture2D<float> depthTexture;
+RWTexture2D<float4> positionTexture;
 
 struct Ray
 {
@@ -197,11 +197,6 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 
 	float4 color = textures[materials.data[materialIndex].diffuseTextureIndex].SampleLevel(linearClampSampler, uv, 0);
 	colorTexture[id.xy] = float4(color.rgb, hasResult);
-	depthTexture[id.xy] = DistanceToDepth(result.distance);
+	positionTexture[id.xy] = float4(ray.origin + ray.dir * result.distance, hasResult);
 	normalsTexture[id.xy] = float4(normalize(normal) * hasResult, 1);
-
-	//const float3 worldSpacePos = ray.origin + ray.dir * result.distance;
-	//const float2 screenUV = float2((id.x + 0.5) / engineData.screenWidth, (id.y + 0.5) / engineData.screenHeight);
-	//float4 clipSpacePos = mul(viewProjectionData.proj, mul(viewProjectionData.view, worldSpacePos));
-	//depthTexture[id.xy] = clipSpacePos.z;
 }

@@ -280,20 +280,22 @@ namespace JoyEngine
 		{
 			m_gbuffer->BarrierToWrite(commandList);
 
-			D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[2] = {
+			D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[3] = {
 				m_gbuffer->GetColorRTV()->GetCPUHandle(),
 				m_gbuffer->GetNormalsRTV()->GetCPUHandle(),
+				m_gbuffer->GetPositionRTV()->GetCPUHandle(),
 			};
 			auto dsvHandle = m_gbuffer->GetDepthDSV()->GetCPUHandle();
 
 			commandList->OMSetRenderTargets(
-				2,
+				3,
 				rtvHandles,
 				FALSE, &dsvHandle);
 
 			constexpr float clearColor[] = {0.0f, 0.0f, 0.0f, 0.0f};
 			commandList->ClearRenderTargetView(rtvHandles[0], clearColor, 0, nullptr);
 			commandList->ClearRenderTargetView(rtvHandles[1], clearColor, 0, nullptr);
+			commandList->ClearRenderTargetView(rtvHandles[2], clearColor, 0, nullptr);
 			commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 			RenderSceneForSharedMaterial(commandList, &mainCameraMatrixVP,
@@ -572,8 +574,8 @@ namespace JoyEngine
 		                                    gBuffer->GetColorSRV());
 		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "normalsTexture",
 		                                    gBuffer->GetNormalsSRV());
-		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "depthTexture",
-		                                    gBuffer->GetDepthSRV());
+		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "positionTexture",
+		                                    gBuffer->GetPositionSRV());
 		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "directionalLightData",
 		                                    m_directionLight->GetLightDataView(m_currentFrameIndex));
 		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "directionalLightShadowmap",

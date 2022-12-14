@@ -15,7 +15,8 @@ namespace JoyEngine
 	{
 		ObjectIndexData,
 		ModelMatrixData,
-		ViewProjectionMatrixData,
+		ViewProjectionMatrixDataGraphics,
+		ViewProjectionMatrixDataCompute,
 		EngineDataGraphics,
 		EngineDataCompute,
 	};

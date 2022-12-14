@@ -142,25 +142,6 @@ namespace JoyEngine
 			// shaders/raytracing/debugImageCompose.hlsl
 			const GUID debugImageComposerSharedMaterialGuid = GUID::Random();
 
-			const D3D12_RENDER_TARGET_BLEND_DESC blendDesc = {
-				true,
-				FALSE,
-				D3D12_BLEND_SRC_ALPHA,
-				D3D12_BLEND_INV_SRC_ALPHA,
-				D3D12_BLEND_OP_ADD,
-				D3D12_BLEND_ONE,
-				D3D12_BLEND_ZERO,
-				D3D12_BLEND_OP_ADD,
-				D3D12_LOGIC_OP_NOOP,
-				D3D12_COLOR_WRITE_ENABLE_ALL
-			};
-
-			D3D12_BLEND_DESC blend = {
-				.AlphaToCoverageEnable = false,
-				.IndependentBlendEnable = false,
-			};
-			blend.RenderTarget[0] = blendDesc;
-
 			m_debugRaytracingTextureDrawGraphicsPipeline = ResourceManager::Get()->LoadResource<
 				GraphicsPipeline, GraphicsPipelineArgs>(
 				debugImageComposerSharedMaterialGuid,
@@ -172,7 +153,7 @@ namespace JoyEngine
 					false,
 					D3D12_CULL_MODE_NONE,
 					D3D12_COMPARISON_FUNC_NEVER,
-					CD3DX12_BLEND_DESC(blend),
+					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 					{
 						mainColorFormat
 					},
@@ -295,7 +276,7 @@ namespace JoyEngine
 		m_bvhConstructor->ConstructBVH();
 	}
 
-	void Raytracing::ProcessRaytracing(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex)
+	void Raytracing::ProcessRaytracing(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, ViewProjectionMatrixData* data)
 	{
 		// Raytracing process
 		{
@@ -328,7 +309,7 @@ namespace JoyEngine
 			                                   EngineSamplersProvider::GetLinearWrapSampler());
 
 			GraphicsUtils::ProcessEngineBindings(commandList, frameIndex, m_raytracingPipeline->GetEngineBindings(),
-			                                     nullptr, nullptr);
+			                                     nullptr, data);
 		}
 
 		commandList->Dispatch((m_width / 32) + 1, (m_height / 32) + 1, 1);
@@ -344,7 +325,7 @@ namespace JoyEngine
 		commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		GraphicsUtils::AttachViewToGraphics(commandList, sm, "raytracingTexture", m_gbuffer->GetColorSRV());
+		GraphicsUtils::AttachViewToGraphics(commandList, sm, "raytracingTexture", m_shadedRenderTexture->GetSRV());
 		commandList->DrawInstanced(3, 1, 0, 0);
 	}
 

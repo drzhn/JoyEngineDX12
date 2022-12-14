@@ -84,7 +84,15 @@ namespace JoyEngine
 				{
 					params[paramsIndex].InitAsConstants(
 						sizeof(ViewProjectionMatrixData) / 4, input.BindPoint, input.Space, input.Visibility);
-					m_engineBindings.insert({paramsIndex, EngineBindingType::ViewProjectionMatrixData});
+					if (shaderTypes & JoyShaderTypeCompute || shaderTypes & JoyShaderTypeCompute6_5)
+					{
+						m_engineBindings.insert({ paramsIndex, EngineBindingType::ViewProjectionMatrixDataCompute });
+					}
+					else
+					{
+						m_engineBindings.insert({ paramsIndex, EngineBindingType::ViewProjectionMatrixDataGraphics });
+
+					}
 					paramsIndex++;
 				}
 				else if (name == "objectMatricesData")

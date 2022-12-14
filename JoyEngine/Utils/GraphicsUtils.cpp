@@ -189,9 +189,18 @@ namespace JoyEngine
 					);
 					break;
 				}
-			case EngineBindingType::ViewProjectionMatrixData:
+			case EngineBindingType::ViewProjectionMatrixDataGraphics:
 				{
 					commandList->SetGraphicsRoot32BitConstants(
+						rootIndex,
+						sizeof(ViewProjectionMatrixData) / 4,
+						viewProjectionMatrix,
+						0);
+					break;
+				}
+			case EngineBindingType::ViewProjectionMatrixDataCompute:
+				{
+					commandList->SetComputeRoot32BitConstants(
 						rootIndex,
 						sizeof(ViewProjectionMatrixData) / 4,
 						viewProjectionMatrix,

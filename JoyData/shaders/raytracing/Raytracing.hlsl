@@ -2,6 +2,8 @@
 #include "CommonEngineStructs.h"
 
 ConstantBuffer<EngineData> engineData;
+ConstantBuffer<ViewProjectionMatrixData> viewProjectionData;
+
 StructuredBuffer<uint> sortedTriangleIndices; // size = THREADS_PER_BLOCK * BLOCK_SIZE
 StructuredBuffer<AABB> triangleAABB; // size = THREADS_PER_BLOCK * BLOCK_SIZE
 StructuredBuffer<InternalNode> internalNodes; // size = THREADS_PER_BLOCK * BLOCK_SIZE - 1
@@ -149,7 +151,7 @@ inline RaycastResult TraceRay(Ray ray)
 	return result;
 }
 
-inline float LinearEyeToDepth(float distance)
+inline float DistanceToDepth(float distance)
 {
 	const float zNear = engineData.cameraNear;
 	const float zFar = engineData.cameraFar;
@@ -157,7 +159,8 @@ inline float LinearEyeToDepth(float distance)
 	const float y = zFar / zNear;
 	const float z = x / zFar;
 	const float w = y / zFar;
-	return ((1.0 / distance) - w) / z;
+
+	return (1.0 / distance - w) / z;
 }
 
 [numthreads(32,32,1)]
@@ -194,6 +197,11 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 
 	float4 color = textures[materials.data[materialIndex].diffuseTextureIndex].SampleLevel(linearClampSampler, uv, 0);
 	colorTexture[id.xy] = float4(color.rgb, hasResult);
-	depthTexture[id.xy] = min(1, LinearEyeToDepth(result.distance));
-	normalsTexture[id.xy] = float4(normal * hasResult, 1);
+	depthTexture[id.xy] = DistanceToDepth(result.distance);
+	normalsTexture[id.xy] = float4(normalize(normal) * hasResult, 1);
+
+	//const float3 worldSpacePos = ray.origin + ray.dir * result.distance;
+	//const float2 screenUV = float2((id.x + 0.5) / engineData.screenWidth, (id.y + 0.5) / engineData.screenHeight);
+	//float4 clipSpacePos = mul(viewProjectionData.proj, mul(viewProjectionData.view, worldSpacePos));
+	//depthTexture[id.xy] = clipSpacePos.z;
 }

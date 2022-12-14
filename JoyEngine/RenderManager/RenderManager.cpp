@@ -314,7 +314,7 @@ namespace JoyEngine
 
 		if (g_drawRaytracedImage)
 		{
-			m_raytracing->ProcessRaytracing(commandList, m_currentFrameIndex);
+			m_raytracing->ProcessRaytracing(commandList, m_currentFrameIndex, &mainCameraMatrixVP);
 
 			auto raytracedRTVHandle = m_raytracing->GetShadedRenderTexture()->GetRTV()->GetCPUHandle();
 
@@ -330,8 +330,12 @@ namespace JoyEngine
 
 			GraphicsUtils::Barrier(commandList, m_raytracing->GetShadedRenderTexture()->GetImageResource().Get(),
 			                       D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
+			commandList->OMSetRenderTargets(
+				1,
+				&hdrRTVHandle,
+				FALSE, nullptr);
 
-			//m_raytracing->DebugDrawRaytracedImage(commandList);
+			m_raytracing->DebugDrawRaytracedImage(commandList);
 		}
 
 		// HDR->LDR

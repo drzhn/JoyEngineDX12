@@ -132,7 +132,7 @@
     <ClCompile Include="JoyEngine\ResourceManager\ConstantCpuBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JoyEngine\RenderManager\Raytracing\Raytracing.cpp">
+    <ClCompile Include="JoyEngine\RenderManager\Raytracing\RaytracedLightProbes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="JoyEngine\RenderManager\Raytracing\BufferSorter.cpp">
@@ -332,7 +332,7 @@
     <ClInclude Include="JoyEngine\ResourceManager\ConstantCpuBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JoyEngine\RenderManager\Raytracing\Raytracing.h">
+    <ClInclude Include="JoyEngine\RenderManager\Raytracing\RaytracedLightProbes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JoyEngine\Utils\TimeCounter.h">
@@ -437,5 +437,6 @@
     <None Include="JoyData\shaders\raytracing\debugImageCompose.hlsl" />
     <None Include="JoyData\shaders\deferredshadingprocessor.hlsl" />
     <None Include="JoyData\shaders\skybox.hlsl" />
+    <None Include="JoyData\shaders\raytracing\debugDrawProbes.hlsl" />
   </ItemGroup>
 </Project>

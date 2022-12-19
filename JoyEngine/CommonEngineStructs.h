@@ -200,6 +200,17 @@ struct MipMapGenerationData
 
 // Raytracing structs
 
+struct RaytracedProbesData
+{
+	VEC3 gridMin;
+	float cellSize;
+
+	UINT1 gridX;
+	UINT1 gridY;
+	UINT1 gridZ;
+	float _dummy0;
+};
+
 struct BufferSorterData
 {
 	UINT1 bitOffset;

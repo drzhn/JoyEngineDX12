@@ -228,7 +228,7 @@
     <ClCompile Include="JoyEngine\RenderManager\GBuffer.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\Raytracing\BufferSorter.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\Raytracing\BVHConstructor.cpp" />
-    <ClCompile Include="JoyEngine\RenderManager\Raytracing\Raytracing.cpp" />
+    <ClCompile Include="JoyEngine\RenderManager\Raytracing\RaytracedLightProbes.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\Skybox.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\Tonemapping.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\Buffer.cpp" />
@@ -290,7 +290,7 @@
     <ClInclude Include="JoyEngine\RenderManager\Raytracing\BufferSorter.h" />
     <ClInclude Include="JoyEngine\RenderManager\Raytracing\BVHConstructor.h" />
     <ClInclude Include="JoyEngine\RenderManager\Raytracing\DataBuffer.h" />
-    <ClInclude Include="JoyEngine\RenderManager\Raytracing\Raytracing.h" />
+    <ClInclude Include="JoyEngine\RenderManager\Raytracing\RaytracedLightProbes.h" />
     <ClInclude Include="JoyEngine\RenderManager\Skybox.h" />
     <ClInclude Include="JoyEngine\RenderManager\Tonemapping.h" />
     <ClInclude Include="JoyEngine\ResourceManager\Buffer.h" />
@@ -518,6 +518,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="JoyData\shaders\skybox.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="JoyData\shaders\raytracing\debugDrawProbes.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

@@ -18,7 +18,7 @@
 #include "ResourceManager/DynamicCpuBuffer.h"
 
 #include "Tonemapping.h"
-#include "Raytracing/Raytracing.h"
+#include "Raytracing/RaytracedLightProbes.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -131,7 +131,7 @@ namespace JoyEngine
 
 
 		std::unique_ptr<Tonemapping> m_tonemapping;
-		std::unique_ptr<Raytracing> m_raytracing;
+		std::unique_ptr<RaytracedLightProbes> m_raytracing;
 
 		std::set<SharedMaterial*> m_sharedMaterials;
 

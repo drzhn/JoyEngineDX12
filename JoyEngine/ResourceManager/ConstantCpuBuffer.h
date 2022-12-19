@@ -50,7 +50,7 @@ namespace JoyEngine
 			m_currentLockedArea = std::move(m_buffer->GetMappedPtr(0, m_size));
 		}
 
-		[[nodiscard]] T* GetPtr() const
+		[[nodiscard]] T* GetPtr() 
 		{
 			ASSERT(m_currentLockedArea != nullptr);
 			return static_cast<T*>(m_currentLockedArea->GetMappedPtr());

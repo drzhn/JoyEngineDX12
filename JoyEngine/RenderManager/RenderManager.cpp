@@ -110,12 +110,13 @@ namespace JoyEngine
 			m_mainColorRenderTarget.get(),
 			hdrRTVFormat, swapchainFormat, depthFormat);
 
-		m_raytracing = std::make_unique<Raytracing>(
+		m_raytracing = std::make_unique<RaytracedLightProbes>(
 			m_sharedMaterials,
 			GetMainColorFormat(),
 			GetGBufferFormat(),
 			GetGBufferFormat(),
 			GetSwapchainFormat(),
+			GetDepthFormat(),
 			m_width,
 			m_height);
 
@@ -360,6 +361,8 @@ namespace JoyEngine
 
 			m_tonemapping->Render(commandList, m_currentFrameIndex,
 			                      m_swapchainRenderTargets[m_currentFrameIndex].get());
+
+			m_raytracing->DebugDrawProbes(commandList, m_currentFrameIndex, &mainCameraMatrixVP);
 
 
 			DrawGui(commandList, &mainCameraMatrixVP);

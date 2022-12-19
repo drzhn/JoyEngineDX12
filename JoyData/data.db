@@ -420,6 +420,10 @@
     {
       "guid": "7e43e76d-9d5f-4fc8-a8f1-c8ec0dce95ef",
       "path": "shaders/skybox.hlsl"
+    },
+    {
+      "guid": "8757d834-8dd7-4858-836b-bb6a4eb6fea0",
+      "path": "shaders/raytracing/debugDrawProbes.hlsl"
     }
   ]
 }

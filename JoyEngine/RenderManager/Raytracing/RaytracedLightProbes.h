@@ -18,23 +18,25 @@ namespace JoyEngine
 {
 	class IRenderManager;
 
-	class Raytracing
+	class RaytracedLightProbes
 	{
 	public:
-		Raytracing() = delete;
-		Raytracing(
+		RaytracedLightProbes() = delete;
+		explicit RaytracedLightProbes(
 			std::set<SharedMaterial*>& sceneSharedMaterials,
 			DXGI_FORMAT mainColorFormat,
 			DXGI_FORMAT gBufferPositionsFormat,
 			DXGI_FORMAT gBufferNormalsFormat,
 			DXGI_FORMAT swapchainFormat,
+			DXGI_FORMAT depthFormat,
 			uint32_t width,
 			uint32_t height);
 		void UploadSceneData();
-		void PrepareBVH();
-		void ProcessRaytracing(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, ViewProjectionMatrixData* data);
-		void DebugDrawRaytracedImage(ID3D12GraphicsCommandList* commandList);
-		void DrawGizmo(ID3D12GraphicsCommandList* commandList, const ViewProjectionMatrixData* viewProjectionMatrixData) const;
+		void PrepareBVH() const;
+		void ProcessRaytracing(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, ViewProjectionMatrixData* data) const;
+		void DebugDrawRaytracedImage(ID3D12GraphicsCommandList* commandList) const;
+		void DebugDrawAABBGizmo(ID3D12GraphicsCommandList* commandList, const ViewProjectionMatrixData* viewProjectionMatrixData) const;
+		void DebugDrawProbes(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, const ViewProjectionMatrixData* viewProjectionMatrixData);
 		[[nodiscard]] UAVGbuffer* GetGBuffer() const { return m_gbuffer.get(); }
 		[[nodiscard]] RenderTexture* GetShadedRenderTexture() const { return m_shadedRenderTexture.get(); }
 
@@ -63,6 +65,8 @@ namespace JoyEngine
 
 		ConstantCpuBuffer<BVHConstructorData> m_bvhConstructionData;
 
+		ConstantCpuBuffer<RaytracedProbesData> m_raytracedProbesData;
+
 		std::unique_ptr<BufferSorter> m_bufferSorter;
 		std::unique_ptr<BVHConstructor> m_bvhConstructor;
 		std::unique_ptr<ComputeDispatcher> m_dispatcher;
@@ -70,7 +74,9 @@ namespace JoyEngine
 		ResourceHandle<ComputePipeline> m_raytracingPipeline;
 		ResourceHandle<GraphicsPipeline> m_raytracedImageApplier;
 
-		ResourceHandle<GraphicsPipeline> m_gizmoAABBDrawerGraphicsPipeline;
+		ResourceHandle<Mesh> m_debugSphereProbeMesh;
+		ResourceHandle<GraphicsPipeline> m_debugDrawProbesGraphicsPipeline;
+		ResourceHandle<GraphicsPipeline> m_debugGizmoAABBDrawerGraphicsPipeline;
 		ResourceHandle<GraphicsPipeline> m_debugRaytracingTextureDrawGraphicsPipeline;
 	};
 }

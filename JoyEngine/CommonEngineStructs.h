@@ -26,7 +26,6 @@
 #endif
 
 // ========= COMMON DEFINES ========
-
 #define RADIX 8
 #define BUCKET_SIZE 256 // 2 ^ RADIX
 #define BLOCK_SIZE 512
@@ -34,7 +33,7 @@
 #define WARP_SIZE 32
 #define ELEM_PER_THREAD  1
 
-#define DATA_ARRAY_COUNT ELEM_PER_THREAD*THREADS_PER_BLOCK*BLOCK_SIZE // 1*512*1024 = 524288
+#define DATA_ARRAY_COUNT (ELEM_PER_THREAD * THREADS_PER_BLOCK * BLOCK_SIZE) // 1*512*1024 = 524288
 
 #define MAX_FLOAT 0x7F7FFFFF // just a big float
 #define MAX_UINT 0xFFFFFFFF
@@ -50,6 +49,9 @@
 // ========= CONTEXT DEPENDENT STRUCTS =========
 
 #ifdef ENGINE
+
+#define PI 3.14159265359f
+
 inline glm::vec3 shadowTransformsForward[6]
 {
 	VEC3(1.0, 0.0, 0.0),
@@ -79,6 +81,7 @@ enum LightType
 };
 #elif SHADER
 
+#define PI 3.14159265359
 
 #endif
 

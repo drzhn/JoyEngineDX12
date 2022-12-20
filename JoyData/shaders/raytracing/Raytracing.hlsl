@@ -1,8 +1,9 @@
 // Raytracing core
 #include "CommonEngineStructs.h"
 
-ConstantBuffer<EngineData> engineData;
-ConstantBuffer<ViewProjectionMatrixData> viewProjectionData;
+//ConstantBuffer<EngineData> engineData;
+//ConstantBuffer<ViewProjectionMatrixData> viewProjectionData;
+ConstantBuffer<RaytracedProbesData> raytracedProbesData;
 
 StructuredBuffer<uint> sortedTriangleIndices; // size = THREADS_PER_BLOCK * BLOCK_SIZE
 StructuredBuffer<AABB> triangleAABB; // size = THREADS_PER_BLOCK * BLOCK_SIZE
@@ -151,35 +152,65 @@ inline RaycastResult TraceRay(Ray ray)
 	return result;
 }
 
-inline float DistanceToDepth(float distance)
-{
-	const float zNear = engineData.cameraNear;
-	const float zFar = engineData.cameraFar;
-	const float x = 1 - zFar / zNear;
-	const float y = zFar / zNear;
-	const float z = x / zFar;
-	const float w = y / zFar;
+//inline float DistanceToDepth(float distance)
+//{
+//	const float zNear = engineData.cameraNear;
+//	const float zFar = engineData.cameraFar;
+//	const float x = 1 - zFar / zNear;
+//	const float y = zFar / zNear;
+//	const float z = x / zFar;
+//	const float w = y / zFar;
+//
+//	return (1.0 / distance - w) / z;
+//}
 
-	return (1.0 / distance - w) / z;
+inline float madfrac(float A, float B)
+{
+	return ((A) * (B) - floor((A) * (B)));
 }
 
-[numthreads(32,32,1)]
-void CSMain(uint3 id : SV_DispatchThreadID)
+inline float3 sphericalFibonacci(float i, float n)
 {
-	const float near = engineData.cameraNear;
-	const float fov = tan(engineData.cameraFovRadians / 2);
-	const float height = 2 * near * fov;
-	const float width = engineData.screenWidth * height / engineData.screenHeight;
+	float PHI = sqrt(5) * 0.5 + 0.5;
+	float phi = 2.0 * PI * madfrac(i, PHI - 1);
+	float cosTheta = 1.0 - (2.0 * i + 1.0) * (1.0 / n);
+	float sinTheta = sqrt(saturate(1.0f - cosTheta * cosTheta));
 
-	const float3 originCamera = float3(0, 0, 0);
-	const float3 dirCamera = float3(
-		-width / 2 + width / engineData.screenWidth * (id.x + 0.5),
-		height / 2 - height / engineData.screenHeight * (id.y + 0.5),
-		near
+	return float3(cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta);
+}
+
+//[numthreads(32,32,1)]
+//void CSMain(uint3 id : SV_DispatchThreadID)
+//{
+//	const float near = engineData.cameraNear;
+//	const float fov = tan(engineData.cameraFovRadians / 2);
+//	const float height = 2 * near * fov;
+//	const float width = engineData.screenWidth * height / engineData.screenHeight;
+//
+//	const float3 originCamera = float3(0, 0, 0);
+//	const float3 dirCamera = float3(
+//		-width / 2 + width / engineData.screenWidth * (id.x + 0.5),
+//		height / 2 - height / engineData.screenHeight * (id.y + 0.5),
+//		near
+//		);
+//
+//	const float3 origin = mul(engineData.cameraInvView, float4(originCamera, 1)).xyz;
+//	const float3 dir = mul(engineData.cameraInvView, float4(dirCamera, 0)).xyz;
+//
+//}
+
+[numthreads(DDGI_RAYS_COUNT,1,1)]
+void CSMain(uint3 groupId : SV_GroupID, uint3 groupThreadId : SV_GroupThreadID)
+{
+	const uint2 id = uint2(
+		groupId.x * raytracedProbesData.gridY * raytracedProbesData.gridZ + 
+		groupId.y * raytracedProbesData.gridZ +
+		groupId.z,
+		groupThreadId.x
 	);
+	const float3 origin = raytracedProbesData.gridMin + float3(groupId) * raytracedProbesData.cellSize;
+	const float3 dir = sphericalFibonacci(groupThreadId.x, DDGI_RAYS_COUNT);
 
-	const float3 origin = mul(engineData.cameraInvView, float4(originCamera, 1)).xyz;
-	const float3 dir = mul(engineData.cameraInvView, float4(dirCamera, 0)).xyz;
 
 	Ray ray;
 	ray.origin = origin;

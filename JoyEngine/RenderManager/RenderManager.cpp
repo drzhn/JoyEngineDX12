@@ -313,11 +313,13 @@ namespace JoyEngine
 				FALSE, nullptr);
 
 			RenderDeferredShading(commandList, m_gbuffer.get(), &mainCameraMatrixVP);
+
+			m_skybox->DrawSky(commandList, m_gbuffer->GetColorSRV(), m_currentFrameIndex, &mainCameraMatrixVP);
 		}
 
 		if (g_drawRaytracedImage)
 		{
-			m_raytracing->ProcessRaytracing(commandList, m_currentFrameIndex, &mainCameraMatrixVP);
+			m_raytracing->ProcessRaytracing(commandList, m_currentFrameIndex, &mainCameraMatrixVP, m_skybox->GetSkyboxTextureDataSrv());
 
 			auto raytracedRTVHandle = m_raytracing->GetShadedRenderTexture()->GetRTV()->GetCPUHandle();
 
@@ -595,7 +597,6 @@ namespace JoyEngine
 			1,
 			0, 0, 0);
 
-		m_skybox->DrawSky(commandList, gBuffer->GetColorSRV(), m_currentFrameIndex, cameraVP);
 	}
 
 	void RenderManager::CopyRTVResource(

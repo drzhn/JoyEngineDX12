@@ -170,6 +170,11 @@ struct ObjectIndexData
 	UINT1 data;
 };
 
+struct TextureIndexData
+{
+	UINT1 data;
+};
+
 struct ObjectMatricesData
 {
 	MAT4 data[OBJECT_SIZE];
@@ -202,6 +207,8 @@ struct MipMapGenerationData
 
 
 // Raytracing structs
+
+//#define CAMERA_TRACE
 
 struct RaytracedProbesData
 {

@@ -180,6 +180,9 @@
     <ClCompile Include="JoyEngine\RenderManager\Skybox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="JoyEngine\RenderManager\RenderState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="JoyEngine\JoyEngine.h">
@@ -396,6 +399,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JoyEngine\RenderManager\Skybox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JoyEngine\RenderManager\RenderState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

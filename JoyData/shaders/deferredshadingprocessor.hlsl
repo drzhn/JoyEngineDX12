@@ -58,11 +58,11 @@ float4 PSMain(PSInput input) : SV_Target
 	const float2 screenPosition = (input.clipPos.xy / input.clipPos.w);
 
 	const float4 color = colorTexture.Load(float3(input.position.xy, 0));
-	const float3 worldNormal = normalsTexture.Load(float3(input.position.xy, 0)).rgb;
-	const float3 worldPosition = positionTexture.Load(float3(input.position.xy, 0)).rgb;
+	const float4 worldNormal = normalsTexture.Load(float3(input.position.xy, 0));
+	const float4 worldPosition = positionTexture.Load(float3(input.position.xy, 0));
 
 	const float4x4 resMatrix = mul(directionalLightData.proj, directionalLightData.view);
-	float4 posShadowMap = mul(resMatrix, float4(worldPosition, 1.0));
+	float4 posShadowMap = mul(resMatrix, float4(worldPosition.rgb, 1.0));
 	float3 UVD = posShadowMap.xyz / posShadowMap.w;
 	UVD.xy = 0.5 * UVD.xy + 0.5;
 	UVD.y = 1.0 - UVD.y;
@@ -84,8 +84,9 @@ float4 PSMain(PSInput input) : SV_Target
 
 	directShadow /= (softShadowSize * 2 + 1) * (softShadowSize * 2 + 1);
 
-	const float attenuation = max(directionalLightData.ambient,
-	                              min(directShadow, dot(worldNormal, -directionalLightData.direction)));
+	float attenuation = max(directionalLightData.ambient, min(directShadow, dot(worldNormal.rgb, -directionalLightData.direction)));
+
+	attenuation = worldPosition.a > 0 ? attenuation : 1;
 
 	const float3 ret = color.rgb * attenuation;
 	return float4(ret, color.a);

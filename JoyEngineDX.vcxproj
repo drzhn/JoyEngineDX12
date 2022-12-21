@@ -229,6 +229,7 @@
     <ClCompile Include="JoyEngine\RenderManager\Raytracing\BufferSorter.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\Raytracing\BVHConstructor.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\Raytracing\RaytracedLightProbes.cpp" />
+    <ClCompile Include="JoyEngine\RenderManager\RenderState.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\Skybox.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\Tonemapping.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\Buffer.cpp" />
@@ -291,6 +292,7 @@
     <ClInclude Include="JoyEngine\RenderManager\Raytracing\BVHConstructor.h" />
     <ClInclude Include="JoyEngine\RenderManager\Raytracing\DataBuffer.h" />
     <ClInclude Include="JoyEngine\RenderManager\Raytracing\RaytracedLightProbes.h" />
+    <ClInclude Include="JoyEngine\RenderManager\RenderState.h" />
     <ClInclude Include="JoyEngine\RenderManager\Skybox.h" />
     <ClInclude Include="JoyEngine\RenderManager\Tonemapping.h" />
     <ClInclude Include="JoyEngine\ResourceManager\Buffer.h" />

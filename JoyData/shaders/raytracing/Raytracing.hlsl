@@ -1,8 +1,8 @@
 // Raytracing core
 #include "CommonEngineStructs.h"
 
-//ConstantBuffer<EngineData> engineData;
-//ConstantBuffer<ViewProjectionMatrixData> viewProjectionData;
+ConstantBuffer<EngineData> engineData;
+ConstantBuffer<ViewProjectionMatrixData> viewProjectionData;
 ConstantBuffer<RaytracedProbesData> raytracedProbesData;
 
 StructuredBuffer<uint> sortedTriangleIndices; // size = THREADS_PER_BLOCK * BLOCK_SIZE
@@ -13,8 +13,10 @@ StructuredBuffer<AABB> bvhData; // size = THREADS_PER_BLOCK * BLOCK_SIZE - 1
 StructuredBuffer<Triangle> triangleData; // size = THREADS_PER_BLOCK * BLOCK_SIZE
 
 ConstantBuffer<StandardMaterialData> materials;
-Texture2D<float4> textures[];
+Texture2D textures[];
 SamplerState linearClampSampler;
+ConstantBuffer<TextureIndexData> skyboxTextureIndex;
+
 
 RWTexture2D<float4> colorTexture;
 RWTexture2D<float4> normalsTexture;
@@ -24,7 +26,6 @@ struct Ray
 {
 	float3 origin;
 	float3 dir;
-	float3 inv_dir;
 };
 
 struct RaycastResult
@@ -69,8 +70,10 @@ RaycastResult RayTriangleIntersection(float3 orig, float3 dir, float3 v0, float3
 
 bool RayBoxIntersection(AABB b, Ray r)
 {
-	const float3 t1 = (b.min - r.origin) * r.inv_dir;
-	const float3 t2 = (b.max - r.origin) * r.inv_dir;
+	const float3 inv_dir = 1 / r.dir;
+
+	const float3 t1 = (b.min - r.origin) * inv_dir;
+	const float3 t2 = (b.max - r.origin) * inv_dir;
 
 	const float3 tmin1 = min(t1, t2);
 	const float3 tmax1 = max(t1, t2);
@@ -152,6 +155,24 @@ inline RaycastResult TraceRay(Ray ray)
 	return result;
 }
 
+float2 SampleSphericalMap(float3 v)
+{
+	const float2 invAtan = float2(0.1591, 0.3183);
+	float2 uv = float2(atan2(v.z, v.x), asin(v.y));
+	uv *= invAtan;
+	uv += 0.5;
+	uv *= float2(-1, 1);
+
+	//float r = length(v);
+	//float theta = acos(-v.y);
+	//float phi = atan2(v.x, -v.z);
+	//float2 uv = float2(
+	//	0.5 + phi / 2.0/ PI,
+	//	theta / PI
+	//	);
+	return uv;
+}
+
 //inline float DistanceToDepth(float distance)
 //{
 //	const float zNear = engineData.cameraNear;
@@ -179,31 +200,34 @@ inline float3 sphericalFibonacci(float i, float n)
 	return float3(cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta);
 }
 
-//[numthreads(32,32,1)]
-//void CSMain(uint3 id : SV_DispatchThreadID)
-//{
-//	const float near = engineData.cameraNear;
-//	const float fov = tan(engineData.cameraFovRadians / 2);
-//	const float height = 2 * near * fov;
-//	const float width = engineData.screenWidth * height / engineData.screenHeight;
-//
-//	const float3 originCamera = float3(0, 0, 0);
-//	const float3 dirCamera = float3(
-//		-width / 2 + width / engineData.screenWidth * (id.x + 0.5),
-//		height / 2 - height / engineData.screenHeight * (id.y + 0.5),
-//		near
-//		);
-//
-//	const float3 origin = mul(engineData.cameraInvView, float4(originCamera, 1)).xyz;
-//	const float3 dir = mul(engineData.cameraInvView, float4(dirCamera, 0)).xyz;
-//
 //}
+#if defined(CAMERA_TRACE)
+
+[numthreads(32,32,1)]
+void CSMain(uint3 id : SV_DispatchThreadID)
+{
+	const float near = engineData.cameraNear;
+	const float fov = tan(engineData.cameraFovRadians / 2);
+	const float height = 2 * near * fov;
+	const float width = engineData.screenWidth * height / engineData.screenHeight;
+
+	const float3 originCamera = float3(0, 0, 0);
+	const float3 dirCamera = float3(
+		-width / 2 + width / engineData.screenWidth * (id.x + 0.5),
+		height / 2 - height / engineData.screenHeight * (id.y + 0.5),
+		near
+	);
+
+	const float3 origin = mul(engineData.cameraInvView, float4(originCamera, 1)).xyz;
+	const float3 dir = mul(engineData.cameraInvView, float4(dirCamera, 0)).xyz;
+
+#else
 
 [numthreads(DDGI_RAYS_COUNT,1,1)]
 void CSMain(uint3 groupId : SV_GroupID, uint3 groupThreadId : SV_GroupThreadID)
 {
 	const uint2 id = uint2(
-		groupId.x * raytracedProbesData.gridY * raytracedProbesData.gridZ + 
+		groupId.x * raytracedProbesData.gridY * raytracedProbesData.gridZ +
 		groupId.y * raytracedProbesData.gridZ +
 		groupId.z,
 		groupThreadId.x
@@ -211,11 +235,12 @@ void CSMain(uint3 groupId : SV_GroupID, uint3 groupThreadId : SV_GroupThreadID)
 	const float3 origin = raytracedProbesData.gridMin + float3(groupId) * raytracedProbesData.cellSize;
 	const float3 dir = sphericalFibonacci(groupThreadId.x, DDGI_RAYS_COUNT);
 
+#endif
+
 
 	Ray ray;
 	ray.origin = origin;
 	ray.dir = normalize(dir);
-	ray.inv_dir = 1 / ray.dir;
 
 	RaycastResult result = TraceRay(ray);
 
@@ -227,7 +252,9 @@ void CSMain(uint3 groupId : SV_GroupID, uint3 groupThreadId : SV_GroupThreadID)
 	const float hasResult = result.distance != MAX_FLOAT;
 
 	float4 color = textures[materials.data[materialIndex].diffuseTextureIndex].SampleLevel(linearClampSampler, uv, 0);
-	colorTexture[id.xy] = float4(color.rgb, hasResult);
+	float4 skyboxColor = textures[skyboxTextureIndex.data].SampleLevel(linearClampSampler, SampleSphericalMap(-ray.dir), 0);
+
+	colorTexture[id.xy] = float4(lerp(skyboxColor.rgb, color.rgb, hasResult), 1);
 	positionTexture[id.xy] = float4(ray.origin + ray.dir * result.distance, hasResult);
-	normalsTexture[id.xy] = float4(normalize(normal) * hasResult, 1);
+	normalsTexture[id.xy] = float4(normalize(normal) * hasResult, hasResult);
 }

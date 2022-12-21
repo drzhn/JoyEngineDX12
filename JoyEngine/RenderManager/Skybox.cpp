@@ -15,6 +15,8 @@ namespace JoyEngine
 		m_skyboxMesh = ResourceManager::Get()->LoadResource<Mesh>(
 			GUID::StringToGuid("b7d27f1a-006b-41fa-b10b-01b212ebfebe")); // DefaultSphere
 
+		m_skyboxTextureIndexData.SetData(TextureIndexData{.data = m_skyboxTexture->GetSRV()->GetDescriptorIndex()});
+
 		const GUID skyboxShaderGuid = GUID::StringToGuid("7e43e76d-9d5f-4fc8-a8f1-c8ec0dce95ef"); //shaders/skybox.hlsl
 		const GUID skyboxSharedMaterialGuid = GUID::Random();
 
@@ -58,7 +60,7 @@ namespace JoyEngine
 	}
 
 	void Skybox::DrawSky(ID3D12GraphicsCommandList* commandList, const ResourceView* colorTextureSrv,
-		uint32_t frameIndex, const ViewProjectionMatrixData* viewProjectionData) const
+	                     uint32_t frameIndex, const ViewProjectionMatrixData* viewProjectionData) const
 	{
 		commandList->SetPipelineState(m_skyboxPipeline->GetPipelineObject().Get());
 		commandList->SetGraphicsRootSignature(m_skyboxPipeline->GetRootSignature().Get());
@@ -78,7 +80,7 @@ namespace JoyEngine
 		GraphicsUtils::AttachViewToGraphics(commandList, m_skyboxPipeline, "skyboxTexture", m_skyboxTexture->GetSRV());
 		GraphicsUtils::AttachViewToGraphics(commandList, m_skyboxPipeline, "gBufferColorTexture", colorTextureSrv);
 		GraphicsUtils::AttachViewToGraphics(commandList, m_skyboxPipeline, "textureSampler",
-			EngineSamplersProvider::GetLinearClampSampler());
+		                                    EngineSamplersProvider::GetLinearClampSampler());
 
 		commandList->DrawIndexedInstanced(
 			m_skyboxMesh->GetIndexCount(),

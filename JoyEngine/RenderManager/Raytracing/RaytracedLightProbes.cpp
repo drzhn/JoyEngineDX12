@@ -91,8 +91,14 @@ namespace JoyEngine
 		m_gBufferPositionsFormat(gBufferPositionsFormat),
 		m_gBufferNormalsFormat(gBufferNormalsFormat),
 		m_swapchainFormat(swapchainFormat),
+#if defined(CAMERA_TRACE)
+		m_width(width),
+		m_height(height),
+#else
 		m_width(g_raytracedProbesData.gridX * g_raytracedProbesData.gridY * g_raytracedProbesData.gridZ),
 		m_height(DDGI_RAYS_COUNT),
+#endif
+
 		m_sceneSharedMaterials(sceneSharedMaterials)
 	{
 		static_assert(sizeof(Triangle) == 128);
@@ -316,7 +322,11 @@ namespace JoyEngine
 		m_bvhConstructor->ConstructBVH();
 	}
 
-	void RaytracedLightProbes::ProcessRaytracing(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, ViewProjectionMatrixData* data) const
+	void RaytracedLightProbes::ProcessRaytracing(
+		ID3D12GraphicsCommandList* commandList,
+		uint32_t frameIndex,
+		ViewProjectionMatrixData* data,
+		ResourceView* skyboxTextureIndexDataView) const
 	{
 		// Raytracing process
 		{
@@ -336,14 +346,19 @@ namespace JoyEngine
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "bvhData", m_bvhDataBuffer->GetSRV());
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "triangleData", m_triangleDataBuffer->GetSRV());
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "linearClampSampler", EngineSamplersProvider::GetLinearWrapSampler());
+#if !defined(CAMERA_TRACE)
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "raytracedProbesData", m_raytracedProbesData.GetView());
+#endif
+			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "skyboxTextureIndex", skyboxTextureIndexDataView);
 
 			GraphicsUtils::ProcessEngineBindings(commandList, frameIndex, m_raytracingPipeline->GetEngineBindings(),
 			                                     nullptr, data);
 		}
-
-		//commandList->Dispatch((m_width / 32) + 1, (m_height / 32) + 1, 1);
+#if defined(CAMERA_TRACE)
+		commandList->Dispatch((m_width / 32) + 1, (m_height / 32) + 1, 1);
+#else
 		commandList->Dispatch(g_raytracedProbesData.gridX, g_raytracedProbesData.gridY, g_raytracedProbesData.gridZ);
+#endif
 
 		m_gbuffer->BarrierToRead(commandList);
 	}

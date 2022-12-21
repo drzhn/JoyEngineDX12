@@ -33,7 +33,7 @@ namespace JoyEngine
 			uint32_t height);
 		void UploadSceneData();
 		void PrepareBVH() const;
-		void ProcessRaytracing(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, ViewProjectionMatrixData* data) const;
+		void ProcessRaytracing(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, ViewProjectionMatrixData* data, ResourceView* skyboxTextureIndexDataView) const;
 		void DebugDrawRaytracedImage(ID3D12GraphicsCommandList* commandList) const;
 		void DebugDrawAABBGizmo(ID3D12GraphicsCommandList* commandList, const ViewProjectionMatrixData* viewProjectionMatrixData) const;
 		void DebugDrawProbes(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, const ViewProjectionMatrixData* viewProjectionMatrixData) const;

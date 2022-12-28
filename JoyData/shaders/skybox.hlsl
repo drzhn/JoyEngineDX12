@@ -18,7 +18,7 @@ struct PSOutput
 	float4 Color: SV_Target;
 };
 
-PSInput VSMain(float3 position : POSITION, float3 color : COLOR, float3 normal : NORMAL, float2 uv : TEXCOORD)
+PSInput VSMain(float3 position : POSITION, float2 uv : TEXCOORD)
 {
 	PSInput result;
 

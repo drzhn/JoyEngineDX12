@@ -424,6 +424,10 @@
     {
       "guid": "8757d834-8dd7-4858-836b-bb6a4eb6fea0",
       "path": "shaders/raytracing/debugDrawProbes.hlsl"
+    },
+    {
+      "guid": "1d69c9ec-de6a-4fff-96ea-3a68808ca8f7",
+      "path": "shaders/raytracing/ProbeIrradiance.hlsl"
     }
   ]
 }

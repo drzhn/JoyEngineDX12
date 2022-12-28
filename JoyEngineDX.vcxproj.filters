@@ -444,5 +444,6 @@
     <None Include="JoyData\shaders\deferredshadingprocessor.hlsl" />
     <None Include="JoyData\shaders\skybox.hlsl" />
     <None Include="JoyData\shaders\raytracing\debugDrawProbes.hlsl" />
+    <None Include="JoyData\shaders\raytracing\ProbeIrradiance.hlsl" />
   </ItemGroup>
 </Project>

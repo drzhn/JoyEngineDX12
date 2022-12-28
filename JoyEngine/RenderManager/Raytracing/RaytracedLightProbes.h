@@ -52,6 +52,7 @@ namespace JoyEngine
 
 		std::unique_ptr<UAVGbuffer> m_gbuffer;
 		std::unique_ptr<RenderTexture> m_shadedRenderTexture;
+		std::unique_ptr<UAVTexture> m_probeIrradianceTexture; // octohedral irradince per-probe storage
 		std::set<SharedMaterial*>& m_sceneSharedMaterials;
 
 		std::unique_ptr<DataBuffer<uint32_t>> m_keysBuffer;
@@ -72,6 +73,7 @@ namespace JoyEngine
 		std::unique_ptr<ComputeDispatcher> m_dispatcher;
 
 		ResourceHandle<ComputePipeline> m_raytracingPipeline;
+		ResourceHandle<ComputePipeline> m_probeIrradiancePipeline;
 		ResourceHandle<GraphicsPipeline> m_raytracedImageApplier;
 
 		ResourceHandle<Mesh> m_debugSphereProbeMesh;

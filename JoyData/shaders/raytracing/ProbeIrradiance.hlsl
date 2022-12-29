@@ -29,7 +29,7 @@ inline float3 sphericalFibonacci(float i, float n)
 	float cosTheta = 1.0 - (2.0 * i + 1.0) * (1.0 / n);
 	float sinTheta = sqrt(saturate(1.0f - cosTheta * cosTheta));
 
-	return float3(cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta);
+	return normalize(float3(cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta));
 }
 
 [numthreads(DDGI_PROBE_IRRADIANCE_RESOLUTION, DDGI_PROBE_IRRADIANCE_RESOLUTION, 1)]
@@ -46,7 +46,7 @@ void CSMain(uint3 groupId : SV_GroupID, uint3 groupThreadId : SV_GroupThreadID)
 	);
 
 	const uint2 probePixelID = groupThreadId.xy;
-	const float2 uv = float2(probePixelID) / DDGI_PROBE_IRRADIANCE_RESOLUTION + float2(0.5, 0.5);
+	const float2 uv = ((float2(probePixelID) + float2(0.5, 0.5)) / DDGI_PROBE_IRRADIANCE_RESOLUTION - 0.5) * 2;
 
 	const float3 direction = oct_to_float32x3(uv);
 
@@ -55,10 +55,30 @@ void CSMain(uint3 groupId : SV_GroupID, uint3 groupThreadId : SV_GroupThreadID)
 	for (int i = 0; i < DDGI_RAYS_COUNT; i++)
 	{
 		const float3 rayDir = sphericalFibonacci(i, DDGI_RAYS_COUNT);
-		const float3 rayRadiance = raytracingTexture.Load(int3(probeId1D, i, 0));
+		const float3 rayRadiance = raytracingTexture.Load(int3(probeId1D, i, 0)).rgb;
 
 		irradiance += rayRadiance * max(0, dot(direction, rayDir));
 	}
 
-	irradianceTexture[probeId2D * DDGI_PROBE_IRRADIANCE_RESOLUTION + probePixelID + uint2(1, 1)] = float4(1,0,0, 1);
+	irradiance = irradiance / float(DDGI_PROBE_IRRADIANCE_RESOLUTION) / PI;
+
+	irradianceTexture[probeId2D * (DDGI_PROBE_IRRADIANCE_RESOLUTION + 2) + probePixelID + uint2(1, 1)] = float4(irradiance, 1);
+
+	if (probePixelID.x == 0)
+	{
+		irradianceTexture[probeId2D * (DDGI_PROBE_IRRADIANCE_RESOLUTION + 2) + probePixelID + uint2(0, 1)] = float4(irradiance, 1);
+	}
+	if (probePixelID.y == 0)
+	{
+		irradianceTexture[probeId2D * (DDGI_PROBE_IRRADIANCE_RESOLUTION + 2) + probePixelID + uint2(1, 0)] = float4(irradiance, 1);
+	}
+
+	if (probePixelID.x == DDGI_PROBE_IRRADIANCE_RESOLUTION - 1)
+	{
+		irradianceTexture[probeId2D * (DDGI_PROBE_IRRADIANCE_RESOLUTION + 2) + probePixelID + uint2(2, 1)] = float4(irradiance, 1);
+	}
+	if (probePixelID.y == DDGI_PROBE_IRRADIANCE_RESOLUTION - 1)
+	{
+		irradianceTexture[probeId2D * (DDGI_PROBE_IRRADIANCE_RESOLUTION + 2) + probePixelID + uint2(1, 2)] = float4(irradiance, 1);
+	}
 }

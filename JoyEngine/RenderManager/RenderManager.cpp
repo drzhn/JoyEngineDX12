@@ -317,14 +317,15 @@ namespace JoyEngine
 			m_skybox->DrawSky(commandList, m_gbuffer->GetColorSRV(), m_currentFrameIndex, &mainCameraMatrixVP);
 		}
 
-		if (g_drawRaytracedImage)
+		// Process raytracing
 		{
 			m_raytracing->ProcessRaytracing(commandList, m_currentFrameIndex, &mainCameraMatrixVP, m_skybox->GetSkyboxTextureDataSrv());
+
 
 			auto raytracedRTVHandle = m_raytracing->GetShadedRenderTexture()->GetRTV()->GetCPUHandle();
 
 			GraphicsUtils::Barrier(commandList, m_raytracing->GetShadedRenderTexture()->GetImageResource().Get(),
-			                       D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
+								   D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
 			commandList->OMSetRenderTargets(
 				1,
@@ -334,7 +335,11 @@ namespace JoyEngine
 			RenderDeferredShading(commandList, m_raytracing->GetGBuffer(), &mainCameraMatrixVP);
 
 			GraphicsUtils::Barrier(commandList, m_raytracing->GetShadedRenderTexture()->GetImageResource().Get(),
-			                       D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
+								   D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
+		}
+
+		if (g_drawRaytracedImage)
+		{
 			commandList->OMSetRenderTargets(
 				1,
 				&hdrRTVHandle,
@@ -596,7 +601,6 @@ namespace JoyEngine
 			3,
 			1,
 			0, 0, 0);
-
 	}
 
 	void RenderManager::CopyRTVResource(

@@ -12,7 +12,7 @@ struct PSInput
 {
 	float4 position : SV_POSITION;
 	float2 uv : TEXCOORD0;
-	float4 normal : COLOR1;
+	float4 worldNormal : COLOR1;
 	float4 worldPosition : COLOR2;
 };
 
@@ -38,7 +38,7 @@ PSInput VSMain(float3 position : POSITION, float3 normal : NORMAL, float2 uv : T
 	const float4x4 resMatrix = mul(viewProjectionData.proj, mul(viewProjectionData.view, objectMatricesData.data[objectIndex.data]));
 
 	result.position = mul(resMatrix, float4(position, 1));
-	result.normal = normalize(mul(objectMatricesData.data[objectIndex.data], float4(normal, 0)));
+	result.worldNormal = normalize(mul(objectMatricesData.data[objectIndex.data], float4(normal, 0)));
 	result.worldPosition = mul(objectMatricesData.data[objectIndex.data], float4(position, 1));
 	result.uv = uv;
 
@@ -50,7 +50,7 @@ PSOutput PSMain(PSInput input)
 	PSOutput output;
 
 	output.Color = diffuse.Sample(textureSampler, input.uv);
-	output.Normal = input.normal;
+	output.Normal = input.worldNormal;
 	output.Position = input.worldPosition;
 
 	return output;

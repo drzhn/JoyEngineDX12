@@ -20,8 +20,8 @@ namespace JoyEngine
 
 	const RaytracedProbesData g_raytracedProbesData = {
 		.gridMin = glm::vec3(-27, 1, -12),
-		.cellSize = 4,
-		.gridX = 14,
+		.cellSize = 2,
+		.gridX = 27,
 		.gridY = 8,
 		.gridZ = 6
 	};
@@ -390,7 +390,7 @@ namespace JoyEngine
 			commandList->SetPipelineState(m_probeIrradiancePipeline->GetPipelineObject().Get());
 
 
-			//GraphicsUtils::AttachViewToCompute(commandList, m_probeIrradiancePipeline, "raytracingTexture", m_shadedRenderTexture->GetSRV());
+			GraphicsUtils::AttachViewToCompute(commandList, m_probeIrradiancePipeline, "raytracingTexture", m_shadedRenderTexture->GetSRV());
 			GraphicsUtils::AttachViewToCompute(commandList, m_probeIrradiancePipeline, "irradianceTexture", m_probeIrradianceTexture->GetUAV());
 
 			GraphicsUtils::AttachViewToCompute(commandList, m_probeIrradiancePipeline, "raytracedProbesData", m_raytracedProbesData.GetView());
@@ -409,7 +409,11 @@ namespace JoyEngine
 		commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+#if defined(CAMERA_TRACE)
+		GraphicsUtils::AttachViewToGraphics(commandList, sm, "raytracingTexture", m_shadedRenderTexture->GetSRV());
+#else
 		GraphicsUtils::AttachViewToGraphics(commandList, sm, "raytracingTexture", m_probeIrradianceTexture->GetSRV());
+#endif
 
 		commandList->DrawInstanced(3, 1, 0, 0);
 	}
@@ -450,6 +454,8 @@ namespace JoyEngine
 		GraphicsUtils::ProcessEngineBindings(commandList, frameIndex, sm->GetEngineBindings(), nullptr, viewProjectionMatrixData);
 
 		GraphicsUtils::AttachViewToGraphics(commandList, sm, "raytracedProbesData", m_raytracedProbesData.GetView());
+		GraphicsUtils::AttachViewToGraphics(commandList, sm, "irradianceTexture", m_probeIrradianceTexture->GetSRV());
+		GraphicsUtils::AttachViewToGraphics(commandList, sm, "linearClampSampler", EngineSamplersProvider::GetLinearWrapSampler());
 
 		const uint32_t instanceCount = g_raytracedProbesData.gridX * g_raytracedProbesData.gridY * g_raytracedProbesData.gridZ;
 

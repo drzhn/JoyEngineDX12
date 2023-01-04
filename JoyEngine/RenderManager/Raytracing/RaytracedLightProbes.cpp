@@ -20,8 +20,8 @@ namespace JoyEngine
 
 	const RaytracedProbesData g_raytracedProbesData = {
 		.gridMin = glm::vec3(-27, 1, -12),
-		.cellSize = 2,
-		.gridX = 27,
+		.cellSize = 4,
+		.gridX = 14,
 		.gridY = 8,
 		.gridZ = 6
 	};
@@ -92,11 +92,11 @@ namespace JoyEngine
 		m_gBufferNormalsFormat(gBufferNormalsFormat),
 		m_swapchainFormat(swapchainFormat),
 #if defined(CAMERA_TRACE)
-		m_width(width),
-		m_height(height),
+		m_raytracedTextureWidth(width),
+		m_raytracedTextureHeight(height),
 #else
-		m_width(g_raytracedProbesData.gridX * g_raytracedProbesData.gridY * g_raytracedProbesData.gridZ),
-		m_height(DDGI_RAYS_COUNT),
+		m_raytracedTextureWidth(g_raytracedProbesData.gridX * g_raytracedProbesData.gridY * g_raytracedProbesData.gridZ),
+		m_raytracedTextureHeight(DDGI_RAYS_COUNT),
 #endif
 
 		m_sceneSharedMaterials(sceneSharedMaterials)
@@ -136,9 +136,9 @@ namespace JoyEngine
 
 		// Raytracing
 		{
-			m_gbuffer = std::make_unique<UAVGbuffer>(m_width, m_height);
+			m_gbuffer = std::make_unique<UAVGbuffer>(m_raytracedTextureWidth, m_raytracedTextureHeight);
 			m_shadedRenderTexture = std::make_unique<RenderTexture>(
-				m_width, m_height,
+				m_raytracedTextureWidth, m_raytracedTextureHeight,
 				m_mainColorFormat,
 				D3D12_RESOURCE_STATE_GENERIC_READ,
 				D3D12_HEAP_TYPE_DEFAULT);
@@ -151,7 +151,8 @@ namespace JoyEngine
 				D3D12_HEAP_TYPE_DEFAULT
 			);
 
-			{ // generate texture w = probesCount, h = DDGI_RAYS_COUNT
+			{
+				// generate texture w = probesCount, h = DDGI_RAYS_COUNT
 				const GUID raytracingShaderGuid = GUID::StringToGuid("b24e90ac-fcfa-4754-b0e5-8553b19e27ca"); //shaders/raytracing/Raytracing.hlsl
 				const GUID raytracingPipelineGuid = GUID::Random();
 
@@ -163,7 +164,8 @@ namespace JoyEngine
 					});
 			}
 
-			{ // generate texture w = probesCount, h = DDGI_RAYS_COUNT
+			{
+				// generate texture w = probesCount, h = DDGI_RAYS_COUNT
 				const GUID pipelineIrradianceShaderGuid = GUID::StringToGuid("1d69c9ec-de6a-4fff-96ea-3a68808ca8f7"); //shaders/raytracing/ProbeIrradiance.hlsl
 				const GUID pipelineIrradiancePipelineGuid = GUID::Random();
 
@@ -382,8 +384,10 @@ namespace JoyEngine
 #endif
 
 		m_gbuffer->BarrierToRead(commandList);
+	}
 
-
+	void RaytracedLightProbes::GenerateProbeIrradiance(ID3D12GraphicsCommandList* commandList) const
+	{
 		// lightprobe data generation process
 		{
 			commandList->SetComputeRootSignature(m_probeIrradiancePipeline->GetRootSignature().Get());
@@ -394,11 +398,9 @@ namespace JoyEngine
 			GraphicsUtils::AttachViewToCompute(commandList, m_probeIrradiancePipeline, "irradianceTexture", m_probeIrradianceTexture->GetUAV());
 
 			GraphicsUtils::AttachViewToCompute(commandList, m_probeIrradiancePipeline, "raytracedProbesData", m_raytracedProbesData.GetView());
-
 		}
 		commandList->Dispatch(g_raytracedProbesData.gridX, g_raytracedProbesData.gridY, g_raytracedProbesData.gridZ);
 		GraphicsUtils::UAVBarrier(commandList, m_probeIrradianceTexture->GetImageResource().Get());
-
 	}
 
 	void RaytracedLightProbes::DebugDrawRaytracedImage(ID3D12GraphicsCommandList* commandList) const
@@ -409,7 +411,7 @@ namespace JoyEngine
 		commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-#if defined(CAMERA_TRACE)
+#if !defined(CAMERA_TRACE)
 		GraphicsUtils::AttachViewToGraphics(commandList, sm, "raytracingTexture", m_shadedRenderTexture->GetSRV());
 #else
 		GraphicsUtils::AttachViewToGraphics(commandList, sm, "raytracingTexture", m_probeIrradianceTexture->GetSRV());

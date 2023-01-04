@@ -34,19 +34,23 @@ namespace JoyEngine
 		void UploadSceneData();
 		void PrepareBVH() const;
 		void ProcessRaytracing(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, ViewProjectionMatrixData* data, ResourceView* skyboxTextureIndexDataView) const;
+		void GenerateProbeIrradiance(ID3D12GraphicsCommandList* commandList) const;
 		void DebugDrawRaytracedImage(ID3D12GraphicsCommandList* commandList) const;
 		void DebugDrawAABBGizmo(ID3D12GraphicsCommandList* commandList, const ViewProjectionMatrixData* viewProjectionMatrixData) const;
 		void DebugDrawProbes(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, const ViewProjectionMatrixData* viewProjectionMatrixData) const;
+
 		[[nodiscard]] UAVGbuffer* GetGBuffer() const { return m_gbuffer.get(); }
 		[[nodiscard]] RenderTexture* GetShadedRenderTexture() const { return m_shadedRenderTexture.get(); }
+		[[nodiscard]] uint32_t GetRaytracedTextureWidth() const noexcept { return m_raytracedTextureWidth; }
+		[[nodiscard]] uint32_t GetRaytracedTextureHeight() const noexcept { return m_raytracedTextureHeight; }
 
 	private:
 		DXGI_FORMAT m_mainColorFormat;
 		DXGI_FORMAT m_gBufferPositionsFormat;
 		DXGI_FORMAT m_gBufferNormalsFormat;
 		DXGI_FORMAT m_swapchainFormat;
-		uint32_t m_width;
-		uint32_t m_height;
+		uint32_t m_raytracedTextureWidth;
+		uint32_t m_raytracedTextureHeight;
 
 		uint32_t m_trianglesLength = 0;
 

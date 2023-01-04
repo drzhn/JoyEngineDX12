@@ -327,6 +327,8 @@ namespace JoyEngine
 			GraphicsUtils::Barrier(commandList, m_raytracing->GetShadedRenderTexture()->GetImageResource().Get(),
 								   D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
+			GraphicsUtils::SetViewportAndScissor(commandList, m_raytracing->GetRaytracedTextureWidth(), m_raytracing->GetRaytracedTextureHeight());
+
 			commandList->OMSetRenderTargets(
 				1,
 				&raytracedRTVHandle,
@@ -336,7 +338,11 @@ namespace JoyEngine
 
 			GraphicsUtils::Barrier(commandList, m_raytracing->GetShadedRenderTexture()->GetImageResource().Get(),
 								   D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
+
+			m_raytracing->GenerateProbeIrradiance(commandList);
 		}
+
+		GraphicsUtils::SetViewportAndScissor(commandList, m_width, m_height);
 
 		if (g_drawRaytracedImage)
 		{
@@ -358,8 +364,6 @@ namespace JoyEngine
 			                       swapchainResource,
 			                       D3D12_RESOURCE_STATE_PRESENT,
 			                       D3D12_RESOURCE_STATE_RENDER_TARGET);
-
-			GraphicsUtils::SetViewportAndScissor(commandList, m_width, m_height);
 
 			commandList->OMSetRenderTargets(
 				1,

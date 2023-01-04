@@ -23,7 +23,7 @@ PSInput VSMain(float3 position : POSITION, float3 normal : NORMAL, uint instance
 {
 	PSInput result;
 
-	const float SCALE = 0.4;
+	const float SCALE = 1;
 
 	const float3 worldPosition = raytracedProbesData.gridMin + float3(
 		(instanceId % raytracedProbesData.gridX),
@@ -78,7 +78,7 @@ PSOutput PSMain(PSInput input) // : SV_TARGET
 	float2 probeTextureSize = float2(raytracedProbesData.gridX * raytracedProbesData.gridY * (DDGI_PROBE_IRRADIANCE_RESOLUTION + 2),
 	                                 raytracedProbesData.gridZ * (DDGI_PROBE_IRRADIANCE_RESOLUTION + 2));
 
-	float2 probeUV = float32x3_to_oct(input.worldNormal) / 2.0 + float2(0.5, 0.5);
+	float2 probeUV = (float32x3_to_oct(input.worldNormal) + float2(1, 1)) / 2.0 ;
 
 	float2 textureUV =
 		probeId2D * (DDGI_PROBE_IRRADIANCE_RESOLUTION + 2) +
@@ -92,5 +92,6 @@ PSOutput PSMain(PSInput input) // : SV_TARGET
 	//output.Color = float4(probeId3D, 1);
 
 	output.Color = irradiance;
+
 	return output;
 }

@@ -411,7 +411,7 @@ namespace JoyEngine
 		commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-#if !defined(CAMERA_TRACE)
+#if defined(CAMERA_TRACE)
 		GraphicsUtils::AttachViewToGraphics(commandList, sm, "raytracingTexture", m_shadedRenderTexture->GetSRV());
 #else
 		GraphicsUtils::AttachViewToGraphics(commandList, sm, "raytracingTexture", m_probeIrradianceTexture->GetSRV());

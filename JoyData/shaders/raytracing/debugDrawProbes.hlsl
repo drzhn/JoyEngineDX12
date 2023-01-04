@@ -78,7 +78,7 @@ PSOutput PSMain(PSInput input) // : SV_TARGET
 	float2 probeTextureSize = float2(raytracedProbesData.gridX * raytracedProbesData.gridY * (DDGI_PROBE_IRRADIANCE_RESOLUTION + 2),
 	                                 raytracedProbesData.gridZ * (DDGI_PROBE_IRRADIANCE_RESOLUTION + 2));
 
-	float2 probeUV = (float32x3_to_oct(input.worldNormal) + float2(1, 1)) / 2.0 ;
+	const float2 probeUV = (float32x3_to_oct(input.worldNormal) + float2(1, 1)) / 2.0 ;
 
 	float2 textureUV =
 		probeId2D * (DDGI_PROBE_IRRADIANCE_RESOLUTION + 2) +
@@ -87,9 +87,7 @@ PSOutput PSMain(PSInput input) // : SV_TARGET
 
 	textureUV = float2(textureUV.x / probeTextureSize.x, textureUV.y / probeTextureSize.y);
 
-	float4 irradiance = irradianceTexture.Sample(linearClampSampler, textureUV);
-
-	//output.Color = float4(probeId3D, 1);
+	const float4 irradiance = irradianceTexture.Sample(linearClampSampler, textureUV);
 
 	output.Color = irradiance;
 

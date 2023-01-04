@@ -35,9 +35,40 @@ inline float3 sphericalFibonacci(float i, float n)
 	return normalize(float3(cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta));
 }
 
-inline int GetPixelId(int realPixelId)
+inline int2 GetPixelId(int2 realPixelId)
 {
-	return min(DDGI_PROBE_IRRADIANCE_RESOLUTION - 1, max(0, realPixelId - 1));
+	int2 pixelId = int2(
+		min(DDGI_PROBE_IRRADIANCE_RESOLUTION - 1, max(0, realPixelId.x - 1)),
+		min(DDGI_PROBE_IRRADIANCE_RESOLUTION - 1, max(0, realPixelId.y - 1))
+	);
+
+	int2 t = pixelId;
+
+	if (realPixelId.y == 0)
+	{
+		pixelId.x = DDGI_PROBE_IRRADIANCE_RESOLUTION - 1 - t.x;
+		pixelId.y = (realPixelId.x == 0 || realPixelId.x == DDGI_PROBE_IRRADIANCE_RESOLUTION + 1) ? DDGI_PROBE_IRRADIANCE_RESOLUTION - 1 : 0;
+	}
+
+	if (realPixelId.y == DDGI_PROBE_IRRADIANCE_RESOLUTION + 1)
+	{
+		pixelId.x = DDGI_PROBE_IRRADIANCE_RESOLUTION - 1 - t.x;
+		pixelId.y = realPixelId.x == 0 || realPixelId.x == DDGI_PROBE_IRRADIANCE_RESOLUTION + 1 ? 0 : DDGI_PROBE_IRRADIANCE_RESOLUTION - 1;
+	}
+
+	if (realPixelId.x == 0)
+	{
+		pixelId.y = DDGI_PROBE_IRRADIANCE_RESOLUTION - 1 - t.y;
+		pixelId.x = realPixelId.y == 0 || realPixelId.y == DDGI_PROBE_IRRADIANCE_RESOLUTION + 1 ? DDGI_PROBE_IRRADIANCE_RESOLUTION - 1 : 0;
+	}
+
+	if (realPixelId.x == DDGI_PROBE_IRRADIANCE_RESOLUTION + 1)
+	{
+		pixelId.y = DDGI_PROBE_IRRADIANCE_RESOLUTION - 1 - t.y;
+		pixelId.x = realPixelId.y == 0 || realPixelId.y == DDGI_PROBE_IRRADIANCE_RESOLUTION + 1 ?  0 : DDGI_PROBE_IRRADIANCE_RESOLUTION - 1;
+	}
+
+	return pixelId;
 }
 
 [numthreads(DDGI_PROBE_IRRADIANCE_RESOLUTION + 2, DDGI_PROBE_IRRADIANCE_RESOLUTION + 2, 1)]
@@ -55,10 +86,7 @@ void CSMain(uint3 groupId : SV_GroupID, uint3 groupThreadId : SV_GroupThreadID)
 
 	const uint2 probeRealPixelID = groupThreadId.xy;
 
-	const int2 probePixelID = int2(
-		GetPixelId(probeRealPixelID.x),
-		GetPixelId(probeRealPixelID.y)
-	);
+	const int2 probePixelID = GetPixelId(probeRealPixelID);
 
 	const float2 uv = ((float2(probePixelID) + float2(0.5, 0.5)) / DDGI_PROBE_IRRADIANCE_RESOLUTION - float2(0.5, 0.5)) * 2;
 

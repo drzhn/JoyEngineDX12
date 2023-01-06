@@ -3,7 +3,7 @@
 ConstantBuffer<RaytracedProbesData> raytracedProbesData;
 
 Texture2D raytracingTexture;
-RWTexture2D<float4> irradianceTexture;
+RWTexture2D<float3> irradianceTexture;
 
 float2 signNotZero(float2 v)
 {
@@ -103,5 +103,5 @@ void CSMain(uint3 groupId : SV_GroupID, uint3 groupThreadId : SV_GroupThreadID)
 		irradiance += float4(rayRadiance * weight, weight);
 	}
 
-	irradianceTexture[probeId2D * (DDGI_PROBE_IRRADIANCE_RESOLUTION + 2) + probeRealPixelID] = float4(irradiance.rgb / irradiance.w, 1);
+	irradianceTexture[probeId2D * (DDGI_PROBE_IRRADIANCE_RESOLUTION + 2) + probeRealPixelID] = float3(irradiance.rgb / irradiance.w);
 }

@@ -118,25 +118,27 @@ float4 PSMain(PSInput input) : SV_Target
 	float bias = directionalLightData.bias; // max(0.05 * (dot(worldNormal, directionalLightData.direction)), 0.005);
 	UVD.z -= bias;
 
-	float directShadow = 0;
+	float shadowAttenuation = 0;
 	const float2 texelSize = 1.0 / float2(2048, 2048); // TODO move to directionalLightData struct
 	const int softShadowSize = 2;
 	for (int x = -softShadowSize; x <= softShadowSize; ++x)
 	{
 		for (int y = -softShadowSize; y <= softShadowSize; ++y)
 		{
-			directShadow += directionalLightShadowmap.SampleCmpLevelZero(
+			shadowAttenuation += directionalLightShadowmap.SampleCmpLevelZero(
 				PCFSampler, UVD.xy + float2(x, y) * texelSize, UVD.z);
 		}
 	}
 
-	directShadow /= (softShadowSize * 2 + 1) * (softShadowSize * 2 + 1);
+	shadowAttenuation /= (softShadowSize * 2 + 1) * (softShadowSize * 2 + 1);
+	shadowAttenuation = max(directionalLightData.ambient, shadowAttenuation);
 
-	float attenuation = max(directionalLightData.ambient, min(directShadow, dot(worldNormal.rgb, -directionalLightData.direction)));
+	float lambertAttenuation = max(0, dot(worldNormal.rgb, -directionalLightData.direction));
 
 	// we use world position alpha chanel as an info about if this pixel is skybox or not.
-	attenuation = worldPosition.a > 0 ? attenuation : 1;
+	shadowAttenuation = worldPosition.a > 0 ? shadowAttenuation : 1;
+	lambertAttenuation = worldPosition.a > 0 ? lambertAttenuation : 1;
 
-	const float3 ret = color.rgb * attenuation + SampleProbeGrid(worldPosition, worldNormal);
+	const float3 ret = color.rgb * (shadowAttenuation * lambertAttenuation + SampleProbeGrid(worldPosition, worldNormal));
 	return float4(ret, 1);
 }

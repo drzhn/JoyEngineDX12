@@ -288,17 +288,23 @@ namespace JoyEngine
 				m_gbuffer->GetPositionRTV()->GetCPUHandle(),
 			};
 			auto dsvHandle = m_gbuffer->GetDepthDSV()->GetCPUHandle();
+			constexpr float clearColor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+			commandList->ClearRenderTargetView(rtvHandles[0], clearColor, 0, nullptr);
+			commandList->ClearRenderTargetView(rtvHandles[1], clearColor, 0, nullptr);
+			commandList->ClearRenderTargetView(rtvHandles[2], clearColor, 0, nullptr);
+			commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+
+			commandList->OMSetRenderTargets(
+				1,
+				&rtvHandles[0],
+				FALSE, nullptr);
+
+			m_skybox->DrawSky(commandList, m_currentFrameIndex, &mainCameraMatrixVP);
 
 			commandList->OMSetRenderTargets(
 				3,
 				rtvHandles,
 				FALSE, &dsvHandle);
-
-			constexpr float clearColor[] = {0.0f, 0.0f, 0.0f, 0.0f};
-			commandList->ClearRenderTargetView(rtvHandles[0], clearColor, 0, nullptr);
-			commandList->ClearRenderTargetView(rtvHandles[1], clearColor, 0, nullptr);
-			commandList->ClearRenderTargetView(rtvHandles[2], clearColor, 0, nullptr);
-			commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 			RenderSceneForSharedMaterial(commandList, &mainCameraMatrixVP,
 			                             EngineMaterialProvider::Get()->GetGBufferWriteSharedMaterial());
@@ -314,8 +320,6 @@ namespace JoyEngine
 				FALSE, nullptr);
 
 			RenderDeferredShading(commandList, m_gbuffer.get(), &mainCameraMatrixVP);
-
-			m_skybox->DrawSky(commandList, m_gbuffer->GetColorSRV(), m_currentFrameIndex, &mainCameraMatrixVP);
 		}
 
 		// Process raytracing

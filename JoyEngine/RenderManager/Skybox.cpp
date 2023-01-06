@@ -21,24 +21,24 @@ namespace JoyEngine
 		const GUID skyboxSharedMaterialGuid = GUID::Random();
 
 
-		const D3D12_RENDER_TARGET_BLEND_DESC blendDesc = {
-			true,
-			FALSE,
-			D3D12_BLEND_SRC_ALPHA,
-			D3D12_BLEND_INV_SRC_ALPHA,
-			D3D12_BLEND_OP_ADD,
-			D3D12_BLEND_ONE,
-			D3D12_BLEND_ONE,
-			D3D12_BLEND_OP_ADD,
-			D3D12_LOGIC_OP_NOOP,
-			D3D12_COLOR_WRITE_ENABLE_ALL
-		};
+		//const D3D12_RENDER_TARGET_BLEND_DESC blendDesc = {
+		//	true,
+		//	FALSE,
+		//	D3D12_BLEND_SRC_ALPHA,
+		//	D3D12_BLEND_INV_SRC_ALPHA,
+		//	D3D12_BLEND_OP_ADD,
+		//	D3D12_BLEND_ONE,
+		//	D3D12_BLEND_ONE,
+		//	D3D12_BLEND_OP_ADD,
+		//	D3D12_LOGIC_OP_NOOP,
+		//	D3D12_COLOR_WRITE_ENABLE_ALL
+		//};
 
-		D3D12_BLEND_DESC blend = {
-			.AlphaToCoverageEnable = false,
-			.IndependentBlendEnable = false,
-		};
-		blend.RenderTarget[0] = blendDesc;
+		//D3D12_BLEND_DESC blend = {
+		//	.AlphaToCoverageEnable = false,
+		//	.IndependentBlendEnable = false,
+		//};
+		//blend.RenderTarget[0] = blendDesc;
 
 		m_skyboxPipeline = ResourceManager::Get()->LoadResource<GraphicsPipeline, GraphicsPipelineArgs>(
 			skyboxSharedMaterialGuid,
@@ -50,7 +50,7 @@ namespace JoyEngine
 				false,
 				D3D12_CULL_MODE_FRONT,
 				D3D12_COMPARISON_FUNC_GREATER_EQUAL,
-				CD3DX12_BLEND_DESC(blend),
+				CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 				{
 					RenderManager::GetMainColorFormat(),
 				},
@@ -59,8 +59,7 @@ namespace JoyEngine
 			});
 	}
 
-	void Skybox::DrawSky(ID3D12GraphicsCommandList* commandList, const ResourceView* colorTextureSrv,
-	                     uint32_t frameIndex, const ViewProjectionMatrixData* viewProjectionData) const
+	void Skybox::DrawSky(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, const ViewProjectionMatrixData* viewProjectionData) const
 	{
 		commandList->SetPipelineState(m_skyboxPipeline->GetPipelineObject().Get());
 		commandList->SetGraphicsRootSignature(m_skyboxPipeline->GetRootSignature().Get());
@@ -78,9 +77,7 @@ namespace JoyEngine
 			viewProjectionData);
 
 		GraphicsUtils::AttachViewToGraphics(commandList, m_skyboxPipeline, "skyboxTexture", m_skyboxTexture->GetSRV());
-		GraphicsUtils::AttachViewToGraphics(commandList, m_skyboxPipeline, "gBufferColorTexture", colorTextureSrv);
-		GraphicsUtils::AttachViewToGraphics(commandList, m_skyboxPipeline, "textureSampler",
-		                                    EngineSamplersProvider::GetLinearClampSampler());
+		GraphicsUtils::AttachViewToGraphics(commandList, m_skyboxPipeline, "textureSampler", EngineSamplersProvider::GetLinearClampSampler());
 
 		commandList->DrawIndexedInstanced(
 			m_skyboxMesh->GetIndexCount(),

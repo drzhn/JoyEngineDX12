@@ -1,8 +1,6 @@
 #include "CommonEngineStructs.h"
 
 Texture2D skyboxTexture;
-Texture2D gBufferColorTexture;
-
 SamplerState textureSampler : register(s0);
 
 ConstantBuffer<ViewProjectionMatrixData> viewProjectionData : register(b1);
@@ -38,10 +36,6 @@ PSInput VSMain(float3 position : POSITION, float2 uv : TEXCOORD)
 PSOutput PSMain(PSInput input) // : SV_TARGET
 {
 	PSOutput output;
-
-	const float4 skyboxColor = skyboxTexture.Sample(textureSampler, input.uv);
-	const float4 gBufferColor = gBufferColorTexture.Load(float3(input.position.xy, 0));
-	output.Color = float4(skyboxColor.rgb, 1-gBufferColor.a);
-
+	output.Color = skyboxTexture.Sample(textureSampler, input.uv);
 	return output;
 }

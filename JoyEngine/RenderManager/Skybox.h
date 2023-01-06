@@ -15,7 +15,7 @@ namespace JoyEngine
 	{
 	public:
 		Skybox();
-		void DrawSky(ID3D12GraphicsCommandList* commandList, const ResourceView* colorTextureSrv, uint32_t frameIndex, const ViewProjectionMatrixData* viewProjectionData) const;
+		void DrawSky(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, const ViewProjectionMatrixData* viewProjectionData) const;
 		[[nodiscard]] ResourceView* GetSkyboxTextureDataSrv() const { return m_skyboxTextureIndexData.GetView(); }
 
 	private:

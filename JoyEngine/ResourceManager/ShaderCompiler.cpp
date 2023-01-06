@@ -17,14 +17,14 @@ namespace JoyEngine
 		m_commonEngineStructsPath(std::filesystem::absolute(R"(JoyEngine/CommonEngineStructs.h)").generic_string()),
 		m_dxcLibrary(library)
 	{
-		m_data = ReadFile(m_commonEngineStructsPath, 0);
+		m_commonEngineStructsData = ReadFile(m_commonEngineStructsPath, 0);
 
 	}
 
 	HRESULT EngineStructsInclude::Open(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID* ppData, UINT* pBytes)
 	{
-		*ppData = m_data.data();
-		*pBytes = static_cast<UINT>(m_data.size());
+		*ppData = m_commonEngineStructsData.data();
+		*pBytes = static_cast<UINT>(m_commonEngineStructsData.size());
 		return S_OK;
 	}
 
@@ -36,7 +36,7 @@ namespace JoyEngine
 	HRESULT EngineStructsInclude::LoadSource(LPCWSTR pFilename, IDxcBlob** ppIncludeSource)
 	{
 		ComPtr<IDxcBlobEncoding> m_dataBlob;
-		ASSERT_SUCC(m_dxcLibrary->CreateBlobWithEncodingFromPinned(m_data.data(), m_data.size(), 0, &m_dataBlob));
+		ASSERT_SUCC(m_dxcLibrary->CreateBlobWithEncodingFromPinned(m_commonEngineStructsData.data(), m_commonEngineStructsData.size(), 0, &m_dataBlob));
 		*ppIncludeSource = m_dataBlob.Get();
 		m_dataBlob.Detach();
 		return S_OK;

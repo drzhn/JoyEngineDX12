@@ -312,16 +312,6 @@ namespace JoyEngine
 			m_gbuffer->BarrierToRead(commandList);
 		}
 
-		// Deferred shading 
-		{
-			commandList->OMSetRenderTargets(
-				1,
-				&hdrRTVHandle,
-				FALSE, nullptr);
-
-			RenderDeferredShading(commandList, m_gbuffer.get(), &mainCameraMatrixVP);
-		}
-
 		// Process raytracing
 		{
 			m_raytracing->ProcessRaytracing(commandList, m_currentFrameIndex, &mainCameraMatrixVP, m_skybox->GetSkyboxTextureDataSrv());
@@ -348,6 +338,16 @@ namespace JoyEngine
 		}
 
 		GraphicsUtils::SetViewportAndScissor(commandList, m_width, m_height);
+
+		// Deferred shading 
+		{
+			commandList->OMSetRenderTargets(
+				1,
+				&hdrRTVHandle,
+				FALSE, nullptr);
+
+			RenderDeferredShading(commandList, m_gbuffer.get(), &mainCameraMatrixVP);
+		}
 
 		if (g_drawRaytracedImage)
 		{

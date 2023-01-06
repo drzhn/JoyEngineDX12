@@ -19,7 +19,7 @@ namespace JoyEngine
 	std::unique_ptr<ResourceView> EngineSamplersProvider::m_linearWrapSampler = nullptr;
 	std::unique_ptr<ResourceView> EngineSamplersProvider::m_linearClampSampler = nullptr;
 	std::unique_ptr<ResourceView> EngineSamplersProvider::m_depthPCFSampler = nullptr;
-	std::unique_ptr<ResourceView> EngineSamplersProvider::m_linearBorderWhiteSampler = nullptr;
+	std::unique_ptr<ResourceView> EngineSamplersProvider::m_linearBlackBorderSampler = nullptr;
 	std::unique_ptr<ResourceView> EngineSamplersProvider::m_pointClampSampler = nullptr;
 
 	void EngineSamplersProvider::InitSamplers()
@@ -69,16 +69,16 @@ namespace JoyEngine
 		linearBorderWhiteSamplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
 		linearBorderWhiteSamplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
 		linearBorderWhiteSamplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
-		linearBorderWhiteSamplerDesc.BorderColor[0] = 1.0f;
-		linearBorderWhiteSamplerDesc.BorderColor[1] = 1.0f;
-		linearBorderWhiteSamplerDesc.BorderColor[2] = 1.0f;
-		linearBorderWhiteSamplerDesc.BorderColor[3] = 1.0f;
+		linearBorderWhiteSamplerDesc.BorderColor[0] = 0.0f;
+		linearBorderWhiteSamplerDesc.BorderColor[1] = 0.0f;
+		linearBorderWhiteSamplerDesc.BorderColor[2] = 0.0f;
+		linearBorderWhiteSamplerDesc.BorderColor[3] = 0.0f;
 		linearBorderWhiteSamplerDesc.MinLOD = 0;
 		linearBorderWhiteSamplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
 		linearBorderWhiteSamplerDesc.MipLODBias = 0.0f;
 		linearBorderWhiteSamplerDesc.MaxAnisotropy = 1;
 		linearBorderWhiteSamplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
-		m_linearBorderWhiteSampler = std::make_unique<ResourceView>(linearBorderWhiteSamplerDesc);
+		m_linearBlackBorderSampler = std::make_unique<ResourceView>(linearBorderWhiteSamplerDesc);
 
 		D3D12_SAMPLER_DESC pointClampDesc = {};
 		pointClampDesc.Filter = D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT;
@@ -115,10 +115,10 @@ namespace JoyEngine
 		return m_depthPCFSampler.get();
 	}
 
-	ResourceView* EngineSamplersProvider::GetLinearBorderWhiteSampler()
+	ResourceView* EngineSamplersProvider::GetLinearBlackBorderSampler()
 	{
-		ASSERT(m_linearBorderWhiteSampler != nullptr);
-		return m_linearBorderWhiteSampler.get();
+		ASSERT(m_linearBlackBorderSampler != nullptr);
+		return m_linearBlackBorderSampler.get();
 	}
 
 	ResourceView* EngineSamplersProvider::GetPointClampSampler()

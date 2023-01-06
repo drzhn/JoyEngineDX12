@@ -39,7 +39,9 @@ namespace JoyEngine
 
 	private:
 		const std::string m_commonEngineStructsPath;
-		std::vector<char> m_data;
+		std::vector<char> m_commonEngineStructsData;
+
+		const std::string m_shadersFolderPath;
 		//ComPtr<IDxcBlobEncoding> m_dataBlob;
 		IDxcLibrary* m_dxcLibrary;
 	};

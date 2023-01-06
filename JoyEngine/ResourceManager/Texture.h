@@ -23,13 +23,13 @@ namespace JoyEngine
 		static ResourceView* GetLinearWrapSampler();
 		static ResourceView* GetLinearClampSampler();
 		static ResourceView* GetDepthPCFSampler();
-		static ResourceView* GetLinearBorderWhiteSampler();
+		static ResourceView* GetLinearBlackBorderSampler();
 		static ResourceView* GetPointClampSampler();
 	private:
 		static std::unique_ptr<ResourceView> m_linearWrapSampler;
 		static std::unique_ptr<ResourceView> m_linearClampSampler;
 		static std::unique_ptr<ResourceView> m_depthPCFSampler;
-		static std::unique_ptr<ResourceView> m_linearBorderWhiteSampler;
+		static std::unique_ptr<ResourceView> m_linearBlackBorderSampler;
 		static std::unique_ptr<ResourceView> m_pointClampSampler;
 	};
 

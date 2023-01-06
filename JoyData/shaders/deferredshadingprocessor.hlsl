@@ -137,6 +137,6 @@ float4 PSMain(PSInput input) : SV_Target
 	// we use world position alpha chanel as an info about if this pixel is skybox or not.
 	attenuation = worldPosition.a > 0 ? attenuation : 1;
 
-	const float3 ret = color.rgb * attenuation;// +SampleProbeGrid(worldPosition, worldNormal);
+	const float3 ret = color.rgb * attenuation + SampleProbeGrid(worldPosition, worldNormal);
 	return float4(ret, 1);
 }

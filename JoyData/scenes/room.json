@@ -36,7 +36,7 @@
                     "type": "light",
                     "lightType": "direction",
                     "intensity": 1.0,
-                    "ambient": 0.1
+                    "ambient": 0.0
                 }
             ]
         },

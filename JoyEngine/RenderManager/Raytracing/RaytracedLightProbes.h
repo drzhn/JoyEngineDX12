@@ -41,8 +41,10 @@ namespace JoyEngine
 
 		[[nodiscard]] UAVGbuffer* GetGBuffer() const { return m_gbuffer.get(); }
 		[[nodiscard]] RenderTexture* GetShadedRenderTexture() const { return m_shadedRenderTexture.get(); }
+		[[nodiscard]] UAVTexture* GetProbeIrradianceTexture() const { return m_probeIrradianceTexture.get(); }
 		[[nodiscard]] uint32_t GetRaytracedTextureWidth() const noexcept { return m_raytracedTextureWidth; }
 		[[nodiscard]] uint32_t GetRaytracedTextureHeight() const noexcept { return m_raytracedTextureHeight; }
+		[[nodiscard]] ResourceView* GetRaytracedProbesData() const noexcept { return m_raytracedProbesData.GetView(); }
 
 	private:
 		DXGI_FORMAT m_mainColorFormat;

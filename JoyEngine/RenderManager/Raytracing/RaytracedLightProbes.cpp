@@ -400,6 +400,7 @@ namespace JoyEngine
 			GraphicsUtils::AttachViewToCompute(commandList, m_probeIrradiancePipeline, "raytracedProbesData", m_raytracedProbesData.GetView());
 		}
 		commandList->Dispatch(g_raytracedProbesData.gridX, g_raytracedProbesData.gridY, g_raytracedProbesData.gridZ);
+
 		GraphicsUtils::UAVBarrier(commandList, m_probeIrradianceTexture->GetImageResource().Get());
 	}
 

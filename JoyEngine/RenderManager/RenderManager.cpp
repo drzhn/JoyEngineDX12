@@ -212,6 +212,7 @@ namespace JoyEngine
 
 
 	bool g_drawRaytracedImage = true;
+	bool g_drawProbes = true;
 
 	void RenderManager::Update()
 	{
@@ -325,7 +326,7 @@ namespace JoyEngine
 			auto raytracedRTVHandle = m_raytracing->GetShadedRenderTexture()->GetRTV()->GetCPUHandle();
 
 			GraphicsUtils::Barrier(commandList, m_raytracing->GetShadedRenderTexture()->GetImageResource().Get(),
-								   D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
+			                       D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
 			GraphicsUtils::SetViewportAndScissor(commandList, m_raytracing->GetRaytracedTextureWidth(), m_raytracing->GetRaytracedTextureHeight());
 
@@ -337,7 +338,7 @@ namespace JoyEngine
 			RenderDeferredShading(commandList, m_raytracing->GetGBuffer(), &mainCameraMatrixVP);
 
 			GraphicsUtils::Barrier(commandList, m_raytracing->GetShadedRenderTexture()->GetImageResource().Get(),
-								   D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
+			                       D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
 
 			m_raytracing->GenerateProbeIrradiance(commandList);
 		}
@@ -373,7 +374,10 @@ namespace JoyEngine
 			m_tonemapping->Render(commandList, m_currentFrameIndex,
 			                      m_swapchainRenderTargets[m_currentFrameIndex].get());
 
-			m_raytracing->DebugDrawProbes(commandList, m_currentFrameIndex, &mainCameraMatrixVP);
+			if (g_drawProbes)
+			{
+				m_raytracing->DebugDrawProbes(commandList, m_currentFrameIndex, &mainCameraMatrixVP);
+			}
 
 
 			DrawGui(commandList, &mainCameraMatrixVP);
@@ -457,6 +461,7 @@ namespace JoyEngine
 			const glm::vec3 camPos = m_currentCamera->GetTransform()->GetPosition();
 			ImGui::Text("Camera: %.3f %.3f %.3f", camPos.x, camPos.y, camPos.z);
 			ImGui::Checkbox("Draw raytraced image", &g_drawRaytracedImage);
+			ImGui::Checkbox("Draw probes", &g_drawProbes);
 			ImGui::End();
 		}
 		ImGui::SetNextWindowPos({0, 150});

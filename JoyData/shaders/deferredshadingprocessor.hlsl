@@ -5,15 +5,21 @@ struct PSInput
 	float4 position : SV_POSITION;
 };
 
-ConstantBuffer<EngineData> engineData;
+ConstantBuffer<EngineData> engineData: register(b0);
+ConstantBuffer<DirectionLightData> directionalLightData: register(b1);
+ConstantBuffer<RaytracedProbesData> raytracedProbesData: register(b2);
 
 Texture2D<float4> colorTexture;
 Texture2D<float4> normalsTexture;
 Texture2D<float4> positionTexture;
 
-ConstantBuffer<DirectionLightData> directionalLightData;
+
 Texture2D<float> directionalLightShadowmap;
 
+Texture2D<float3> irradianceTexture;
+
+
+SamplerState linearClampSampler;
 SamplerComparisonState PCFSampler;
 
 
@@ -45,7 +51,7 @@ float4 PSMain(PSInput input) : SV_Target
 	UVD.z -= bias;
 
 	float directShadow = 0;
-	const float2 texelSize = 1.0 / float2(2048, 2048);
+	const float2 texelSize = 1.0 / float2(2048, 2048); // TODO move to directionalLightData struct
 	const int softShadowSize = 2;
 	for (int x = -softShadowSize; x <= softShadowSize; ++x)
 	{

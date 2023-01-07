@@ -75,6 +75,13 @@ float3 SampleProbeGrid(float3 worldPosition, float3 worldNormal)
 {
 	float3 ret = float3(0, 0, 0);
 	float3 gridPos = (worldPosition - raytracedProbesData.gridMin) / raytracedProbesData.cellSize;
+
+	//gridPos = float3(
+	//	clamp(gridPos.x, -1.0, float(raytracedProbesData.gridX) + 1.0),
+	//	clamp(gridPos.y, -1.0, float(raytracedProbesData.gridY) + 1.0),
+	//	clamp(gridPos.z, -1.0, float(raytracedProbesData.gridZ) + 1.0)
+	//);
+
 	const float3 gridCage[8] = {
 		float3(ceil(gridPos.x), ceil(gridPos.y), ceil(gridPos.z)),
 		float3(ceil(gridPos.x), ceil(gridPos.y), floor(gridPos.z)),
@@ -86,19 +93,29 @@ float3 SampleProbeGrid(float3 worldPosition, float3 worldNormal)
 		float3(floor(gridPos.x), floor(gridPos.y), floor(gridPos.z))
 	};
 
+	float wholeWeight = 0;
+
 	[unroll]
 	for (int i = 0; i < 8; i++)
 	{
 		float3 probePos = gridCage[i];
-		float backProbeMultiplier = sign(dot(worldNormal, normalize(probePos - gridPos))) / 2.0 + 1.0; // 0 if probe behind triangle;
-		float3 probeColor = SampleIrradianceTexture(probePos, worldNormal) * backProbeMultiplier;
+		float3 probeColor = SampleIrradianceTexture(probePos, worldNormal); // *backProbeMultiplier;
+
+		//float backProbeMultiplier = pow(max(0.0001, (dot(normalize(probePos - gridPos), worldNormal) + 1.0) * 0.5), 2) + 0.2;
+		float backProbeMultiplier = (dot(normalize(probePos - gridPos), worldNormal) + 1.0) / 2.0;
 		float weight =
 			(1 - abs(probePos.x - gridPos.x)) *
 			(1 - abs(probePos.y - gridPos.y)) *
 			(1 - abs(probePos.z - gridPos.z));
 
+		weight *= backProbeMultiplier;
+
 		ret += probeColor * weight;
+
+		wholeWeight += weight;
 	}
+
+	ret /= wholeWeight;
 
 	return ret;
 }
@@ -139,6 +156,8 @@ float4 PSMain(PSInput input) : SV_Target
 	shadowAttenuation = worldPosition.a > 0 ? shadowAttenuation : 1;
 	lambertAttenuation = worldPosition.a > 0 ? lambertAttenuation : 1;
 
-	const float3 ret = color.rgb * (shadowAttenuation * lambertAttenuation + SampleProbeGrid(worldPosition, worldNormal));
+	const float3 ret =
+		color.rgb * shadowAttenuation * lambertAttenuation +
+		color.rgb * SampleProbeGrid(worldPosition, worldNormal);
 	return float4(ret, 1);
 }

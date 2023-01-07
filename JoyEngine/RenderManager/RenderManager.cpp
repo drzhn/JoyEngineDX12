@@ -211,7 +211,7 @@ namespace JoyEngine
 	}
 
 
-	bool g_drawRaytracedImage = true;
+	bool g_drawRaytracedImage = false;
 	bool g_drawProbes = true;
 
 	void RenderManager::Update()

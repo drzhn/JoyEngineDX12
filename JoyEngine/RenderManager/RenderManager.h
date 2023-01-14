@@ -101,7 +101,7 @@ namespace JoyEngine
 
 		void RenderDeferredShading(
 			ID3D12GraphicsCommandList* commandList,
-			const AbstractGBuffer* gBuffer, const ViewProjectionMatrixData* cameraVP, bool isFinalImage
+			const AbstractGBuffer* gBuffer, const ViewProjectionMatrixData* cameraVP
 		) const;
 
 		void UpdateObjectMatrices() const;

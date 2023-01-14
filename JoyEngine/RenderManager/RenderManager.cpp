@@ -329,7 +329,7 @@ namespace JoyEngine
 				&raytracedRTVHandle,
 				FALSE, nullptr);
 
-			RenderDeferredShading(commandList, m_raytracing->GetGBuffer(), &mainCameraMatrixVP, false);
+			RenderDeferredShading(commandList, m_raytracing->GetGBuffer(), &mainCameraMatrixVP);
 
 			GraphicsUtils::Barrier(commandList, m_raytracing->GetShadedRenderTexture()->GetImageResource().Get(),
 			                       D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
@@ -346,7 +346,7 @@ namespace JoyEngine
 				&hdrRTVHandle,
 				FALSE, nullptr);
 
-			RenderDeferredShading(commandList, m_gbuffer.get(), &mainCameraMatrixVP, true);
+			RenderDeferredShading(commandList, m_gbuffer.get(), &mainCameraMatrixVP);
 		}
 
 		if (g_drawRaytracedImage)
@@ -587,8 +587,7 @@ namespace JoyEngine
 	void RenderManager::RenderDeferredShading(
 		ID3D12GraphicsCommandList* commandList,
 		const AbstractGBuffer* gBuffer,
-		const ViewProjectionMatrixData* cameraVP,
-		bool isFinalImage) const
+		const ViewProjectionMatrixData* cameraVP) const
 	{
 		const auto& sm = EngineMaterialProvider::Get()->GetDeferredShadingProcessorSharedMaterial();
 
@@ -608,14 +607,7 @@ namespace JoyEngine
 		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "raytracedProbesData", m_raytracing->GetRaytracedProbesData());
 		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "linearBlackBorderSampler", EngineSamplersProvider::GetLinearBlackBorderSampler());
 
-		if (isFinalImage)
-		{
-			GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "irradianceTexture", m_raytracing->GetProbeIrradianceTexture()->GetSRV());
-		}
-		else
-		{
-			GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "irradianceTexture", EngineMaterialProvider::Get()->GetNullTextureView());
-		}
+		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "irradianceTexture", m_raytracing->GetProbeIrradianceTexture()->GetSRV());
 
 		GraphicsUtils::ProcessEngineBindings(commandList, m_currentFrameIndex,
 		                                     sm->GetGraphicsPipeline()->GetEngineBindings(), nullptr,

@@ -103,5 +103,9 @@ void CSMain(uint3 groupId : SV_GroupID, uint3 groupThreadId : SV_GroupThreadID)
 		irradiance += float4(rayRadiance * weight, weight);
 	}
 
-	irradianceTexture[probeId2D * (DDGI_PROBE_IRRADIANCE_RESOLUTION + 2) + probeRealPixelID] = float3(irradiance.rgb / irradiance.w);
+	const float3 weightedIrradiance = float3(irradiance.rgb / irradiance.w);
+	const float3 prevIrradiance = irradianceTexture[probeId2D * (DDGI_PROBE_IRRADIANCE_RESOLUTION + 2) + probeRealPixelID];
+	const float3 newIrradiance = lerp(prevIrradiance, weightedIrradiance, 0.25);
+
+	irradianceTexture[probeId2D * (DDGI_PROBE_IRRADIANCE_RESOLUTION + 2) + probeRealPixelID] = newIrradiance;
 }

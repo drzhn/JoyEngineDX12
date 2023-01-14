@@ -101,14 +101,15 @@ float3 SampleProbeGrid(float3 worldPosition, float3 worldNormal)
 		float3 probePos = gridCage[i];
 		float3 probeColor = SampleIrradianceTexture(probePos, worldNormal); // *backProbeMultiplier;
 
-		//float backProbeMultiplier = pow(max(0.0001, (dot(normalize(probePos - gridPos), worldNormal) + 1.0) * 0.5), 2) + 0.2;
-		float backProbeMultiplier = (dot(normalize(probePos - gridPos), worldNormal) + 1.0) / 2.0;
+		//float backProbeMultiplier = pow(max(0.0001, (dot(normalize(probePos - gridPos), worldNormal) /*+ 1.0*/) /** 0.5*/), 2) + 0.2;
+		//float backProbeMultiplier = (dot(normalize(probePos - gridPos), worldNormal) + 1.0) / 2.0;
+		float backProbeMultiplier = max(0, dot(normalize(probePos - gridPos), worldNormal));
 		float weight =
 			(1 - abs(probePos.x - gridPos.x)) *
 			(1 - abs(probePos.y - gridPos.y)) *
 			(1 - abs(probePos.z - gridPos.z));
 
-		weight *= backProbeMultiplier;
+		//weight *= backProbeMultiplier;
 
 		ret += probeColor * weight;
 
@@ -155,9 +156,10 @@ float4 PSMain(PSInput input) : SV_Target
 	// we use world position alpha chanel as an info about if this pixel is skybox or not.
 	shadowAttenuation = worldPosition.a > 0 ? shadowAttenuation : 1;
 	lambertAttenuation = worldPosition.a > 0 ? lambertAttenuation : 1;
+	const float3 sampledProbeGridColor = worldPosition.a > 0 ? SampleProbeGrid(worldPosition, worldNormal) : 0;
 
 	const float3 ret =
 		color.rgb * shadowAttenuation * lambertAttenuation +
-		color.rgb * SampleProbeGrid(worldPosition, worldNormal);
+		color.rgb * sampledProbeGridColor;
 	return float4(ret, 1);
 }

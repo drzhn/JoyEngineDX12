@@ -101,15 +101,16 @@ float3 SampleProbeGrid(float3 worldPosition, float3 worldNormal)
 		float3 probePos = gridCage[i];
 		float3 probeColor = SampleIrradianceTexture(probePos, worldNormal); // *backProbeMultiplier;
 
-		//float backProbeMultiplier = pow(max(0.0001, (dot(normalize(probePos - gridPos), worldNormal) /*+ 1.0*/) /** 0.5*/), 2) + 0.2;
-		//float backProbeMultiplier = (dot(normalize(probePos - gridPos), worldNormal) + 1.0) / 2.0;
-		float backProbeMultiplier = max(0, dot(normalize(probePos - gridPos), worldNormal));
+		//float backProbeMultiplier = pow(max(0.0001, (dot(normalize(probePos - gridPos), worldNormal) + 1.0) * 0.5), 2) + 0.2;
+		//float backProbeMultiplier = max(0.000, dot(normalize(probePos - gridPos), worldNormal));
+		float backProbeMultiplier = pow(max(0.000, dot(normalize(probePos - gridPos), worldNormal)), 1.2);
+
 		float weight =
 			(1 - abs(probePos.x - gridPos.x)) *
 			(1 - abs(probePos.y - gridPos.y)) *
 			(1 - abs(probePos.z - gridPos.z));
 
-		//weight *= backProbeMultiplier;
+		weight *= backProbeMultiplier;
 
 		ret += probeColor * weight;
 

@@ -113,7 +113,7 @@ struct DirectionLightData
 
 	float ambient;
 	float bias;
-	float _dummy1;
+	UINT1 shadowmapSize;
 	float _dummy2;
 };
 

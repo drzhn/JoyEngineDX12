@@ -135,7 +135,7 @@ float4 PSMain(PSInput input) : SV_Target
 	UVD.z -= bias;
 
 	float shadowAttenuation = 0;
-	const float2 texelSize = 1.0 / float2(2048, 2048); // TODO move to directionalLightData struct
+	const float2 texelSize = 1.0 / float2(directionalLightData.shadowmapSize, directionalLightData.shadowmapSize);
 	const int softShadowSize = 2;
 	for (int x = -softShadowSize; x <= softShadowSize; ++x)
 	{

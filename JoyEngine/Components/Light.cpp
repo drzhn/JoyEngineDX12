@@ -13,6 +13,8 @@
 
 namespace JoyEngine
 {
+	#define DIRECTIONAL_SHADOWMAP_SIZE 2048
+
 	//Light::Light(LightType lightType, float intensity, float radius, float height, float angle, float ambient):
 	//	m_lightType(lightType),
 	//	m_intensity(intensity),
@@ -147,10 +149,11 @@ namespace JoyEngine
 		m_lightData.ambient = ambient;
 		m_lightData.intensity = intensity;
 		m_lightData.bias = 0.001f;
+		m_lightData.shadowmapSize = DIRECTIONAL_SHADOWMAP_SIZE;
 
 		m_shadowmap = std::make_unique<DepthTexture>(
-			2048,
-			2048,
+			DIRECTIONAL_SHADOWMAP_SIZE,
+			DIRECTIONAL_SHADOWMAP_SIZE,
 			DXGI_FORMAT_R32_TYPELESS,
 			D3D12_RESOURCE_STATE_GENERIC_READ,
 			D3D12_HEAP_TYPE_DEFAULT);

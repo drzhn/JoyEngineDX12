@@ -144,12 +144,21 @@ namespace JoyEngine
 				D3D12_HEAP_TYPE_DEFAULT);
 
 			m_probeIrradianceTexture = std::make_unique<UAVTexture>(
-				g_raytracedProbesData.gridX * g_raytracedProbesData.gridY * (DDGI_PROBE_IRRADIANCE_RESOLUTION + 2),
-				g_raytracedProbesData.gridZ * (DDGI_PROBE_IRRADIANCE_RESOLUTION + 2),
+				g_raytracedProbesData.gridX * g_raytracedProbesData.gridY * (DDGI_PROBE_DATA_RESOLUTION + 2),
+				g_raytracedProbesData.gridZ * (DDGI_PROBE_DATA_RESOLUTION + 2),
 				DXGI_FORMAT_R11G11B10_FLOAT,
 				D3D12_RESOURCE_STATE_GENERIC_READ,
 				D3D12_HEAP_TYPE_DEFAULT
 			);
+
+			m_probeDepthTexture = std::make_unique<UAVTexture>(
+				g_raytracedProbesData.gridX * g_raytracedProbesData.gridY * (DDGI_PROBE_DATA_RESOLUTION + 2),
+				g_raytracedProbesData.gridZ * (DDGI_PROBE_DATA_RESOLUTION + 2),
+				DXGI_FORMAT_R16_FLOAT,
+				D3D12_RESOURCE_STATE_GENERIC_READ,
+				D3D12_HEAP_TYPE_DEFAULT
+			);
+
 
 			{
 				// generate texture w = probesCount, h = DDGI_RAYS_COUNT
@@ -394,14 +403,18 @@ namespace JoyEngine
 			commandList->SetPipelineState(m_probeIrradiancePipeline->GetPipelineObject().Get());
 
 
-			GraphicsUtils::AttachViewToCompute(commandList, m_probeIrradiancePipeline, "raytracingTexture", m_shadedRenderTexture->GetSRV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_probeIrradiancePipeline, "irradianceTexture", m_probeIrradianceTexture->GetUAV());
+			GraphicsUtils::AttachViewToCompute(commandList, m_probeIrradiancePipeline, "shadedColorTexture", m_shadedRenderTexture->GetSRV());
+			GraphicsUtils::AttachViewToCompute(commandList, m_probeIrradiancePipeline, "positionsTexture", m_gbuffer->GetPositionSRV());
+
+			GraphicsUtils::AttachViewToCompute(commandList, m_probeIrradiancePipeline, "probeIrradianceTexture", m_probeIrradianceTexture->GetUAV());
+			GraphicsUtils::AttachViewToCompute(commandList, m_probeIrradiancePipeline, "probeDepthTexture", m_probeDepthTexture->GetUAV());
 
 			GraphicsUtils::AttachViewToCompute(commandList, m_probeIrradiancePipeline, "raytracedProbesData", m_raytracedProbesData.GetView());
 		}
 		commandList->Dispatch(g_raytracedProbesData.gridX, g_raytracedProbesData.gridY, g_raytracedProbesData.gridZ);
 
 		GraphicsUtils::UAVBarrier(commandList, m_probeIrradianceTexture->GetImageResource().Get());
+		GraphicsUtils::UAVBarrier(commandList, m_probeDepthTexture->GetImageResource().Get());
 	}
 
 	void RaytracedLightProbes::DebugDrawRaytracedImage(ID3D12GraphicsCommandList* commandList) const

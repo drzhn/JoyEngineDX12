@@ -55,15 +55,15 @@ float3 SampleIrradianceTexture(float3 gridID, float3 worldNormal)
 		gridID.z
 	);
 
-	float2 probeTextureSize = float2(raytracedProbesData.gridX * raytracedProbesData.gridY * (DDGI_PROBE_IRRADIANCE_RESOLUTION + 2),
-	                                 raytracedProbesData.gridZ * (DDGI_PROBE_IRRADIANCE_RESOLUTION + 2));
+	float2 probeTextureSize = float2(raytracedProbesData.gridX * raytracedProbesData.gridY * (DDGI_PROBE_DATA_RESOLUTION + 2),
+	                                 raytracedProbesData.gridZ * (DDGI_PROBE_DATA_RESOLUTION + 2));
 
 	const float2 probeUV = (float32x3_to_oct(worldNormal) + float2(1, 1)) / 2.0;
 
 	float2 textureUV =
-		probeId2D * (DDGI_PROBE_IRRADIANCE_RESOLUTION + 2) +
+		probeId2D * (DDGI_PROBE_DATA_RESOLUTION + 2) +
 		float2(1, 1) +
-		probeUV * DDGI_PROBE_IRRADIANCE_RESOLUTION;
+		probeUV * DDGI_PROBE_DATA_RESOLUTION;
 
 	textureUV = float2(textureUV.x / probeTextureSize.x, textureUV.y / probeTextureSize.y);
 

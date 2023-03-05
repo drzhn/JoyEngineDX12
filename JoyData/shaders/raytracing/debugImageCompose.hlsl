@@ -3,7 +3,7 @@ struct PSOutput
 	float4 Color: SV_Target;
 };
 
-Texture2D<float4> raytracingTexture : register(t1);
+Texture2D<float4> shadedColorTexture : register(t1);
 
 float4 VSMain(uint id : SV_VertexID) : SV_POSITION
 {
@@ -15,7 +15,7 @@ PSOutput PSMain(float4 position : SV_POSITION)
 {
 	PSOutput output;
 
-	const float4 raytracing = raytracingTexture.Load(float3(position.xy, 0));
+	const float4 raytracing = shadedColorTexture.Load(float3(position.xy, 0));
 
 	output.Color = raytracing;
 

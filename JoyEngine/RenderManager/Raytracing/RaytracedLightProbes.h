@@ -59,6 +59,8 @@ namespace JoyEngine
 		std::unique_ptr<UAVGbuffer> m_gbuffer;
 		std::unique_ptr<RenderTexture> m_shadedRenderTexture;
 		std::unique_ptr<UAVTexture> m_probeIrradianceTexture; // octohedral irradince per-probe storage
+		std::unique_ptr<UAVTexture> m_probeDepthTexture; // octohedral depth per-probe storage
+
 		std::set<SharedMaterial*>& m_sceneSharedMaterials;
 
 		std::unique_ptr<DataBuffer<uint32_t>> m_keysBuffer;

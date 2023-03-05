@@ -16,8 +16,7 @@ Texture2D<float4> positionTexture;
 
 Texture2D<float> directionalLightShadowmap;
 
-Texture2D<float3> irradianceTexture;
-
+Texture2D<float3> probeIrradianceTexture;
 
 SamplerState linearBlackBorderSampler;
 SamplerComparisonState PCFSampler;
@@ -48,15 +47,15 @@ float2 float32x3_to_oct(in float3 v)
 	return (v.z <= 0.0) ? ((1.0 - abs(p.yx)) * signNotZero(p)) : p;
 }
 
-float3 SampleIrradianceTexture(float3 gridID, float3 worldNormal)
+float2 GetProbeTextureUV(float3 gridID, float3 worldNormal)
 {
 	const float2 probeId2D = float2(
 		gridID.x + raytracedProbesData.gridX * gridID.y,
 		gridID.z
-	);
+		);
 
 	float2 probeTextureSize = float2(raytracedProbesData.gridX * raytracedProbesData.gridY * (DDGI_PROBE_DATA_RESOLUTION + 2),
-	                                 raytracedProbesData.gridZ * (DDGI_PROBE_DATA_RESOLUTION + 2));
+		raytracedProbesData.gridZ * (DDGI_PROBE_DATA_RESOLUTION + 2));
 
 	const float2 probeUV = (float32x3_to_oct(worldNormal) + float2(1, 1)) / 2.0;
 
@@ -65,9 +64,7 @@ float3 SampleIrradianceTexture(float3 gridID, float3 worldNormal)
 		float2(1, 1) +
 		probeUV * DDGI_PROBE_DATA_RESOLUTION;
 
-	textureUV = float2(textureUV.x / probeTextureSize.x, textureUV.y / probeTextureSize.y);
-
-	return irradianceTexture.Sample(linearBlackBorderSampler, textureUV);
+	return float2(textureUV.x / probeTextureSize.x, textureUV.y / probeTextureSize.y);
 }
 
 
@@ -99,10 +96,10 @@ float3 SampleProbeGrid(float3 worldPosition, float3 worldNormal)
 	for (int i = 0; i < 8; i++)
 	{
 		float3 probePos = gridCage[i];
-		float3 probeColor = SampleIrradianceTexture(probePos, worldNormal); // *backProbeMultiplier;
-
+		float3 probeColor = probeIrradianceTexture.Sample(linearBlackBorderSampler, GetProbeTextureUV(probePos, worldNormal)); 
 		//float backProbeMultiplier = pow(max(0.0001, (dot(normalize(probePos - gridPos), worldNormal) + 1.0) * 0.5), 2) + 0.2;
 		//float backProbeMultiplier = max(0.000, dot(normalize(probePos - gridPos), worldNormal));
+
 		float backProbeMultiplier = pow(max(0.000, dot(normalize(probePos - gridPos), worldNormal)), 1.2);
 
 		float weight =

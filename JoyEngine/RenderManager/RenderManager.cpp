@@ -606,7 +606,7 @@ namespace JoyEngine
 		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "raytracedProbesData", m_raytracing->GetRaytracedProbesData());
 		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "linearBlackBorderSampler", EngineSamplersProvider::GetLinearBlackBorderSampler());
 
-		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "irradianceTexture", m_raytracing->GetProbeIrradianceTexture()->GetSRV());
+		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "probeIrradianceTexture", m_raytracing->GetProbeIrradianceTexture()->GetSRV());
 
 		GraphicsUtils::ProcessEngineBindings(commandList, m_currentFrameIndex,
 			sm->GetGraphicsPipeline()->GetEngineBindings(), nullptr,

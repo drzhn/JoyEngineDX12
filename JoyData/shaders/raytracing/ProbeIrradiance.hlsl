@@ -98,7 +98,8 @@ void CSMain(uint3 groupId : SV_GroupID, uint3 groupThreadId : SV_GroupThreadID)
 	const float3 direction = oct_to_float32x3(uv);
 
 	float4 irradiance = float4(0, 0, 0, 0);
-	float4 position = float4(0, 0, 0, 0);
+	float3 position = float4(0, 0, 0, 0);
+	float currentCosine = 0;
 
 	for (int i = 0; i < DDGI_RAYS_COUNT; i++)
 	{
@@ -106,17 +107,18 @@ void CSMain(uint3 groupId : SV_GroupID, uint3 groupThreadId : SV_GroupThreadID)
 		const float3 rayRadiance = shadedColorTexture.Load(int3(probeId1D, i, 0)).rgb;
 		const float3 rayPosition = positionsTexture.Load(int3(probeId1D, i, 0)).rgb;
 
-		const float weight = max(0, dot(direction, rayDir));
+		const float cosine = dot(direction, rayDir);
+		const float weight = max(0, cosine);
 		irradiance += float4(rayRadiance * weight, weight);
-		position += float4(rayPosition * weight, weight);
+		position = cosine > currentCosine ? rayPosition : position;
+		currentCosine = cosine > currentCosine ? cosine : currentCosine;
 	}
 
 	const float3 weightedIrradiance = float3(irradiance.rgb / irradiance.w);
-	const float3 weightedPosition = float3(position.rgb / position.w);
 
 	const float3 prevIrradiance = probeIrradianceTexture[probeId2D * (DDGI_PROBE_DATA_RESOLUTION + 2) + probeRealPixelID];
 	const float3 newIrradiance = lerp(prevIrradiance, weightedIrradiance, 0.25);
 
 	probeIrradianceTexture[probeId2D * (DDGI_PROBE_DATA_RESOLUTION + 2) + probeRealPixelID] = newIrradiance;
-	probeDepthTexture[probeId2D * (DDGI_PROBE_DATA_RESOLUTION + 2) + probeRealPixelID] = length(weightedPosition - probePosition);
+	probeDepthTexture[probeId2D * (DDGI_PROBE_DATA_RESOLUTION + 2) + probeRealPixelID] = length(position - probePosition);
 }

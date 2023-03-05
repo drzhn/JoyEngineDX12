@@ -20,7 +20,7 @@ namespace JoyEngine
 
 	const RaytracedProbesData g_raytracedProbesData = {
 		.gridMin = glm::vec3(-27, 1, -12),
-		.cellSize = 4.0f,
+		.cellSize = 4.1f,
 		.gridX = 14,
 		.gridY = 8,
 		.gridZ = 6

@@ -22,7 +22,7 @@ float3 oct_to_float32x3(float2 e)
 
 inline float madfrac(float A, float B)
 {
-	return ((A) * (B) - floor((A) * (B)));
+	return ((A) * (B)-floor((A) * (B)));
 }
 
 inline float3 sphericalFibonacci(float i, float n)
@@ -40,7 +40,7 @@ inline int2 GetPixelId(int2 realPixelId)
 	int2 pixelId = int2(
 		min(DDGI_PROBE_IRRADIANCE_RESOLUTION - 1, max(0, realPixelId.x - 1)),
 		min(DDGI_PROBE_IRRADIANCE_RESOLUTION - 1, max(0, realPixelId.y - 1))
-	);
+		);
 
 	int2 t = pixelId;
 
@@ -65,7 +65,7 @@ inline int2 GetPixelId(int2 realPixelId)
 	if (realPixelId.x == DDGI_PROBE_IRRADIANCE_RESOLUTION + 1)
 	{
 		pixelId.y = DDGI_PROBE_IRRADIANCE_RESOLUTION - 1 - t.y;
-		pixelId.x = realPixelId.y == 0 || realPixelId.y == DDGI_PROBE_IRRADIANCE_RESOLUTION + 1 ?  0 : DDGI_PROBE_IRRADIANCE_RESOLUTION - 1;
+		pixelId.x = realPixelId.y == 0 || realPixelId.y == DDGI_PROBE_IRRADIANCE_RESOLUTION + 1 ? 0 : DDGI_PROBE_IRRADIANCE_RESOLUTION - 1;
 	}
 
 	return pixelId;
@@ -82,13 +82,13 @@ void CSMain(uint3 groupId : SV_GroupID, uint3 groupThreadId : SV_GroupThreadID)
 	const uint2 probeId2D = uint2(
 		groupId.x + raytracedProbesData.gridX * groupId.y,
 		groupId.z
-	);
+		);
 
 	const uint2 probeRealPixelID = groupThreadId.xy;
 
 	const int2 probePixelID = GetPixelId(probeRealPixelID);
 
-	const float2 uv = ((float2(probePixelID) + float2(0.5, 0.5)) / DDGI_PROBE_IRRADIANCE_RESOLUTION - float2(0.5, 0.5)) * 2;
+	const float2 uv = ((float2(probePixelID)+float2(0.5, 0.5)) / DDGI_PROBE_IRRADIANCE_RESOLUTION - float2(0.5, 0.5)) * 2;
 
 	const float3 direction = oct_to_float32x3(uv);
 

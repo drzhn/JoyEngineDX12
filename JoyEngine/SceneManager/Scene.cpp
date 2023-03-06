@@ -68,7 +68,14 @@ namespace JoyEngine
 					}
 					else if (type == "camera")
 					{
-						go->AddComponent(std::make_unique<Camera>(RenderManager::Get()));
+						ASSERT(component.HasMember("near"));
+						const float cameraNear = component["near"].GetFloat();
+						ASSERT(component.HasMember("far"));
+						const float cameraFar = component["far"].GetFloat();
+						ASSERT(component.HasMember("fov"));
+						const float cameraFov = component["fov"].GetFloat();
+
+						go->AddComponent(std::make_unique<Camera>(RenderManager::Get(), cameraNear, cameraFar, cameraFov));
 					}
 					else if (type == "light")
 					{

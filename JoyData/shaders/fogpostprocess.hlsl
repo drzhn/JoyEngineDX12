@@ -12,7 +12,7 @@ Texture2D<float4> colorTexture : register(t1);
 inline float LinearEyeDepth(float depth)
 {
 	const float zNear = 0.1f;
-	const float zFar = 1000.0f;
+	const float zFar = 1000.0f; // TODO get this info from engine data
 	float x = 1 - zFar / zNear;
 	float y = zFar / zNear;
 	float z = x / zFar;

@@ -8,12 +8,12 @@
 
 namespace JoyEngine
 {
-	CameraUnit::CameraUnit(float aspect, float width, float height, float fov, float nearPlane, float farPlane):
+	CameraUnit::CameraUnit(float aspect, float width, float height, float fovDeg, float nearPlane, float farPlane):
 		m_type(CameraUnitType::Perspective),
 		m_aspect(aspect),
 		m_width(width),
 		m_height(height),
-		m_fov(fov),
+		m_fovRad(glm::radians(fovDeg)),
 		m_near(nearPlane),
 		m_far(farPlane)
 	{
@@ -33,7 +33,7 @@ namespace JoyEngine
 		switch (m_type)
 		{
 		case CameraUnitType::Perspective:
-			return glm::perspectiveFovLH_ZO(glm::radians(m_fov), m_width, m_height, m_near, m_far);
+			return glm::perspectiveFovLH_ZO(m_fovRad, m_width, m_height, m_near, m_far);
 		case CameraUnitType::Orthographic:
 			return glm::orthoLH_ZO(-m_size * m_aspect, m_size * m_aspect, -m_size, m_size, m_near, m_far);
 		}

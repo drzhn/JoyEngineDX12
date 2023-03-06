@@ -5,13 +5,17 @@
 #include "RenderManager/IRenderManager.h"
 #include "SceneManager/Transform.h"
 
-#define CAMERA_FOV 60.f
-#define CAMERA_NEAR 0.1f
-#define CAMERA_FAR 1000
-
 namespace JoyEngine
 {
-	Camera::Camera(IRenderManager* manager):
+	Camera::Camera(IRenderManager* manager, float cameraNear, float cameraFar, float cameraFov) :
+		m_cameraUnit(CameraUnit(manager->GetAspect(),
+		                        manager->GetWidth_f(),
+		                        manager->GetHeight_f(),
+		                        cameraFov,
+		                        cameraNear,
+		                        cameraFar
+
+		)),
 		m_manager(manager)
 	{
 	}
@@ -19,13 +23,6 @@ namespace JoyEngine
 	void Camera::Enable()
 	{
 		m_manager->RegisterCamera(this);
-		m_cameraUnit = CameraUnit(m_manager->GetAspect(),
-		                          m_manager->GetWidth_f(),
-		                          m_manager->GetHeight_f(),
-		                          CAMERA_FOV,
-		                          CAMERA_NEAR,
-		                          CAMERA_FAR
-		);
 		m_enabled = true;
 	}
 
@@ -51,16 +48,16 @@ namespace JoyEngine
 
 	float Camera::GetFovRadians() const
 	{
-		return glm::radians(CAMERA_FOV);
+		return m_cameraUnit.GetFOVRadians();
 	}
 
 	float Camera::GetNear() const
 	{
-		return CAMERA_NEAR;
+		return m_cameraUnit.GetNear();
 	}
 
 	float Camera::GetFar() const
 	{
-		return CAMERA_FAR;
+		return m_cameraUnit.GetFar();
 	}
 }

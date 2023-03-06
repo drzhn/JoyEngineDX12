@@ -12,7 +12,10 @@
             },
             "components": [
                 {
-                    "type": "camera"
+                    "type": "camera",
+                    "near": 0.1,
+                    "far": 1000,
+                    "fov": 60
                 },
                 {
                     "type": "component",

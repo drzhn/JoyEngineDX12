@@ -6,7 +6,7 @@ Texture2D shadedColorTexture;
 Texture2D positionsTexture;
 
 RWTexture2D<float3> probeIrradianceTexture;
-RWTexture2D<float> probeDepthTexture;
+RWTexture2D<float2> probeDepthTexture;
 
 float2 signNotZero(float2 v)
 {
@@ -25,7 +25,7 @@ float3 oct_to_float32x3(float2 e)
 
 inline float madfrac(float A, float B)
 {
-	return ((A) * (B)-floor((A) * (B)));
+	return ((A) * (B) - floor((A) * (B)));
 }
 
 inline float3 sphericalFibonacci(float i, float n)
@@ -43,7 +43,7 @@ inline int2 GetPixelId(int2 realPixelId)
 	int2 pixelId = int2(
 		min(DDGI_PROBE_DATA_RESOLUTION - 1, max(0, realPixelId.x - 1)),
 		min(DDGI_PROBE_DATA_RESOLUTION - 1, max(0, realPixelId.y - 1))
-		);
+	);
 
 	int2 t = pixelId;
 
@@ -77,7 +77,7 @@ inline int2 GetPixelId(int2 realPixelId)
 [numthreads(DDGI_PROBE_DATA_RESOLUTION + 2, DDGI_PROBE_DATA_RESOLUTION + 2, 1)]
 void CSMain(uint3 groupId : SV_GroupID, uint3 groupThreadId : SV_GroupThreadID)
 {
-	const float3 probePosition = raytracedProbesData.gridMin + float3(groupId)*raytracedProbesData.cellSize;
+	const float3 probePosition = raytracedProbesData.gridMin + float3(groupId) * raytracedProbesData.cellSize;
 
 	const uint probeId1D =
 		groupId.x * raytracedProbesData.gridY * raytracedProbesData.gridZ +
@@ -87,18 +87,18 @@ void CSMain(uint3 groupId : SV_GroupID, uint3 groupThreadId : SV_GroupThreadID)
 	const uint2 probeId2D = uint2(
 		groupId.x + raytracedProbesData.gridX * groupId.y,
 		groupId.z
-		);
+	);
 
 	const uint2 probeRealPixelID = groupThreadId.xy;
 
 	const int2 probePixelID = GetPixelId(probeRealPixelID);
 
-	const float2 uv = ((float2(probePixelID)+float2(0.5, 0.5)) / DDGI_PROBE_DATA_RESOLUTION - float2(0.5, 0.5)) * 2;
+	const float2 uv = ((float2(probePixelID) + float2(0.5, 0.5)) / DDGI_PROBE_DATA_RESOLUTION - float2(0.5, 0.5)) * 2;
 
 	const float3 direction = oct_to_float32x3(uv);
 
 	float4 irradiance = float4(0, 0, 0, 0);
-	float3 position = float4(0, 0, 0, 0);
+	float3 position = float3(0, 0, 0);
 	float currentCosine = 0;
 
 	for (int i = 0; i < DDGI_RAYS_COUNT; i++)
@@ -110,6 +110,7 @@ void CSMain(uint3 groupId : SV_GroupID, uint3 groupThreadId : SV_GroupThreadID)
 		const float cosine = dot(direction, rayDir);
 		const float weight = max(0, cosine);
 		irradiance += float4(rayRadiance * weight, weight);
+
 		position = cosine > currentCosine ? rayPosition : position;
 		currentCosine = cosine > currentCosine ? cosine : currentCosine;
 	}
@@ -120,5 +121,9 @@ void CSMain(uint3 groupId : SV_GroupID, uint3 groupThreadId : SV_GroupThreadID)
 	const float3 newIrradiance = lerp(prevIrradiance, weightedIrradiance, 0.25);
 
 	probeIrradianceTexture[probeId2D * (DDGI_PROBE_DATA_RESOLUTION + 2) + probeRealPixelID] = newIrradiance;
-	probeDepthTexture[probeId2D * (DDGI_PROBE_DATA_RESOLUTION + 2) + probeRealPixelID] = length(position - probePosition);
+
+	const float sphericalDistance = acos(currentCosine);
+	const float3 v = position - probePosition;
+	const float squaredDistance = dot(v, v);
+	probeDepthTexture[probeId2D * (DDGI_PROBE_DATA_RESOLUTION + 2) + probeRealPixelID] = float2(sphericalDistance, squaredDistance);
 }

@@ -154,7 +154,7 @@ namespace JoyEngine
 			m_probeDepthTexture = std::make_unique<UAVTexture>(
 				g_raytracedProbesData.gridX * g_raytracedProbesData.gridY * (DDGI_PROBE_DATA_RESOLUTION + 2),
 				g_raytracedProbesData.gridZ * (DDGI_PROBE_DATA_RESOLUTION + 2),
-				DXGI_FORMAT_R16_FLOAT,
+				DXGI_FORMAT_R16G16_FLOAT,
 				D3D12_RESOURCE_STATE_GENERIC_READ,
 				D3D12_HEAP_TYPE_DEFAULT
 			);

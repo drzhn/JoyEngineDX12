@@ -8,7 +8,6 @@
 #include "Transform.h"
 #include "Components/Component.h"
 #include "Components/MeshRenderer.h"
-#include "Utils/GUID.h"
 
 namespace JoyEngine
 {
@@ -27,7 +26,7 @@ namespace JoyEngine
 
 		~GameObject()
 		{
-			for (auto& component : m_components)
+			for (const auto& component : m_components)
 			{
 				component->Disable();
 			}

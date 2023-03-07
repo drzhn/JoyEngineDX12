@@ -117,6 +117,9 @@ namespace JoyEngine
 			m_width,
 			m_height);
 
+		m_worldMatricesProvider = std::make_unique<WorldMatricesProvider>(frameCount);
+
+		// IMGUI initialization
 		{
 			D3D12_CPU_DESCRIPTOR_HANDLE imguiCpuHandle;
 			D3D12_GPU_DESCRIPTOR_HANDLE imguiGpuHandle;

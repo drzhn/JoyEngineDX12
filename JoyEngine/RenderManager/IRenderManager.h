@@ -3,6 +3,7 @@
 
 namespace JoyEngine
 {
+	class WorldMatricesProvider;
 	class Camera;
 	class DirectionalLight;
 	class SharedMaterial;
@@ -19,13 +20,14 @@ namespace JoyEngine
 		virtual void UnregisterDirectionLight(DirectionalLight*) = 0;
 		virtual void RegisterCamera(Camera* camera) = 0;
 		virtual void UnregisterCamera(Camera* camera) = 0;
-		[[nodiscard]]virtual float GetAspect() const noexcept = 0;
-		[[nodiscard]]virtual float GetWidth_f() const noexcept = 0;
-		[[nodiscard]]virtual float GetHeight_f() const noexcept = 0;
-		[[nodiscard]]virtual uint32_t GetWidth() const noexcept = 0;
-		[[nodiscard]]virtual uint32_t GetHeight() const noexcept = 0;
-		[[nodiscard]]virtual uint32_t GetFrameCount() const noexcept = 0;
 
+		[[nodiscard]] virtual WorldMatricesProvider* GetWorldMatricesProvider() const noexcept = 0;
+		[[nodiscard]] virtual float GetAspect() const noexcept = 0;
+		[[nodiscard]] virtual float GetWidth_f() const noexcept = 0;
+		[[nodiscard]] virtual float GetHeight_f() const noexcept = 0;
+		[[nodiscard]] virtual uint32_t GetWidth() const noexcept = 0;
+		[[nodiscard]] virtual uint32_t GetHeight() const noexcept = 0;
+		[[nodiscard]] virtual uint32_t GetFrameCount() const noexcept = 0;
 	};
 }
 #endif // IRENDERMANAGER_H

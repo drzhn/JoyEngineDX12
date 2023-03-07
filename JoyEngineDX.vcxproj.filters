@@ -186,7 +186,7 @@
     <ClCompile Include="JoyEngine\RenderManager\LightSystems\ClusteredLightSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JoyEngine\RenderManager\ModelDataSystem.cpp">
+    <ClCompile Include="JoyEngine\RenderManager\WorldMatricesProvider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -416,7 +416,7 @@
     <ClInclude Include="JoyEngine\RenderManager\LightSystems\ILightSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JoyEngine\RenderManager\ModelDataSystem.h">
+    <ClInclude Include="JoyEngine\RenderManager\WorldMatricesProvider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

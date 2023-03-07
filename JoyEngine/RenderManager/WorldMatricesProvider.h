@@ -8,10 +8,20 @@
 
 namespace JoyEngine
 {
-	class ModelDataSystem
+	class WorldMatricesProvider
 	{
 	public:
+		WorldMatricesProvider() = delete;
 
+		explicit WorldMatricesProvider(uint32_t frameCount)
+			:m_pool(frameCount)
+		{
+
+		}
+
+		void Update();
+		uint32_t Allocate();
+		void Free(uint32_t index); // TODO
 	private:
 		DynamicBufferPool<glm::mat4, ObjectMatricesData, OBJECT_SIZE> m_pool;
 	};

@@ -23,7 +23,7 @@ namespace JoyEngine
 				m_freeItems.push(i);
 				m_usedItems[i] = false;
 			}
-			m_buffer = std::make_unique<DynamicCpuBuffer<ElemT>>(bufferSize);
+			m_buffer = std::make_unique<DynamicCpuBuffer<GpuT>>(bufferSize);
 		}
 
 		ElemT* Allocate(uint32_t& allocatedIndex)
@@ -54,7 +54,7 @@ namespace JoyEngine
 		std::stack<uint32_t> m_freeItems;
 		std::bitset<Size> m_usedItems;
 
-		ElemT m_data[Size];
+		std::array<ElemT, Size> m_data;
 		std::unique_ptr<DynamicCpuBuffer<GpuT>> m_buffer;
 	};
 }

@@ -17,6 +17,7 @@
 #include "Common/Singleton.h"
 
 #include "Tonemapping.h"
+#include "WorldMatricesProvider.h"
 #include "Raytracing/RaytracedLightProbes.h"
 
 using Microsoft::WRL::ComPtr;
@@ -78,6 +79,8 @@ namespace JoyEngine
 
 		[[nodiscard]] uint32_t GetFrameCount() const noexcept override { return frameCount; }
 
+		[[nodiscard]] WorldMatricesProvider* GetWorldMatricesProvider() const noexcept override { return m_worldMatricesProvider.get(); }
+
 		[[nodiscard]] static DXGI_FORMAT GetMainColorFormat() noexcept { return hdrRTVFormat; };
 		[[nodiscard]] static DXGI_FORMAT GetHdrRTVFormat() noexcept { return hdrRTVFormat; }
 		[[nodiscard]] static DXGI_FORMAT GetSwapchainFormat() noexcept { return swapchainFormat; }
@@ -131,7 +134,7 @@ namespace JoyEngine
 
 		std::unique_ptr<Tonemapping> m_tonemapping;
 		std::unique_ptr<RaytracedLightProbes> m_raytracing;
-
+		std::unique_ptr<WorldMatricesProvider> m_worldMatricesProvider;
 		std::set<SharedMaterial*> m_sharedMaterials;
 
 		Camera* m_currentCamera;

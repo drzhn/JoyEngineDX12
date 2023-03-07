@@ -5,10 +5,10 @@
 #include <memory>
 
 #include "CommonEngineStructs.h"
-#include "ResourceManager/DynamicCpuBuffer.h"
 #include "ResourceManager/ResourceHandle.h"
 #include "ResourceManager/SharedMaterial.h"
-#include "ResourceManager/UAVGpuBuffer.h"
+#include "ResourceManager/Buffers/DynamicCpuBuffer.h"
+#include "ResourceManager/Buffers/UAVGpuBuffer.h"
 
 
 namespace JoyEngine

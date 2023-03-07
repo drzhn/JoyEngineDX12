@@ -6,7 +6,6 @@
 #include "EngineMaterialProvider/EngineMaterialProvider.h"
 #include "ResourceManager/Texture.h"
 #include "RenderManager/RenderManager.h"
-#include "glm/gtc/type_ptr.hpp"
 #include "SceneManager/Transform.h"
 #include "Utils/GraphicsUtils.h"
 

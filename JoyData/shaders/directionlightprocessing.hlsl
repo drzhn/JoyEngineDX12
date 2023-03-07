@@ -5,7 +5,7 @@ struct PSOutput
 	float4 Color: SV_Target;
 };
 
-ConstantBuffer<DirectionLightData> lightData : register(b0);
+ConstantBuffer<DirectionalLightData> lightData : register(b0);
 ConstantBuffer<EngineData> engineData : register(b1);
 
 Texture2D positionTexture: register(t0);

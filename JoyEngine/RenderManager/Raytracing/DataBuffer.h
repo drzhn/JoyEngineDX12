@@ -2,7 +2,7 @@
 #define DATA_BUFFER_H
 
 #include "MemoryManager/MemoryManager.h"
-#include "ResourceManager/UAVGpuBuffer.h"
+#include "ResourceManager/Buffers/UAVGpuBuffer.h"
 
 namespace JoyEngine
 {

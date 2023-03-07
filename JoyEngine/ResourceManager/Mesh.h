@@ -2,12 +2,12 @@
 #define MESH_H
 
 #include <memory>
-#include <fstream>
+#include <wrl/client.h>
 
 #include "CommonEngineStructs.h"
+#include "Buffers/Buffer.h"
 
 #include "Common/Resource.h"
-#include "ResourceManager/Buffer.h"
 #include "Utils/GUID.h"
 
 namespace JoyEngine

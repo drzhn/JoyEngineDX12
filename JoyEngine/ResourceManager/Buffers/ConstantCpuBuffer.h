@@ -5,7 +5,7 @@
 #include <memory>
 
 #include "Buffer.h"
-#include "ResourceView.h"
+#include "ResourceManager/ResourceView.h"
 
 namespace JoyEngine
 {

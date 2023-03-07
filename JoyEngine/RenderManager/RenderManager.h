@@ -15,7 +15,6 @@
 #include "IRenderManager.h"
 #include "Skybox.h"
 #include "Common/Singleton.h"
-#include "ResourceManager/DynamicCpuBuffer.h"
 
 #include "Tonemapping.h"
 #include "Raytracing/RaytracedLightProbes.h"

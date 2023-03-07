@@ -13,21 +13,18 @@
 
 #include "GraphicsManager/GraphicsManager.h"
 #include "EngineMaterialProvider/EngineMaterialProvider.h"
-#include "CommonEngineStructs.h"
 
-#include "ResourceManager/Buffer.h"
-#include "ResourceManager/ResourceView.h"
 #include "ResourceManager/Texture.h"
 #include "Utils/Assert.h"
 #include "Utils/GraphicsUtils.h"
 #include "Utils/TimeCounter.h"
 
-#define GPU_BUFFER_ALLOCATION_SIZE 256*1024*1024 // 256 MB
-#define GPU_TEXTURE_ALLOCATION_SIZE 64*1024*1024 // 64 MB
-#define GPU_RT_DS_ALLOCATION_SIZE 128*1024*1024 // 128 MB
+#define GPU_BUFFER_ALLOCATION_SIZE (256*1024*1024) // 256 MB
+#define GPU_TEXTURE_ALLOCATION_SIZE (64*1024*1024) // 64 MB
+#define GPU_RT_DS_ALLOCATION_SIZE (128*1024*1024) // 128 MB
 
-#define CPU_UPLOAD_ALLOCATION_SIZE 256*1024*1024 // 256 MB
-#define CPU_READBACK_ALLOCATION_SIZE 256*1024*1024 // 256 MB
+#define CPU_UPLOAD_ALLOCATION_SIZE (256*1024*1024) // 256 MB
+#define CPU_READBACK_ALLOCATION_SIZE (256*1024*1024) // 256 MB
 
 
 namespace JoyEngine

@@ -54,7 +54,7 @@
     <ClCompile Include="JoyEngine\MemoryManager\MemoryManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JoyEngine\ResourceManager\Buffer.cpp">
+    <ClCompile Include="JoyEngine\ResourceManager\Buffers\Buffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="JoyEngine\ResourceManager\Texture.cpp">
@@ -123,13 +123,13 @@
     <ClCompile Include="JoyEngine\RenderManager\Tonemapping.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JoyEngine\ResourceManager\DynamicCpuBuffer.cpp">
+    <ClCompile Include="JoyEngine\ResourceManager\Buffers\DynamicCpuBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="JoyEngine\Utils\GraphicsUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JoyEngine\ResourceManager\ConstantCpuBuffer.cpp">
+    <ClCompile Include="JoyEngine\ResourceManager\Buffers\ConstantCpuBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="JoyEngine\RenderManager\Raytracing\RaytracedLightProbes.cpp">
@@ -150,7 +150,7 @@
     <ClCompile Include="JoyEngine\RenderManager\Raytracing\BVHConstructor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JoyEngine\ResourceManager\UAVGpuBuffer.cpp">
+    <ClCompile Include="JoyEngine\ResourceManager\Buffers\UAVGpuBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ThirdParty\imgui\imgui.cpp">
@@ -181,6 +181,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="JoyEngine\RenderManager\RenderState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JoyEngine\RenderManager\LightSystems\ClusteredLightSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -245,7 +248,7 @@
     <ClInclude Include="JoyEngine\MemoryManager\MemoryManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JoyEngine\ResourceManager\Buffer.h">
+    <ClInclude Include="JoyEngine\ResourceManager\Buffers\Buffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JoyEngine\d3dx12.h">
@@ -326,13 +329,13 @@
     <ClInclude Include="JoyEngine\RenderManager\Tonemapping.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JoyEngine\ResourceManager\DynamicCpuBuffer.h">
+    <ClInclude Include="JoyEngine\ResourceManager\Buffers\DynamicCpuBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JoyEngine\Utils\GraphicsUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JoyEngine\ResourceManager\ConstantCpuBuffer.h">
+    <ClInclude Include="JoyEngine\ResourceManager\Buffers\ConstantCpuBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JoyEngine\RenderManager\Raytracing\RaytracedLightProbes.h">
@@ -359,7 +362,7 @@
     <ClInclude Include="JoyEngine\RenderManager\Raytracing\BVHConstructor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JoyEngine\ResourceManager\UAVGpuBuffer.h">
+    <ClInclude Include="JoyEngine\ResourceManager\Buffers\UAVGpuBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JoyEngine\RenderManager\IRenderManager.h">
@@ -389,7 +392,7 @@
     <ClInclude Include="ThirdParty\imgui\backends\imgui_impl_win32.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JoyEngine\Utils\ObjectPool.h">
+    <ClInclude Include="JoyEngine\ResourceManager\Buffers\DynamicBufferPool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JoyEngine\JoyAssetHeaders.h">
@@ -402,6 +405,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JoyEngine\RenderManager\RenderState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JoyEngine\RenderManager\LightSystems\ClusteredLightSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JoyEngine\RenderManager\LightSystems\ILightSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

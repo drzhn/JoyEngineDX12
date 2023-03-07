@@ -5,10 +5,9 @@
 #include "Common/CameraUnit.h"
 #include "CommonEngineStructs.h"
 #include "RenderManager/IRenderManager.h"
-#include "ResourceManager/Buffer.h"
-#include "ResourceManager/DynamicCpuBuffer.h"
 #include "ResourceManager/ResourceView.h"
 #include "ResourceManager/Texture.h"
+#include "ResourceManager/Buffers/DynamicCpuBuffer.h"
 
 namespace JoyEngine
 {
@@ -52,7 +51,7 @@ namespace JoyEngine
 		std::unique_ptr<DynamicCpuBuffer<LightDataT>> m_lightDataBuffer;
 	};
 
-	class DirectionalLight : public Light<DirectionLightData>
+	class DirectionalLight : public Light<DirectionalLightData>
 	{
 	public:
 		explicit DirectionalLight(IRenderManager* renderManager, float intensity, float ambient);
@@ -67,7 +66,7 @@ namespace JoyEngine
 		                   SharedMaterial* gBufferSharedMaterial) override;
 
 		float* GetCurrentAnglePtr() { return &m_currentAngle; }
-		DirectionLightData* GetLightDataPtr() { return &m_lightData; }
+		DirectionalLightData* GetLightDataPtr() { return &m_lightData; }
 
 	private:
 		CameraUnit m_cameraUnit;

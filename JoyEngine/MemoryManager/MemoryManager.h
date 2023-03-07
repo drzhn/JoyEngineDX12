@@ -4,11 +4,11 @@
 #include <fstream>
 
 #include "Common/CommandQueue.h"
-#include "ResourceManager/Buffer.h"
 #include "ResourceManager/Texture.h"
 
 #include "DeviceLinearAllocator.h"
 #include "Common/Singleton.h"
+#include "ResourceManager/Buffers/Buffer.h"
 
 
 namespace JoyEngine

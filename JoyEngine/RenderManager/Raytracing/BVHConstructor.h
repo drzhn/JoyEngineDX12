@@ -5,9 +5,9 @@
 
 #include "CommonEngineStructs.h"
 #include "DataBuffer.h"
-#include "ResourceManager/ConstantCpuBuffer.h"
 #include "ResourceManager/ResourceHandle.h"
 #include "ResourceManager/SharedMaterial.h"
+#include "ResourceManager/Buffers/ConstantCpuBuffer.h"
 
 namespace JoyEngine
 {

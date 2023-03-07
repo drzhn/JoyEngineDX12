@@ -1,7 +1,7 @@
 ﻿#ifndef UAV_GPU_BUFFER_H
 #define UAV_GPU_BUFFER_H
 #include "Buffer.h"
-#include "ResourceView.h"
+#include "ResourceManager/ResourceView.h"
 
 namespace JoyEngine
 {

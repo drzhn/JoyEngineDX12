@@ -5,11 +5,10 @@
 #include <memory>
 #include <vector>
 
+#include "ResourceHandle.h"
 #include "Common/Resource.h"
-#include "ResourceManager/Buffer.h"
-
-#include "ResourceManager/ResourceManager.h"
 #include "ResourceView.h"
+#include "Buffers/Buffer.h"
 
 #include "Utils/GUID.h"
 

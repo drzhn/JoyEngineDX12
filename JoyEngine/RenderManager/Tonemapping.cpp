@@ -6,8 +6,6 @@
 #include "ResourceManager/ResourceManager.h"
 #include "ResourceManager/SharedMaterial.h"
 #include "ResourceManager/Texture.h"
-#include "ResourceManager/Buffer.h"
-#include "ResourceManager/ResourceView.h"
 #include "Utils/GraphicsUtils.h"
 
 #include "Utils/GUID.h"

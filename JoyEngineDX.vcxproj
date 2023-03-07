@@ -224,6 +224,7 @@
     <ClCompile Include="JoyEngine\GameplayComponents\CameraBehaviour.cpp" />
     <ClCompile Include="JoyEngine\GameplayComponents\RoomBehaviour.cpp" />
     <ClCompile Include="JoyEngine\MemoryManager\DeviceLinearAllocator.cpp" />
+    <ClCompile Include="JoyEngine\RenderManager\LightSystems\ClusteredLightSystem.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\ComputeDispatcher.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\GBuffer.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\Raytracing\BufferSorter.cpp" />
@@ -232,7 +233,7 @@
     <ClCompile Include="JoyEngine\RenderManager\RenderState.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\Skybox.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\Tonemapping.cpp" />
-    <ClCompile Include="JoyEngine\ResourceManager\Buffer.cpp" />
+    <ClCompile Include="JoyEngine\ResourceManager\Buffers\Buffer.cpp" />
     <ClCompile Include="JoyEngine\DataManager\DataManager.cpp" />
     <ClCompile Include="JoyEngine\DescriptorManager\DescriptorManager.cpp" />
     <ClCompile Include="JoyEngine\Common\CommandQueue.cpp" />
@@ -244,8 +245,8 @@
     <ClCompile Include="JoyEngine\JoyEngine.cpp" />
     <ClCompile Include="JoyEngine\MemoryManager\MemoryManager.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\RenderManager.cpp" />
-    <ClCompile Include="JoyEngine\ResourceManager\ConstantCpuBuffer.cpp" />
-    <ClCompile Include="JoyEngine\ResourceManager\DynamicCpuBuffer.cpp" />
+    <ClCompile Include="JoyEngine\ResourceManager\Buffers\ConstantCpuBuffer.cpp" />
+    <ClCompile Include="JoyEngine\ResourceManager\Buffers\DynamicCpuBuffer.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\MtlBinaryParser.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\ResourceView.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\Material.cpp" />
@@ -255,7 +256,7 @@
     <ClCompile Include="JoyEngine\ResourceManager\ShaderCompiler.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\SharedMaterial.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\Texture.cpp" />
-    <ClCompile Include="JoyEngine\ResourceManager\UAVGpuBuffer.cpp" />
+    <ClCompile Include="JoyEngine\ResourceManager\Buffers\UAVGpuBuffer.cpp" />
     <ClCompile Include="JoyEngine\SceneManager\GameObject.cpp" />
     <ClCompile Include="JoyEngine\SceneManager\Scene.cpp" />
     <ClCompile Include="JoyEngine\SceneManager\SceneManager.cpp" />
@@ -285,9 +286,11 @@
     <ClInclude Include="JoyEngine\GameplayComponents\RoomBehaviour.h" />
     <ClInclude Include="JoyEngine\JoyAssetHeaders.h" />
     <ClInclude Include="JoyEngine\MemoryManager\DeviceLinearAllocator.h" />
+    <ClInclude Include="JoyEngine\RenderManager\LightSystems\ClusteredLightSystem.h" />
     <ClInclude Include="JoyEngine\RenderManager\ComputeDispatcher.h" />
     <ClInclude Include="JoyEngine\RenderManager\GBuffer.h" />
     <ClInclude Include="JoyEngine\RenderManager\IRenderManager.h" />
+    <ClInclude Include="JoyEngine\RenderManager\LightSystems\ILightSystem.h" />
     <ClInclude Include="JoyEngine\RenderManager\Raytracing\BufferSorter.h" />
     <ClInclude Include="JoyEngine\RenderManager\Raytracing\BVHConstructor.h" />
     <ClInclude Include="JoyEngine\RenderManager\Raytracing\DataBuffer.h" />
@@ -295,7 +298,7 @@
     <ClInclude Include="JoyEngine\RenderManager\RenderState.h" />
     <ClInclude Include="JoyEngine\RenderManager\Skybox.h" />
     <ClInclude Include="JoyEngine\RenderManager\Tonemapping.h" />
-    <ClInclude Include="JoyEngine\ResourceManager\Buffer.h" />
+    <ClInclude Include="JoyEngine\ResourceManager\Buffers\Buffer.h" />
     <ClInclude Include="JoyEngine\DataManager\DataManager.h" />
     <ClInclude Include="JoyEngine\DescriptorManager\DescriptorManager.h" />
     <ClInclude Include="JoyEngine\Common\Color.h" />
@@ -312,8 +315,8 @@
     <ClInclude Include="JoyEngine\MemoryManager\MemoryManager.h" />
     <ClInclude Include="JoyEngine\RenderManager\RenderManager.h" />
     <ClInclude Include="JoyEngine\CommonEngineStructs.h" />
-    <ClInclude Include="JoyEngine\ResourceManager\ConstantCpuBuffer.h" />
-    <ClInclude Include="JoyEngine\ResourceManager\DynamicCpuBuffer.h" />
+    <ClInclude Include="JoyEngine\ResourceManager\Buffers\ConstantCpuBuffer.h" />
+    <ClInclude Include="JoyEngine\ResourceManager\Buffers\DynamicCpuBuffer.h" />
     <ClInclude Include="JoyEngine\ResourceManager\DDS.h" />
     <ClInclude Include="JoyEngine\ResourceManager\MtlBinaryParser.h" />
     <ClInclude Include="JoyEngine\ResourceManager\ResourceView.h" />
@@ -325,7 +328,7 @@
     <ClInclude Include="JoyEngine\ResourceManager\ShaderCompiler.h" />
     <ClInclude Include="JoyEngine\ResourceManager\SharedMaterial.h" />
     <ClInclude Include="JoyEngine\ResourceManager\Texture.h" />
-    <ClInclude Include="JoyEngine\ResourceManager\UAVGpuBuffer.h" />
+    <ClInclude Include="JoyEngine\ResourceManager\Buffers\UAVGpuBuffer.h" />
     <ClInclude Include="JoyEngine\SceneManager\GameObject.h" />
     <ClInclude Include="JoyEngine\SceneManager\Scene.h" />
     <ClInclude Include="JoyEngine\SceneManager\SceneManager.h" />
@@ -336,7 +339,7 @@
     <ClInclude Include="JoyEngine\Utils\GraphicsUtils.h" />
     <ClInclude Include="JoyEngine\Utils\GUID.h" />
     <ClInclude Include="JoyEngine\Utils\Log.h" />
-    <ClInclude Include="JoyEngine\Utils\ObjectPool.h" />
+    <ClInclude Include="JoyEngine\ResourceManager\Buffers\DynamicBufferPool.h" />
     <ClInclude Include="JoyEngine\Utils\TimeCounter.h" />
     <ClInclude Include="ThirdParty\imgui\backends\imgui_impl_dx12.h" />
     <ClInclude Include="ThirdParty\imgui\backends\imgui_impl_win32.h" />

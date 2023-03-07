@@ -43,6 +43,7 @@
 
 #define MATERIAL_SIZE 512
 #define OBJECT_SIZE 512
+#define LIGHT_SIZE 256
 
 #define DDGI_RAYS_COUNT 192
 #define DDGI_PROBE_DATA_RESOLUTION 16
@@ -103,7 +104,7 @@ struct ViewProjectionMatrixData
 	MAT4 proj;
 };
 
-struct DirectionLightData
+struct DirectionalLightData
 {
 	VEC3 direction;
 	float intensity;
@@ -117,15 +118,12 @@ struct DirectionLightData
 	float _dummy2;
 };
 
-struct LightData
+struct CommonLightData
 {
 	float intensity;
 	float radius;
 	float height;
 	float angle;
-
-	MAT4 view[6];
-	MAT4 proj;
 };
 
 struct CubemapConvolutionConstants
@@ -180,6 +178,11 @@ struct TextureIndexData
 struct ObjectMatricesData
 {
 	MAT4 data[OBJECT_SIZE];
+};
+
+struct LightsData
+{
+	CommonLightData data[LIGHT_SIZE];
 };
 
 struct HDRDownScaleConstants

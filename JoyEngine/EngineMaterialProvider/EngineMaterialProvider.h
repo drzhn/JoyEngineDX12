@@ -4,10 +4,10 @@
 #include "Common/Singleton.h"
 
 #include "CommonEngineStructs.h"
-#include "ResourceManager/ConstantCpuBuffer.h"
-#include "ResourceManager/DynamicCpuBuffer.h"
 #include "ResourceManager/SharedMaterial.h"
 #include "ResourceManager/ResourceView.h"
+#include "ResourceManager/Buffers/ConstantCpuBuffer.h"
+#include "ResourceManager/Buffers/DynamicCpuBuffer.h"
 
 namespace JoyEngine
 {

@@ -172,6 +172,7 @@ namespace JoyEngine
 
 	void DirectionalLight::Update()
 	{
+		// TODO this should be controlled by behaviour class
 		GetTransform()->SetRotation(glm::vec3(m_currentAngle, 180, 0));
 		GetTransform()->SetPosition(glm::vec3(
 			0,

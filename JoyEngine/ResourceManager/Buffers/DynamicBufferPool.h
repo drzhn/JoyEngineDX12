@@ -5,32 +5,38 @@
 #include <stack>
 #include <bitset>
 
+#include "DynamicCpuBuffer.h"
 #include "Utils/Assert.h"
 
 namespace JoyEngine
 {
-	template <typename T, uint32_t Size>
+	template <typename ElemT, typename GpuT, uint32_t Size>
 	class DynamicBufferPool
 	{
 	public:
-		DynamicBufferPool()
+		explicit DynamicBufferPool(uint32_t bufferSize)
 		{
+			static_assert(sizeof(GpuT) == (sizeof(ElemT) * Size));
+
 			for (uint32_t i = 0; i < Size; i++)
 			{
 				m_freeItems.push(i);
 				m_usedItems[i] = false;
 			}
+			m_buffer = std::make_unique<DynamicCpuBuffer<ElemT>>(bufferSize);
 		}
 
-		T* Allocate()
+		ElemT* Allocate(uint32_t& allocatedIndex)
 		{
-			uint32_t index = m_freeItems.pop();
+			uint32_t index = m_freeItems.top();
+			m_freeItems.pop();
 			m_usedItems[index] = true;
+			allocatedIndex = index;
 
 			return &m_data[index];
 		}
 
-		void Free(T* ptr)
+		void Free(ElemT* ptr)
 		{
 			ASSERT(ptr >= m_data);
 			uint32_t index = ptr - m_data;
@@ -39,11 +45,17 @@ namespace JoyEngine
 			m_usedItems[index] = false;
 		}
 
+		void Update(uint32_t bufferIndex)
+		{
+			m_buffer->SetData(m_data, bufferIndex);
+		}
+
 	private:
-		std::stack<T> m_freeItems;
+		std::stack<uint32_t> m_freeItems;
 		std::bitset<Size> m_usedItems;
 
-		T m_data[Size];
+		ElemT m_data[Size];
+		std::unique_ptr<DynamicCpuBuffer<GpuT>> m_buffer;
 	};
 }
 #endif // OBJECT_POOL_H

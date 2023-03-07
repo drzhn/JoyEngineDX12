@@ -27,12 +27,12 @@ namespace JoyEngine
 			uint32_t frameIndex,
 			SharedMaterial* gBufferSharedMaterial) = 0;
 
-		ResourceView* GetLightDataView(uint32_t frameIndex) const
+		[[nodiscard]] ResourceView* GetLightDataView(uint32_t frameIndex) const
 		{
 			return m_lightDataBuffer->GetView(frameIndex);
 		}
 
-		ResourceView* GetShadowmapView() const
+		[[nodiscard]] ResourceView* GetShadowmapView() const
 		{
 			return m_shadowmap->GetSRV();
 		}

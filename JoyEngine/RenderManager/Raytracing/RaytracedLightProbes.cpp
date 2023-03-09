@@ -427,9 +427,9 @@ namespace JoyEngine
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 #if defined(CAMERA_TRACE)
-		GraphicsUtils::AttachViewToGraphics(commandList, sm, "raytracingTexture", m_shadedRenderTexture->GetSRV());
+		GraphicsUtils::AttachViewToGraphics(commandList, sm, "shadedColorTexture", m_shadedRenderTexture->GetSRV());
 #else
-		GraphicsUtils::AttachViewToGraphics(commandList, sm, "raytracingTexture", m_probeIrradianceTexture->GetSRV());
+		GraphicsUtils::AttachViewToGraphics(commandList, sm, "shadedColorTexture", m_probeIrradianceTexture->GetSRV());
 #endif
 
 		commandList->DrawInstanced(3, 1, 0, 0);

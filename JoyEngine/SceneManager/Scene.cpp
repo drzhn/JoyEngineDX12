@@ -117,7 +117,7 @@ namespace JoyEngine
 
 							std::unique_ptr<DirectionalLight> light = std::make_unique<DirectionalLight>(
 								*go,
-								RenderManager::Get(), 
+								RenderManager::Get()->GetLightSystem(), 
 								intensity, 
 								ambient);
 							go->AddComponent(std::move(light));

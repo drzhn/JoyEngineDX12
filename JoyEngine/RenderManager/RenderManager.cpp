@@ -119,6 +119,7 @@ namespace JoyEngine
 			m_height);
 
 		m_transformProvider = std::make_unique<TransformProvider>(frameCount);
+		m_lightSystem = std::make_unique<ClusteredLightSystem>(frameCount);
 
 		// IMGUI initialization
 		{
@@ -172,33 +173,6 @@ namespace JoyEngine
 		m_sharedMaterials.erase(sm);
 	}
 
-	//void RenderManager::RegisterLight(Light* light)
-	//{
-	//	//ASSERT(light->GetLightType() != Direction);
-	//	//m_lights.insert(light);
-	//}
-
-	//void RenderManager::UnregisterLight(Light* light)
-	//{
-	//	//if (m_lights.find(light) == m_lights.end())
-	//	//{
-	//	//	ASSERT(false);
-	//	//}
-	//	//m_lights.erase(light);
-	//}
-
-	void RenderManager::RegisterDirectionLight(DirectionalLight* light)
-	{
-		ASSERT(m_directionLight == nullptr);
-		m_directionLight = light;
-	}
-
-	void RenderManager::UnregisterDirectionLight(DirectionalLight* light)
-	{
-		ASSERT(m_directionLight != nullptr);
-		m_directionLight = nullptr;
-	}
-
 	void RenderManager::RegisterCamera(Camera* camera)
 	{
 		m_currentCamera = camera;
@@ -214,6 +188,13 @@ namespace JoyEngine
 
 	bool g_drawRaytracedImage = false;
 	bool g_drawProbes = true;
+
+	void RenderManager::PreUpdate()
+	{
+		ImGui_ImplDX12_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
+	}
 
 	void RenderManager::Update()
 	{
@@ -260,7 +241,8 @@ namespace JoyEngine
 			engineDataBuffer->Unlock();
 		}
 
-		UpdateObjectMatrices();
+		m_transformProvider->Update(m_currentFrameIndex);
+		m_lightSystem->Update(m_currentFrameIndex);
 
 		ID3D12DescriptorHeap* heaps[2]
 		{
@@ -271,7 +253,7 @@ namespace JoyEngine
 
 		// Drawing shadows
 		{
-			m_directionLight->RenderShadows(
+			m_lightSystem->RenderDirectionalShadows(
 				commandList,
 				m_currentFrameIndex,
 				EngineMaterialProvider::Get()->GetGBufferWriteSharedMaterial());
@@ -453,11 +435,6 @@ namespace JoyEngine
 				0, 0);
 		}
 
-
-		ImGui_ImplDX12_NewFrame();
-		ImGui_ImplWin32_NewFrame();
-		ImGui::NewFrame();
-
 		ImGui::SetNextWindowPos({ 0, 0 });
 		ImGui::SetNextWindowSize({ 300, 150 });
 		{
@@ -481,23 +458,8 @@ namespace JoyEngine
 			ImGui::End();
 			m_tonemapping->UpdateConstants(m_currentFrameIndex);
 		}
-		ImGui::SetNextWindowPos({ 0, 300 });
-		{
-			HDRDownScaleConstants* constants = m_tonemapping->GetConstantsPtr();
-			ImGui::Begin("Directional Light:");
-			ImGui::SliderFloat("Angle", m_directionLight->GetCurrentAnglePtr(), 0.f, 90.f);
-			ImGui::SliderFloat("Ambient", &m_directionLight->GetLightDataPtr()->ambient, 0.f, 1.f);
-			ImGui::SliderFloat("Bias", &m_directionLight->GetLightDataPtr()->bias, 0.f, 0.002f);
-			ImGui::End();
-			m_tonemapping->UpdateConstants(m_currentFrameIndex);
-		}
 		ImGui::Render();
 		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
-	}
-
-	void RenderManager::UpdateObjectMatrices() const
-	{
-		m_transformProvider->Update(m_currentFrameIndex);
 	}
 
 	void RenderManager::RenderEntireSceneWithMaterials(
@@ -589,8 +551,8 @@ namespace JoyEngine
 		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "colorTexture", gBuffer->GetColorSRV());
 		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "normalsTexture", gBuffer->GetNormalsSRV());
 		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "positionTexture", gBuffer->GetPositionSRV());
-		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "directionalLightData", m_directionLight->GetLightDataView(m_currentFrameIndex));
-		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "directionalLightShadowmap", m_directionLight->GetShadowmapView());
+		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "directionalLightData", m_lightSystem->GetDirectionalLightDataView(m_currentFrameIndex));
+		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "directionalLightShadowmap", m_lightSystem->GetDirectionalShadowmapView());
 		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "PCFSampler", EngineSamplersProvider::GetDepthPCFSampler());
 
 

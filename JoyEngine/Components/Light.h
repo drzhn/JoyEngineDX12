@@ -4,58 +4,35 @@
 #include "Component.h"
 #include "Common/CameraUnit.h"
 #include "CommonEngineStructs.h"
-#include "RenderManager/IRenderManager.h"
-#include "ResourceManager/ResourceView.h"
-#include "ResourceManager/Texture.h"
-#include "ResourceManager/Buffers/DynamicCpuBuffer.h"
 
 namespace JoyEngine
 {
+	class ILightSystem;
 	class Texture;
 	class DepthTexture;
 
-	template <typename LightDataT>
-	class Light : public Component
+	class LightBase : public Component
 	{
 	public:
-		Light() = delete;
-
-		// TODO I still do not have option how to get list of z-write geometry from scene,
-		// So I just pass gbuffer shared material to this method bc it contains all of mesh renderers 
-		virtual void RenderShadows(
-			ID3D12GraphicsCommandList* commandList,
-			uint32_t frameIndex,
-			SharedMaterial* gBufferSharedMaterial) = 0;
-
-		[[nodiscard]] ResourceView* GetLightDataView(uint32_t frameIndex) const
-		{
-			return m_lightDataBuffer->GetView(frameIndex);
-		}
-
-		[[nodiscard]] ResourceView* GetShadowmapView() const
-		{
-			return m_shadowmap->GetSRV();
-		}
+		LightBase() = delete;
 
 	protected:
-		explicit Light(GameObject& go, IRenderManager* renderManager):
+		explicit LightBase(GameObject& go, ILightSystem* lightSystem, uint32_t lightIndex):
 			Component(go),
-			m_renderManager(renderManager),
-			m_lightDataBuffer(std::make_unique<DynamicCpuBuffer<LightDataT>>(renderManager->GetFrameCount()))
+			m_lightSystem(lightSystem),
+			m_lightIndex(lightIndex)
 		{
 		}
 
-		IRenderManager* m_renderManager;
-		std::unique_ptr<DepthTexture> m_shadowmap;
+		ILightSystem* m_lightSystem;
 
-		LightDataT m_lightData;
-		std::unique_ptr<DynamicCpuBuffer<LightDataT>> m_lightDataBuffer;
+		const uint32_t m_lightIndex;
 	};
 
-	class DirectionalLight : public Light<DirectionalLightData>
+	class DirectionalLight : public LightBase
 	{
 	public:
-		explicit DirectionalLight(GameObject& go, IRenderManager* renderManager, float intensity, float ambient);
+		explicit DirectionalLight(GameObject& go, ILightSystem* lightSystem, float intensity, float ambient);
 
 		void Enable() override;
 
@@ -63,11 +40,7 @@ namespace JoyEngine
 
 		void Update() override;
 
-		void RenderShadows(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex,
-		                   SharedMaterial* gBufferSharedMaterial) override;
-
 		float* GetCurrentAnglePtr() { return &m_currentAngle; }
-		DirectionalLightData* GetLightDataPtr() { return &m_lightData; }
 
 	private:
 		CameraUnit m_cameraUnit;

@@ -18,6 +18,7 @@
 
 #include "Tonemapping.h"
 #include "TransformProvider.h"
+#include "LightSystems/ClusteredLightSystem.h"
 #include "Raytracing/RaytracedLightProbes.h"
 
 using Microsoft::WRL::ComPtr;
@@ -49,6 +50,8 @@ namespace JoyEngine
 
 		void Stop();
 
+		void PreUpdate();
+
 		void Update();
 
 		void DrawGui(ID3D12GraphicsCommandList* commandList, const ViewProjectionMatrixData* viewProjectionData) const;
@@ -56,14 +59,6 @@ namespace JoyEngine
 		void RegisterSharedMaterial(SharedMaterial*) override;
 
 		void UnregisterSharedMaterial(SharedMaterial*) override;
-
-		//void RegisterLight(Light*) override;
-
-		//void UnregisterLight(Light*) override;
-
-		void RegisterDirectionLight(DirectionalLight*) override;
-
-		void UnregisterDirectionLight(DirectionalLight*) override;
 
 		void RegisterCamera(Camera* camera) override;
 
@@ -80,6 +75,7 @@ namespace JoyEngine
 		[[nodiscard]] uint32_t GetFrameCount() const noexcept override { return frameCount; }
 
 		[[nodiscard]] TransformProvider* GetTransformProvider() const noexcept override { return m_transformProvider.get(); }
+		[[nodiscard]] ILightSystem* GetLightSystem() const noexcept override { return m_lightSystem.get(); }
 
 		[[nodiscard]] static DXGI_FORMAT GetMainColorFormat() noexcept { return hdrRTVFormat; }
 		[[nodiscard]] static DXGI_FORMAT GetHdrRTVFormat() noexcept { return hdrRTVFormat; }
@@ -105,8 +101,6 @@ namespace JoyEngine
 			ID3D12GraphicsCommandList* commandList,
 			const AbstractGBuffer* gBuffer, const ViewProjectionMatrixData* cameraVP
 		) const;
-
-		void UpdateObjectMatrices() const;
 
 		static void CopyRTVResource(ID3D12GraphicsCommandList* commandList, ID3D12Resource* rtvResource,
 		                            ID3D12Resource* copyResource);
@@ -135,10 +129,10 @@ namespace JoyEngine
 		std::unique_ptr<Tonemapping> m_tonemapping;
 		std::unique_ptr<RaytracedLightProbes> m_raytracing;
 		std::unique_ptr<TransformProvider> m_transformProvider;
+		std::unique_ptr<ClusteredLightSystem> m_lightSystem;
 		std::set<SharedMaterial*> m_sharedMaterials;
 
 		Camera* m_currentCamera;
-		DirectionalLight* m_directionLight;
 
 		std::unique_ptr<CommandQueue> m_queue;
 		uint32_t m_currentFrameIndex;

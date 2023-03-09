@@ -95,6 +95,8 @@ namespace JoyEngine
 	{
 		Time::Update();
 
+		m_renderManager->PreUpdate();
+
 		m_sceneManager->Update();
 		m_renderManager->Update();
 	}

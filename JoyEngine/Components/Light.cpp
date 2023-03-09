@@ -1,11 +1,13 @@
 ﻿#include "Light.h"
 
 
+#include "imgui.h"
 #include "MeshRenderer.h"
 #include "DataManager/DataManager.h"
 #include "EngineMaterialProvider/EngineMaterialProvider.h"
 #include "ResourceManager/Texture.h"
 #include "RenderManager/RenderManager.h"
+#include "RenderManager/LightSystems/ILightSystem.h"
 #include "SceneManager/GameObject.h"
 #include "SceneManager/Transform.h"
 #include "Utils/GraphicsUtils.h"
@@ -13,7 +15,6 @@
 
 namespace JoyEngine
 {
-	#define DIRECTIONAL_SHADOWMAP_SIZE 2048
 
 	//Light::Light(LightType lightType, float intensity, float radius, float height, float angle, float ambient):
 	//	m_lightType(lightType),
@@ -142,33 +143,27 @@ namespace JoyEngine
 	//	return m_cameraUnit.GetProjMatrix();
 	//}
 
-	DirectionalLight::DirectionalLight(GameObject& go, IRenderManager* renderManager, float intensity, float ambient)
-		: Light(go, renderManager),
-		  m_cameraUnit(1, 50, 0.1f, 1000.0f)
+	DirectionalLight::DirectionalLight(GameObject& go, ILightSystem* lightSystem, float intensity, float ambient)
+		: LightBase(
+			go,
+			lightSystem,
+			lightSystem->RegisterDirectionalLight()),
+		m_cameraUnit(1, 50, 0.1f, 1000.0f)
 	{
-		m_lightData.ambient = ambient;
-		m_lightData.intensity = intensity;
-		m_lightData.bias = 0.001f;
-		m_lightData.shadowmapSize = DIRECTIONAL_SHADOWMAP_SIZE;
-
-		m_shadowmap = std::make_unique<DepthTexture>(
-			DIRECTIONAL_SHADOWMAP_SIZE,
-			DIRECTIONAL_SHADOWMAP_SIZE,
-			DXGI_FORMAT_R32_TYPELESS,
-			D3D12_RESOURCE_STATE_GENERIC_READ,
-			D3D12_HEAP_TYPE_DEFAULT);
+		DirectionalLightData& lightData = m_lightSystem->GetDirectionalLightData();
+		lightData.ambient = ambient;
+		lightData.intensity = intensity;
 	}
 
 
 	void DirectionalLight::Enable()
 	{
-		m_renderManager->RegisterDirectionLight(this);
 		m_currentAngle = 30;
 	}
 
 	void DirectionalLight::Disable()
 	{
-		m_renderManager->UnregisterDirectionLight(this);
+		m_lightSystem->UnregisterDirectionalLight();
 	}
 
 	void DirectionalLight::Update()
@@ -179,61 +174,21 @@ namespace JoyEngine
 			0,
 			70 * glm::cos(glm::radians(90 - m_currentAngle)),
 			70 * glm::sin(glm::radians(90 - m_currentAngle))));
-		m_lightData.direction = m_gameObject.GetTransform()->GetForward();
-		m_lightData.proj = m_cameraUnit.GetProjMatrix();
-		m_lightData.view = m_cameraUnit.GetViewMatrix(m_gameObject.GetTransform()->GetPosition(), m_gameObject.GetTransform()->GetRotation());
-	}
 
-	void DirectionalLight::RenderShadows(
-		ID3D12GraphicsCommandList* commandList,
-		uint32_t frameIndex,
-		SharedMaterial* gBufferSharedMaterial)
-	{
-		m_lightDataBuffer->SetData(&m_lightData, frameIndex);
+		DirectionalLightData& lightData = m_lightSystem->GetDirectionalLightData();
 
-		GraphicsUtils::Barrier(commandList, m_shadowmap->GetImageResource().Get(), D3D12_RESOURCE_STATE_GENERIC_READ,
-		                       D3D12_RESOURCE_STATE_DEPTH_WRITE);
+		lightData.direction = m_gameObject.GetTransform()->GetForward();
+		lightData.proj = m_cameraUnit.GetProjMatrix();
+		lightData.view = m_cameraUnit.GetViewMatrix(m_gameObject.GetTransform()->GetPosition(), m_gameObject.GetTransform()->GetRotation());
 
-		GraphicsUtils::SetViewportAndScissor(commandList, m_shadowmap->GetWidth(), m_shadowmap->GetHeight());
 
-		const auto shadowMapHandle = m_shadowmap->GetDSV()->GetCPUHandle();
-
-		commandList->OMSetRenderTargets(
-			0,
-			nullptr,
-			FALSE, &shadowMapHandle);
-
-		commandList->ClearDepthStencilView(shadowMapHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
-
-		const auto sm = EngineMaterialProvider::Get()->GetShadowProcessingSharedMaterial();
-		commandList->SetPipelineState(sm->GetGraphicsPipeline()->GetPipelineObject().Get());
-		commandList->SetGraphicsRootSignature(sm->GetGraphicsPipeline()->GetRootSignature().Get());
-
-		const ViewProjectionMatrixData viewProjectionMatrixData = {
-			.view = m_lightData.view,
-			.proj = m_lightData.proj,
-		};
-
-		for (const auto& mr : gBufferSharedMaterial->GetMeshRenderers())
+		ImGui::SetNextWindowPos({ 0, 300 }); // move to DrawGui()?...
 		{
-			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-			commandList->IASetVertexBuffers(0, 1, mr->GetMesh()->GetVertexBufferView());
-			commandList->IASetIndexBuffer(mr->GetMesh()->GetIndexBufferView());
-
-			GraphicsUtils::ProcessEngineBindings(
-				commandList,
-				frameIndex,
-				sm->GetGraphicsPipeline()->GetEngineBindings(),
-				mr->GetGameObject().GetTransformIndexPtr(),
-				&viewProjectionMatrixData);
-
-			commandList->DrawIndexedInstanced(
-				mr->GetMesh()->GetIndexCount(),
-				1,
-				0, 0, 0);
+			ImGui::Begin("Directional Light:");
+			ImGui::SliderFloat("Angle", &m_currentAngle, 0.f, 90.f);
+			ImGui::SliderFloat("Ambient", &lightData.ambient, 0.f, 1.f);
+			ImGui::SliderFloat("Bias", &lightData.bias, 0.f, 0.002f);
+			ImGui::End();
 		}
-
-		GraphicsUtils::Barrier(commandList, m_shadowmap->GetImageResource().Get(), D3D12_RESOURCE_STATE_DEPTH_WRITE,
-		                       D3D12_RESOURCE_STATE_GENERIC_READ);
 	}
 }

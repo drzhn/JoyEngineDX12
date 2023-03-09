@@ -28,17 +28,11 @@ namespace JoyEngine
 		[[nodiscard]] glm::vec3 GetUp() const noexcept;
 		[[nodiscard]] glm::vec3 GetRight() const noexcept;
 
-		[[nodiscard]] uint32_t const* GetIndex() const noexcept;
-
 		[[nodiscard]] glm::mat4 GetModelMatrix() const noexcept;
 	private:
 		glm::vec3 m_localPosition;
 		glm::quat m_localRotation;
 		glm::vec3 m_localScale;
-
-		const uint32_t m_index = 0;
-
-		static uint32_t m_currentIndex; // TODO: Index constantly increasing. Make object pool
 	};
 }
 

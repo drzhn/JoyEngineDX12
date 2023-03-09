@@ -3,7 +3,7 @@
 
 namespace JoyEngine
 {
-	class WorldMatricesProvider;
+	class TransformProvider;
 	class Camera;
 	class DirectionalLight;
 	class SharedMaterial;
@@ -21,7 +21,7 @@ namespace JoyEngine
 		virtual void RegisterCamera(Camera* camera) = 0;
 		virtual void UnregisterCamera(Camera* camera) = 0;
 
-		[[nodiscard]] virtual WorldMatricesProvider* GetWorldMatricesProvider() const noexcept = 0;
+		[[nodiscard]] virtual TransformProvider* GetTransformProvider() const noexcept = 0;
 		[[nodiscard]] virtual float GetAspect() const noexcept = 0;
 		[[nodiscard]] virtual float GetWidth_f() const noexcept = 0;
 		[[nodiscard]] virtual float GetHeight_f() const noexcept = 0;

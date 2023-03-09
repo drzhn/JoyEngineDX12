@@ -8,7 +8,8 @@
 
 namespace JoyEngine
 {
-	MeshRenderer::MeshRenderer(bool isStatic):
+	MeshRenderer::MeshRenderer(GameObject& go, bool isStatic):
+		Component(go),
 		m_isStatic(isStatic)
 	{
 	}

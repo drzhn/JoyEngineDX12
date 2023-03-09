@@ -3,6 +3,7 @@
 #include "CommonEngineStructs.h"
 #include "Common/HashDefs.h"
 #include "EngineMaterialProvider/EngineMaterialProvider.h"
+#include "RenderManager/RenderManager.h"
 #include "ResourceManager/ResourceView.h"
 
 namespace JoyEngine
@@ -185,7 +186,7 @@ namespace JoyEngine
 				{
 					commandList->SetGraphicsRootDescriptorTable(
 						rootIndex,
-						EngineMaterialProvider::Get()->GetObjectMatricesDataView(frameIndex)->GetGPUHandle()
+						RenderManager::Get()->GetTransformProvider()->GetObjectMatricesBufferView(frameIndex)->GetGPUHandle()
 					);
 					break;
 				}

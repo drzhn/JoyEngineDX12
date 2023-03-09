@@ -27,10 +27,8 @@ namespace JoyEngine
 
 		[[nodiscard]] ResourceView* GetNullTextureView() const noexcept { return m_nullTextureView.get(); }
 		[[nodiscard]] ResourceView* GetMaterialsDataView() const noexcept { return m_materials->GetView(); }
-		[[nodiscard]] ResourceView* GetObjectMatricesDataView(uint32_t index) const noexcept { return m_objectMatrices->GetView(index); }
 		[[nodiscard]] ResourceView* GetEngineDataView(uint32_t index) const noexcept { return m_engineDataBuffer->GetView(index); }
 
-		[[nodiscard]] DynamicCpuBuffer<ObjectMatricesData>* GetObjectMatricesDataBuffer() const noexcept { return m_objectMatrices.get(); }
 		[[nodiscard]] DynamicCpuBuffer<EngineData>* GetEngineDataBuffer() const noexcept { return m_engineDataBuffer.get(); }
 
 		void SetMaterialData(uint32_t index, uint32_t diffuseTextureIndex) const;
@@ -66,8 +64,6 @@ namespace JoyEngine
 		std::unique_ptr<ResourceView> m_nullTextureView;
 
 		std::unique_ptr<ConstantCpuBuffer<StandardMaterialData>> m_materials;
-
-		std::unique_ptr<DynamicCpuBuffer<ObjectMatricesData>> m_objectMatrices;
 
 		std::unique_ptr<DynamicCpuBuffer<EngineData>> m_engineDataBuffer;
 

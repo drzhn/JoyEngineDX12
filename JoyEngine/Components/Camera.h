@@ -14,7 +14,7 @@ namespace JoyEngine
 	{
 	public:
 		Camera() = delete;
-		explicit Camera(IRenderManager* manager, float cameraNear, float cameraFar, float cameraFov);
+		explicit Camera(GameObject& go, IRenderManager* manager, float cameraNear, float cameraFar, float cameraFov);
 		void Enable() override;
 		void Disable() override;
 		void Update() override;

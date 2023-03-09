@@ -24,6 +24,7 @@
 #include "GraphicsManager/GraphicsManager.h"
 #include "EngineMaterialProvider/EngineMaterialProvider.h"
 #include "ResourceManager/Material.h"
+#include "SceneManager/GameObject.h"
 #include "SceneManager/Transform.h"
 
 #include "Utils/GraphicsUtils.h"
@@ -117,7 +118,7 @@ namespace JoyEngine
 			m_width,
 			m_height);
 
-		m_worldMatricesProvider = std::make_unique<WorldMatricesProvider>(frameCount);
+		m_transformProvider = std::make_unique<TransformProvider>(frameCount);
 
 		// IMGUI initialization
 		{
@@ -239,13 +240,14 @@ namespace JoyEngine
 			.proj = mainCameraProjMatrix
 		};
 
-		DynamicCpuBuffer<EngineData>* engineDataBuffer = EngineMaterialProvider::Get()->GetEngineDataBuffer();
 
 		{
+			DynamicCpuBuffer<EngineData>* engineDataBuffer = EngineMaterialProvider::Get()->GetEngineDataBuffer();
+
 			engineDataBuffer->Lock(m_currentFrameIndex);
 
 			const auto data = static_cast<EngineData*>(engineDataBuffer->GetPtr());
-			data->cameraWorldPos = m_currentCamera->GetTransform()->GetPosition();
+			data->cameraWorldPos = m_currentCamera->GetGameObject().GetTransform()->GetPosition();
 			data->time = Time::GetTime();
 			data->cameraInvProj = glm::inverse(mainCameraProjMatrix);
 			data->cameraInvView = glm::inverse(mainCameraViewMatrix);
@@ -442,8 +444,8 @@ namespace JoyEngine
 			commandList->RSSetScissorRects(1, &scissorRect);
 
 			GraphicsUtils::ProcessEngineBindings(commandList, m_currentFrameIndex,
-				sm->GetGraphicsPipeline()->GetEngineBindings(), nullptr,
-				viewProjectionData);
+			                                     sm->GetGraphicsPipeline()->GetEngineBindings(), nullptr,
+			                                     viewProjectionData);
 
 			commandList->DrawInstanced(
 				6,
@@ -462,7 +464,7 @@ namespace JoyEngine
 			ImGui::Begin("Stats:");
 			ImGui::Text("Screen: %dx%d", m_width, m_height);
 			ImGui::Text("Num triangles %d", m_trianglesCount);
-			const glm::vec3 camPos = m_currentCamera->GetTransform()->GetPosition();
+			const glm::vec3 camPos = m_currentCamera->GetGameObject().GetTransform()->GetPosition();
 			ImGui::Text("Camera: %.3f %.3f %.3f", camPos.x, camPos.y, camPos.z);
 			ImGui::Checkbox("Draw raytraced image", &g_drawRaytracedImage);
 			ImGui::Checkbox("Draw probes", &g_drawProbes);
@@ -495,18 +497,7 @@ namespace JoyEngine
 
 	void RenderManager::UpdateObjectMatrices() const
 	{
-		DynamicCpuBuffer<ObjectMatricesData>* objectMatrices = EngineMaterialProvider::Get()->GetObjectMatricesDataBuffer();
-		objectMatrices->Lock(m_currentFrameIndex);
-		ObjectMatricesData* data = objectMatrices->GetPtr();
-		for (auto const& sm : m_sharedMaterials)
-		{
-			for (const auto& mr : sm->GetMeshRenderers())
-			{
-				data->data[*mr->GetTransform()->GetIndex()] = mr->GetTransform()->GetModelMatrix();
-			}
-		}
-
-		objectMatrices->Unlock();
+		m_transformProvider->Update(m_currentFrameIndex);
 	}
 
 	void RenderManager::RenderEntireSceneWithMaterials(
@@ -535,7 +526,7 @@ namespace JoyEngine
 					commandList,
 					m_currentFrameIndex,
 					sm->GetGraphicsPipeline()->GetEngineBindings(),
-					mr->GetTransform()->GetIndex(),
+					mr->GetGameObject().GetTransformIndexPtr(),
 					viewProjectionData);
 
 				commandList->DrawIndexedInstanced(
@@ -572,7 +563,7 @@ namespace JoyEngine
 				commandList,
 				m_currentFrameIndex,
 				sharedMaterial->GetGraphicsPipeline()->GetEngineBindings(),
-				mr->GetTransform()->GetIndex(),
+				mr->GetGameObject().GetTransformIndexPtr(),
 				viewProjectionData);
 
 			commandList->DrawIndexedInstanced(
@@ -609,8 +600,8 @@ namespace JoyEngine
 		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "probeIrradianceTexture", m_raytracing->GetProbeIrradianceTexture()->GetSRV());
 
 		GraphicsUtils::ProcessEngineBindings(commandList, m_currentFrameIndex,
-			sm->GetGraphicsPipeline()->GetEngineBindings(), nullptr,
-			cameraVP);
+		                                     sm->GetGraphicsPipeline()->GetEngineBindings(), nullptr,
+		                                     cameraVP);
 
 		commandList->DrawIndexedInstanced(
 			3,

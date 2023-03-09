@@ -3,13 +3,19 @@
 
 #include "Common/Serializable.h"
 
-namespace JoyEngine {
+namespace JoyEngine
+{
+	class GameObject;
 
-	class Transform;
-
-	class Component : public Serializable {
+	class Component : public Serializable
+	{
 	public:
-		Component() = default;
+		Component() = delete;
+
+		explicit Component(GameObject& go):
+			m_gameObject(go)
+		{
+		}
 
 		virtual ~Component() = default;
 
@@ -19,13 +25,11 @@ namespace JoyEngine {
 
 		virtual void Update() = 0;
 
-		void SetTransform(Transform* t) { m_transform = t; }
-		[[nodiscard]] Transform* GetTransform() const noexcept { return m_transform; }
-
-		bool IsEnabled() const noexcept { return m_enabled; }
+		[[nodiscard]] GameObject& GetGameObject() const noexcept { return m_gameObject; }
+		[[nodiscard]] bool IsEnabled() const noexcept { return m_enabled; }
 
 	protected:
-		Transform* m_transform;
+		GameObject& m_gameObject;
 
 		bool m_enabled = false;
 	};

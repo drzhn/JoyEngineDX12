@@ -5,6 +5,7 @@
 
 #include "Common/Time.h"
 #include "InputManager/InputManager.h"
+#include "SceneManager/GameObject.h"
 #include "SceneManager/Transform.h"
 
 namespace JoyEngine
@@ -49,15 +50,15 @@ namespace JoyEngine
 
 		glm::vec3 vec = glm::vec3(deltaX, deltaY, deltaZ);
 
-		const glm::vec3 vecWorld = m_transform->GetRotation() * glm::vec4(deltaX, deltaY, deltaZ, 1);
+		const glm::vec3 vecWorld = m_gameObject.GetTransform()->GetRotation() * glm::vec4(deltaX, deltaY, deltaZ, 1);
 
-		m_transform->SetPosition(
-			m_transform->GetPosition() + vecWorld * m_speed
+		m_gameObject.GetTransform()->SetPosition(
+			m_gameObject.GetTransform()->GetPosition() + vecWorld * m_speed
 		);
-		m_transform->SetRotation(
+		m_gameObject.GetTransform()->SetRotation(
 			glm::angleAxis(deltaYRotation, glm::vec3(0, 1, 0)) *
-			glm::angleAxis(deltaXRotation, m_transform->GetRight()) *
-			m_transform->GetRotation()
+			glm::angleAxis(deltaXRotation, m_gameObject.GetTransform()->GetRight()) *
+			m_gameObject.GetTransform()->GetRotation()
 		);
 	}
 }

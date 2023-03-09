@@ -15,7 +15,6 @@ namespace JoyEngine {
 
 
     public :
-        RoomBehaviour() = default;
 
         void Enable() final;
 

@@ -38,7 +38,8 @@ namespace JoyEngine
 		}
 
 	protected:
-		explicit Light(IRenderManager* renderManager):
+		explicit Light(GameObject& go, IRenderManager* renderManager):
+			Component(go),
 			m_renderManager(renderManager),
 			m_lightDataBuffer(std::make_unique<DynamicCpuBuffer<LightDataT>>(renderManager->GetFrameCount()))
 		{
@@ -54,7 +55,7 @@ namespace JoyEngine
 	class DirectionalLight : public Light<DirectionalLightData>
 	{
 	public:
-		explicit DirectionalLight(IRenderManager* renderManager, float intensity, float ambient);
+		explicit DirectionalLight(GameObject& go, IRenderManager* renderManager, float intensity, float ambient);
 
 		void Enable() override;
 

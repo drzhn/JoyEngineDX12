@@ -2,14 +2,11 @@
 
 namespace JoyEngine
 {
-	uint32_t Transform::m_currentIndex = 0;
-
 	Transform::Transform() : Transform(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1))
 	{
 	}
 
-	Transform::Transform(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale):
-		m_index(m_currentIndex++)
+	Transform::Transform(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale)
 	{
 		SetPosition(pos);
 		SetRotation(rot);
@@ -74,10 +71,5 @@ namespace JoyEngine
 	glm::vec3 Transform::GetRight() const noexcept
 	{
 		return GetModelMatrix() * glm::vec4(1, 0, 0, 0);
-	}
-
-	uint32_t const* Transform::GetIndex() const noexcept
-	{
-		return &m_index;
 	}
 }

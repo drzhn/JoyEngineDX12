@@ -104,11 +104,6 @@ namespace JoyEngine
 			m_materials = std::make_unique<ConstantCpuBuffer<StandardMaterialData>>();
 		}
 
-		// Object matrices data that we will pass to GPU
-		{
-			m_objectMatrices = std::make_unique<DynamicCpuBuffer<ObjectMatricesData>>(3);
-		}
-
 		{
 			m_engineDataBuffer = std::make_unique<DynamicCpuBuffer<EngineData>>(RenderManager::Get()->GetFrameCount());
 		}

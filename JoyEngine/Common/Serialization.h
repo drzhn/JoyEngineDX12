@@ -33,7 +33,13 @@
 
 #define DECLARE_CLASS(className) \
 static SerializedObjectCreator<className> className##_creator = SerializedObjectCreator<className>(#className);
-#define DECLARE_CLASS_NAME(T) static constexpr const char* className = #T;
+
+#define DECLARE_CLASS_NAME(T) \
+static constexpr const char* className = #T;\
+public:\
+	T(GameObject& go):Component(go){};\
+private:\
+
 
 // TODO correct check for Serializable class !
 #define REFLECT_FIELD(T, v) FieldRegistrator v##_registrator = FieldRegistrator \
@@ -41,6 +47,7 @@ static SerializedObjectCreator<className> className##_creator = SerializedObject
 
 namespace JoyEngine
 {
+	class GameObject;
 	class SerializableClassFactory;
 
 	class SerializedObjectCreatorBase
@@ -48,7 +55,9 @@ namespace JoyEngine
 	public:
 		SerializedObjectCreatorBase() = default;
 
-		virtual std::unique_ptr<Serializable> Create() = 0;
+		// TODO pass parameters as template arguments
+		// TODO not only Component can be Serializable
+		virtual std::unique_ptr<Serializable> Create(GameObject& go) = 0; 
 	};
 
 	template <typename Type>
@@ -57,7 +66,7 @@ namespace JoyEngine
 	public:
 		explicit SerializedObjectCreator(const std::string& className);
 
-		std::unique_ptr<Serializable> Create() override;
+		std::unique_ptr<Serializable> Create(GameObject& go) override;
 	};
 
 	struct FieldInfo
@@ -79,7 +88,7 @@ namespace JoyEngine
 
 		void RegisterClassFieldOffset(const std::string& className, const std::string& filedName, FieldInfo fieldInfo);
 
-		std::unique_ptr<Serializable> Deserialize(rapidjson::Value& fieldsJson, const std::string& className);
+		std::unique_ptr<Serializable> Deserialize(GameObject& go, rapidjson::Value& fieldsJson, const std::string& className);
 
 		// don't want to make storages static because of exceptions before main()
 		static SerializableClassFactory* GetInstance()
@@ -113,9 +122,9 @@ namespace JoyEngine
 	}
 
 	template <typename Type>
-	std::unique_ptr<Serializable> SerializedObjectCreator<Type>::Create()
+	std::unique_ptr<Serializable> SerializedObjectCreator<Type>::Create(GameObject& go)
 	{
-		std::unique_ptr<Type> asset = std::make_unique<Type>();
+		std::unique_ptr<Type> asset = std::make_unique<Type>(go);
 		ASSERT(dynamic_cast<Serializable*>(asset.get()) != nullptr);
 		return std::unique_ptr<Type>(std::move(asset));
 	}

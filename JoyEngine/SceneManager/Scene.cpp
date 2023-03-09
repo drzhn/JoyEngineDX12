@@ -38,7 +38,11 @@ namespace JoyEngine
 
 			if (objType == "obj_simple")
 			{
-				std::unique_ptr<GameObject> go = std::make_unique<GameObject>(obj["name"].GetString());
+				std::unique_ptr<GameObject> go = std::make_unique<GameObject>(
+					obj["name"].GetString(),
+					RenderManager::Get()->GetTransformProvider()->Allocate(),
+					RenderManager::Get()->GetTransformProvider()
+				);
 
 				rapidjson::Value& transformValue = obj["transform"];
 				ParseTransform(go, transformValue);
@@ -49,7 +53,7 @@ namespace JoyEngine
 					if (type == "renderer")
 					{
 						bool isStatic = component["static"].GetBool();
-						std::unique_ptr<MeshRenderer> mr = std::make_unique<MeshRenderer>(isStatic);
+						std::unique_ptr<MeshRenderer> mr = std::make_unique<MeshRenderer>(*go, isStatic);
 						mr->SetMesh(GUID::StringToGuid(component["model"].GetString()));
 						mr->SetMaterial(GUID::StringToGuid(component["material"].GetString()));
 						go->AddComponent(std::move(mr));
@@ -60,7 +64,7 @@ namespace JoyEngine
 						auto type = component["component"].GetString();
 						ASSERT(SerializableClassFactory::GetInstance() != nullptr);
 						std::unique_ptr<Serializable> s = SerializableClassFactory::GetInstance()->Deserialize(
-							component["fields"], component["component"].GetString());
+							*go, component["fields"], component["component"].GetString());
 						auto* c_ptr = dynamic_cast<Component*>(s.release());
 						ASSERT(c_ptr != nullptr);
 						std::unique_ptr<Component> c(c_ptr);
@@ -75,7 +79,7 @@ namespace JoyEngine
 						ASSERT(component.HasMember("fov"));
 						const float cameraFov = component["fov"].GetFloat();
 
-						go->AddComponent(std::make_unique<Camera>(RenderManager::Get(), cameraNear, cameraFar, cameraFov));
+						go->AddComponent(std::make_unique<Camera>(*go, RenderManager::Get(), cameraNear, cameraFar, cameraFov));
 					}
 					else if (type == "light")
 					{
@@ -111,7 +115,11 @@ namespace JoyEngine
 							float intensity = component["intensity"].GetFloat();
 							float ambient = component["ambient"].GetFloat();
 
-							std::unique_ptr<DirectionalLight> light = std::make_unique<DirectionalLight>(RenderManager::Get(),intensity, ambient);
+							std::unique_ptr<DirectionalLight> light = std::make_unique<DirectionalLight>(
+								*go,
+								RenderManager::Get(), 
+								intensity, 
+								ambient);
 							go->AddComponent(std::move(light));
 						}
 						else
@@ -143,13 +151,16 @@ namespace JoyEngine
 				int objectIndex = 0;
 				while (data != nullptr)
 				{
-					std::unique_ptr<GameObject> go = std::make_unique<
-						GameObject>(obj["name"].GetString() + objectIndex);
+					std::unique_ptr<GameObject> go = std::make_unique<GameObject>(
+						obj["name"].GetString() + objectIndex,
+						RenderManager::Get()->GetTransformProvider()->Allocate(),
+						RenderManager::Get()->GetTransformProvider()
+					);
 
 					rapidjson::Value& transformValue = obj["transform"];
 					ParseTransform(go, transformValue);
 
-					std::unique_ptr<MeshRenderer> mr = std::make_unique<MeshRenderer>(isStatic);
+					std::unique_ptr<MeshRenderer> mr = std::make_unique<MeshRenderer>(*go, isStatic);
 					mr->SetMesh(GUID::Random(),
 					            data->vertexDataSize,
 					            data->indexDataSize,

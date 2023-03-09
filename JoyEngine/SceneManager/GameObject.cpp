@@ -11,7 +11,6 @@ namespace JoyEngine {
     }
 
     void GameObject::AddComponent(std::unique_ptr<Component> component) {
-        component->SetTransform(&m_transform);
         component->Enable();
         m_components.push_back(std::move(component));
     }

@@ -6,6 +6,7 @@
 #include "EngineMaterialProvider/EngineMaterialProvider.h"
 #include "ResourceManager/Texture.h"
 #include "RenderManager/RenderManager.h"
+#include "SceneManager/GameObject.h"
 #include "SceneManager/Transform.h"
 #include "Utils/GraphicsUtils.h"
 
@@ -141,8 +142,8 @@ namespace JoyEngine
 	//	return m_cameraUnit.GetProjMatrix();
 	//}
 
-	DirectionalLight::DirectionalLight(IRenderManager* renderManager, float intensity, float ambient)
-		: Light(renderManager),
+	DirectionalLight::DirectionalLight(GameObject& go, IRenderManager* renderManager, float intensity, float ambient)
+		: Light(go, renderManager),
 		  m_cameraUnit(1, 50, 0.1f, 1000.0f)
 	{
 		m_lightData.ambient = ambient;
@@ -173,14 +174,14 @@ namespace JoyEngine
 	void DirectionalLight::Update()
 	{
 		// TODO this should be controlled by behaviour class
-		GetTransform()->SetRotation(glm::vec3(m_currentAngle, 180, 0));
-		GetTransform()->SetPosition(glm::vec3(
+		m_gameObject.GetTransform()->SetRotation(glm::vec3(m_currentAngle, 180, 0));
+		m_gameObject.GetTransform()->SetPosition(glm::vec3(
 			0,
 			70 * glm::cos(glm::radians(90 - m_currentAngle)),
 			70 * glm::sin(glm::radians(90 - m_currentAngle))));
-		m_lightData.direction = GetTransform()->GetForward();
+		m_lightData.direction = m_gameObject.GetTransform()->GetForward();
 		m_lightData.proj = m_cameraUnit.GetProjMatrix();
-		m_lightData.view = m_cameraUnit.GetViewMatrix(GetTransform()->GetPosition(), GetTransform()->GetRotation());
+		m_lightData.view = m_cameraUnit.GetViewMatrix(m_gameObject.GetTransform()->GetPosition(), m_gameObject.GetTransform()->GetRotation());
 	}
 
 	void DirectionalLight::RenderShadows(
@@ -223,7 +224,7 @@ namespace JoyEngine
 				commandList,
 				frameIndex,
 				sm->GetGraphicsPipeline()->GetEngineBindings(),
-				mr->GetTransform()->GetIndex(),
+				mr->GetGameObject().GetTransformIndexPtr(),
 				&viewProjectionMatrixData);
 
 			commandList->DrawIndexedInstanced(

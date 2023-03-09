@@ -19,7 +19,7 @@ namespace JoyEngine
 	public:
 		MeshRenderer() = delete;
 
-		explicit MeshRenderer(bool isStatic);
+		explicit MeshRenderer(GameObject& go, bool isStatic);
 
 		void Enable() final;
 

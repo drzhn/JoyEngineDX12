@@ -29,14 +29,17 @@ namespace JoyEngine
 		}
 	}
 
-	std::unique_ptr<Serializable> SerializableClassFactory::Deserialize(rapidjson::Value& fieldsJson,
-	                                                                    const std::string& className)
+	std::unique_ptr<Serializable> SerializableClassFactory::Deserialize(
+		GameObject& go,
+		rapidjson::Value& fieldsJson,
+		const std::string& className)
 	{
-		ASSERT(GetInstance()->m_classCreatorStorage.find(className) != GetInstance()->m_classCreatorStorage.end());
+		ASSERT(GetInstance()->m_classCreatorStorage.contains(className));
 
 		SerializedObjectCreatorBase* creator = GetInstance()->m_classCreatorStorage.find(className)->second;
-		std::unique_ptr<Serializable> object = creator->Create();
-		ASSERT(GetInstance()->m_fieldOffsetStorage.find(className) != GetInstance()->m_fieldOffsetStorage.end());
+		std::unique_ptr<Serializable> object = creator->Create(go);
+		ASSERT(GetInstance()->m_fieldOffsetStorage.contains(className));
+
 		auto fieldOffsetStorage = GetInstance()->m_fieldOffsetStorage[className];
 		for (auto member = fieldsJson.MemberBegin(); member != fieldsJson.MemberEnd(); member++)
 		{

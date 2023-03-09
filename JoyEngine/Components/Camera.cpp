@@ -3,11 +3,13 @@
 #include <glm/gtx/matrix_decompose.hpp>
 
 #include "RenderManager/IRenderManager.h"
+#include "SceneManager/GameObject.h"
 #include "SceneManager/Transform.h"
 
 namespace JoyEngine
 {
-	Camera::Camera(IRenderManager* manager, float cameraNear, float cameraFar, float cameraFov) :
+	Camera::Camera(GameObject& go, IRenderManager* manager, float cameraNear, float cameraFar, float cameraFov) :
+		Component(go),
 		m_cameraUnit(CameraUnit(manager->GetAspect(),
 		                        manager->GetWidth_f(),
 		                        manager->GetHeight_f(),
@@ -38,7 +40,7 @@ namespace JoyEngine
 
 	glm::mat4 Camera::GetViewMatrix() const
 	{
-		return m_cameraUnit.GetViewMatrix(m_transform->GetPosition(), m_transform->GetRotation());
+		return m_cameraUnit.GetViewMatrix(m_gameObject.GetTransform()->GetPosition(), m_gameObject.GetTransform()->GetRotation());
 	}
 
 	glm::mat4x4 Camera::GetProjMatrix() const

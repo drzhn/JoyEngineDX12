@@ -227,7 +227,7 @@
     <ClCompile Include="JoyEngine\RenderManager\LightSystems\ClusteredLightSystem.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\ComputeDispatcher.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\GBuffer.cpp" />
-    <ClCompile Include="JoyEngine\RenderManager\WorldMatricesProvider.cpp" />
+    <ClCompile Include="JoyEngine\RenderManager\TransformProvider.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\Raytracing\BufferSorter.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\Raytracing\BVHConstructor.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\Raytracing\RaytracedLightProbes.cpp" />
@@ -292,7 +292,7 @@
     <ClInclude Include="JoyEngine\RenderManager\GBuffer.h" />
     <ClInclude Include="JoyEngine\RenderManager\IRenderManager.h" />
     <ClInclude Include="JoyEngine\RenderManager\LightSystems\ILightSystem.h" />
-    <ClInclude Include="JoyEngine\RenderManager\WorldMatricesProvider.h" />
+    <ClInclude Include="JoyEngine\RenderManager\TransformProvider.h" />
     <ClInclude Include="JoyEngine\RenderManager\Raytracing\BufferSorter.h" />
     <ClInclude Include="JoyEngine\RenderManager\Raytracing\BVHConstructor.h" />
     <ClInclude Include="JoyEngine\RenderManager\Raytracing\DataBuffer.h" />

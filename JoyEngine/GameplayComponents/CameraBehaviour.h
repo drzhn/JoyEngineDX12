@@ -13,8 +13,6 @@ namespace JoyEngine
 		REFLECT_FIELD(float, m_speed);
 
 	public :
-		CameraBehaviour() = default;
-
 		void Enable() final;
 
 		void Disable() final;

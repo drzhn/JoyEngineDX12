@@ -9,9 +9,7 @@
 
 #include "Utils/Assert.h"
 
-#include "ResourceManager/ResourceManager.h"
 #include "Common/CommandQueue.h"
-#include "Components/Light.h"
 #include "ResourceManager/Mesh.h"
 #include "Components/Camera.h"
 #include "ResourceManager/SharedMaterial.h"
@@ -34,11 +32,11 @@ namespace JoyEngine
 {
 	IMPLEMENT_SINGLETON(RenderManager)
 
-		void RenderManager::Init()
+	void RenderManager::Init()
 	{
 		TIME_PERF("RenderManager init")
 
-			static_assert(sizeof(EngineData) == 176);
+		static_assert(sizeof(EngineData) == 176);
 
 		m_width = GraphicsManager::Get()->GetWidth();
 		m_height = GraphicsManager::Get()->GetHeight();
@@ -46,7 +44,7 @@ namespace JoyEngine
 		ASSERT(m_width != 0 && m_height != 0);
 
 		m_queue = std::make_unique<CommandQueue>(D3D12_COMMAND_LIST_TYPE_DIRECT, GraphicsManager::Get()->GetDevice(),
-			frameCount);
+		                                         frameCount);
 
 		// Describe and create the swap chain.
 		DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
@@ -126,11 +124,14 @@ namespace JoyEngine
 			D3D12_CPU_DESCRIPTOR_HANDLE imguiCpuHandle;
 			D3D12_GPU_DESCRIPTOR_HANDLE imguiGpuHandle;
 
-			DescriptorManager::Get()->AllocateDescriptor(DescriptorHeapType::SRV_CBV_UAV, m_imguiDescriptorIndex,
+			DescriptorManager::Get()->AllocateDescriptor(
+				DescriptorHeapType::SRV_CBV_UAV,
+				m_imguiDescriptorIndex,
 				imguiCpuHandle,
 				imguiGpuHandle);
 
-			ImGui_ImplDX12_Init(GraphicsManager::Get()->GetDevice(), frameCount,
+			ImGui_ImplDX12_Init(
+				GraphicsManager::Get()->GetDevice(), frameCount,
 				swapchainFormat,
 				DescriptorManager::Get()->GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV),
 				imguiCpuHandle,
@@ -166,7 +167,7 @@ namespace JoyEngine
 
 	void RenderManager::UnregisterSharedMaterial(SharedMaterial* sm)
 	{
-		if (m_sharedMaterials.find(sm) == m_sharedMaterials.end())
+		if (!m_sharedMaterials.contains(sm))
 		{
 			ASSERT(false);
 		}
@@ -272,7 +273,7 @@ namespace JoyEngine
 				m_gbuffer->GetPositionRTV()->GetCPUHandle(),
 			};
 			auto dsvHandle = m_gbuffer->GetDepthDSV()->GetCPUHandle();
-			constexpr float clearColor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+			constexpr float clearColor[] = {0.0f, 0.0f, 0.0f, 0.0f};
 			commandList->ClearRenderTargetView(rtvHandles[0], clearColor, 0, nullptr);
 			commandList->ClearRenderTargetView(rtvHandles[1], clearColor, 0, nullptr);
 			commandList->ClearRenderTargetView(rtvHandles[2], clearColor, 0, nullptr);
@@ -291,7 +292,7 @@ namespace JoyEngine
 				FALSE, &dsvHandle);
 
 			RenderSceneForSharedMaterial(commandList, &mainCameraMatrixVP,
-				EngineMaterialProvider::Get()->GetGBufferWriteSharedMaterial());
+			                             EngineMaterialProvider::Get()->GetGBufferWriteSharedMaterial());
 
 			m_gbuffer->BarrierToRead(commandList);
 		}
@@ -304,7 +305,7 @@ namespace JoyEngine
 			auto raytracedRTVHandle = m_raytracing->GetShadedRenderTexture()->GetRTV()->GetCPUHandle();
 
 			GraphicsUtils::Barrier(commandList, m_raytracing->GetShadedRenderTexture()->GetImageResource().Get(),
-				D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
+			                       D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
 			GraphicsUtils::SetViewportAndScissor(commandList, m_raytracing->GetRaytracedTextureWidth(), m_raytracing->GetRaytracedTextureHeight());
 
@@ -316,7 +317,7 @@ namespace JoyEngine
 			RenderDeferredShading(commandList, m_raytracing->GetGBuffer(), &mainCameraMatrixVP);
 
 			GraphicsUtils::Barrier(commandList, m_raytracing->GetShadedRenderTexture()->GetImageResource().Get(),
-				D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
+			                       D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
 
 			m_raytracing->GenerateProbeIrradiance(commandList);
 		}
@@ -346,13 +347,13 @@ namespace JoyEngine
 		// HDR->LDR
 		{
 			GraphicsUtils::Barrier(commandList,
-				hdrRTVResource,
-				D3D12_RESOURCE_STATE_RENDER_TARGET,
-				D3D12_RESOURCE_STATE_GENERIC_READ);
+			                       hdrRTVResource,
+			                       D3D12_RESOURCE_STATE_RENDER_TARGET,
+			                       D3D12_RESOURCE_STATE_GENERIC_READ);
 			GraphicsUtils::Barrier(commandList,
-				swapchainResource,
-				D3D12_RESOURCE_STATE_PRESENT,
-				D3D12_RESOURCE_STATE_RENDER_TARGET);
+			                       swapchainResource,
+			                       D3D12_RESOURCE_STATE_PRESENT,
+			                       D3D12_RESOURCE_STATE_RENDER_TARGET);
 
 			commandList->OMSetRenderTargets(
 				1,
@@ -360,7 +361,7 @@ namespace JoyEngine
 				FALSE, nullptr);
 
 			m_tonemapping->Render(commandList, m_currentFrameIndex,
-				m_swapchainRenderTargets[m_currentFrameIndex].get());
+			                      m_swapchainRenderTargets[m_currentFrameIndex].get());
 
 			if (g_drawProbes)
 			{
@@ -372,13 +373,13 @@ namespace JoyEngine
 
 
 			GraphicsUtils::Barrier(commandList,
-				swapchainResource,
-				D3D12_RESOURCE_STATE_RENDER_TARGET,
-				D3D12_RESOURCE_STATE_PRESENT);
+			                       swapchainResource,
+			                       D3D12_RESOURCE_STATE_RENDER_TARGET,
+			                       D3D12_RESOURCE_STATE_PRESENT);
 			GraphicsUtils::Barrier(commandList,
-				hdrRTVResource,
-				D3D12_RESOURCE_STATE_GENERIC_READ,
-				D3D12_RESOURCE_STATE_RENDER_TARGET);
+			                       hdrRTVResource,
+			                       D3D12_RESOURCE_STATE_GENERIC_READ,
+			                       D3D12_RESOURCE_STATE_RENDER_TARGET);
 		}
 
 
@@ -395,7 +396,7 @@ namespace JoyEngine
 	}
 
 	void RenderManager::DrawGui(ID3D12GraphicsCommandList* commandList,
-		const ViewProjectionMatrixData* viewProjectionData) const
+	                            const ViewProjectionMatrixData* viewProjectionData) const
 	{
 		// Draw axis gizmo
 		{
@@ -435,8 +436,8 @@ namespace JoyEngine
 				0, 0);
 		}
 
-		ImGui::SetNextWindowPos({ 0, 0 });
-		ImGui::SetNextWindowSize({ 300, 150 });
+		ImGui::SetNextWindowPos({0, 0});
+		ImGui::SetNextWindowSize({300, 150});
 		{
 			ImGui::Begin("Stats:");
 			ImGui::Text("Screen: %dx%d", m_width, m_height);
@@ -447,7 +448,7 @@ namespace JoyEngine
 			ImGui::Checkbox("Draw probes", &g_drawProbes);
 			ImGui::End();
 		}
-		ImGui::SetNextWindowPos({ 0, 150 });
+		ImGui::SetNextWindowPos({0, 150});
 		{
 			HDRDownScaleConstants* constants = m_tonemapping->GetConstantsPtr();
 			ImGui::Begin("Tonemapping:");
@@ -578,10 +579,10 @@ namespace JoyEngine
 	)
 	{
 		GraphicsUtils::Barrier(commandList, rtvResource,
-			D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);
+		                       D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);
 
 		GraphicsUtils::Barrier(commandList, copyResource,
-			D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_COPY_DEST);
+		                       D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_COPY_DEST);
 
 
 		commandList->CopyResource(
@@ -590,10 +591,10 @@ namespace JoyEngine
 		);
 
 		GraphicsUtils::Barrier(commandList, copyResource,
-			D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ);
+		                       D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ);
 
 		GraphicsUtils::Barrier(commandList, rtvResource,
-			D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		                       D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
 	}
 
 	float RenderManager::GetAspect() const noexcept

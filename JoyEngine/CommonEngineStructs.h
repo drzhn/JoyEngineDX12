@@ -115,7 +115,7 @@ struct DirectionalLightInfo
 	float ambient;
 	float bias;
 	UINT1 shadowmapSize;
-	UINT1 packedColor; // TODO
+	UINT1 packedColor;
 };
 
 struct LightInfo

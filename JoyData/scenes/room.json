@@ -39,7 +39,26 @@
                     "type": "light",
                     "lightType": "direction",
                     "intensity": 1.0,
-                    "ambient": 0.0
+                    "ambient": 0.0,
+                    "color": [ 1.0, 1.0, 1.0, 1.0 ]
+                }
+            ]
+        },
+        {
+            "name": "point_light_test",
+            "type": "obj_simple",
+            "transform": {
+                "localPosition": [ 0.0, 2.0, 0.0 ],
+                "localRotation": [ 0.0, 0.0, 0.0 ],
+                "localScale": [ 1.0, 1.0, 1.0 ]
+            },
+            "components": [
+                {
+                    "type": "light",
+                    "lightType": "point",
+                    "intensity": 1.0,
+                    "radius": 3.0,
+                    "color": [ 1.0, 0.0, 0.0, 1.0 ]
                 }
             ]
         },

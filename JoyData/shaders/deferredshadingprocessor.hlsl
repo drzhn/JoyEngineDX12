@@ -22,6 +22,18 @@ SamplerState linearBlackBorderSampler;
 SamplerComparisonState PCFSampler;
 
 
+float4 UnpackColor(UINT1 packedColor)
+{
+	float4 color;
+
+	color.r = ((packedColor >> 24) & 255) / 255.0f;
+	color.g = ((packedColor >> 16) & 255) / 255.0f;
+	color.b = ((packedColor >> 8) & 255) / 255.0f;
+	color.a = ((packedColor >> 0) & 255) / 255.0f;
+
+	return color;
+}
+
 PSInput VSMain(uint id : SV_VertexID)
 {
 	const float2 uv = float2((id << 1) & 2, id & 2);
@@ -152,12 +164,12 @@ float4 PSMain(PSInput input) : SV_Target
 	float lambertAttenuation = max(0, dot(worldNormal.rgb, -directionalLightData.direction));
 
 	// we use world position alpha chanel as an info about if this pixel is skybox or not.
-	shadowAttenuation = worldPosition.a > 0 ? shadowAttenuation : 1;
+	const float3 directionalLightAttenuation = worldPosition.a > 0 ? UnpackColor(directionalLightData.packedColor).rgb * shadowAttenuation : 1;
 	lambertAttenuation = worldPosition.a > 0 ? lambertAttenuation : 1;
 	const float3 sampledProbeGridColor = worldPosition.a > 0 ? SampleProbeGrid(worldPosition, worldNormal) : 0;
 
 	const float3 ret =
-		color.rgb * shadowAttenuation * lambertAttenuation +
+		color.rgb * directionalLightAttenuation * lambertAttenuation +
 		color.rgb * sampledProbeGridColor;
 	return float4(ret, 1);
 }

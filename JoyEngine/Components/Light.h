@@ -34,7 +34,7 @@ namespace JoyEngine
 	class DirectionalLight : public LightBase
 	{
 	public:
-		explicit DirectionalLight(GameObject& go, ILightSystem& lightSystem, float intensity, float ambient);
+		explicit DirectionalLight(GameObject& go, ILightSystem& lightSystem, float intensity, float ambient, float color[4]);
 
 		void Enable() override;
 

@@ -5,17 +5,14 @@
 #include "MeshRenderer.h"
 #include "DataManager/DataManager.h"
 #include "EngineMaterialProvider/EngineMaterialProvider.h"
-#include "ResourceManager/Texture.h"
 #include "RenderManager/RenderManager.h"
 #include "RenderManager/LightSystems/ILightSystem.h"
 #include "SceneManager/GameObject.h"
 #include "SceneManager/Transform.h"
-#include "Utils/GraphicsUtils.h"
 
 
 namespace JoyEngine
 {
-
 	//Light::Light(LightType lightType, float intensity, float radius, float height, float angle, float ambient):
 	//	m_lightType(lightType),
 	//	m_intensity(intensity),
@@ -146,24 +143,33 @@ namespace JoyEngine
 	uint32_t PackColor(float color[4])
 	{
 		uint32_t ret = 0;
-		ret |= static_cast<uint32_t>(color[0] * 255) << 24;
-		ret |= static_cast<uint32_t>(color[1] * 255) << 16;
-		ret |= static_cast<uint32_t>(color[2] * 255) << 8;
-		ret |= static_cast<uint32_t>(color[3] * 255) << 0;
+		ret |= static_cast<uint32_t>(color[0] * 255 + 0.5f) << 24;
+		ret |= static_cast<uint32_t>(color[1] * 255 + 0.5f) << 16;
+		ret |= static_cast<uint32_t>(color[2] * 255 + 0.5f) << 8;
+		ret |= static_cast<uint32_t>(color[3] * 255 + 0.5f) << 0;
 
 		return ret;
 	}
 
-	DirectionalLight::DirectionalLight(GameObject& go, ILightSystem& lightSystem, float intensity, float ambient)
+	void UnpackColor(float color[4], uint32_t packedColor)
+	{
+		color[0] = static_cast<float>((packedColor >> 24) & 255) / 255.0f;
+		color[1] = static_cast<float>((packedColor >> 16) & 255) / 255.0f;
+		color[2] = static_cast<float>((packedColor >> 8) & 255) / 255.0f;
+		color[3] = static_cast<float>((packedColor >> 0) & 255) / 255.0f;
+	}
+
+	DirectionalLight::DirectionalLight(GameObject& go, ILightSystem& lightSystem, float intensity, float ambient, float color[4])
 		: LightBase(
-			go,
-			lightSystem,
-			lightSystem.RegisterDirectionalLight()),
-		m_cameraUnit(1, 50, 0.1f, 1000.0f)
+			  go,
+			  lightSystem,
+			  lightSystem.RegisterDirectionalLight()),
+		  m_cameraUnit(1, 50, 0.1f, 1000.0f)
 	{
 		DirectionalLightInfo& lightData = m_lightSystem.GetDirectionalLightData();
 		lightData.ambient = ambient;
 		lightData.intensity = intensity;
+		lightData.packedColor = PackColor(color);
 	}
 
 
@@ -192,24 +198,26 @@ namespace JoyEngine
 		lightData.proj = m_cameraUnit.GetProjMatrix();
 		lightData.view = m_cameraUnit.GetViewMatrix(m_gameObject.GetTransform()->GetPosition(), m_gameObject.GetTransform()->GetRotation());
 
-
-		ImGui::SetNextWindowPos({ 0, 300 }); // move to DrawGui()?...
+		float tempColor[4];
+		UnpackColor(tempColor, lightData.packedColor);
+		ImGui::SetNextWindowPos({0, 300}); // move to DrawGui()?...
+		ImGui::SetNextWindowSize({ 300, 100 }); // move to DrawGui()?...
 		{
 			ImGui::Begin("Directional Light:");
 			ImGui::SliderFloat("Angle", &m_currentAngle, 0.f, 90.f);
-			ImGui::SliderFloat("Ambient", &lightData.ambient, 0.f, 1.f);
-			ImGui::SliderFloat("Bias", &lightData.bias, 0.f, 0.002f);
+			//ImGui::SliderFloat("Bias", &lightData.bias, 0.f, 0.002f);
+			ImGui::ColorEdit3("Color", tempColor);
 			ImGui::End();
 		}
+		lightData.packedColor = PackColor(tempColor);
 	}
 
 	PointLight::PointLight(GameObject& go, ILightSystem& lightSystem, float radius, float intensity, float color[4]):
-	LightBase(
-		go, 
-		lightSystem, 
-		lightSystem.RegisterLight(this))
+		LightBase(
+			go,
+			lightSystem,
+			lightSystem.RegisterLight(this))
 	{
-
 		auto& lightInfo = m_lightSystem.GetLightInfo(m_lightIndex);
 		lightInfo.radius = radius;
 		lightInfo.intensity = intensity;
@@ -226,6 +234,5 @@ namespace JoyEngine
 
 	void PointLight::Update()
 	{
-
 	}
 }

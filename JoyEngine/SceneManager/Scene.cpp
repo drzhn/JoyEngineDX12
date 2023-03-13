@@ -26,6 +26,21 @@ namespace JoyEngine
 		go->GetTransform()->SetScale(vec);
 	}
 
+	inline void ParseColor(float color[4], const rapidjson::Value& colorValue)
+	{
+		ASSERT(colorValue.IsArray());
+
+		auto arr = colorValue.GetArray();
+		ASSERT(arr.Size() == 4);
+
+		for (int i = 0; i < 4; i++)
+		{
+			auto& obj = arr[i];
+			ASSERT(obj.IsFloat());
+			color[i] = obj.GetFloat();
+		}
+	}
+
 	Scene::Scene(const GUID& guid)
 	{
 		rapidjson::Document json = DataManager::Get()->GetSerializedData(guid, scene);
@@ -85,14 +100,21 @@ namespace JoyEngine
 					{
 						std::string lightTypeStr = std::string(component["lightType"].GetString());
 
-						//std::unique_ptr<Light> light;
-						//if (lightTypeStr == "point")
-						//{
-						//	float intensity = component["intensity"].GetFloat();
-						//	float radius = component["radius"].GetFloat();
+						if (lightTypeStr == "point")
+						{
+							float intensity = component["intensity"].GetFloat();
+							float radius = component["radius"].GetFloat();
+							float color[4];
+							ParseColor(color, component["color"]);
 
-						//	light = std::make_unique<Light>(LightType::Point, intensity, radius, 0.0f, 0.0f, 0.0f);
-						//}
+							std::unique_ptr<PointLight> light = std::make_unique<PointLight>(
+								*go,
+								RenderManager::Get()->GetLightSystem(),
+								radius,
+								intensity,
+								color);
+							go->AddComponent(std::move(light));
+						}
 						//else if (lightTypeStr == "capsule")
 						//{
 						//	float intensity = component["intensity"].GetFloat();
@@ -110,16 +132,19 @@ namespace JoyEngine
 						//	light = std::make_unique<Light>(LightType::Spot, intensity, 0.0f, height, angle, 0.0f);
 						//}
 						//else 
-						if (lightTypeStr == "direction")
+						else if (lightTypeStr == "direction")
 						{
 							float intensity = component["intensity"].GetFloat();
 							float ambient = component["ambient"].GetFloat();
+							float color[4];
+							ParseColor(color, component["color"]);
 
 							std::unique_ptr<DirectionalLight> light = std::make_unique<DirectionalLight>(
 								*go,
-								RenderManager::Get()->GetLightSystem(), 
-								intensity, 
-								ambient);
+								RenderManager::Get()->GetLightSystem(),
+								intensity,
+								ambient,
+								color);
 							go->AddComponent(std::move(light));
 						}
 						else

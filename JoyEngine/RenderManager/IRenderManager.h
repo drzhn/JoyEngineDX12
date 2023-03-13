@@ -18,7 +18,7 @@ namespace JoyEngine
 		virtual void UnregisterCamera(Camera* camera) = 0;
 
 		[[nodiscard]] virtual TransformProvider* GetTransformProvider() const noexcept = 0;
-		[[nodiscard]] virtual ILightSystem* GetLightSystem() const noexcept = 0;
+		[[nodiscard]] virtual ILightSystem& GetLightSystem() const noexcept = 0;
 		[[nodiscard]] virtual float GetAspect() const noexcept = 0;
 		[[nodiscard]] virtual float GetWidth_f() const noexcept = 0;
 		[[nodiscard]] virtual float GetHeight_f() const noexcept = 0;

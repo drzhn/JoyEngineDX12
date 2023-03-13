@@ -176,7 +176,7 @@ namespace JoyEngine
 	void RenderManager::RegisterCamera(Camera* camera)
 	{
 		m_currentCamera = camera;
-		//m_commonDescriptorSetProvider->SetCamera(camera);
+		m_lightSystem->SetCamera(m_currentCamera);
 	}
 
 	void RenderManager::UnregisterCamera(Camera* camera)

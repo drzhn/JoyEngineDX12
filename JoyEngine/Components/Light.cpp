@@ -143,14 +143,25 @@ namespace JoyEngine
 	//	return m_cameraUnit.GetProjMatrix();
 	//}
 
-	DirectionalLight::DirectionalLight(GameObject& go, ILightSystem* lightSystem, float intensity, float ambient)
+	uint32_t PackColor(float color[4])
+	{
+		uint32_t ret = 0;
+		ret |= static_cast<uint32_t>(color[0] * 255) << 24;
+		ret |= static_cast<uint32_t>(color[1] * 255) << 16;
+		ret |= static_cast<uint32_t>(color[2] * 255) << 8;
+		ret |= static_cast<uint32_t>(color[3] * 255) << 0;
+
+		return ret;
+	}
+
+	DirectionalLight::DirectionalLight(GameObject& go, ILightSystem& lightSystem, float intensity, float ambient)
 		: LightBase(
 			go,
 			lightSystem,
-			lightSystem->RegisterDirectionalLight()),
+			lightSystem.RegisterDirectionalLight()),
 		m_cameraUnit(1, 50, 0.1f, 1000.0f)
 	{
-		DirectionalLightData& lightData = m_lightSystem->GetDirectionalLightData();
+		DirectionalLightInfo& lightData = m_lightSystem.GetDirectionalLightData();
 		lightData.ambient = ambient;
 		lightData.intensity = intensity;
 	}
@@ -163,7 +174,7 @@ namespace JoyEngine
 
 	void DirectionalLight::Disable()
 	{
-		m_lightSystem->UnregisterDirectionalLight();
+		m_lightSystem.UnregisterDirectionalLight();
 	}
 
 	void DirectionalLight::Update()
@@ -175,7 +186,7 @@ namespace JoyEngine
 			70 * glm::cos(glm::radians(90 - m_currentAngle)),
 			70 * glm::sin(glm::radians(90 - m_currentAngle))));
 
-		DirectionalLightData& lightData = m_lightSystem->GetDirectionalLightData();
+		DirectionalLightInfo& lightData = m_lightSystem.GetDirectionalLightData();
 
 		lightData.direction = m_gameObject.GetTransform()->GetForward();
 		lightData.proj = m_cameraUnit.GetProjMatrix();
@@ -190,5 +201,31 @@ namespace JoyEngine
 			ImGui::SliderFloat("Bias", &lightData.bias, 0.f, 0.002f);
 			ImGui::End();
 		}
+	}
+
+	PointLight::PointLight(GameObject& go, ILightSystem& lightSystem, float radius, float intensity, float color[4]):
+	LightBase(
+		go, 
+		lightSystem, 
+		lightSystem.RegisterLight(this))
+	{
+
+		auto& lightInfo = m_lightSystem.GetLightInfo(m_lightIndex);
+		lightInfo.radius = radius;
+		lightInfo.intensity = intensity;
+		lightInfo.packedColor = PackColor(color);
+	}
+
+	void PointLight::Enable()
+	{
+	}
+
+	void PointLight::Disable()
+	{
+	}
+
+	void PointLight::Update()
+	{
+
 	}
 }

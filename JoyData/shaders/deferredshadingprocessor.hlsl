@@ -6,7 +6,7 @@ struct PSInput
 };
 
 ConstantBuffer<EngineData> engineData: register(b0);
-ConstantBuffer<DirectionalLightData> directionalLightData: register(b1);
+ConstantBuffer<DirectionalLightInfo> directionalLightData: register(b1);
 ConstantBuffer<RaytracedProbesData> raytracedProbesData: register(b2);
 
 Texture2D<float4> colorTexture;

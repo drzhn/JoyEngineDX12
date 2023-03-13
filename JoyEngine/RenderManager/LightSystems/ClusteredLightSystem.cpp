@@ -10,16 +10,33 @@
 
 namespace JoyEngine
 {
-	ClusteredLightSystem::ClusteredLightSystem(const uint32_t frameCount):
+	ClusteredLightSystem::ClusteredLightSystem(const uint32_t frameCount) :
 		m_frameCount(frameCount),
-		m_directionalLightData()
+		m_camera(nullptr),
+		m_directionalLightData(),
+		m_lightDataPool(frameCount)
 	{
 	}
 
 	void ClusteredLightSystem::Update(const uint32_t frameIndex)
 	{
+		ASSERT(m_camera != nullptr);
+
 		m_directionalLightDataBuffer->SetData(&m_directionalLightData, frameIndex);
 
+		{
+			auto& buffer = m_lightDataPool.GetDynamicBuffer();
+			buffer.Lock(frameIndex);
+
+			LightData* dataPtr = buffer.GetPtr();
+			const auto& dataArray = m_lightDataPool.GetDataArray();
+			for (uint32_t i = 0; i < dataArray.size(); ++i)
+			{
+				dataPtr->data[i] = dataArray[i];
+			}
+
+			buffer.Unlock();
+		}
 	}
 
 	void ClusteredLightSystem::RenderDirectionalShadows(
@@ -27,9 +44,8 @@ namespace JoyEngine
 		uint32_t frameIndex,
 		SharedMaterial* gBufferSharedMaterial)
 	{
-
 		GraphicsUtils::Barrier(commandList, m_directionalShadowmap->GetImageResource().Get(), D3D12_RESOURCE_STATE_GENERIC_READ,
-			D3D12_RESOURCE_STATE_DEPTH_WRITE);
+		                       D3D12_RESOURCE_STATE_DEPTH_WRITE);
 
 		GraphicsUtils::SetViewportAndScissor(commandList, m_directionalShadowmap->GetWidth(), m_directionalShadowmap->GetHeight());
 
@@ -71,9 +87,8 @@ namespace JoyEngine
 		}
 
 		GraphicsUtils::Barrier(commandList, m_directionalShadowmap->GetImageResource().Get(), D3D12_RESOURCE_STATE_DEPTH_WRITE,
-			D3D12_RESOURCE_STATE_GENERIC_READ);
+		                       D3D12_RESOURCE_STATE_GENERIC_READ);
 	}
-
 
 
 	uint32_t ClusteredLightSystem::RegisterDirectionalLight()
@@ -88,7 +103,7 @@ namespace JoyEngine
 			D3D12_RESOURCE_STATE_GENERIC_READ,
 			D3D12_HEAP_TYPE_DEFAULT);
 
-		m_directionalLightDataBuffer = std::make_unique<DynamicCpuBuffer<DirectionalLightData>>(m_frameCount);
+		m_directionalLightDataBuffer = std::make_unique<DynamicCpuBuffer<DirectionalLightInfo>>(m_frameCount);
 
 		return 0;
 	}
@@ -96,5 +111,19 @@ namespace JoyEngine
 	void ClusteredLightSystem::UnregisterDirectionalLight()
 	{
 		// empty
+	}
+
+	uint32_t ClusteredLightSystem::RegisterLight(LightBase* light)
+	{
+		ASSERT(!m_lights.contains(light));
+		m_lights.insert(light);
+		return m_lightDataPool.Allocate();
+	}
+
+	void ClusteredLightSystem::UnregisterLight(LightBase* light)
+	{
+		ASSERT(m_lights.contains(light));
+		m_lights.erase(light);
+		m_lightDataPool.Free(light->GetIndex());
 	}
 }

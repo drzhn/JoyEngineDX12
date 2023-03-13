@@ -104,7 +104,7 @@ struct ViewProjectionMatrixData
 	MAT4 proj;
 };
 
-struct DirectionalLightData
+struct DirectionalLightInfo
 {
 	VEC3 direction;
 	float intensity;
@@ -118,12 +118,12 @@ struct DirectionalLightData
 	float _dummy2;
 };
 
-struct CommonLightData
+struct LightInfo
 {
-	float intensity;
+	UINT1 packedColor;
 	float radius;
-	float height;
-	float angle;
+	float intensity;
+	float _dummy0; // TODO pack radius and height for spotlight
 };
 
 struct CubemapConvolutionConstants
@@ -180,9 +180,9 @@ struct ObjectMatricesData
 	MAT4 data[OBJECT_SIZE];
 };
 
-struct LightsData
+struct LightData
 {
-	CommonLightData data[LIGHT_SIZE];
+	LightInfo data[LIGHT_SIZE];
 };
 
 struct HDRDownScaleConstants

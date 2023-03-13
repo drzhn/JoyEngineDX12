@@ -28,7 +28,6 @@ namespace JoyEngine
 	enum class EngineBindingType;
 
 	class CommandQueue;
-	//class Light;
 	class Mesh;
 	class Camera;
 	class SharedMaterial;
@@ -75,7 +74,7 @@ namespace JoyEngine
 		[[nodiscard]] uint32_t GetFrameCount() const noexcept override { return frameCount; }
 
 		[[nodiscard]] TransformProvider* GetTransformProvider() const noexcept override { return m_transformProvider.get(); }
-		[[nodiscard]] ILightSystem* GetLightSystem() const noexcept override { return m_lightSystem.get(); }
+		[[nodiscard]] ILightSystem& GetLightSystem() const noexcept override { return *m_lightSystem; }
 
 		[[nodiscard]] static DXGI_FORMAT GetMainColorFormat() noexcept { return hdrRTVFormat; }
 		[[nodiscard]] static DXGI_FORMAT GetHdrRTVFormat() noexcept { return hdrRTVFormat; }

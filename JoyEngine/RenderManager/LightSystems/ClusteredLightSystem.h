@@ -1,13 +1,18 @@
 ﻿#ifndef CLUSTERED_LIGHT_SYSTEM_H
 #define CLUSTERED_LIGHT_SYSTEM_H
 
+#include <set>
+
 #include "CommonEngineStructs.h"
 #include "ILightSystem.h"
+#include "Components/Light.h"
 #include "ResourceManager/Texture.h"
+#include "ResourceManager/Buffers/DynamicBufferPool.h"
 #include "ResourceManager/Buffers/DynamicCpuBuffer.h"
 
 namespace JoyEngine
 {
+	class Camera;
 	class SharedMaterial;
 	class ResourceView;
 
@@ -16,6 +21,10 @@ namespace JoyEngine
 	public:
 
 		explicit ClusteredLightSystem(uint32_t frameCount);
+
+		void SetCamera(Camera* camera) { m_camera = camera; }
+
+		void Update(const uint32_t frameIndex) override;
 
 		// TODO I still do not have option how to get list of z-write geometry from scene,
 		// So I just pass gbuffer shared material to this method bc it contains all of mesh renderers 
@@ -34,21 +43,35 @@ namespace JoyEngine
 			return m_directionalShadowmap->GetSRV();
 		}
 
-		DirectionalLightData& GetDirectionalLightData() override
+		DirectionalLightInfo& GetDirectionalLightData() override
 		{
 			return m_directionalLightData;
 		}
 
-		void Update(const uint32_t frameIndex) override;
 		uint32_t RegisterDirectionalLight() override;
 		void UnregisterDirectionalLight() override;
 
+		uint32_t RegisterLight(LightBase* light) override;
+		void UnregisterLight(LightBase* light) override;
+
+		LightInfo& GetLightInfo(uint32_t lightIndex) override
+		{
+			return m_lightDataPool.GetElem(lightIndex);
+		}
+
 	private:
 		const uint32_t m_frameCount;
+		Camera* m_camera;
 
-		DirectionalLightData m_directionalLightData;
-		std::unique_ptr<DynamicCpuBuffer<DirectionalLightData>> m_directionalLightDataBuffer;
+		DirectionalLightInfo m_directionalLightData;
+		std::unique_ptr<DynamicCpuBuffer<DirectionalLightInfo>> m_directionalLightDataBuffer;
 		std::unique_ptr<DepthTexture> m_directionalShadowmap;
+
+
+		DynamicBufferPool<LightInfo, LightData, LIGHT_SIZE> m_lightDataPool;
+		// TODO we store pointers to lights here for getting their positions during light clusterization
+		// TODO make something smarter than this
+		std::set<LightBase*> m_lights; 
 	};
 }
 #endif // CLUSTERED_LIGHT_SYSTEM_H

@@ -16,15 +16,17 @@ namespace JoyEngine
 	public:
 		LightBase() = delete;
 
+		[[nodiscard]] uint32_t GetIndex() const noexcept { return m_lightIndex; }
+
 	protected:
-		explicit LightBase(GameObject& go, ILightSystem* lightSystem, uint32_t lightIndex):
+		explicit LightBase(GameObject& go, ILightSystem& lightSystem, uint32_t lightIndex):
 			Component(go),
 			m_lightSystem(lightSystem),
 			m_lightIndex(lightIndex)
 		{
 		}
 
-		ILightSystem* m_lightSystem;
+		ILightSystem& m_lightSystem;
 
 		const uint32_t m_lightIndex;
 	};
@@ -32,7 +34,7 @@ namespace JoyEngine
 	class DirectionalLight : public LightBase
 	{
 	public:
-		explicit DirectionalLight(GameObject& go, ILightSystem* lightSystem, float intensity, float ambient);
+		explicit DirectionalLight(GameObject& go, ILightSystem& lightSystem, float intensity, float ambient);
 
 		void Enable() override;
 
@@ -45,6 +47,16 @@ namespace JoyEngine
 	private:
 		CameraUnit m_cameraUnit;
 		float m_currentAngle = 0;
+	};
+
+	class PointLight: public LightBase
+	{
+	public:
+		explicit PointLight(GameObject& go, ILightSystem& lightSystem, float radius, float intensity, float color[4]);
+		
+		void Enable() override;
+		void Disable() override;
+		void Update() override;
 	};
 
 	//class Light : public Component

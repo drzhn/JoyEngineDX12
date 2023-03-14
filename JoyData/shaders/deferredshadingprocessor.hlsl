@@ -8,6 +8,8 @@ struct PSInput
 ConstantBuffer<EngineData> engineData: register(b0);
 ConstantBuffer<DirectionalLightInfo> directionalLightData: register(b1);
 ConstantBuffer<RaytracedProbesData> raytracedProbesData: register(b2);
+ConstantBuffer<ClusterEntryData> clusteredEntryData: register(b3);
+ConstantBuffer<ClusterItemData> clusteredItemData: register(b4);
 
 Texture2D<float4> colorTexture;
 Texture2D<float4> normalsTexture;
@@ -64,10 +66,10 @@ float2 GetProbeTextureUV(float3 gridID, float3 worldNormal)
 	const float2 probeId2D = float2(
 		gridID.x + raytracedProbesData.gridX * gridID.y,
 		gridID.z
-		);
+	);
 
 	float2 probeTextureSize = float2(raytracedProbesData.gridX * raytracedProbesData.gridY * (DDGI_PROBE_DATA_RESOLUTION + 2),
-		raytracedProbesData.gridZ * (DDGI_PROBE_DATA_RESOLUTION + 2));
+	                                 raytracedProbesData.gridZ * (DDGI_PROBE_DATA_RESOLUTION + 2));
 
 	const float2 probeUV = (float32x3_to_oct(worldNormal) + float2(1, 1)) / 2.0;
 
@@ -108,7 +110,7 @@ float3 SampleProbeGrid(float3 worldPosition, float3 worldNormal)
 	for (int i = 0; i < 8; i++)
 	{
 		float3 probePos = gridCage[i];
-		float3 probeColor = probeIrradianceTexture.Sample(linearBlackBorderSampler, GetProbeTextureUV(probePos, worldNormal)); 
+		float3 probeColor = probeIrradianceTexture.Sample(linearBlackBorderSampler, GetProbeTextureUV(probePos, worldNormal));
 		//float backProbeMultiplier = pow(max(0.0001, (dot(normalize(probePos - gridPos), worldNormal) + 1.0) * 0.5), 2) + 0.2;
 		//float backProbeMultiplier = max(0.000, dot(normalize(probePos - gridPos), worldNormal));
 

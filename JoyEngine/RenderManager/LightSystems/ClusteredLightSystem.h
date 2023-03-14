@@ -34,16 +34,6 @@ namespace JoyEngine
 			uint32_t frameIndex,
 			SharedMaterial* gBufferSharedMaterial);
 
-		[[nodiscard]] ResourceView* GetDirectionalLightDataView(uint32_t frameIndex) const
-		{
-			return m_directionalLightDataBuffer->GetView(frameIndex);
-		}
-
-		[[nodiscard]] ResourceView* GetDirectionalShadowmapView() const
-		{
-			return m_directionalShadowmap->GetSRV();
-		}
-
 		DirectionalLightInfo& GetDirectionalLightData() override
 		{
 			return m_directionalLightData;
@@ -58,6 +48,26 @@ namespace JoyEngine
 		LightInfo& GetLightInfo(uint32_t lightIndex) override
 		{
 			return m_lightDataPool.GetElem(lightIndex);
+		}
+
+		[[nodiscard]] ResourceView* GetDirectionalLightDataView(const uint32_t frameIndex) const
+		{
+			return m_directionalLightDataBuffer->GetView(frameIndex);
+		}
+
+		[[nodiscard]] ResourceView* GetDirectionalShadowmapView() const
+		{
+			return m_directionalShadowmap->GetSRV();
+		}
+
+		[[nodiscard]] ResourceView* GetClusterEntryDataView(const uint32_t frameIndex) const
+		{
+			return m_clusterEntryData.GetView(frameIndex);
+		}
+
+		[[nodiscard]] ResourceView* GetClusterItemDataView(const uint32_t frameIndex) const
+		{
+			return m_clusterItemData.GetView(frameIndex);
 		}
 
 	private:

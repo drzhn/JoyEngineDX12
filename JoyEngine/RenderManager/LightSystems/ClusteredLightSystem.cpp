@@ -16,22 +16,25 @@ namespace JoyEngine
 	bool SphereCubeIntersection(glm::vec3 cubeMin, glm::vec3 cubeMax, glm::vec3 sphereCenter, float sphereRadius)
 	{
 		float dmin = 0;
-		float r2 = pow(sphereRadius, 2);
+		float r2 = pow(sphereRadius, 2.f);
 		for (int i = 0; i < 3; i++)
 		{
 			if (sphereCenter[i] < cubeMin[i])
-				dmin += pow(sphereCenter[i] - cubeMin[i], 2);
+				dmin += pow(sphereCenter[i] - cubeMin[i], 2.f);
 			else if (sphereCenter[i] > cubeMax[i])
-				dmin += pow(sphereCenter[i] - cubeMax[i], 2);
+				dmin += pow(sphereCenter[i] - cubeMax[i], 2.f);
 		}
 
-		if (dmin <= r2) return (true);
+		if (dmin <= r2)
+		{
+			return true;
+		}
 		return false;
 	}
 
 	inline glm::vec4 ToVec4(glm::vec3 vec3)
 	{
-		return glm::vec4(vec3.x, vec3.y, vec3.z, 1);
+		return {vec3.x, vec3.y, vec3.z, 1};
 	}
 
 	ClusteredLightSystem::ClusteredLightSystem(const uint32_t frameCount) :
@@ -123,7 +126,6 @@ namespace JoyEngine
 					{
 						uint32_t lightIndex = light->GetIndex();
 
-
 						glm::vec4 sphereCenter = ToVec4(light->GetGameObject().GetTransform()->GetPosition());
 						sphereCenter = cameraViewMatrix * sphereCenter;
 
@@ -143,7 +145,50 @@ namespace JoyEngine
 			}
 		}
 
+		// Convolution
+		m_clusterEntryData.Lock(frameIndex);
+		ClusterEntryData* entryDataPtr = m_clusterEntryData.GetPtr();
 
+		m_clusterItemData.Lock(frameIndex);
+		ClusterItemData* itemDataPtr = m_clusterItemData.GetPtr();
+
+		uint32_t currentOffset = 0;
+		for (int z = 0; z < NUM_CLUSTERS_Z; z++)
+		{
+			for (int x = 0; x < NUM_CLUSTERS_X; x++)
+			{
+				for (int y = 0; y < NUM_CLUSTERS_Y; y++)
+				{
+					const int clusterIndex =
+						y +
+						x * NUM_CLUSTERS_Y +
+						z * NUM_CLUSTERS_Y * NUM_CLUSTERS_X;
+
+					uint32_t numLight = 0;
+					uint32_t prevOffset = currentOffset;
+
+					for (int i = 0; i < LIGHTS_PER_CLUSTER; i++)
+					{
+						if (m_clusterLightIndices[clusterIndex * LIGHTS_PER_CLUSTER + i] == -1)
+						{
+							break;
+						}
+						itemDataPtr->data[currentOffset] = m_clusterLightIndices[clusterIndex * LIGHTS_PER_CLUSTER + i];
+						numLight++;
+						currentOffset++;
+						ASSERT(currentOffset < CLUSTER_ITEM_DATA_SIZE); // Pls, increase CLUSTER_ITEM_DATA_SIZE
+					}
+
+					entryDataPtr->data[clusterIndex] = {
+						.offset = prevOffset,
+						.numLight = numLight
+					};
+				}
+			}
+		}
+
+		m_clusterEntryData.Unlock();
+		m_clusterItemData.Unlock();
 	}
 
 	void ClusteredLightSystem::RenderDirectionalShadows(

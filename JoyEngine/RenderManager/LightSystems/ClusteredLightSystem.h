@@ -10,6 +10,8 @@
 #include "ResourceManager/Buffers/DynamicBufferPool.h"
 #include "ResourceManager/Buffers/DynamicCpuBuffer.h"
 
+
+
 namespace JoyEngine
 {
 	class Camera;
@@ -19,7 +21,6 @@ namespace JoyEngine
 	class ClusteredLightSystem : public ILightSystem
 	{
 	public:
-
 		explicit ClusteredLightSystem(uint32_t frameCount);
 
 		void SetCamera(Camera* camera) { m_camera = camera; }
@@ -71,7 +72,10 @@ namespace JoyEngine
 		DynamicBufferPool<LightInfo, LightData, LIGHT_SIZE> m_lightDataPool;
 		// TODO we store pointers to lights here for getting their positions during light clusterization
 		// TODO make something smarter than this
-		std::set<LightBase*> m_lights; 
+		std::set<LightBase*> m_lights;
+		std::array<uint32_t, NUM_CLUSTERS_X * NUM_CLUSTERS_Y * NUM_CLUSTERS_Z * LIGHTS_PER_CLUSTER> m_clusterLightIndices;
+		DynamicCpuBuffer<ClusterEntryData> m_clusterEntryData;
+		DynamicCpuBuffer<ClusterItemData> m_clusterItemData;
 	};
 }
 #endif // CLUSTERED_LIGHT_SYSTEM_H

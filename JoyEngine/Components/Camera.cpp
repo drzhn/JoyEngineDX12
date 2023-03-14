@@ -62,4 +62,9 @@ namespace JoyEngine
 	{
 		return m_cameraUnit.GetFar();
 	}
+
+	float Camera::GetAspect() const
+	{
+		return m_cameraUnit.GetAspect();
+	}
 }

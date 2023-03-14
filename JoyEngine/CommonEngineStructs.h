@@ -49,6 +49,12 @@
 #define DDGI_PROBE_DATA_RESOLUTION 16
 #define DDGI_PROBE_IRRADIANCE_SAMPLES 4
 
+#define NUM_CLUSTERS_X 20
+#define NUM_CLUSTERS_Y 10
+#define NUM_CLUSTERS_Z 24
+#define LIGHTS_PER_CLUSTER 32
+#define CLUSTER_ITEM_DATA_SIZE 1024 // TODO make additional check in engine
+
 // ========= CONTEXT DEPENDENT STRUCTS =========
 
 #ifdef ENGINE
@@ -184,6 +190,23 @@ struct LightData
 {
 	LightInfo data[LIGHT_SIZE];
 };
+
+struct ClusterEntry
+{
+	UINT1 offset;
+	UINT1 numLight;
+};
+
+struct ClusterEntryData
+{
+	ClusterEntry data[NUM_CLUSTERS_X * NUM_CLUSTERS_Y * NUM_CLUSTERS_Z];
+};
+
+struct ClusterItemData
+{
+	UINT1 data[CLUSTER_ITEM_DATA_SIZE];
+};
+
 
 struct HDRDownScaleConstants
 {

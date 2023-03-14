@@ -1,5 +1,8 @@
 ﻿#include "ClusteredLightSystem.h"
 
+#include <cmath>
+
+#include "Components/Camera.h"
 #include "Components/MeshRenderer.h"
 #include "EngineMaterialProvider/EngineMaterialProvider.h"
 #include "ResourceManager/Mesh.h"
@@ -10,11 +13,34 @@
 
 namespace JoyEngine
 {
+	bool SphereCubeIntersection(glm::vec3 cubeMin, glm::vec3 cubeMax, glm::vec3 sphereCenter, float sphereRadius)
+	{
+		float dmin = 0;
+		float r2 = pow(sphereRadius, 2);
+		for (int i = 0; i < 3; i++)
+		{
+			if (sphereCenter[i] < cubeMin[i])
+				dmin += pow(sphereCenter[i] - cubeMin[i], 2);
+			else if (sphereCenter[i] > cubeMax[i])
+				dmin += pow(sphereCenter[i] - cubeMax[i], 2);
+		}
+
+		if (dmin <= r2) return (true);
+		return false;
+	}
+
+	inline glm::vec4 ToVec4(glm::vec3 vec3)
+	{
+		return glm::vec4(vec3.x, vec3.y, vec3.z, 1);
+	}
+
 	ClusteredLightSystem::ClusteredLightSystem(const uint32_t frameCount) :
 		m_frameCount(frameCount),
 		m_camera(nullptr),
 		m_directionalLightData(),
-		m_lightDataPool(frameCount)
+		m_lightDataPool(frameCount),
+		m_clusterEntryData(frameCount),
+		m_clusterItemData(frameCount)
 	{
 	}
 
@@ -24,6 +50,8 @@ namespace JoyEngine
 
 		m_directionalLightDataBuffer->SetData(&m_directionalLightData, frameIndex);
 
+
+		// update light info (intensity, color, etc)
 		{
 			auto& buffer = m_lightDataPool.GetDynamicBuffer();
 			buffer.Lock(frameIndex);
@@ -37,6 +65,85 @@ namespace JoyEngine
 
 			buffer.Unlock();
 		}
+
+		const float cameraNear = m_camera->GetNear();
+		const float cameraFar = m_camera->GetFar();
+		const float cameraAspect = m_camera->GetAspect();
+		const float cameraFowRad = m_camera->GetFovRadians();
+
+		const float distance = cameraFar - cameraNear;
+		const float logDistance = log2(distance + 1);
+
+		const glm::mat4 cameraViewMatrix = m_camera->GetViewMatrix();
+
+		auto GetCubeVertex = [&](int x, int y, int z)
+		{
+			const float nearZ = (pow(2.0f, logDistance / NUM_CLUSTERS_Z * z) - 1 + cameraNear);
+			const float nearH = 2 * nearZ * tan(cameraFowRad / 2.f);
+			const float nearW = cameraAspect * nearH;
+			const float cubeX = x * nearW / NUM_CLUSTERS_X - nearW / 2;
+			const float cubeY = y * nearH / NUM_CLUSTERS_Y - nearH / 2;
+
+			return glm::vec3(cubeX, cubeY, nearZ);
+		};
+
+		for (int z = 0; z < NUM_CLUSTERS_Z; z++) // TODO make it in parallel
+		{
+			for (int x = 0; x < NUM_CLUSTERS_X; x++)
+			{
+				for (int y = 0; y < NUM_CLUSTERS_Y; y++)
+				{
+					glm::vec3 cubePoints[8];
+
+					cubePoints[0] = GetCubeVertex(x + 0, y + 0, z + 0);
+					cubePoints[1] = GetCubeVertex(x + 0, y + 0, z + 1);
+					cubePoints[2] = GetCubeVertex(x + 0, y + 1, z + 0);
+					cubePoints[3] = GetCubeVertex(x + 0, y + 1, z + 1);
+					cubePoints[4] = GetCubeVertex(x + 1, y + 0, z + 0);
+					cubePoints[5] = GetCubeVertex(x + 1, y + 0, z + 1);
+					cubePoints[6] = GetCubeVertex(x + 1, y + 1, z + 0);
+					cubePoints[7] = GetCubeVertex(x + 1, y + 1, z + 1);
+
+					glm::vec3 cubeMin = cubePoints[0];
+					glm::vec3 cubeMax = cubePoints[0];
+
+					for (int i = 1; i < 8; i++)
+					{
+						cubeMin = glm::min(cubePoints[i], cubeMin);
+						cubeMax = glm::max(cubePoints[i], cubeMax);
+					}
+
+					int currentLight = 0;
+					const int clusterStartingPoint =
+						y * LIGHTS_PER_CLUSTER +
+						x * LIGHTS_PER_CLUSTER * NUM_CLUSTERS_Y +
+						z * LIGHTS_PER_CLUSTER * NUM_CLUSTERS_Y * NUM_CLUSTERS_X;
+
+					for (const auto& light : m_lights)
+					{
+						uint32_t lightIndex = light->GetIndex();
+
+
+						glm::vec4 sphereCenter = ToVec4(light->GetGameObject().GetTransform()->GetPosition());
+						sphereCenter = cameraViewMatrix * sphereCenter;
+
+						if (SphereCubeIntersection(cubeMin, cubeMax, sphereCenter, m_lightDataPool.GetElem(lightIndex).radius))
+						{
+							ASSERT(currentLight < LIGHTS_PER_CLUSTER);
+							m_clusterLightIndices[clusterStartingPoint + currentLight] = lightIndex;
+							currentLight++;
+						}
+					}
+
+					for (int i = currentLight; i < LIGHTS_PER_CLUSTER; i++)
+					{
+						m_clusterLightIndices[clusterStartingPoint + i] = -1;
+					}
+				}
+			}
+		}
+
+
 	}
 
 	void ClusteredLightSystem::RenderDirectionalShadows(

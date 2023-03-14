@@ -24,6 +24,7 @@ namespace JoyEngine
 		[[nodiscard]] float GetFovRadians() const;
 		[[nodiscard]] float GetNear() const;
 		[[nodiscard]] float GetFar() const;
+		[[nodiscard]] float GetAspect() const;
 	private:
 		CameraUnit m_cameraUnit;
 		IRenderManager* m_manager;

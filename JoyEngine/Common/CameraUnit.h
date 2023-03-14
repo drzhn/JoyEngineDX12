@@ -26,6 +26,7 @@ namespace JoyEngine
 		[[nodiscard]] float GetNear() const noexcept { return m_near; }
 		[[nodiscard]] float GetFar() const noexcept { return m_far; }
 		[[nodiscard]] float GetFOVRadians() const noexcept { return m_fovRad; }
+		[[nodiscard]] float GetAspect() const noexcept { return m_aspect; }
 
 	protected:
 		CameraUnitType m_type;

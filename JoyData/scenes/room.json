@@ -45,10 +45,37 @@
             ]
         },
         {
-            "name": "point_light_test",
+            "name": "point_light_test1",
             "type": "obj_simple",
             "transform": {
-                "localPosition": [ 0.0, 2.0, 0.0 ],
+                "localPosition": [ 0.0, 1.0, 7.8 ],
+                "localRotation": [ 0.0, 0.0, 0.0 ],
+                "localScale": [ 1.0, 1.0, 1.0 ]
+            },
+            "components": [
+                {
+                    "type": "light",
+                    "lightType": "point",
+                    "intensity": 1.0,
+                    "radius": 3.0,
+                    "color": [ 0.0, 1.0, 0.0, 1.0 ]
+                },
+                {
+                    "type": "component",
+                    "component": "LightBehaviour",
+                    "fields": {
+                        "m_speed": 2.0,
+                        "m_phase": 0.0,
+                        "m_amplitude": 20.0
+                    }
+                }
+            ]
+        },        
+        {
+            "name": "point_light_test2",
+            "type": "obj_simple",
+            "transform": {
+                "localPosition": [ 3.0, 1.0, 7.8 ],
                 "localRotation": [ 0.0, 0.0, 0.0 ],
                 "localScale": [ 1.0, 1.0, 1.0 ]
             },
@@ -59,6 +86,15 @@
                     "intensity": 1.0,
                     "radius": 3.0,
                     "color": [ 1.0, 0.0, 0.0, 1.0 ]
+                },
+                {
+                    "type": "component",
+                    "component": "LightBehaviour",
+                    "fields": {
+                        "m_speed": -2.0,
+                        "m_phase": 0.0,
+                        "m_amplitude": 20.0
+                    }
                 }
             ]
         },

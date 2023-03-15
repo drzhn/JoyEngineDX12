@@ -222,6 +222,7 @@ namespace JoyEngine
 		lightInfo.radius = radius;
 		lightInfo.intensity = intensity;
 		lightInfo.packedColor = PackColor(color);
+		lightInfo.transformIndex = GetGameObject().GetTransformIndex();
 	}
 
 	void PointLight::Enable()

@@ -189,6 +189,9 @@
     <ClCompile Include="JoyEngine\RenderManager\TransformProvider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="JoyEngine\GameplayComponents\LightBehaviour.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="JoyEngine\JoyEngine.h">
@@ -417,6 +420,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JoyEngine\RenderManager\TransformProvider.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JoyEngine\GameplayComponents\LightBehaviour.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

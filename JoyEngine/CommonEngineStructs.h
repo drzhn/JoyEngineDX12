@@ -49,11 +49,11 @@
 #define DDGI_PROBE_DATA_RESOLUTION 16
 #define DDGI_PROBE_IRRADIANCE_SAMPLES 4
 
-#define NUM_CLUSTERS_X 20
+#define NUM_CLUSTERS_X 10
 #define NUM_CLUSTERS_Y 10
 #define NUM_CLUSTERS_Z 24
 #define LIGHTS_PER_CLUSTER 32
-#define CLUSTER_ITEM_DATA_SIZE 1024 // TODO make additional check in engine
+#define CLUSTER_ITEM_DATA_SIZE 2048 // TODO make additional check in engine
 
 // ========= CONTEXT DEPENDENT STRUCTS =========
 
@@ -129,7 +129,7 @@ struct LightInfo
 	UINT1 packedColor;
 	float radius;
 	float intensity;
-	float _dummy0; // TODO pack radius and height for spotlight
+	UINT1 transformIndex; 
 };
 
 struct CubemapConvolutionConstants
@@ -153,7 +153,7 @@ struct EngineData
 	UINT1 screenWidth;
 
 	UINT1 screenHeight;
-	UINT1 _dummy0;
+	float cameraAspect;
 	UINT1 _dummy1;
 	UINT1 _dummy2;
 };
@@ -191,10 +191,12 @@ struct LightData
 	LightInfo data[LIGHT_SIZE];
 };
 
-struct ClusterEntry
+struct ClusterEntry // TODO WTF
 {
 	UINT1 offset;
 	UINT1 numLight;
+	UINT1 _dummy0;
+	UINT1 _dummy1;
 };
 
 struct ClusterEntryData
@@ -202,9 +204,17 @@ struct ClusterEntryData
 	ClusterEntry data[NUM_CLUSTERS_X * NUM_CLUSTERS_Y * NUM_CLUSTERS_Z];
 };
 
+struct ClusterItem 
+{
+	UINT1 lightIndex; // TODO WTF
+	UINT1 _dummy0;
+	UINT1 _dummy1;
+	UINT1 _dummy2;
+};
+
 struct ClusterItemData
 {
-	UINT1 data[CLUSTER_ITEM_DATA_SIZE];
+	ClusterItem data[CLUSTER_ITEM_DATA_SIZE];
 };
 
 

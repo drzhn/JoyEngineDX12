@@ -70,6 +70,11 @@ namespace JoyEngine
 			return m_clusterItemData.GetView(frameIndex);
 		}
 
+		[[nodiscard]] ResourceView* GetLightDataView(const uint32_t frameIndex)
+		{
+			return m_lightDataPool.GetDynamicBuffer().GetView(frameIndex);
+		}
+
 	private:
 		const uint32_t m_frameCount;
 		Camera* m_camera;

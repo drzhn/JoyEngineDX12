@@ -10,6 +10,10 @@ ConstantBuffer<DirectionalLightInfo> directionalLightData: register(b1);
 ConstantBuffer<RaytracedProbesData> raytracedProbesData: register(b2);
 ConstantBuffer<ClusterEntryData> clusteredEntryData: register(b3);
 ConstantBuffer<ClusterItemData> clusteredItemData: register(b4);
+ConstantBuffer<LightData> lightData: register(b5);
+
+ConstantBuffer<ObjectMatricesData> objectMatricesData : register(b6);
+ConstantBuffer<ViewProjectionMatrixData> viewProjectionData : register(b7);
 
 Texture2D<float4> colorTexture;
 Texture2D<float4> normalsTexture;
@@ -34,6 +38,19 @@ float4 UnpackColor(UINT1 packedColor)
 	color.a = ((packedColor >> 0) & 255) / 255.0f;
 
 	return color;
+}
+
+inline float sqr(float x)
+{
+	return x * x;
+}
+
+float PointLightAttenuation(float distance, float radius, float max_intensity, float falloff)
+{
+	const float s = distance / radius;
+	const float s2 = sqr(s);
+	const float attenuation = max_intensity * sqr(1 - s2) / (1 + falloff * s);
+	return s >= 1.0 ? 0 : attenuation;
 }
 
 PSInput VSMain(uint id : SV_VertexID)
@@ -140,7 +157,7 @@ float4 PSMain(PSInput input) : SV_Target
 	const float4 worldPosition = positionTexture.Load(float3(input.position.xy, 0));
 
 	const float4x4 resMatrix = mul(directionalLightData.proj, directionalLightData.view);
-	float4 posShadowMap = mul(resMatrix, float4(worldPosition.rgb, 1.0));
+	float4 posShadowMap = mul(resMatrix, float4(worldPosition.xyz, 1.0));
 	float3 UVD = posShadowMap.xyz / posShadowMap.w;
 	UVD.xy = 0.5 * UVD.xy + 0.5;
 	UVD.y = 1.0 - UVD.y;
@@ -170,8 +187,35 @@ float4 PSMain(PSInput input) : SV_Target
 	lambertAttenuation = worldPosition.a > 0 ? lambertAttenuation : 1;
 	const float3 sampledProbeGridColor = worldPosition.a > 0 ? SampleProbeGrid(worldPosition, worldNormal) : 0;
 
+	float3 lightColor = float3(0, 0, 0);
+	{
+		const float aspect = engineData.cameraAspect;
+		const float distance = engineData.cameraFar - engineData.cameraNear;
+		const float logDistance = log2(distance + 1);
+
+		float4 viewPos = mul(viewProjectionData.view, float4(worldPosition.xyz, 1.0));
+		uint clusterZ = floor(log2(viewPos.z + 1 - engineData.cameraNear) / logDistance * NUM_CLUSTERS_Z);
+
+		const float nearH = 2 * viewPos.z * tan(engineData.cameraFovRadians / 2.f);
+		const float nearW = aspect * nearH;
+
+		uint clusterX = floor((viewPos.x + nearW / 2) / nearW * NUM_CLUSTERS_X);
+		uint clusterY = floor((viewPos.y + nearH / 2) / nearH * NUM_CLUSTERS_Y);
+
+		ClusterEntry entry = clusteredEntryData.data[clusterY + clusterX * NUM_CLUSTERS_Y + clusterZ * NUM_CLUSTERS_Y * NUM_CLUSTERS_X];
+		for(int i = 0; i < entry.numLight; i++)
+		{
+			LightInfo info = lightData.data[clusteredItemData.data[entry.offset + i].lightIndex];
+			float4 lightViewPos = mul(viewProjectionData.view, mul(objectMatricesData.data[info.transformIndex], float4(0, 0, 0, 1)));
+			const float d = length(viewPos.xyz - lightViewPos.xyz);
+			const float pointLightAttenuation = PointLightAttenuation(d, info.radius, info.intensity, 4);
+			lightColor += UnpackColor(info.packedColor).rgb * pointLightAttenuation;
+		}
+	}
+
 	const float3 ret =
 		color.rgb * directionalLightAttenuation * lambertAttenuation +
-		color.rgb * sampledProbeGridColor;
+		color.rgb * sampledProbeGridColor +
+		color.rgb * lightColor;
 	return float4(ret, 1);
 }

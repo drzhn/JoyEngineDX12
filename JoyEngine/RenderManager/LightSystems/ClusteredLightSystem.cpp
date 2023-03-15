@@ -173,7 +173,7 @@ namespace JoyEngine
 						{
 							break;
 						}
-						itemDataPtr->data[currentOffset] = m_clusterLightIndices[clusterIndex * LIGHTS_PER_CLUSTER + i];
+						itemDataPtr->data[currentOffset].lightIndex = m_clusterLightIndices[clusterIndex * LIGHTS_PER_CLUSTER + i];
 						numLight++;
 						currentOffset++;
 						ASSERT(currentOffset < CLUSTER_ITEM_DATA_SIZE); // Pls, increase CLUSTER_ITEM_DATA_SIZE

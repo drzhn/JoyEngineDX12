@@ -238,6 +238,7 @@ namespace JoyEngine
 			data->cameraFovRadians = m_currentCamera->GetFovRadians();
 			data->screenWidth = m_width;
 			data->screenHeight = m_height;
+			data->cameraAspect = GetAspect();
 
 			engineDataBuffer->Unlock();
 		}
@@ -561,6 +562,10 @@ namespace JoyEngine
 		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "linearBlackBorderSampler", EngineSamplersProvider::GetLinearBlackBorderSampler());
 
 		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "probeIrradianceTexture", m_raytracing->GetProbeIrradianceTexture()->GetSRV());
+
+		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "clusteredEntryData", m_lightSystem->GetClusterEntryDataView(m_currentFrameIndex));
+		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "clusteredItemData", m_lightSystem->GetClusterItemDataView(m_currentFrameIndex));
+		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "lightData", m_lightSystem->GetLightDataView(m_currentFrameIndex));
 
 		GraphicsUtils::ProcessEngineBindings(commandList, m_currentFrameIndex,
 		                                     sm->GetGraphicsPipeline()->GetEngineBindings(), nullptr,

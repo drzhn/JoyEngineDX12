@@ -100,30 +100,6 @@ float2 GetProbeTextureUV(float3 gridID, float3 worldNormal)
 	return float2(textureUV.x / probeTextureSize.x, textureUV.y / probeTextureSize.y);
 }
 
-inline uint3 ddgi_base_probe_coord(float3 P)
-{
-	int3 grid_dimensions = int3(
-		raytracedProbesData.gridX,
-		raytracedProbesData.gridY,
-		raytracedProbesData.gridZ
-		);
-	float3 grid_extents = grid_dimensions * raytracedProbesData.cellSize;
-
-	float3 grid_extents_rcp = float3(
-		1.0f / grid_extents.x,
-		1.0f / grid_extents.y,
-		1.0f / grid_extents.z
-		);
-	float3 normalized_pos = (P - raytracedProbesData.gridMin) * grid_extents_rcp;
-	return floor(normalized_pos * (grid_dimensions - 1));
-}
-
-inline float3 ddgi_probe_position(uint3 probeCoord)
-{
-	float3 pos = raytracedProbesData.gridMin + probeCoord * raytracedProbesData.cellSize;
-	return pos;
-}
-
 float3 SampleProbeGrid(float3 worldPosition, float3 worldNormal)
 {
 	float3 ret = float3(0, 0, 0);

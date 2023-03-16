@@ -252,17 +252,15 @@ namespace JoyEngine
 					drawProbesShaderGuid,
 					JoyShaderTypeVertex | JoyShaderTypePixel,
 					true,
-					false,
-					false,
+					true,
+					true,
 					D3D12_CULL_MODE_BACK,
 					D3D12_COMPARISON_FUNC_LESS_EQUAL,
 					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 					{
-						swapchainFormat,
-						swapchainFormat,
-						swapchainFormat,
+						mainColorFormat,
 					},
-					DXGI_FORMAT_UNKNOWN,
+					depthFormat,
 					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 				});
 		}
@@ -393,7 +391,7 @@ namespace JoyEngine
 		commandList->Dispatch(g_raytracedProbesData.gridX, g_raytracedProbesData.gridY, g_raytracedProbesData.gridZ);
 #endif
 
-		m_gbuffer->BarrierToRead(commandList);
+		m_gbuffer->BarrierColorToRead(commandList);
 	}
 
 	void RaytracedLightProbes::GenerateProbeIrradiance(ID3D12GraphicsCommandList* commandList) const

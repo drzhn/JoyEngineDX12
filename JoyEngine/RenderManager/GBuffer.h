@@ -17,8 +17,10 @@ namespace JoyEngine
 		AbstractGBuffer(uint32_t width, uint32_t height);
 
 		virtual ~AbstractGBuffer() = default;
-		virtual void BarrierToRead(ID3D12GraphicsCommandList* commandList) = 0;
-		virtual void BarrierToWrite(ID3D12GraphicsCommandList* commandList) = 0;
+		virtual void BarrierColorToRead(ID3D12GraphicsCommandList* commandList) = 0;
+		virtual void BarrierColorToWrite(ID3D12GraphicsCommandList* commandList) = 0;
+		virtual void BarrierDepthToRead(ID3D12GraphicsCommandList* commandList) = 0;
+		virtual void BarrierDepthToWrite(ID3D12GraphicsCommandList* commandList) = 0;
 
 		[[nodiscard]] ResourceView* GetColorSRV() const noexcept { return m_colorTexture->GetSRV(); }
 		[[nodiscard]] ResourceView* GetNormalsSRV() const noexcept { return m_normalsTexture->GetSRV(); }
@@ -39,15 +41,19 @@ namespace JoyEngine
 	{
 	public:
 		UAVGbuffer() = delete;
-		UAVGbuffer(uint32_t width, uint32_t height);
+		explicit UAVGbuffer(uint32_t width, uint32_t height);
 
-		void BarrierToRead(ID3D12GraphicsCommandList* commandList) override;
-		void BarrierToWrite(ID3D12GraphicsCommandList* commandList) override;
+		void BarrierColorToRead(ID3D12GraphicsCommandList* commandList) override;
+		void BarrierColorToWrite(ID3D12GraphicsCommandList* commandList) override;
+		void BarrierDepthToRead(ID3D12GraphicsCommandList* commandList) override;
+		void BarrierDepthToWrite(ID3D12GraphicsCommandList* commandList) override;
 
 		[[nodiscard]] ResourceView* GetColorUAV() const noexcept { return reinterpret_cast<UAVTexture*>(m_colorTexture.get())->GetUAV(); }
 		[[nodiscard]] ResourceView* GetNormalsUAV() const noexcept { return reinterpret_cast<UAVTexture*>(m_normalsTexture.get())->GetUAV(); }
 		[[nodiscard]] ResourceView* GetPositionUAV() const noexcept { return reinterpret_cast<UAVTexture*>(m_positionTexture.get())->GetUAV(); }
 		[[nodiscard]] ResourceView* GetDepthUAV() const noexcept { return reinterpret_cast<UAVTexture*>(m_depthTexture.get())->GetUAV(); }
+		
+
 	private:
 	};
 
@@ -56,16 +62,19 @@ namespace JoyEngine
 	{
 	public:
 		RTVGbuffer() = delete;
-		RTVGbuffer(uint32_t width, uint32_t height);
+		explicit  RTVGbuffer(uint32_t width, uint32_t height);
 
-		void BarrierToRead(ID3D12GraphicsCommandList* commandList) override;
-		void BarrierToWrite(ID3D12GraphicsCommandList* commandList) override;
-
+		void BarrierColorToRead(ID3D12GraphicsCommandList* commandList) override;
+		void BarrierColorToWrite(ID3D12GraphicsCommandList* commandList) override;
+		void BarrierDepthToRead(ID3D12GraphicsCommandList* commandList) override;
+		void BarrierDepthToWrite(ID3D12GraphicsCommandList* commandList) override;
 
 		[[nodiscard]] ResourceView* GetColorRTV() const noexcept { return reinterpret_cast<RenderTexture*>(m_colorTexture.get())->GetRTV(); }
 		[[nodiscard]] ResourceView* GetNormalsRTV() const noexcept { return reinterpret_cast<RenderTexture*>(m_normalsTexture.get())->GetRTV(); }
 		[[nodiscard]] ResourceView* GetPositionRTV() const noexcept { return reinterpret_cast<RenderTexture*>(m_positionTexture.get())->GetRTV(); }
 		[[nodiscard]] ResourceView* GetDepthDSV() const noexcept { return reinterpret_cast<DepthTexture*>(m_depthTexture.get())->GetDSV(); }
+		
+
 	private:
 	};
 }

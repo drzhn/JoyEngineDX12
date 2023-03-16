@@ -266,7 +266,7 @@ namespace JoyEngine
 
 		//Drawing G-Buffer
 		{
-			m_gbuffer->BarrierToWrite(commandList);
+			m_gbuffer->BarrierColorToWrite(commandList);
 
 			D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[3] = {
 				m_gbuffer->GetColorRTV()->GetCPUHandle(),
@@ -295,7 +295,7 @@ namespace JoyEngine
 			RenderSceneForSharedMaterial(commandList, &mainCameraMatrixVP,
 			                             EngineMaterialProvider::Get()->GetGBufferWriteSharedMaterial());
 
-			m_gbuffer->BarrierToRead(commandList);
+			m_gbuffer->BarrierColorToRead(commandList);
 		}
 
 		// Process raytracing
@@ -345,6 +345,19 @@ namespace JoyEngine
 			m_raytracing->DebugDrawRaytracedImage(commandList);
 		}
 
+		if (g_drawProbes)
+		{
+			auto dsvHandle = m_gbuffer->GetDepthDSV()->GetCPUHandle();
+			//commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+
+			commandList->OMSetRenderTargets(
+				1,
+				&hdrRTVHandle,
+				FALSE, &dsvHandle);
+
+			m_raytracing->DebugDrawProbes(commandList, m_currentFrameIndex, &mainCameraMatrixVP);
+		}
+
 		// HDR->LDR
 		{
 			GraphicsUtils::Barrier(commandList,
@@ -364,10 +377,7 @@ namespace JoyEngine
 			m_tonemapping->Render(commandList, m_currentFrameIndex,
 			                      m_swapchainRenderTargets[m_currentFrameIndex].get());
 
-			if (g_drawProbes)
-			{
-				m_raytracing->DebugDrawProbes(commandList, m_currentFrameIndex, &mainCameraMatrixVP);
-			}
+
 
 
 			DrawGui(commandList, &mainCameraMatrixVP);

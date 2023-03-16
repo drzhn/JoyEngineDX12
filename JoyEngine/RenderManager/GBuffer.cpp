@@ -47,19 +47,27 @@ namespace JoyEngine
 		);
 	}
 
-	void UAVGbuffer::BarrierToRead(ID3D12GraphicsCommandList* commandList)
+	void UAVGbuffer::BarrierColorToRead(ID3D12GraphicsCommandList* commandList)
 	{
 		GraphicsUtils::UAVBarrier(commandList, m_colorTexture->GetImageResource().Get());
 		GraphicsUtils::UAVBarrier(commandList, m_normalsTexture->GetImageResource().Get());
 		GraphicsUtils::UAVBarrier(commandList, m_positionTexture->GetImageResource().Get());
+	}
+
+	void UAVGbuffer::BarrierColorToWrite(ID3D12GraphicsCommandList* commandList)
+	{
+		GraphicsUtils::UAVBarrier(commandList, m_colorTexture->GetImageResource().Get());
+		GraphicsUtils::UAVBarrier(commandList, m_normalsTexture->GetImageResource().Get());
+		GraphicsUtils::UAVBarrier(commandList, m_positionTexture->GetImageResource().Get());
+	}
+
+	void UAVGbuffer::BarrierDepthToRead(ID3D12GraphicsCommandList* commandList)
+	{
 		GraphicsUtils::UAVBarrier(commandList, m_depthTexture->GetImageResource().Get());
 	}
 
-	void UAVGbuffer::BarrierToWrite(ID3D12GraphicsCommandList* commandList)
+	void UAVGbuffer::BarrierDepthToWrite(ID3D12GraphicsCommandList* commandList)
 	{
-		GraphicsUtils::UAVBarrier(commandList, m_colorTexture->GetImageResource().Get());
-		GraphicsUtils::UAVBarrier(commandList, m_normalsTexture->GetImageResource().Get());
-		GraphicsUtils::UAVBarrier(commandList, m_positionTexture->GetImageResource().Get());
 		GraphicsUtils::UAVBarrier(commandList, m_depthTexture->GetImageResource().Get());
 	}
 
@@ -93,12 +101,12 @@ namespace JoyEngine
 			m_width,
 			m_height,
 			RenderManager::GetDepthFormat(),
-			D3D12_RESOURCE_STATE_GENERIC_READ,
+			D3D12_RESOURCE_STATE_DEPTH_WRITE,
 			D3D12_HEAP_TYPE_DEFAULT
 		);
 	}
 
-	void RTVGbuffer::BarrierToRead(ID3D12GraphicsCommandList* commandList)
+	void RTVGbuffer::BarrierColorToRead(ID3D12GraphicsCommandList* commandList)
 	{
 		GraphicsUtils::Barrier(commandList, m_colorTexture->GetImageResource().Get(),
 		                       D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
@@ -106,18 +114,26 @@ namespace JoyEngine
 		                       D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
 		GraphicsUtils::Barrier(commandList, m_positionTexture->GetImageResource().Get(),
 		                       D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
+	}
+
+	void RTVGbuffer::BarrierColorToWrite(ID3D12GraphicsCommandList* commandList)
+	{
+		GraphicsUtils::Barrier(commandList, m_colorTexture->GetImageResource().Get(),
+		                       D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		GraphicsUtils::Barrier(commandList, m_normalsTexture->GetImageResource().Get(),
+		                       D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		GraphicsUtils::Barrier(commandList, m_positionTexture->GetImageResource().Get(),
+		                       D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	}
+
+	void RTVGbuffer::BarrierDepthToRead(ID3D12GraphicsCommandList* commandList)
+	{
 		GraphicsUtils::Barrier(commandList, m_depthTexture->GetImageResource().Get(),
 		                       D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_GENERIC_READ);
 	}
 
-	void RTVGbuffer::BarrierToWrite(ID3D12GraphicsCommandList* commandList)
+	void RTVGbuffer::BarrierDepthToWrite(ID3D12GraphicsCommandList* commandList)
 	{
-		GraphicsUtils::Barrier(commandList, m_colorTexture->GetImageResource().Get(),
-		                       D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
-		GraphicsUtils::Barrier(commandList, m_normalsTexture->GetImageResource().Get(),
-		                       D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
-		GraphicsUtils::Barrier(commandList, m_positionTexture->GetImageResource().Get(),
-		                       D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
 		GraphicsUtils::Barrier(commandList, m_depthTexture->GetImageResource().Get(),
 		                       D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_DEPTH_WRITE);
 	}

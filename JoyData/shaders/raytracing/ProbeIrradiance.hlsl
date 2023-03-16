@@ -23,6 +23,11 @@ float3 oct_to_float32x3(float2 e)
 	return normalize(v);
 }
 
+inline float sqr(float v)
+{
+	return v * v;
+}
+
 inline float madfrac(float A, float B)
 {
 	return ((A) * (B) - floor((A) * (B)));
@@ -97,9 +102,9 @@ void CSMain(uint3 groupId : SV_GroupID, uint3 groupThreadId : SV_GroupThreadID)
 
 	const float3 direction = oct_to_float32x3(uv);
 
-	float4 irradiance = float4(0, 0, 0, 0);
-	float3 position = float3(0, 0, 0);
-	float currentCosine = 0;
+	float3 resultIrradiance = float3(0, 0, 0);
+	float2 resultDepth = float2(0, 0);
+	float totalWeight = 0;
 
 	for (int i = 0; i < DDGI_RAYS_COUNT; i++)
 	{
@@ -109,21 +114,29 @@ void CSMain(uint3 groupId : SV_GroupID, uint3 groupThreadId : SV_GroupThreadID)
 
 		const float cosine = dot(direction, rayDir);
 		const float weight = max(0, cosine);
-		irradiance += float4(rayRadiance * weight, weight);
 
-		position = cosine > currentCosine ? rayPosition : position;
-		currentCosine = cosine > currentCosine ? cosine : currentCosine;
+		float rayDepth = length(rayPosition - probePosition);
+		float depth = rayDepth > 0 ? clamp(rayDepth - 0.01, 0, MAX_FLOAT) : MAX_FLOAT;
+
+		if (weight > DDGI_WEIGHT_EPSILON)
+		{
+			resultIrradiance += rayRadiance * weight;
+			resultDepth += float2(depth, sqr(depth)) * weight;
+
+			totalWeight += weight;
+		}
 	}
 
-	const float3 weightedIrradiance = float3(irradiance.rgb / irradiance.w);
+	if (totalWeight > DDGI_WEIGHT_EPSILON)
+	{
+		resultIrradiance /= totalWeight;
+		resultDepth /= totalWeight;
+	}
 
 	const float3 prevIrradiance = probeIrradianceTexture[probeId2D * (DDGI_PROBE_DATA_RESOLUTION + 2) + probeRealPixelID];
-	const float3 newIrradiance = lerp(prevIrradiance, weightedIrradiance, 0.25);
+	const float3 newIrradiance = lerp(prevIrradiance, resultIrradiance, 0.25);
 
 	probeIrradianceTexture[probeId2D * (DDGI_PROBE_DATA_RESOLUTION + 2) + probeRealPixelID] = newIrradiance;
 
-	const float sphericalDistance = acos(currentCosine);
-	const float3 v = position - probePosition;
-	const float squaredDistance = dot(v, v);
-	probeDepthTexture[probeId2D * (DDGI_PROBE_DATA_RESOLUTION + 2) + probeRealPixelID] = float2(sphericalDistance, squaredDistance);
+	probeDepthTexture[probeId2D * (DDGI_PROBE_DATA_RESOLUTION + 2) + probeRealPixelID] = resultDepth;
 }

@@ -90,6 +90,13 @@ namespace JoyEngine
 			return glm::vec3(cubeX, cubeY, nearZ);
 		};
 
+		for (auto& pair : m_lights) // TODO make it in parallel
+		{
+			glm::vec4 sphereCenter = ToVec4(pair.first->GetGameObject().GetTransform()->GetPosition());
+			sphereCenter = cameraViewMatrix * sphereCenter;
+			pair.second = sphereCenter;
+		}
+
 		for (int z = 0; z < NUM_CLUSTERS_Z; z++) // TODO make it in parallel
 		{
 			for (int x = 0; x < NUM_CLUSTERS_X; x++)
@@ -124,12 +131,9 @@ namespace JoyEngine
 
 					for (const auto& light : m_lights)
 					{
-						uint32_t lightIndex = light->GetIndex();
+						uint32_t lightIndex = light.first->GetIndex();
 
-						glm::vec4 sphereCenter = ToVec4(light->GetGameObject().GetTransform()->GetPosition());
-						sphereCenter = cameraViewMatrix * sphereCenter;
-
-						if (SphereCubeIntersection(cubeMin, cubeMax, sphereCenter, m_lightDataPool.GetElem(lightIndex).radius))
+						if (SphereCubeIntersection(cubeMin, cubeMax, light.second, m_lightDataPool.GetElem(lightIndex).radius))
 						{
 							ASSERT(currentLight < LIGHTS_PER_CLUSTER);
 							m_clusterLightIndices[clusterStartingPoint + currentLight] = lightIndex;
@@ -268,7 +272,7 @@ namespace JoyEngine
 	uint32_t ClusteredLightSystem::RegisterLight(LightBase* light)
 	{
 		ASSERT(!m_lights.contains(light));
-		m_lights.insert(light);
+		m_lights.insert({ light, glm::vec4() });
 		return m_lightDataPool.Allocate();
 	}
 

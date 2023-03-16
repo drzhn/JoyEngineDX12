@@ -113,6 +113,7 @@ namespace JoyEngine
 			GetGBufferFormat(),
 			GetSwapchainFormat(),
 			GetDepthFormat(),
+			frameCount,
 			m_width,
 			m_height);
 
@@ -320,7 +321,7 @@ namespace JoyEngine
 			GraphicsUtils::Barrier(commandList, m_raytracing->GetShadedRenderTexture()->GetImageResource().Get(),
 			                       D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
 
-			m_raytracing->GenerateProbeIrradiance(commandList);
+			m_raytracing->GenerateProbeIrradiance(commandList, m_currentFrameIndex);
 		}
 
 		GraphicsUtils::SetViewportAndScissor(commandList, m_width, m_height);
@@ -376,8 +377,6 @@ namespace JoyEngine
 
 			m_tonemapping->Render(commandList, m_currentFrameIndex,
 			                      m_swapchainRenderTargets[m_currentFrameIndex].get());
-
-
 
 
 			DrawGui(commandList, &mainCameraMatrixVP);
@@ -448,17 +447,27 @@ namespace JoyEngine
 		}
 
 		ImGui::SetNextWindowPos({0, 0});
-		ImGui::SetNextWindowSize({300, 150});
+		ImGui::SetNextWindowSize({300, 75});
 		{
 			ImGui::Begin("Stats:");
-			ImGui::Text("Screen: %dx%d", m_width, m_height);
+			//ImGui::Text("Screen: %dx%d", m_width, m_height);
 			ImGui::Text("Num triangles %d", m_trianglesCount);
 			const glm::vec3 camPos = m_currentCamera->GetGameObject().GetTransform()->GetPosition();
 			ImGui::Text("Camera: %.3f %.3f %.3f", camPos.x, camPos.y, camPos.z);
-			ImGui::Checkbox("Draw raytraced image", &g_drawRaytracedImage);
-			ImGui::Checkbox("Draw probes", &g_drawProbes);
+			//ImGui::Checkbox("Draw raytraced image", &g_drawRaytracedImage);
 			ImGui::End();
 		}
+		ImGui::SetNextWindowPos({0, 75});
+		ImGui::SetNextWindowSize({300, 75});
+		{
+			bool useDDGI = m_raytracing->GetRaytracedProbesDataPtr()->useDDGI == 1;
+			ImGui::Begin("DDGI:");
+			ImGui::Checkbox("Draw probes", &g_drawProbes);
+			ImGui::Checkbox("Use GI", &useDDGI);
+			ImGui::End();
+			m_raytracing->GetRaytracedProbesDataPtr()->useDDGI = useDDGI ? 1 : 0;
+		}
+		ImGui::SetNextWindowSize({300, 150});
 		ImGui::SetNextWindowPos({0, 150});
 		{
 			HDRDownScaleConstants* constants = m_tonemapping->GetConstantsPtr();
@@ -568,7 +577,7 @@ namespace JoyEngine
 		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "PCFSampler", EngineSamplersProvider::GetDepthPCFSampler());
 
 
-		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "raytracedProbesData", m_raytracing->GetRaytracedProbesData());
+		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "raytracedProbesData", m_raytracing->GetRaytracedProbesDataView(m_currentFrameIndex));
 		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "linearBlackBorderSampler", EngineSamplersProvider::GetLinearBlackBorderSampler());
 
 		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "probeIrradianceTexture", m_raytracing->GetProbeIrradianceTexture()->GetSRV());

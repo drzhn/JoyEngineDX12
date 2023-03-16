@@ -257,7 +257,7 @@ struct RaytracedProbesData
 	UINT1 gridX;
 	UINT1 gridY;
 	UINT1 gridZ;
-	float _dummy0;
+	UINT1 useDDGI;
 };
 
 struct BufferSorterData

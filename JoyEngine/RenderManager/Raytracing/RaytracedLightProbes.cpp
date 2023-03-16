@@ -19,12 +19,13 @@ namespace JoyEngine
 		.max = glm::vec3(40.0f, 30.0f, 25.0f),
 	};
 
-	const RaytracedProbesData g_raytracedProbesData = {
+	RaytracedProbesData g_raytracedProbesData = {
 		.gridMin = glm::vec3(-27, 1, -12),
 		.cellSize = 4.1f,
 		.gridX = 14,
 		.gridY = 8,
-		.gridZ = 6
+		.gridZ = 6,
+		.useDDGI = 1
 	};
 
 	uint32_t ExpandBits(uint32_t v)
@@ -86,6 +87,7 @@ namespace JoyEngine
 		DXGI_FORMAT gBufferNormalsFormat,
 		DXGI_FORMAT swapchainFormat,
 		DXGI_FORMAT depthFormat,
+		uint32_t frameCount,
 		uint32_t width,
 		uint32_t height) :
 		m_mainColorFormat(mainColorFormat),
@@ -99,13 +101,11 @@ namespace JoyEngine
 		m_raytracedTextureWidth(g_raytracedProbesData.gridX * g_raytracedProbesData.gridY * g_raytracedProbesData.gridZ),
 		m_raytracedTextureHeight(DDGI_RAYS_COUNT),
 #endif
-
-		m_sceneSharedMaterials(sceneSharedMaterials)
+		m_sceneSharedMaterials(sceneSharedMaterials),
+		m_raytracedProbesData(frameCount)
 	{
 		static_assert(sizeof(Triangle) == 128);
 		static_assert(sizeof(AABB) == 32);
-
-		m_raytracedProbesData.SetData(g_raytracedProbesData);
 
 		m_keysBuffer = std::make_unique<DataBuffer<uint32_t>>(DATA_ARRAY_COUNT, MAX_UINT);
 		m_triangleIndexBuffer = std::make_unique<DataBuffer<uint32_t>>(DATA_ARRAY_COUNT, MAX_UINT);
@@ -357,8 +357,10 @@ namespace JoyEngine
 		ID3D12GraphicsCommandList* commandList,
 		uint32_t frameIndex,
 		ViewProjectionMatrixData* data,
-		ResourceView* skyboxTextureIndexDataView) const
+		ResourceView* skyboxTextureIndexDataView)
 	{
+		m_raytracedProbesData.SetData(&g_raytracedProbesData, frameIndex);
+
 		// Raytracing process
 		{
 			commandList->SetComputeRootSignature(m_raytracingPipeline->GetRootSignature().Get());
@@ -378,7 +380,7 @@ namespace JoyEngine
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "triangleData", m_triangleDataBuffer->GetSRV());
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "linearClampSampler", EngineSamplersProvider::GetLinearWrapSampler());
 #if !defined(CAMERA_TRACE)
-			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "raytracedProbesData", m_raytracedProbesData.GetView());
+			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "raytracedProbesData", m_raytracedProbesData.GetView(frameIndex));
 #endif
 			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "skyboxTextureIndex", skyboxTextureIndexDataView);
 
@@ -394,7 +396,7 @@ namespace JoyEngine
 		m_gbuffer->BarrierColorToRead(commandList);
 	}
 
-	void RaytracedLightProbes::GenerateProbeIrradiance(ID3D12GraphicsCommandList* commandList) const
+	void RaytracedLightProbes::GenerateProbeIrradiance(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex) const
 	{
 		// lightprobe data generation process
 		{
@@ -408,7 +410,7 @@ namespace JoyEngine
 			GraphicsUtils::AttachViewToCompute(commandList, m_probeIrradiancePipeline, "probeIrradianceTexture", m_probeIrradianceTexture->GetUAV());
 			GraphicsUtils::AttachViewToCompute(commandList, m_probeIrradiancePipeline, "probeDepthTexture", m_probeDepthTexture->GetUAV());
 
-			GraphicsUtils::AttachViewToCompute(commandList, m_probeIrradiancePipeline, "raytracedProbesData", m_raytracedProbesData.GetView());
+			GraphicsUtils::AttachViewToCompute(commandList, m_probeIrradiancePipeline, "raytracedProbesData", m_raytracedProbesData.GetView(frameIndex));
 		}
 		commandList->Dispatch(g_raytracedProbesData.gridX, g_raytracedProbesData.gridY, g_raytracedProbesData.gridZ);
 
@@ -468,7 +470,7 @@ namespace JoyEngine
 
 		GraphicsUtils::ProcessEngineBindings(commandList, frameIndex, sm->GetEngineBindings(), nullptr, viewProjectionMatrixData);
 
-		GraphicsUtils::AttachViewToGraphics(commandList, sm, "raytracedProbesData", m_raytracedProbesData.GetView());
+		GraphicsUtils::AttachViewToGraphics(commandList, sm, "raytracedProbesData", m_raytracedProbesData.GetView(frameIndex));
 		GraphicsUtils::AttachViewToGraphics(commandList, sm, "irradianceTexture", m_probeIrradianceTexture->GetSRV());
 		GraphicsUtils::AttachViewToGraphics(commandList, sm, "linearClampSampler", EngineSamplersProvider::GetLinearWrapSampler());
 
@@ -479,5 +481,10 @@ namespace JoyEngine
 			instanceCount,
 			0,
 			0);
+	}
+
+	RaytracedProbesData* RaytracedLightProbes::GetRaytracedProbesDataPtr() noexcept
+	{
+		return &g_raytracedProbesData;
 	}
 }

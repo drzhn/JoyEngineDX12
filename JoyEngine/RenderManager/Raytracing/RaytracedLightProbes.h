@@ -13,6 +13,7 @@
 #include "RenderManager/GBuffer.h"
 #include "ResourceManager/Mesh.h"
 #include "ResourceManager/ResourceHandle.h"
+#include "ResourceManager/Buffers/DynamicCpuBuffer.h"
 
 namespace JoyEngine
 {
@@ -29,12 +30,13 @@ namespace JoyEngine
 			DXGI_FORMAT gBufferNormalsFormat,
 			DXGI_FORMAT swapchainFormat,
 			DXGI_FORMAT depthFormat,
+			uint32_t frameCount,
 			uint32_t width,
 			uint32_t height);
 		void UploadSceneData();
 		void PrepareBVH() const;
-		void ProcessRaytracing(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, ViewProjectionMatrixData* data, ResourceView* skyboxTextureIndexDataView) const;
-		void GenerateProbeIrradiance(ID3D12GraphicsCommandList* commandList) const;
+		void ProcessRaytracing(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, ViewProjectionMatrixData* data, ResourceView* skyboxTextureIndexDataView);
+		void GenerateProbeIrradiance(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex) const;
 		void DebugDrawRaytracedImage(ID3D12GraphicsCommandList* commandList) const;
 		void DebugDrawAABBGizmo(ID3D12GraphicsCommandList* commandList, const ViewProjectionMatrixData* viewProjectionMatrixData) const;
 		void DebugDrawProbes(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, const ViewProjectionMatrixData* viewProjectionMatrixData) const;
@@ -45,7 +47,8 @@ namespace JoyEngine
 		[[nodiscard]] UAVTexture* GetProbeDepthTexture() const { return m_probeDepthTexture.get(); }
 		[[nodiscard]] uint32_t GetRaytracedTextureWidth() const noexcept { return m_raytracedTextureWidth; }
 		[[nodiscard]] uint32_t GetRaytracedTextureHeight() const noexcept { return m_raytracedTextureHeight; }
-		[[nodiscard]] ResourceView* GetRaytracedProbesData() const noexcept { return m_raytracedProbesData.GetView(); }
+		[[nodiscard]] ResourceView* GetRaytracedProbesDataView(uint32_t frameIndex) const noexcept { return m_raytracedProbesData.GetView(frameIndex); }
+		[[nodiscard]] RaytracedProbesData* GetRaytracedProbesDataPtr() noexcept;
 
 	private:
 		DXGI_FORMAT m_mainColorFormat;
@@ -75,7 +78,7 @@ namespace JoyEngine
 
 		ConstantCpuBuffer<BVHConstructorData> m_bvhConstructionData;
 
-		ConstantCpuBuffer<RaytracedProbesData> m_raytracedProbesData;
+		DynamicCpuBuffer<RaytracedProbesData> m_raytracedProbesData;
 
 		std::unique_ptr<BufferSorter> m_bufferSorter;
 		std::unique_ptr<BVHConstructor> m_bvhConstructor;

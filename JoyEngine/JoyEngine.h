@@ -36,6 +36,9 @@ namespace JoyEngine
 		{
 			m_deltaTimeHandler = handler;
 		}
+
+		virtual void GetScreenSize(uint32_t& width, uint32_t& height) = 0;
+
 	protected:
 		std::function<void(float)> m_deltaTimeHandler;
 	};
@@ -58,6 +61,8 @@ namespace JoyEngine
 		~JoyEngine();
 
 		void HandleMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) override;
+
+		void GetScreenSize(uint32_t& width, uint32_t& height) override;
 
 	private:
 		HWND m_windowHandle;

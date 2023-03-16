@@ -104,7 +104,6 @@ namespace JoyEngine
 	void JoyEngine::Stop() noexcept
 	{
 		m_renderManager->Stop();
-
 	}
 
 	JoyEngine::~JoyEngine()
@@ -140,5 +139,11 @@ namespace JoyEngine
 		ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam);
 
 		m_inputManager->HandleWinMessage(hwnd, uMsg, wParam, lParam);
+	}
+
+	void JoyEngine::GetScreenSize(uint32_t& width, uint32_t& height)
+	{
+		width = m_renderManager->GetWidth();
+		height = m_renderManager->GetHeight();
 	}
 }

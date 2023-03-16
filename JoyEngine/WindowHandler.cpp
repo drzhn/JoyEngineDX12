@@ -10,13 +10,15 @@ JoyEngine::IWindowHandler* WindowHandler::m_messageHandler = nullptr;
 void WindowHandler::RegisterMessageHandler(JoyEngine::IWindowHandler* messageHandler, HWND hwnd)
 {
 	m_messageHandler = messageHandler;
-	m_messageHandler->SetDeltaTimeHandler([hwnd](float deltaTime)
+	m_messageHandler->SetDeltaTimeHandler([hwnd, messageHandler](float deltaTime)
 	{
+		uint32_t width, height = 0;
+		messageHandler->GetScreenSize(width, height);
 		SetWindowTextA(hwnd, (
 #ifdef _DEBUG
-			
+
 #ifdef FULL_DEBUG
-			               "JoyEngine FULL DEBUG   " +
+			               "JoyEngine FULL_DEBUG   " +
 #else
 			               "JoyEngine DEBUG   " +
 #endif
@@ -24,6 +26,7 @@ void WindowHandler::RegisterMessageHandler(JoyEngine::IWindowHandler* messageHan
 #else
 						   "JoyEngine RELEASE   " +
 #endif
+			               std::to_string(width) + "X" + std::to_string(height) + "   " + 
 			               std::to_string(static_cast<int>(1 / deltaTime)) +
 			               " FPS"
 		               ).c_str());

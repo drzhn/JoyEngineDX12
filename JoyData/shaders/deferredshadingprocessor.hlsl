@@ -85,10 +85,10 @@ float2 GetProbeTextureUV(float3 gridID, float3 worldNormal)
 	const float2 probeId2D = float2(
 		gridID.x + raytracedProbesData.gridX * gridID.y,
 		gridID.z
-		);
+	);
 
 	float2 probeTextureSize = float2(raytracedProbesData.gridX * raytracedProbesData.gridY * (DDGI_PROBE_DATA_RESOLUTION + 2),
-		raytracedProbesData.gridZ * (DDGI_PROBE_DATA_RESOLUTION + 2));
+	                                 raytracedProbesData.gridZ * (DDGI_PROBE_DATA_RESOLUTION + 2));
 
 	const float2 probeUV = (float32x3_to_oct(worldNormal) + float2(1, 1)) / 2.0;
 
@@ -128,7 +128,7 @@ float3 SampleProbeGrid(float3 worldPosition, float3 worldNormal)
 		const float3 probeColor = probeIrradianceTexture.Sample(linearBlackBorderSampler, textureUV);
 
 		const float backProbeMultiplier = pow(max(0.000, dot(normalize(probeCoord - gridPos), worldNormal)), 1.2);
-		
+
 		const float2 temp = probeDepthTexture.Sample(linearBlackBorderSampler, textureUV);
 		const float mean = temp.x;
 		const float variance = abs(sqr(temp.x) - temp.y);
@@ -227,7 +227,7 @@ float4 PSMain(PSInput input) : SV_Target
 
 	const float3 ret =
 		color.rgb * directionalLightAttenuation * lambertAttenuation +
-		color.rgb * sampledProbeGridColor +
+		color.rgb * sampledProbeGridColor * raytracedProbesData.useDDGI +
 		color.rgb * lightColor;
 	return float4(ret, 1);
 }

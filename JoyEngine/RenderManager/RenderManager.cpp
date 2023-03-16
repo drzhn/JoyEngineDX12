@@ -562,6 +562,7 @@ namespace JoyEngine
 		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "linearBlackBorderSampler", EngineSamplersProvider::GetLinearBlackBorderSampler());
 
 		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "probeIrradianceTexture", m_raytracing->GetProbeIrradianceTexture()->GetSRV());
+		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "probeDepthTexture", m_raytracing->GetProbeDepthTexture()->GetSRV());
 
 		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "clusteredEntryData", m_lightSystem->GetClusterEntryDataView(m_currentFrameIndex));
 		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "clusteredItemData", m_lightSystem->GetClusterItemDataView(m_currentFrameIndex));

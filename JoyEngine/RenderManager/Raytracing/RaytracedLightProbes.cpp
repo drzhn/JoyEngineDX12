@@ -388,7 +388,7 @@ namespace JoyEngine
 			                                     nullptr, data);
 		}
 #if defined(CAMERA_TRACE)
-		commandList->Dispatch((m_width / 32) + 1, (m_height / 32) + 1, 1);
+		commandList->Dispatch((m_raytracedTextureWidth / 32) + 1, (m_raytracedTextureHeight / 32) + 1, 1);
 #else
 		commandList->Dispatch(g_raytracedProbesData.gridX, g_raytracedProbesData.gridY, g_raytracedProbesData.gridZ);
 #endif

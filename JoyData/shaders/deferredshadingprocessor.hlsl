@@ -23,10 +23,12 @@ Texture2D<float4> positionTexture;
 Texture2D<float> directionalLightShadowmap;
 
 Texture2D<float3> probeIrradianceTexture;
+Texture2D<float2> probeDepthTexture;
 
 SamplerState linearBlackBorderSampler;
 SamplerComparisonState PCFSampler;
 
+#define DDGI_LINEAR_BLENDING
 
 float4 UnpackColor(UINT1 packedColor)
 {
@@ -83,10 +85,10 @@ float2 GetProbeTextureUV(float3 gridID, float3 worldNormal)
 	const float2 probeId2D = float2(
 		gridID.x + raytracedProbesData.gridX * gridID.y,
 		gridID.z
-	);
+		);
 
 	float2 probeTextureSize = float2(raytracedProbesData.gridX * raytracedProbesData.gridY * (DDGI_PROBE_DATA_RESOLUTION + 2),
-	                                 raytracedProbesData.gridZ * (DDGI_PROBE_DATA_RESOLUTION + 2));
+		raytracedProbesData.gridZ * (DDGI_PROBE_DATA_RESOLUTION + 2));
 
 	const float2 probeUV = (float32x3_to_oct(worldNormal) + float2(1, 1)) / 2.0;
 
@@ -98,17 +100,34 @@ float2 GetProbeTextureUV(float3 gridID, float3 worldNormal)
 	return float2(textureUV.x / probeTextureSize.x, textureUV.y / probeTextureSize.y);
 }
 
+inline uint3 ddgi_base_probe_coord(float3 P)
+{
+	int3 grid_dimensions = int3(
+		raytracedProbesData.gridX,
+		raytracedProbesData.gridY,
+		raytracedProbesData.gridZ
+		);
+	float3 grid_extents = grid_dimensions * raytracedProbesData.cellSize;
+
+	float3 grid_extents_rcp = float3(
+		1.0f / grid_extents.x,
+		1.0f / grid_extents.y,
+		1.0f / grid_extents.z
+		);
+	float3 normalized_pos = (P - raytracedProbesData.gridMin) * grid_extents_rcp;
+	return floor(normalized_pos * (grid_dimensions - 1));
+}
+
+inline float3 ddgi_probe_position(uint3 probeCoord)
+{
+	float3 pos = raytracedProbesData.gridMin + probeCoord * raytracedProbesData.cellSize;
+	return pos;
+}
 
 float3 SampleProbeGrid(float3 worldPosition, float3 worldNormal)
 {
 	float3 ret = float3(0, 0, 0);
 	float3 gridPos = (worldPosition - raytracedProbesData.gridMin) / raytracedProbesData.cellSize;
-
-	//gridPos = float3(
-	//	clamp(gridPos.x, -1.0, float(raytracedProbesData.gridX) + 1.0),
-	//	clamp(gridPos.y, -1.0, float(raytracedProbesData.gridY) + 1.0),
-	//	clamp(gridPos.z, -1.0, float(raytracedProbesData.gridZ) + 1.0)
-	//);
 
 	const float3 gridCage[8] = {
 		float3(ceil(gridPos.x), ceil(gridPos.y), ceil(gridPos.z)),
@@ -121,31 +140,48 @@ float3 SampleProbeGrid(float3 worldPosition, float3 worldNormal)
 		float3(floor(gridPos.x), floor(gridPos.y), floor(gridPos.z))
 	};
 
-	float wholeWeight = 0;
+	float totalWeight = 0;
 
 	[unroll]
 	for (int i = 0; i < 8; i++)
 	{
-		float3 probePos = gridCage[i];
-		float3 probeColor = probeIrradianceTexture.Sample(linearBlackBorderSampler, GetProbeTextureUV(probePos, worldNormal));
-		//float backProbeMultiplier = pow(max(0.0001, (dot(normalize(probePos - gridPos), worldNormal) + 1.0) * 0.5), 2) + 0.2;
-		//float backProbeMultiplier = max(0.000, dot(normalize(probePos - gridPos), worldNormal));
+		const float3 probeCoord = gridCage[i];
+		const float3 probeWorldPos = raytracedProbesData.gridMin + probeCoord * raytracedProbesData.cellSize;
+		const float distanceToProbe = length(worldPosition - probeWorldPos);
+		const float2 textureUV = GetProbeTextureUV(probeCoord, worldNormal);
+		const float3 probeColor = probeIrradianceTexture.Sample(linearBlackBorderSampler, textureUV);
 
-		float backProbeMultiplier = pow(max(0.000, dot(normalize(probePos - gridPos), worldNormal)), 1.2);
+		const float backProbeMultiplier = pow(max(0.000, dot(normalize(probeCoord - gridPos), worldNormal)), 1.2);
+		
+		const float2 temp = probeDepthTexture.Sample(linearBlackBorderSampler, textureUV);
+		const float mean = temp.x;
+		const float variance = abs(sqr(temp.x) - temp.y);
+
+		// http://www.punkuser.net/vsm/vsm_paper.pdf; equation 5
+		// Need the max in the denominator because biasing can cause a negative displacement
+		float chebyshev_weight = variance / (variance + sqr(max(distanceToProbe - mean, 0.0)));
+
+		// Increase contrast in the weight 
+		chebyshev_weight = max(pow(chebyshev_weight, 3), 0.0);
+
+		chebyshev_weight = (distanceToProbe <= mean) ? 1.0 : chebyshev_weight;
 
 		float weight =
-			(1 - abs(probePos.x - gridPos.x)) *
-			(1 - abs(probePos.y - gridPos.y)) *
-			(1 - abs(probePos.z - gridPos.z));
+			(1 - abs(probeCoord.x - gridPos.x)) *
+			(1 - abs(probeCoord.y - gridPos.y)) *
+			(1 - abs(probeCoord.z - gridPos.z));
 
-		weight *= backProbeMultiplier;
+		weight *= backProbeMultiplier * chebyshev_weight;
+
+		// Avoid zero weight
+		weight = max(0.000001, weight);
 
 		ret += probeColor * weight;
 
-		wholeWeight += weight;
+		totalWeight += weight;
 	}
 
-	ret /= wholeWeight;
+	ret /= totalWeight;
 
 	return ret;
 }
@@ -203,7 +239,7 @@ float4 PSMain(PSInput input) : SV_Target
 		uint clusterY = floor((viewPos.y + nearH / 2) / nearH * NUM_CLUSTERS_Y);
 
 		ClusterEntry entry = clusteredEntryData.data[clusterY + clusterX * NUM_CLUSTERS_Y + clusterZ * NUM_CLUSTERS_Y * NUM_CLUSTERS_X];
-		for(int i = 0; i < entry.numLight; i++)
+		for (int i = 0; i < entry.numLight; i++)
 		{
 			LightInfo info = lightData.data[clusteredItemData.data[entry.offset + i].lightIndex];
 			float4 lightViewPos = mul(viewProjectionData.view, mul(objectMatricesData.data[info.transformIndex], float4(0, 0, 0, 1)));

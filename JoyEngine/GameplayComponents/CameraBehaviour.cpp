@@ -10,7 +10,11 @@
 
 namespace JoyEngine
 {
-	DECLARE_CLASS(CameraBehaviour)
+	CameraBehaviour::CameraBehaviour(GameObject& go)
+		:Component(go)
+	{
+
+	}
 
 	void CameraBehaviour::Enable()
 	{
@@ -31,7 +35,7 @@ namespace JoyEngine
 			(InputManager::Get()->GetKeyDown(KeyCode::KEYCODE_D) ? deltaTime : 0) -
 			(InputManager::Get()->GetKeyDown(KeyCode::KEYCODE_A) ? deltaTime : 0);
 #else
-		(InputManager::Get()->GetKeyDown(KeyCode::KEYCODE_D) ? deltaTime : 0) -
+			(InputManager::Get()->GetKeyDown(KeyCode::KEYCODE_D) ? deltaTime : 0) -
 			(InputManager::Get()->GetKeyDown(KeyCode::KEYCODE_A) ? deltaTime : 0);
 #endif
 

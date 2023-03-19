@@ -8,7 +8,11 @@
 
 namespace JoyEngine
 {
-	DECLARE_CLASS(LightBehaviour)
+	LightBehaviour::LightBehaviour(GameObject& go)
+		:Component(go)
+	{
+
+	}
 
 	void LightBehaviour::Enable()
 	{

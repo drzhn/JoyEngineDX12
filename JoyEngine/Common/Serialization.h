@@ -12,9 +12,8 @@
 #include "HashDefs.h"
 
 //    =============== USAGE: ===================
-//    
-//		class.h
-// 
+//	  DECLARE_CLASS(SomeClass)
+//
 //    class SomeClass : public Serializable {
 //
 //        DECLARE_CLASS_NAME(SomeClass)
@@ -23,23 +22,15 @@
 //        REFLECT_FIELD(int, b);
 //
 //    };
-// 
-//		class.cpp
-// 
-//	  DECLARE_CLASS(SomeClass)
-// 
 
 
 
 #define DECLARE_CLASS(className) \
-static SerializedObjectCreator<className> className##_creator = SerializedObjectCreator<className>(#className);
+class className; \
+inline SerializedObjectCreator<className> className##_creator = SerializedObjectCreator<className>(#className);
 
 #define DECLARE_CLASS_NAME(T) \
-static constexpr const char* className = #T;\
-public:\
-	T(GameObject& go):Component(go){};\
-private:\
-
+static constexpr const char* className = #T;
 
 // TODO correct check for Serializable class !
 #define REFLECT_FIELD(T, v) FieldRegistrator v##_registrator = FieldRegistrator \

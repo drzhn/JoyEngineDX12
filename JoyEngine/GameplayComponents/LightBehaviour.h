@@ -6,15 +6,19 @@
 
 namespace JoyEngine
 {
+	DECLARE_CLASS(LightBehaviour)
+
 	class LightBehaviour : public Component
 	{
-		DECLARE_CLASS_NAME(LightBehaviour)
+		DECLARE_CLASS_NAME(LightBehaviour);
 
 		REFLECT_FIELD(float, m_phase);
 		REFLECT_FIELD(float, m_speed);
 		REFLECT_FIELD(float, m_amplitude);
 
 	public:
+		explicit LightBehaviour(GameObject& go);
+
 		void Enable() final;
 
 		void Disable() final;

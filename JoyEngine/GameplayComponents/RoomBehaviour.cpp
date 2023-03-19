@@ -13,8 +13,11 @@
 
 namespace JoyEngine
 {
-	DECLARE_CLASS(RoomBehaviour)
+	RoomBehaviour::RoomBehaviour(GameObject& go)
+		:Component(go)
+	{
 
+	}
 
 	void RoomBehaviour::Enable()
 	{

@@ -33,10 +33,10 @@ float4 PSMain(PSInput input) : SV_Target
 {
 	float4 color = HdrTexture.Load(float3(input.position.xy, 0));
 
+	color = lerp(color, ToneMapping(color), Constants.UseTonemapping);
+
 	const float gamma = 2.2;
 	color.rgb = lerp(color.rgb, pow(color.rgb, float3(1, 1, 1) * (1.0 / gamma)), Constants.UseGammaCorrection);
-
-	color = lerp(color, ToneMapping(color), Constants.UseTonemapping);
 
 	return color;
 }

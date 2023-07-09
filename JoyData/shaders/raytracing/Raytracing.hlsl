@@ -251,8 +251,8 @@ void CSMain(uint3 groupId : SV_GroupID, uint3 groupThreadId : SV_GroupThreadID)
 
 	const float hasResult = result.distance != MAX_FLOAT;
 
-	float4 color = textures[materials.data[materialIndex].diffuseTextureIndex].SampleLevel(linearClampSampler, uv, 0);
-	float4 skyboxColor = textures[skyboxTextureIndex.data].SampleLevel(linearClampSampler, SampleSphericalMap(-ray.dir), 0);
+	float4 color = textures[materials.data[materialIndex].diffuseTextureIndex].SampleLevel(linearClampSampler, uv, 2);
+	float4 skyboxColor = textures[skyboxTextureIndex.data].SampleLevel(linearClampSampler, SampleSphericalMap(-ray.dir), 2);
 
 	colorTexture[id.xy] = float4(lerp(skyboxColor.rgb, color.rgb, hasResult), 1);
 	positionTexture[id.xy] = float4(ray.origin + ray.dir * result.distance, hasResult);

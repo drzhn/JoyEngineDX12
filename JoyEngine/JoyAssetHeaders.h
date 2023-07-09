@@ -1,6 +1,8 @@
 #ifndef JOY_ASSET_HEADER_H
 #define JOY_ASSET_HEADER_H
 
+#include <cstdint>
+
 struct MeshAssetHeader
 {
 	uint32_t vertexDataSize;

@@ -70,7 +70,7 @@
                     }
                 }
             ]
-        },        
+        },
         {
             "name": "point_light_test2",
             "type": "obj_simple",
@@ -109,6 +109,31 @@
             "model": "46bc949d-eacb-4cff-a7f8-07e738bbfb3e",
             "material": "a254d10b-ba5a-444d-9ef0-4ef7777b918b",
             "static": true
+        },
+        {
+            "name": "head2",
+            "type": "obj_simple",
+            "transform": {
+                "localPosition": [ -10.0, 8.0, -2.0 ],
+                "localRotation": [ 0.0, 0.0, 0.0 ],
+                "localScale": [ 0.05, 0.05, 0.05 ]
+            },
+            "components": [
+                {
+                    "type": "renderer",
+                    "model": "2529df0e-9a8e-4730-9b8d-a70b4b93251a",
+                    "material": "cbab0eb5-74a0-400f-92c2-8aae39175ed7",
+                    "static": false
+                },
+                {
+                    "type": "component",
+                    "component": "RoomBehaviour",
+                    "fields": {
+                        "m_speed": 4,
+                        "m_color": [ 0.4, 0.5, 0.8, 1.0 ]
+                    }
+                }
+            ]
         }
     ]
 }

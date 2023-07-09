@@ -227,9 +227,8 @@ namespace JoyEngine
 		{
 			DynamicCpuBuffer<EngineData>* engineDataBuffer = EngineMaterialProvider::Get()->GetEngineDataBuffer();
 
-			engineDataBuffer->Lock(m_currentFrameIndex);
 
-			const auto data = static_cast<EngineData*>(engineDataBuffer->GetPtr());
+			const auto data = static_cast<EngineData*>(engineDataBuffer->GetPtr(m_currentFrameIndex));
 			data->cameraWorldPos = m_currentCamera->GetGameObject().GetTransform()->GetPosition();
 			data->time = Time::GetTime();
 			data->cameraInvProj = glm::inverse(mainCameraProjMatrix);
@@ -241,7 +240,6 @@ namespace JoyEngine
 			data->screenHeight = m_height;
 			data->cameraAspect = GetAspect();
 
-			engineDataBuffer->Unlock();
 		}
 
 		m_transformProvider->Update(m_currentFrameIndex);

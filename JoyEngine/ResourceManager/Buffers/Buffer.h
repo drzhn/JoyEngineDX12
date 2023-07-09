@@ -17,6 +17,7 @@ namespace JoyEngine
 		BufferMappedPtr(ComPtr<ID3D12Resource> bufferMemory, uint64_t offset, uint64_t size);
 		~BufferMappedPtr();
 		[[nodiscard]] void* GetMappedPtr() const noexcept;
+
 	private:
 		void* m_bufferPtr = nullptr;
 		ComPtr<ID3D12Resource> m_bufferMemory;
@@ -38,6 +39,8 @@ namespace JoyEngine
 
 		~Buffer() override = default;
 
+		[[nodiscard]] uint64_t GetSizeInBytes() const noexcept { return m_sizeInBytes; }
+
 		[[nodiscard]] std::unique_ptr<BufferMappedPtr> GetMappedPtr(uint64_t offset, uint64_t size) const;
 		[[nodiscard]] std::unique_ptr<BufferMappedPtr> GetMappedPtr() const; // whole buffer
 
@@ -46,8 +49,9 @@ namespace JoyEngine
 
 		[[nodiscard]] D3D12_RESOURCE_STATES GetCurrentResourceState() const noexcept { return m_currentResourceState; }
 		void SetCurrentResourceState(D3D12_RESOURCE_STATES newState) noexcept { m_currentResourceState = newState; }
+
 	private:
-		uint64_t m_size = 0;
+		uint64_t m_sizeInBytes = 0;
 		D3D12_RESOURCE_STATES m_currentResourceState;
 		CD3DX12_HEAP_PROPERTIES m_properties;
 		ComPtr<ID3D12Resource> m_buffer;

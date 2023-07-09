@@ -164,9 +164,7 @@ namespace JoyEngine
 
 	void Tonemapping::UpdateConstants(uint32_t frameIndex) const
 	{
-		m_constantsBuffer->Lock(frameIndex);
-		HDRDownScaleConstants* ptr = m_constantsBuffer->GetPtr();
+		HDRDownScaleConstants* ptr = m_constantsBuffer->GetPtr(frameIndex);
 		*ptr = m_constantsValues;
-		m_constantsBuffer->Unlock();
 	}
 }

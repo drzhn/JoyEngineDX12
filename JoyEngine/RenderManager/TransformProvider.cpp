@@ -4,8 +4,7 @@ namespace JoyEngine
 {
 	void TransformProvider::Update(uint32_t frameIndex)
 	{
-		m_pool.GetDynamicBuffer().Lock(frameIndex);
-		ObjectMatricesData* data = m_pool.GetDynamicBuffer().GetPtr();
+		ObjectMatricesData* data = m_pool.GetDynamicBuffer().GetPtr(frameIndex);
 
 		for (uint32_t i =0; i < m_pool.GetDataArray().size(); i++)
 		{
@@ -14,7 +13,6 @@ namespace JoyEngine
 			data->data[i] = m_pool.GetElem(i).GetModelMatrix();
 		}
 
-		m_pool.GetDynamicBuffer().Unlock();
 	}
 
 	uint32_t TransformProvider::Allocate()

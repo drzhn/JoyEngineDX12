@@ -2,6 +2,7 @@
 #define OBJECT_POOL_H
 
 #include <cstdint>
+#include <array>
 #include <stack>
 #include <bitset>
 

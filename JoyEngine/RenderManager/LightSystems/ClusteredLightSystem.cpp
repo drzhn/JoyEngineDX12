@@ -57,16 +57,14 @@ namespace JoyEngine
 		// update light info (intensity, color, etc)
 		{
 			auto& buffer = m_lightDataPool.GetDynamicBuffer();
-			buffer.Lock(frameIndex);
 
-			LightData* dataPtr = buffer.GetPtr();
+			LightData* dataPtr = buffer.GetPtr(frameIndex);
 			const auto& dataArray = m_lightDataPool.GetDataArray();
 			for (uint32_t i = 0; i < dataArray.size(); ++i)
 			{
 				dataPtr->data[i] = dataArray[i];
 			}
 
-			buffer.Unlock();
 		}
 
 		const float cameraNear = m_camera->GetNear();
@@ -150,11 +148,9 @@ namespace JoyEngine
 		}
 
 		// Convolution
-		m_clusterEntryData.Lock(frameIndex);
-		ClusterEntryData* entryDataPtr = m_clusterEntryData.GetPtr();
+		ClusterEntryData* entryDataPtr = m_clusterEntryData.GetPtr(frameIndex);
 
-		m_clusterItemData.Lock(frameIndex);
-		ClusterItemData* itemDataPtr = m_clusterItemData.GetPtr();
+		ClusterItemData* itemDataPtr = m_clusterItemData.GetPtr(frameIndex);
 
 		uint32_t currentOffset = 0;
 		for (int z = 0; z < NUM_CLUSTERS_Z; z++)
@@ -191,8 +187,6 @@ namespace JoyEngine
 			}
 		}
 
-		m_clusterEntryData.Unlock();
-		m_clusterItemData.Unlock();
 	}
 
 	void ClusteredLightSystem::RenderDirectionalShadows(

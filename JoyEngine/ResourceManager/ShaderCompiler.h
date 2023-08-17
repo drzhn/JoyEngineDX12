@@ -58,7 +58,6 @@ namespace JoyEngine
 		JoyShaderTypeAmplification = 1 << 5,
 		JoyShaderTypeMesh = 1 << 6,
 		JoyShaderTypeCompute = 1 << 7,
-		JoyShaderTypeCompute6_5 = 1 << 8
 	} ShaderType;
 
 	struct ShaderInput

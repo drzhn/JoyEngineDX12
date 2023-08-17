@@ -1,9 +1,5 @@
 #include "Shader.h"
 
-#include <d3d12.h>
-#include <dxgi1_6.h>
-
-#include "Utils/Assert.h"
 #include "DataManager/DataManager.h"
 #include "GraphicsManager/GraphicsManager.h"
 
@@ -24,15 +20,6 @@ namespace JoyEngine
 		{
 			CompileShader(
 				JoyShaderTypeCompute,
-				shaderPath.c_str(),
-				shaderData,
-				m_computeModule
-			);
-		}
-		if (m_shaderType & JoyShaderTypeCompute6_5)
-		{
-			CompileShader(
-				JoyShaderTypeCompute6_5,
 				shaderPath.c_str(),
 				shaderData,
 				m_computeModule

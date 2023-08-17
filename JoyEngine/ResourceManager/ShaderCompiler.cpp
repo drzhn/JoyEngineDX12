@@ -18,7 +18,6 @@ namespace JoyEngine
 		m_dxcLibrary(library)
 	{
 		m_commonEngineStructsData = ReadFile(m_commonEngineStructsPath, 0);
-
 	}
 
 	HRESULT EngineStructsInclude::Open(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID* ppData, UINT* pBytes)
@@ -118,26 +117,21 @@ namespace JoyEngine
 		switch (type)
 		{
 		case JoyShaderTypeVertex:
-			entryPoint = "VSMain";
-			target = "vs_5_1";
+			entryPointL = L"VSMain";
+			targetL = L"vs_6_5";
 			visibility = D3D12_SHADER_VISIBILITY_VERTEX;
 			break;
 		case JoyShaderTypeGeometry:
-			entryPoint = "GSMain";
-			target = "gs_5_1";
+			entryPointL = L"GSMain";
+			targetL = L"gs_6_5";
 			visibility = D3D12_SHADER_VISIBILITY_GEOMETRY;
 			break;
 		case JoyShaderTypePixel:
-			entryPoint = "PSMain";
-			target = "ps_5_1";
+			entryPointL = L"PSMain";
+			targetL = L"ps_6_5";
 			visibility = D3D12_SHADER_VISIBILITY_PIXEL;
 			break;
 		case JoyShaderTypeCompute:
-			entryPoint = "CSMain";
-			target = "cs_5_1";
-			visibility = D3D12_SHADER_VISIBILITY_ALL;
-			break;
-		case JoyShaderTypeCompute6_5:
 			entryPointL = L"CSMain";
 			targetL = L"cs_6_5";
 			visibility = D3D12_SHADER_VISIBILITY_ALL;
@@ -149,119 +143,78 @@ namespace JoyEngine
 		ComPtr<ID3D12ShaderReflection> reflection;
 
 
-		if (type == JoyShaderTypeCompute6_5)
-		{
-			DxcDefine Shader_Macros[] = {{L"SHADER", L"1"}, nullptr, nullptr};
-			IDxcIncludeHandler* includeHandler = m_commonEngineStructsInclude.get();
+		DxcDefine Shader_Macros[] = { {L"SHADER", L"1"}, nullptr, nullptr };
+		IDxcIncludeHandler* includeHandler = m_commonEngineStructsInclude.get();
 
-			ComPtr<IDxcBlobEncoding> sourceBlob;
-			ComPtr<IDxcOperationResult> dxcOperationResult;
+		ComPtr<IDxcBlobEncoding> sourceBlob;
+		ComPtr<IDxcOperationResult> dxcOperationResult;
 
-			ASSERT_SUCC(s_dxcLibrary->CreateBlobWithEncodingFromPinned(
-				shaderData.data(),
-				shaderData.size(),
-				0,
-				&sourceBlob));
+		ASSERT_SUCC(s_dxcLibrary->CreateBlobWithEncodingFromPinned(
+			shaderData.data(),
+			shaderData.size(),
+			0,
+			&sourceBlob));
 
 #if defined(_DEBUG)
-			// Enable better shader debugging with the graphics debugging tools.
-			LPCWSTR arguments[] = {
-				L"/Od", // D3DCOMPILE_SKIP_OPTIMIZATION 
-				L"/Zi", // D3DCOMPILE_DEBUG
-			};
-			uint32_t argCount = 2;
+		// Enable better shader debugging with the graphics debugging tools.
+		LPCWSTR arguments[] = {
+			L"/Od", // D3DCOMPILE_SKIP_OPTIMIZATION 
+			L"/Zi", // D3DCOMPILE_DEBUG
+		};
+		uint32_t argCount = 2;
 #else
-			LPCWSTR* arguments = nullptr;
-			uint32_t argCount = 0;
+		LPCWSTR* arguments = nullptr;
+		uint32_t argCount = 0;
 
 #endif
 
-			HRESULT res = s_dxcCompiler->Compile(
-				sourceBlob.Get(), // pSource
-				entryPointL, // pSourceName
-				entryPointL, // pEntryPoint
-				targetL, // pTargetProfile
-				arguments, argCount, // pArguments, argCount
-				Shader_Macros, 1, // pDefines, defineCount
-				includeHandler, // pIncludeHandler
-				&dxcOperationResult);
-			if (SUCCEEDED(res))
-			{
-				dxcOperationResult->GetStatus(&res);
-			}
-			if (dxcOperationResult)
-			{
-				ComPtr<IDxcBlobEncoding> errorsBlob;
-				res = dxcOperationResult->GetErrorBuffer(&errorsBlob);
-				if (SUCCEEDED(res) && errorsBlob)
-				{
-					const char* errorMsg = static_cast<const char*>(errorsBlob->GetBufferPointer());
-					OutputDebugStringA(errorMsg);
-				}
-			}
-			ASSERT_SUCC(res);
-
-			ASSERT_SUCC(dxcOperationResult->GetResult(reinterpret_cast<IDxcBlob**>(module)));
-
-			s_validator->Validate(reinterpret_cast<IDxcBlob*>(*module), 0, &dxcOperationResult);
+		HRESULT res = s_dxcCompiler->Compile(
+			sourceBlob.Get(), // pSource
+			entryPointL, // pSourceName
+			entryPointL, // pEntryPoint
+			targetL, // pTargetProfile
+			arguments, argCount, // pArguments, argCount
+			Shader_Macros, 1, // pDefines, defineCount
+			includeHandler, // pIncludeHandler
+			&dxcOperationResult);
+		if (SUCCEEDED(res))
+		{
 			dxcOperationResult->GetStatus(&res);
-			if (FAILED(res))
-			{
-				ComPtr<IDxcBlobEncoding> errorsBlob;
-				res = dxcOperationResult->GetErrorBuffer(&errorsBlob);
-				if (SUCCEEDED(res) && errorsBlob)
-				{
-					const char* errorMsg = static_cast<const char*>(errorsBlob->GetBufferPointer());
-					OutputDebugStringA(errorMsg);
-				}
-			}
-
-			ASSERT_SUCC(s_dxcReflection->Load(reinterpret_cast<IDxcBlob*>(*module)));
-			uint32_t partCount;
-			ASSERT_SUCC(s_dxcReflection->GetPartCount(&partCount));
-
-			uint32_t shaderId;
-			ASSERT_SUCC(s_dxcReflection->FindFirstPartKind(DXIL_FOURCC('D', 'X', 'I', 'L'), &shaderId));
-			ASSERT_SUCC(s_dxcReflection->GetPartReflection(shaderId, __uuidof(ID3D12ShaderReflection), (void**)&reflection));
 		}
-		else
+		if (dxcOperationResult)
 		{
-			D3D_SHADER_MACRO Shader_Macros[] = {{"SHADER", "1"}, nullptr, nullptr};
-			ID3DInclude* pInclude = m_commonEngineStructsInclude.get();
-
-#if defined(_DEBUG)
-			// Enable better shader debugging with the graphics debugging tools.
-			constexpr UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
-#else
-			constexpr UINT compileFlags = 0;
-#endif
-
-			ID3DBlob* errorMessages = nullptr;
-
-
-			HRESULT hr;
-
-			hr = (D3DCompile(
-				shaderData.data(),
-				shaderData.size(),
-				shaderPath,
-				Shader_Macros,
-				pInclude,
-				entryPoint,
-				target, compileFlags, 0, module, &errorMessages));
-
-			if (FAILED(hr) && errorMessages)
+			ComPtr<IDxcBlobEncoding> errorsBlob;
+			res = dxcOperationResult->GetErrorBuffer(&errorsBlob);
+			if (SUCCEEDED(res) && errorsBlob)
 			{
-				const char* errorMsg = static_cast<const char*>(errorMessages->GetBufferPointer());
+				const char* errorMsg = static_cast<const char*>(errorsBlob->GetBufferPointer());
 				OutputDebugStringA(errorMsg);
-				ASSERT(false);
 			}
-
-
-			ASSERT_SUCC(D3DReflect((* module)->GetBufferPointer(),
-				(* module)->GetBufferSize(),
-				IID_PPV_ARGS(&reflection)));
 		}
+		ASSERT_SUCC(res);
+
+		ASSERT_SUCC(dxcOperationResult->GetResult(reinterpret_cast<IDxcBlob**>(module)));
+
+		s_validator->Validate(reinterpret_cast<IDxcBlob*>(*module), 0, &dxcOperationResult);
+		dxcOperationResult->GetStatus(&res);
+		if (FAILED(res))
+		{
+			ComPtr<IDxcBlobEncoding> errorsBlob;
+			res = dxcOperationResult->GetErrorBuffer(&errorsBlob);
+			if (SUCCEEDED(res) && errorsBlob)
+			{
+				const char* errorMsg = static_cast<const char*>(errorsBlob->GetBufferPointer());
+				OutputDebugStringA(errorMsg);
+			}
+		}
+
+		ASSERT_SUCC(s_dxcReflection->Load(reinterpret_cast<IDxcBlob*>(*module)));
+		uint32_t partCount;
+		ASSERT_SUCC(s_dxcReflection->GetPartCount(&partCount));
+
+		uint32_t shaderId;
+		ASSERT_SUCC(s_dxcReflection->FindFirstPartKind(DXIL_FOURCC('D', 'X', 'I', 'L'), &shaderId));
+		ASSERT_SUCC(s_dxcReflection->GetPartReflection(shaderId, __uuidof(ID3D12ShaderReflection), (void**)&reflection));
 
 
 		D3D12_SHADER_DESC desc;
@@ -284,7 +237,7 @@ namespace JoyEngine
 						inputBindDesc.Space,
 						visibility
 					}
-				});
+					});
 			}
 			else
 			{

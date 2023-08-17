@@ -45,7 +45,7 @@ namespace JoyEngine
 
 	uint32_t AbstractPipelineObject::GetBindingIndexByHash(const uint32_t hash) const
 	{
-		if(!m_rootIndices.contains(hash))
+		if (!m_rootIndices.contains(hash))
 		{
 			Logger::LogFormat("Warning: pipline doesn't contain hash %d", hash);
 			return -1;
@@ -77,45 +77,44 @@ namespace JoyEngine
 				{
 					params[paramsIndex].InitAsConstants(
 						sizeof(uint32_t) / 4, input.BindPoint, input.Space, input.Visibility);
-					m_engineBindings.insert({paramsIndex, EngineBindingType::ObjectIndexData});
+					m_engineBindings.insert({ paramsIndex, EngineBindingType::ObjectIndexData });
 					paramsIndex++;
 				}
 				else if (name == "viewProjectionData")
 				{
 					params[paramsIndex].InitAsConstants(
 						sizeof(ViewProjectionMatrixData) / 4, input.BindPoint, input.Space, input.Visibility);
-					if (shaderTypes & JoyShaderTypeCompute || shaderTypes & JoyShaderTypeCompute6_5)
+					if (shaderTypes & JoyShaderTypeCompute)
 					{
 						m_engineBindings.insert({ paramsIndex, EngineBindingType::ViewProjectionMatrixDataCompute });
 					}
 					else
 					{
 						m_engineBindings.insert({ paramsIndex, EngineBindingType::ViewProjectionMatrixDataGraphics });
-
 					}
 					paramsIndex++;
 				}
 				else if (name == "objectMatricesData")
 				{
 					ranges[rangesIndex].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, input.BindPoint, input.Space,
-					                         D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
+						D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
 					params[paramsIndex].InitAsDescriptorTable(1, &ranges[rangesIndex], input.Visibility);
-					m_engineBindings.insert({paramsIndex, EngineBindingType::ModelMatrixData});
+					m_engineBindings.insert({ paramsIndex, EngineBindingType::ModelMatrixData });
 					rangesIndex++;
 					paramsIndex++;
 				}
 				else if (name == "engineData")
 				{
 					ranges[rangesIndex].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, input.BindPoint, input.Space,
-					                         D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
+						D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
 					params[paramsIndex].InitAsDescriptorTable(1, &ranges[rangesIndex], input.Visibility);
-					if (shaderTypes & JoyShaderTypeCompute || shaderTypes & JoyShaderTypeCompute6_5)
+					if (shaderTypes & JoyShaderTypeCompute)
 					{
-						m_engineBindings.insert({paramsIndex, EngineBindingType::EngineDataCompute});
+						m_engineBindings.insert({ paramsIndex, EngineBindingType::EngineDataCompute });
 					}
 					else
 					{
-						m_engineBindings.insert({paramsIndex, EngineBindingType::EngineDataGraphics});
+						m_engineBindings.insert({ paramsIndex, EngineBindingType::EngineDataGraphics });
 					}
 					rangesIndex++;
 					paramsIndex++;
@@ -151,9 +150,9 @@ namespace JoyEngine
 						ASSERT(false);
 					}
 					ranges[rangesIndex].Init(type, input.BindCount == 0 ? READONLY_TEXTURES_COUNT : input.BindCount,
-					                         input.BindPoint, input.Space, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
+						input.BindPoint, input.Space, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
 					params[paramsIndex].InitAsDescriptorTable(1, &ranges[rangesIndex], input.Visibility);
-					m_rootIndices.insert({strHash(name.c_str()), paramsIndex});
+					m_rootIndices.insert({ strHash(name.c_str()), paramsIndex });
 					rangesIndex++;
 					paramsIndex++;
 				}
@@ -190,7 +189,7 @@ namespace JoyEngine
 		ComPtr<ID3DBlob> signature;
 		ComPtr<ID3DBlob> error;
 		HRESULT result = D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, featureData.HighestVersion,
-		                                                       &signature, &error);
+			&signature, &error);
 		if (FAILED(result) && error != nullptr)
 		{
 			const char* errorMsg = static_cast<const char*>(error->GetBufferPointer());
@@ -209,10 +208,7 @@ namespace JoyEngine
 	ComputePipeline::ComputePipeline(GUID guid, ComputePipelineArgs args) :
 		Resource(guid)
 	{
-		CreateShaderAndRootSignature(args.computeShaderGuid,
-		                             args.shaderModel == D3D_SHADER_MODEL_6_5
-			                             ? JoyShaderTypeCompute6_5
-			                             : JoyShaderTypeCompute);
+		CreateShaderAndRootSignature(args.computeShaderGuid, JoyShaderTypeCompute);
 		CreateComputePipeline();
 	}
 
@@ -490,7 +486,4 @@ namespace JoyEngine
 			GraphicsManager::Get()->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&
 				m_pipelineState)));
 	}
-
-
-
 }

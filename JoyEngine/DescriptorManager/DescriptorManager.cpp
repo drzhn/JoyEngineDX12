@@ -69,7 +69,12 @@ namespace JoyEngine
 				gpuHeapStart = m_heaps[nativeType]->GetGPUDescriptorHandleForHeapStart();
 			}
 
-			// separate area in descriptor heap for srv and for cbv-uav.
+			// directx only allows binding 2 descriptor heaps to the pipeline: srv-cbv-uav type and sampler type.
+			// the main idea of this system is to store ALL of the descriptors in these two heaps (and not rebind them during render update)
+			// since we now store all of the loadable textures (which we load from disk) in bindless way, we need to have 
+			// separate area in srv-cbv-uav heap for these textures and for other srv-cbv-uav (srv from dept or render textures, const and uav buffers, etc.)
+			// why? when we bind bindless texture array to the pipeline, all of the textures must be in readable state
+			// that is sometime impossible, when, for example, we render to some render target which has as srv stored in this array!
 			// <heap start>[----READONLY_TEXTURES (READONLY_TEXTURES_COUNT)----][-----SRV_CBV_UAV(DESCRIPTORS_COUNT-READONLY_TEXTURES_COUNT)----]<heap end>
 			uint32_t count = DESCRIPTORS_COUNT;
 			if (type == DescriptorHeapType::READONLY_TEXTURES)

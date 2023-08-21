@@ -34,6 +34,9 @@ namespace JoyEngine
 		[[nodiscard]] uint32_t GetWidth() const noexcept { return m_width; }
 		[[nodiscard]] uint32_t GetHeight() const noexcept { return m_height; }
 		[[nodiscard]] bool GetTearingSupport() const noexcept { return m_allowTearing; }
+
+		[[nodiscard]] D3D_ROOT_SIGNATURE_VERSION GetHighestRootSignatureVersion() const noexcept { return m_highestRootSignatureVersion; }
+
 	private:
 		uint32_t m_width;
 		uint32_t m_height;
@@ -51,6 +54,7 @@ namespace JoyEngine
 		uint32_t m_m4xMsaaQuality;
 		bool m_allowTearing;
 		D3D12_FEATURE_DATA_D3D12_OPTIONS m_featureSupport;
+		D3D_ROOT_SIGNATURE_VERSION m_highestRootSignatureVersion;
 	};
 }
 

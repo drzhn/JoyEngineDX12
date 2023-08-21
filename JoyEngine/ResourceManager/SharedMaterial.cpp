@@ -77,7 +77,7 @@ namespace JoyEngine
 				{
 					params[paramsIndex].InitAsConstants(
 						sizeof(uint32_t) / 4, input.BindPoint, input.Space, input.Visibility);
-					m_engineBindings.insert({ paramsIndex, EngineBindingType::ObjectIndexData });
+					m_engineBindings.insert({paramsIndex, EngineBindingType::ObjectIndexData});
 					paramsIndex++;
 				}
 				else if (name == "viewProjectionData")
@@ -86,35 +86,35 @@ namespace JoyEngine
 						sizeof(ViewProjectionMatrixData) / 4, input.BindPoint, input.Space, input.Visibility);
 					if (shaderTypes & JoyShaderTypeCompute)
 					{
-						m_engineBindings.insert({ paramsIndex, EngineBindingType::ViewProjectionMatrixDataCompute });
+						m_engineBindings.insert({paramsIndex, EngineBindingType::ViewProjectionMatrixDataCompute});
 					}
 					else
 					{
-						m_engineBindings.insert({ paramsIndex, EngineBindingType::ViewProjectionMatrixDataGraphics });
+						m_engineBindings.insert({paramsIndex, EngineBindingType::ViewProjectionMatrixDataGraphics});
 					}
 					paramsIndex++;
 				}
 				else if (name == "objectMatricesData")
 				{
 					ranges[rangesIndex].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, input.BindPoint, input.Space,
-						D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
+					                         D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
 					params[paramsIndex].InitAsDescriptorTable(1, &ranges[rangesIndex], input.Visibility);
-					m_engineBindings.insert({ paramsIndex, EngineBindingType::ModelMatrixData });
+					m_engineBindings.insert({paramsIndex, EngineBindingType::ModelMatrixData});
 					rangesIndex++;
 					paramsIndex++;
 				}
 				else if (name == "engineData")
 				{
 					ranges[rangesIndex].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, input.BindPoint, input.Space,
-						D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
+					                         D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
 					params[paramsIndex].InitAsDescriptorTable(1, &ranges[rangesIndex], input.Visibility);
 					if (shaderTypes & JoyShaderTypeCompute)
 					{
-						m_engineBindings.insert({ paramsIndex, EngineBindingType::EngineDataCompute });
+						m_engineBindings.insert({paramsIndex, EngineBindingType::EngineDataCompute});
 					}
 					else
 					{
-						m_engineBindings.insert({ paramsIndex, EngineBindingType::EngineDataGraphics });
+						m_engineBindings.insert({paramsIndex, EngineBindingType::EngineDataGraphics});
 					}
 					rangesIndex++;
 					paramsIndex++;
@@ -150,9 +150,9 @@ namespace JoyEngine
 						ASSERT(false);
 					}
 					ranges[rangesIndex].Init(type, input.BindCount == 0 ? READONLY_TEXTURES_COUNT : input.BindCount,
-						input.BindPoint, input.Space, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
+					                         input.BindPoint, input.Space, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
 					params[paramsIndex].InitAsDescriptorTable(1, &ranges[rangesIndex], input.Visibility);
-					m_rootIndices.insert({ strHash(name.c_str()), paramsIndex });
+					m_rootIndices.insert({strHash(name.c_str()), paramsIndex});
 					rangesIndex++;
 					paramsIndex++;
 				}
@@ -164,20 +164,8 @@ namespace JoyEngine
 
 	void AbstractPipelineObject::CreateRootSignature(const CD3DX12_ROOT_PARAMETER1* params, uint32_t paramsCount)
 	{
-		D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = {};
-
-		// This is the highest version the sample supports. If CheckFeatureSupport succeeds, the HighestVersion returned will not be greater than this.
-		featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
-
-		if (FAILED(GraphicsManager::Get()->GetDevice()->CheckFeatureSupport(
-			D3D12_FEATURE_ROOT_SIGNATURE,
-			&featureData,
-			sizeof(featureData))))
-		{
-			featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
-		}
-
-
+		// TODO should I make compatibility with 1.0?
+		ASSERT(GraphicsManager::Get()->GetHighestRootSignatureVersion() == D3D_ROOT_SIGNATURE_VERSION_1_1);
 		CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
 		rootSignatureDesc.Init_1_1(
 			paramsCount,
@@ -188,14 +176,12 @@ namespace JoyEngine
 
 		ComPtr<ID3DBlob> signature;
 		ComPtr<ID3DBlob> error;
-		HRESULT result = D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, featureData.HighestVersion,
-			&signature, &error);
-		if (FAILED(result) && error != nullptr)
-		{
-			const char* errorMsg = static_cast<const char*>(error->GetBufferPointer());
-			OutputDebugStringA(errorMsg);
-			ASSERT(false);
-		}
+		const HRESULT result = D3DX12SerializeVersionedRootSignature(
+			&rootSignatureDesc,
+			GraphicsManager::Get()->GetHighestRootSignatureVersion(),
+			&signature,
+			&error);
+		ASSERT_DESC(result == S_OK, static_cast<const char*>(error->GetBufferPointer()));
 		ASSERT_SUCC(GraphicsManager::Get()->GetDevice()->CreateRootSignature(
 			0,
 			signature->GetBufferPointer(),

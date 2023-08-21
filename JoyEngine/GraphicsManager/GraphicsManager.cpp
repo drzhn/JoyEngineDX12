@@ -68,6 +68,18 @@ namespace JoyEngine
 			&shaderModel,
 			sizeof(D3D12_FEATURE_DATA_SHADER_MODEL)));
 
+		D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = {};
+		featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
+
+		if (FAILED(GraphicsManager::Get()->GetDevice()->CheckFeatureSupport(
+			D3D12_FEATURE_ROOT_SIGNATURE,
+			&featureData,
+			sizeof(featureData))))
+		{
+			featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
+		}
+		m_highestRootSignatureVersion = featureData.HighestVersion;
+
 		// Enable debug messages in debug mode.
 #if defined(FULL_DEBUG)
 		ComPtr<ID3D12InfoQueue> pInfoQueue;

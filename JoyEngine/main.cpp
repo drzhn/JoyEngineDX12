@@ -2,7 +2,6 @@
 #define UNICODE
 #endif
 
-
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
@@ -18,11 +17,11 @@
 
 #include "WindowHandler.h"
 
-
 #include <iostream>
-#include <cstdlib>
 #include <fstream>
 #include <memory>
+
+#include "Utils/Log.h"
 
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
@@ -31,7 +30,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 	constexpr uint32_t windowHeight = 720;
 
 	// Register the window class.
-	const wchar_t CLASS_NAME[] = L"Sample Window Class";
+	const wchar_t CLASS_NAME[] = L"Joy Engine";
 	WNDCLASS wc = {};
 	wc.lpfnWndProc = &WindowHandler::WindowProc;
 	wc.hInstance = hInstance;
@@ -61,7 +60,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 		return 0;
 	}
 
-	OutputDebugStringA("=========== JOY ENGINE ===========\n");
+	Logger::Log("=========== JOY ENGINE ===========\n");
 
 	JoyEngine::JoyEngine* graphicsContext = new JoyEngine::JoyEngine(hInstance, hwnd, windowWidth, windowHeight);
 	WindowHandler::RegisterMessageHandler(graphicsContext, hwnd);

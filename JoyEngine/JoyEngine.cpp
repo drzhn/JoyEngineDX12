@@ -126,12 +126,12 @@ namespace JoyEngine
 		IDXGIDebug1* pDebug = nullptr;
 		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&pDebug))))
 		{
-			pDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_SUMMARY);
+			pDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
 			pDebug->Release();
 		}
 #endif
 
-		OutputDebugStringA("Context destroyed\n");
+		Logger::Log("Context destroyed\n");
 	}
 
 	void JoyEngine::HandleMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)

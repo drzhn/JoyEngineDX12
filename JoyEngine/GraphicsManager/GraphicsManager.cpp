@@ -117,8 +117,6 @@ namespace JoyEngine
 
 			ASSERT_SUCC(pInfoQueue->PushStorageFilter(&NewFilter));
 		}
-
-
 #endif
 
 		//D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS msQualityLevels;

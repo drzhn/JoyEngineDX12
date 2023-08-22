@@ -2,25 +2,23 @@
 #define ASSERT_H
 
 #ifdef _DEBUG
-
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-#include <iostream>
-#include <sstream>
+#include "Log.h"
 
 #ifdef _MSC_VER
 #include <intrin.h>
 #define DEBUG_BREAK __debugbreak()
 #else
+#error Unsupported compiler
 #endif
 
 #define BREAK(expr) \
-	std::stringstream ss; \
-	ss << "Error: " << #expr << " " <<  __FILE__ <<  ":" << __LINE__ << std::endl; \
-	OutputDebugStringA(ss.str().c_str()); \
+	Logger::LogFormat("Error: %s %s:%d\n", #expr, __FILE__, __LINE__); \
 	DEBUG_BREAK;
 #define ASSERT(expr) if (expr) {} else { BREAK(expr) }
-#define ASSERT_DESC(expr, message) if (expr) {} else { std::cerr << message << " " << #expr << " " <<  __FILE__ <<  ":" << __LINE__ << std::endl; DEBUG_BREAK;}
+#define ASSERT_DESC(expr, message) \
+if (expr) {} else {\
+	Logger::LogFormat("Error: %s %s %s:%d\n", message, #expr, __FILE__, __LINE__);\
+	DEBUG_BREAK;}
 #define ASSERT_SUCC(expr) if (FAILED(expr)) {BREAK(expr)}
 
 #else

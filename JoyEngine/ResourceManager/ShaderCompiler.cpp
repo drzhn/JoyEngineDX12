@@ -5,6 +5,7 @@
 #include <dxcapi.h>
 
 #include "DataManager/DataManager.h"
+#include "Utils/Log.h"
 
 #define DXIL_FOURCC(ch0, ch1, ch2, ch3) (                            \
   (uint32_t)(uint8_t)(ch0)        | (uint32_t)(uint8_t)(ch1) << 8  | \
@@ -188,7 +189,7 @@ namespace JoyEngine
 			if (SUCCEEDED(res) && errorsBlob)
 			{
 				const char* errorMsg = static_cast<const char*>(errorsBlob->GetBufferPointer());
-				OutputDebugStringA(errorMsg);
+				Logger::Log(errorMsg);
 			}
 		}
 		ASSERT_SUCC(res);
@@ -204,7 +205,7 @@ namespace JoyEngine
 			if (SUCCEEDED(res) && errorsBlob)
 			{
 				const char* errorMsg = static_cast<const char*>(errorsBlob->GetBufferPointer());
-				OutputDebugStringA(errorMsg);
+				Logger::Log(errorMsg);
 			}
 		}
 

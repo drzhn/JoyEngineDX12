@@ -7,7 +7,7 @@
 
 namespace JoyEngine
 {
-	ResourceView::ResourceView(D3D12_DEPTH_STENCIL_VIEW_DESC desc, ID3D12Resource* resource) :
+	ResourceView::ResourceView(const D3D12_DEPTH_STENCIL_VIEW_DESC& desc, ID3D12Resource* resource) :
 		m_type(D3D12_DESCRIPTOR_HEAP_TYPE_DSV)
 	{
 		m_description.dsvDesc = desc;
@@ -19,7 +19,7 @@ namespace JoyEngine
 			m_cpuHandle);
 	}
 
-	ResourceView::ResourceView(D3D12_SAMPLER_DESC desc) :
+	ResourceView::ResourceView(const D3D12_SAMPLER_DESC& desc) :
 		m_type(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER)
 	{
 		m_description.samplerDesc = desc;
@@ -31,7 +31,7 @@ namespace JoyEngine
 			m_cpuHandle);
 	}
 
-	ResourceView::ResourceView(D3D12_CONSTANT_BUFFER_VIEW_DESC desc) :
+	ResourceView::ResourceView(const D3D12_CONSTANT_BUFFER_VIEW_DESC desc) :
 		m_type(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
 	{
 		m_description.constantBufferDesc = desc;
@@ -43,7 +43,7 @@ namespace JoyEngine
 			m_cpuHandle);
 	}
 
-	ResourceView::ResourceView(D3D12_UNORDERED_ACCESS_VIEW_DESC desc, ID3D12Resource* resource) :
+	ResourceView::ResourceView(const D3D12_UNORDERED_ACCESS_VIEW_DESC& desc, ID3D12Resource* resource) :
 		m_type(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
 	{
 		m_description.uavDesc = desc;
@@ -57,7 +57,7 @@ namespace JoyEngine
 			m_cpuHandle);
 	}
 
-	ResourceView::ResourceView(D3D12_RENDER_TARGET_VIEW_DESC desc, ID3D12Resource* resource) :
+	ResourceView::ResourceView(const D3D12_RENDER_TARGET_VIEW_DESC& desc, ID3D12Resource* resource) :
 		m_type(D3D12_DESCRIPTOR_HEAP_TYPE_RTV)
 	{
 		m_description.rtvDesc = desc;
@@ -70,7 +70,7 @@ namespace JoyEngine
 			m_cpuHandle);
 	}
 
-	ResourceView::ResourceView(D3D12_SHADER_RESOURCE_VIEW_DESC desc, ID3D12Resource* resource, bool nonReadonlyTexture) :
+	ResourceView::ResourceView(const D3D12_SHADER_RESOURCE_VIEW_DESC& desc, ID3D12Resource* resource, bool nonReadonlyTexture) :
 		m_type(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
 	{
 		m_description.srvDesc = desc;

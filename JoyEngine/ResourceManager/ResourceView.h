@@ -1,27 +1,24 @@
 ﻿#ifndef HEAP_HANDLE_H
 #define HEAP_HANDLE_H
 
-#include <d3d12.h>
-#include <dxgi1_6.h>
-#include <fstream>
-#include <wrl.h>
+#include <cstdint>
 
-#include "d3dx12.h"
-using Microsoft::WRL::ComPtr;
+#include <d3d12.h>
 
 namespace JoyEngine
 {
-	class ResourceView
+	class ResourceView final
 	{
 	public:
-		ResourceView() = default;
+		ResourceView() = delete;
+		~ResourceView() = default;
 
-		explicit ResourceView(D3D12_DEPTH_STENCIL_VIEW_DESC desc, ID3D12Resource* resource);
-		explicit ResourceView(D3D12_SAMPLER_DESC);
+		explicit ResourceView(const D3D12_DEPTH_STENCIL_VIEW_DESC& desc, ID3D12Resource* resource);
+		explicit ResourceView(const D3D12_SAMPLER_DESC&);
 		explicit ResourceView(D3D12_CONSTANT_BUFFER_VIEW_DESC desc);
-		explicit ResourceView(D3D12_UNORDERED_ACCESS_VIEW_DESC desc, ID3D12Resource* resource);
-		explicit ResourceView(D3D12_RENDER_TARGET_VIEW_DESC desc, ID3D12Resource* resource);
-		explicit ResourceView(D3D12_SHADER_RESOURCE_VIEW_DESC desc, ID3D12Resource* resource, bool nonReadonlyTexture = false);
+		explicit ResourceView(const D3D12_UNORDERED_ACCESS_VIEW_DESC& desc, ID3D12Resource* resource);
+		explicit ResourceView(const D3D12_RENDER_TARGET_VIEW_DESC& desc, ID3D12Resource* resource);
+		explicit ResourceView(const D3D12_SHADER_RESOURCE_VIEW_DESC& desc, ID3D12Resource* resource, bool nonReadonlyTexture = false);
 
 		[[nodiscard]] D3D12_DESCRIPTOR_HEAP_TYPE GetType() const noexcept { return m_type; }
 		[[nodiscard]] D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle() const noexcept { return m_cpuHandle; }

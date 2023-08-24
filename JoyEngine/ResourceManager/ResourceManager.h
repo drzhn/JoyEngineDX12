@@ -17,9 +17,9 @@ namespace JoyEngine
 	public:
 		ResourceManager() = default;
 
-		bool IsResourceLoaded(GUID guid)
+		[[nodiscard]] bool IsResourceLoaded(GUID guid) const
 		{
-			return m_isResourceInUse.find(guid) != m_isResourceInUse.end();
+			return m_isResourceInUse.contains(guid);
 		}
 
 		template <class T>
@@ -29,7 +29,7 @@ namespace JoyEngine
 			{
 				m_isResourceInUse.insert({guid, std::make_unique<T>(guid)});
 			}
-			m_isResourceInUse[guid]->IncreaseRefCount();
+			m_isResourceInUse[guid]->AddRef();
 			return ResourceHandle<T>(GetResource<T>(guid), this);
 		}
 
@@ -40,7 +40,7 @@ namespace JoyEngine
 			{
 				m_isResourceInUse.insert({guid, std::make_unique<T>(guid, args...)});
 			}
-			m_isResourceInUse[guid]->IncreaseRefCount();
+			m_isResourceInUse[guid]->AddRef();
 			return ResourceHandle<T>(GetResource<T>(guid), this);
 		}
 
@@ -62,7 +62,7 @@ namespace JoyEngine
 		{
 			if (IsResourceLoaded(guid))
 			{
-				m_isResourceInUse[guid]->IncreaseRefCount();
+				m_isResourceInUse[guid]->AddRef();
 			}
 			else
 			{
@@ -74,7 +74,7 @@ namespace JoyEngine
 		{
 			if (IsResourceLoaded(guid))
 			{
-				m_isResourceInUse[guid]->DecreaseRefCount();
+				m_isResourceInUse[guid]->RemoveRef();
 			}
 			else
 			{

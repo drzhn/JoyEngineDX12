@@ -329,21 +329,22 @@ namespace JoyEngine
 	}
 
 
-	Texture::Texture(
-		uint32_t width,
-		uint32_t height,
-		DXGI_FORMAT format,
-		D3D12_RESOURCE_STATES usage,
-		D3D12_HEAP_TYPE heapType)
-	{
-		m_width = width;
-		m_height = height;
-		m_format = format;
-		m_usageFlags = usage;
-		m_memoryPropertiesFlags = CD3DX12_HEAP_PROPERTIES(heapType);
-		CreateImageResource(false, false, false, 1, 1);
-		Texture::CreateImageViews();
-	}
+	//Texture::Texture(
+	//	uint32_t width,
+	//	uint32_t height,
+	//	DXGI_FORMAT format,
+	//	D3D12_RESOURCE_STATES usage,
+	//	D3D12_HEAP_TYPE heapType) :
+	//	Resource(GUID::Random())
+	//{
+	//	m_width = width;
+	//	m_height = height;
+	//	m_format = format;
+	//	m_usageFlags = usage;
+	//	m_memoryPropertiesFlags = CD3DX12_HEAP_PROPERTIES(heapType);
+	//	CreateImageResource(false, false, false, 1, 1);
+	//	Texture::CreateImageViews();
+	//}
 
 
 	void Texture::CreateImageViews()
@@ -499,7 +500,7 @@ namespace JoyEngine
 	}
 
 	UAVRenderTexture::UAVRenderTexture(uint32_t width, uint32_t height, DXGI_FORMAT format, D3D12_RESOURCE_STATES usage,
-		D3D12_HEAP_TYPE heapType)
+	                                   D3D12_HEAP_TYPE heapType)
 	{
 		m_width = width;
 		m_height = height;

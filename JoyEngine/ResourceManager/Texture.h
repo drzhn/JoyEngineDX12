@@ -86,18 +86,18 @@ namespace JoyEngine
 	class Texture : public Resource, public AbstractSingleTexture
 	{
 	public:
-		explicit Texture() = default;
+		explicit Texture() = delete;
 
 		explicit Texture(GUID);
 		explicit Texture(GUID guid, const std::string& file);
 
-		explicit Texture(
-			uint32_t width,
-			uint32_t height,
-			DXGI_FORMAT format,
-			D3D12_RESOURCE_STATES usage,
-			D3D12_HEAP_TYPE heapType
-		);
+		//explicit Texture(
+		//	uint32_t width,
+		//	uint32_t height,
+		//	DXGI_FORMAT format,
+		//	D3D12_RESOURCE_STATES usage,
+		//	D3D12_HEAP_TYPE heapType
+		//);
 
 		~Texture() override = default;
 

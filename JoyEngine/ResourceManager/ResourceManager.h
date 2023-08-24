@@ -22,17 +22,6 @@ namespace JoyEngine
 			return m_isResourceInUse.contains(guid);
 		}
 
-		template <class T>
-		ResourceHandle<T> LoadResource(GUID guid)
-		{
-			if (!IsResourceLoaded(guid))
-			{
-				m_isResourceInUse.insert({guid, std::make_unique<T>(guid)});
-			}
-			m_isResourceInUse[guid]->AddRef();
-			return ResourceHandle<T>(GetResource<T>(guid), this);
-		}
-
 		template <class T, typename... Args>
 		ResourceHandle<T> LoadResource(GUID guid, Args&& ... args)
 		{

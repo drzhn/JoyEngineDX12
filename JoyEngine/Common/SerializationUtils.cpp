@@ -44,13 +44,13 @@ namespace JoyEngine
 
 	size_t SerializationUtils::GetTypeSize(uint32_t typeHash)
 	{
-		ASSERT(m_typeSizes.find(typeHash) != m_typeSizes.end());
+		ASSERT(m_typeSizes.contains(typeHash));
 		return m_typeSizes.find(typeHash)->second;
 	}
 
 	size_t SerializationUtils::GetType(uint32_t cppTypeHash)
 	{
-		ASSERT(m_typeMapping.find(cppTypeHash) != m_typeMapping.end());
+		ASSERT(m_typeMapping.contains(cppTypeHash));
 		return m_typeMapping.find(cppTypeHash)->second;
 	}
 

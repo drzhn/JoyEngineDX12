@@ -1,20 +1,12 @@
 #ifndef RESOURCE_HANDLE_H
 #define RESOURCE_HANDLE_H
 
+#include <functional>
 
 #include "Common/Resource.h"
-#include "Utils/Assert.h"
 
 namespace JoyEngine
 {
-	class IResourceManager
-	{
-	public:
-		virtual ~IResourceManager() = default;
-		virtual void IncreaseRefCounter(GUID guid) = 0;
-		virtual void UnloadResource(GUID guid) = 0;
-	};
-
 	template <typename T>
 	class ResourceHandle
 	{
@@ -77,25 +69,29 @@ namespace JoyEngine
 	private:
 		GUID m_guid;
 		T* m_ptr = nullptr;
-		IResourceManager* m_manager = nullptr;
+		std::function<void(GUID)>* m_unregisterResourceAction;
 
 	public:
-		explicit ResourceHandle(T* ptr, IResourceManager* manager)
+		explicit ResourceHandle(T* ptr, std::function<void(GUID)>* unregisterResourceAction)
+			: m_unregisterResourceAction(unregisterResourceAction)
 		{
-			const Resource* resource = reinterpret_cast<Resource*>(ptr);
+			const Resource* resource = static_cast<Resource*>(ptr);
 			m_ptr = ptr;
 			m_guid = resource->GetGuid();
-			m_manager = manager;
 		}
 
 
 		void Copy(const ResourceHandle<T>& other)
 		{
 			m_guid = other.m_guid;
-			m_ptr = other.m_ptr;
-			m_manager = other.m_manager;
+			m_unregisterResourceAction = other.m_unregisterResourceAction;
 
-			m_manager->IncreaseRefCounter(m_guid);
+			if (other.m_ptr != nullptr)
+			{
+				m_ptr = other.m_ptr;
+				Resource* resource = static_cast<Resource*>(m_ptr);
+				resource->AddRef();
+			}
 		}
 
 		void Move(ResourceHandle<T>& other)
@@ -109,7 +105,15 @@ namespace JoyEngine
 		{
 			if (m_ptr != nullptr)
 			{
-				m_manager->UnloadResource(m_guid);
+				Resource* resource = static_cast<Resource*>(m_ptr);
+				resource->RemoveRef();
+
+				if (resource->GetRefCount() == 0)
+				{
+					delete m_ptr;
+					m_unregisterResourceAction->operator()(m_guid);
+				}
+
 				m_ptr = nullptr;
 			}
 		}

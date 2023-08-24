@@ -4,13 +4,12 @@
 #include <fstream>
 #include <vector>
 
+#include "Material.h"
 #include "ResourceManager/ResourceManager.h"
 #include "Utils/GUID.h"
 
 namespace JoyEngine
 {
-	class Material;
-
 	struct MtlMeshStreamData
 	{
 		uint32_t vertexDataSize;

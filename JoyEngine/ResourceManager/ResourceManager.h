@@ -1,6 +1,7 @@
 #ifndef RESOURCE_MANAGER_H
 #define RESOURCE_MANAGER_H
 
+#include <functional>
 #include <map>
 #include <set>
 #include <Utils/Assert.h>
@@ -12,10 +13,23 @@
 
 namespace JoyEngine
 {
-	class ResourceManager : IResourceManager, public Singleton<ResourceManager>
+	class ResourceManager: public Singleton<ResourceManager>
 	{
 	public:
-		ResourceManager() = default;
+		ResourceManager():
+			m_unregisterResourceAction([this](GUID guid)
+			{
+				if (IsResourceLoaded(guid))
+				{
+					m_isResourceInUse.erase(guid);
+				}
+				else
+				{
+					ASSERT(false);
+				}
+			})
+		{
+		}
 
 		[[nodiscard]] bool IsResourceLoaded(GUID guid) const
 		{
@@ -23,14 +37,14 @@ namespace JoyEngine
 		}
 
 		template <class T, typename... Args>
-		ResourceHandle<T> LoadResource(GUID guid, Args&& ... args)
+		ResourceHandle<T> LoadResource(GUID guid, Args&&... args)
 		{
 			if (!IsResourceLoaded(guid))
 			{
-				m_isResourceInUse.insert({guid, std::make_unique<T>(guid, args...)});
+				m_isResourceInUse.insert({guid, new T(guid, args...)});
 			}
 			m_isResourceInUse[guid]->AddRef();
-			return ResourceHandle<T>(GetResource<T>(guid), this);
+			return ResourceHandle<T>(GetResource<T>(guid), &m_unregisterResourceAction);
 		}
 
 	private:
@@ -39,7 +53,7 @@ namespace JoyEngine
 		{
 			ASSERT(IsResourceLoaded(guid));
 #ifdef _DEBUG
-			T* ptr = dynamic_cast<T*>(m_isResourceInUse[guid].get());
+			T* ptr = dynamic_cast<T*>(m_isResourceInUse[guid]);
 			ASSERT(ptr != nullptr);
 #else
             T *ptr = reinterpret_cast<T *>(m_isResourceInUse[guid].get());
@@ -47,35 +61,8 @@ namespace JoyEngine
 			return ptr;
 		}
 
-		void IncreaseRefCounter(GUID guid) override
-		{
-			if (IsResourceLoaded(guid))
-			{
-				m_isResourceInUse[guid]->AddRef();
-			}
-			else
-			{
-				ASSERT(false);
-			}
-		}
-
-		void UnloadResource(GUID guid) override
-		{
-			if (IsResourceLoaded(guid))
-			{
-				m_isResourceInUse[guid]->RemoveRef();
-			}
-			else
-			{
-				ASSERT(false);
-			}
-			if (m_isResourceInUse[guid]->GetRefCount() == 0)
-			{
-				m_isResourceInUse.erase(guid);
-			}
-		}
-
-		std::map<GUID, std::unique_ptr<Resource>> m_isResourceInUse;
+		std::map<GUID, Resource*> m_isResourceInUse;
+		std::function<void(GUID)> m_unregisterResourceAction;
 	};
 }
 

@@ -62,7 +62,7 @@ namespace JoyEngine
 
 		ASSERT_SUCC(m_logicalDevice->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS, &m_featureSupport, sizeof(m_featureSupport)));
 
-		D3D12_FEATURE_DATA_SHADER_MODEL shaderModel = { D3D_SHADER_MODEL_6_6 };
+		D3D12_FEATURE_DATA_SHADER_MODEL shaderModel = {D3D_SHADER_MODEL_6_7};
 		ASSERT_SUCC(m_logicalDevice->CheckFeatureSupport(
 			D3D12_FEATURE_SHADER_MODEL,
 			&shaderModel,
@@ -79,6 +79,10 @@ namespace JoyEngine
 			featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
 		}
 		m_highestRootSignatureVersion = featureData.HighestVersion;
+
+		D3D12_FEATURE_DATA_D3D12_OPTIONS5 options5 = {};
+		ASSERT_SUCC(m_logicalDevice->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS5, &options5, sizeof(options5)));
+		ASSERT(options5.RaytracingTier > D3D12_RAYTRACING_TIER_1_0);
 
 		// Enable debug messages in debug mode.
 #if defined(FULL_DEBUG)

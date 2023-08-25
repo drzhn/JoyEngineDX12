@@ -46,11 +46,12 @@ namespace JoyEngine
 
 		ComPtr<IDXGIFactory5> m_dxgiFactory = nullptr;
 		ComPtr<IDXGIAdapter4> m_physicalDevice = nullptr;
-		ComPtr<ID3D12Device2> m_logicalDevice = nullptr;
+		ComPtr<ID3D12Device5> m_logicalDevice = nullptr;
+
 #if defined(FULL_DEBUG)
 		ComPtr<ID3D12Debug> m_debugController;
-
 #endif
+
 		uint32_t m_m4xMsaaQuality;
 		bool m_allowTearing;
 		D3D12_FEATURE_DATA_D3D12_OPTIONS m_featureSupport;

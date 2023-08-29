@@ -56,7 +56,7 @@ namespace JoyEngine
 			T* ptr = dynamic_cast<T*>(m_isResourceInUse[guid]);
 			ASSERT(ptr != nullptr);
 #else
-            T *ptr = reinterpret_cast<T *>(m_isResourceInUse[guid].get());
+            T *ptr = reinterpret_cast<T *>(m_isResourceInUse[guid]);
 #endif //DEBUG
 			return ptr;
 		}

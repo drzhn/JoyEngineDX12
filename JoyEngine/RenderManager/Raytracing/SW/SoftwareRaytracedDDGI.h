@@ -6,7 +6,6 @@
 #include <memory>
 
 #include "CommonEngineStructs.h"
-#include "DataBuffer.h"
 #include "BufferSorter.h"
 #include "BVHConstructor.h"
 #include "RenderManager/ComputeDispatcher.h"
@@ -19,11 +18,11 @@ namespace JoyEngine
 {
 	class IRenderManager;
 
-	class RaytracedLightProbes
+	class SoftwareRaytracedDDGI
 	{
 	public:
-		RaytracedLightProbes() = delete;
-		explicit RaytracedLightProbes(
+		SoftwareRaytracedDDGI() = delete;
+		explicit SoftwareRaytracedDDGI(
 			std::set<SharedMaterial*>& sceneSharedMaterials,
 			DXGI_FORMAT mainColorFormat,
 			DXGI_FORMAT gBufferPositionsFormat,

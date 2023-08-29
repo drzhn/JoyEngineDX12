@@ -106,7 +106,7 @@ namespace JoyEngine
 			m_mainColorRenderTarget.get(),
 			hdrRTVFormat, swapchainFormat, depthFormat);
 
-		m_raytracing = std::make_unique<RaytracedLightProbes>(
+		m_raytracing = std::make_unique<SoftwareRaytracedDDGI>(
 			m_sharedMaterials,
 			GetMainColorFormat(),
 			GetGBufferFormat(),

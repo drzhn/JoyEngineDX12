@@ -183,43 +183,43 @@
     },
     {
       "guid": "fb423066-e885-4ea4-93d5-01b69037a9aa",
-      "path": "shaders/raytracing/LocalRadixSort.hlsl"
+      "path": "shaders/sw_raytracing/LocalRadixSort.hlsl"
     },
     {
       "guid": "8190cec8-aa5a-420e-8de2-34c6f838476c",
-      "path": "shaders/raytracing/PreScan.hlsl"
+      "path": "shaders/sw_raytracing/PreScan.hlsl"
     },
     {
       "guid": "d00ec3ea-53c4-48f3-bc42-d775c67db85c",
-      "path": "shaders/raytracing/BlockSum.hlsl"
+      "path": "shaders/sw_raytracing/BlockSum.hlsl"
     },
     {
       "guid": "8e67cd9b-afdf-409e-bb98-a79ad3f692c8",
-      "path": "shaders/raytracing/GlobalScan.hlsl"
+      "path": "shaders/sw_raytracing/GlobalScan.hlsl"
     },
     {
       "guid": "fc94651f-874c-49c8-9b01-83a238ce580b",
-      "path": "shaders/raytracing/GlobalRadixSort.hlsl"
+      "path": "shaders/sw_raytracing/GlobalRadixSort.hlsl"
     },
     {
       "guid": "326057ce-8c0c-40be-b912-67b63d25211e",
-      "path": "shaders/raytracing/BVHTreeConstructor.hlsl"
+      "path": "shaders/sw_raytracing/BVHTreeConstructor.hlsl"
     },
     {
       "guid": "d611cd9f-6ce0-42f5-b908-af7289b0eae5",
-      "path": "shaders/raytracing/BVHAABBMerger.hlsl"
+      "path": "shaders/sw_raytracing/BVHAABBMerger.hlsl"
     },
     {
       "guid": "a231c467-dc15-4753-a3db-8888efc73c1a",
-      "path": "shaders/raytracing/gizmoAABBDrawer.hlsl"
+      "path": "shaders/sw_raytracing/gizmoAABBDrawer.hlsl"
     },
     {
       "guid": "b24e90ac-fcfa-4754-b0e5-8553b19e27ca",
-      "path": "shaders/raytracing/Raytracing.hlsl"
+      "path": "shaders/sw_raytracing/Raytracing.hlsl"
     },
     {
       "guid": "cc8de13c-0510-4842-99f5-de2327aa95d4",
-      "path": "shaders/raytracing/debugImageCompose.hlsl"
+      "path": "shaders/sw_raytracing/debugImageCompose.hlsl"
     },
     {
       "guid": "11dcfeba-c2b6-4c2e-a3c7-51054ff06f1d",
@@ -423,11 +423,11 @@
     },
     {
       "guid": "8757d834-8dd7-4858-836b-bb6a4eb6fea0",
-      "path": "shaders/raytracing/debugDrawProbes.hlsl"
+      "path": "shaders/sw_raytracing/debugDrawProbes.hlsl"
     },
     {
       "guid": "1d69c9ec-de6a-4fff-96ea-3a68808ca8f7",
-      "path": "shaders/raytracing/ProbeIrradiance.hlsl"
+      "path": "shaders/sw_raytracing/ProbeIrradiance.hlsl"
     }
   ]
 }

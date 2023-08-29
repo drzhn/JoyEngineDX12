@@ -2,7 +2,7 @@
 #define BUFFER_SORTER_H
 
 #include "CommonEngineStructs.h"
-#include "DataBuffer.h"
+#include "RenderManager/Raytracing/DataBuffer.h"
 #include "ResourceManager/SharedMaterial.h"
 #include "ResourceManager/Buffers/ConstantCpuBuffer.h"
 

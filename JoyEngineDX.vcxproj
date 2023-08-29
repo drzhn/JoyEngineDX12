@@ -229,9 +229,9 @@
     <ClCompile Include="JoyEngine\RenderManager\ComputeDispatcher.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\GBuffer.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\TransformProvider.cpp" />
-    <ClCompile Include="JoyEngine\RenderManager\Raytracing\BufferSorter.cpp" />
-    <ClCompile Include="JoyEngine\RenderManager\Raytracing\BVHConstructor.cpp" />
-    <ClCompile Include="JoyEngine\RenderManager\Raytracing\RaytracedLightProbes.cpp" />
+    <ClCompile Include="JoyEngine\RenderManager\Raytracing\SW\BufferSorter.cpp" />
+    <ClCompile Include="JoyEngine\RenderManager\Raytracing\SW\BVHConstructor.cpp" />
+    <ClCompile Include="JoyEngine\RenderManager\Raytracing\SW\SoftwareRaytracedDDGI.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\RenderState.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\Skybox.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\Tonemapping.cpp" />
@@ -295,10 +295,10 @@
     <ClInclude Include="JoyEngine\RenderManager\IRenderManager.h" />
     <ClInclude Include="JoyEngine\RenderManager\LightSystems\ILightSystem.h" />
     <ClInclude Include="JoyEngine\RenderManager\TransformProvider.h" />
-    <ClInclude Include="JoyEngine\RenderManager\Raytracing\BufferSorter.h" />
-    <ClInclude Include="JoyEngine\RenderManager\Raytracing\BVHConstructor.h" />
+    <ClInclude Include="JoyEngine\RenderManager\Raytracing\SW\BufferSorter.h" />
+    <ClInclude Include="JoyEngine\RenderManager\Raytracing\SW\BVHConstructor.h" />
     <ClInclude Include="JoyEngine\RenderManager\Raytracing\DataBuffer.h" />
-    <ClInclude Include="JoyEngine\RenderManager\Raytracing\RaytracedLightProbes.h" />
+    <ClInclude Include="JoyEngine\RenderManager\Raytracing\SW\SoftwareRaytracedDDGI.h" />
     <ClInclude Include="JoyEngine\RenderManager\RenderState.h" />
     <ClInclude Include="JoyEngine\RenderManager\Skybox.h" />
     <ClInclude Include="JoyEngine\RenderManager\Tonemapping.h" />
@@ -477,46 +477,46 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="JoyData\shaders\raytracing\LocalRadixSort.hlsl">
+    <None Include="JoyData\shaders\sw_raytracing\LocalRadixSort.hlsl">
       <FileType>HLSL</FileType>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="JoyData\shaders\raytracing\BlockSum.hlsl">
+    <None Include="JoyData\shaders\sw_raytracing\BlockSum.hlsl">
       <FileType>Document</FileType>
     </None>
-    <None Include="JoyData\shaders\raytracing\GlobalScan.hlsl">
+    <None Include="JoyData\shaders\sw_raytracing\GlobalScan.hlsl">
       <FileType>Document</FileType>
     </None>
-    <None Include="JoyData\shaders\raytracing\PreScan.hlsl">
-      <FileType>Document</FileType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="JoyData\shaders\raytracing\GlobalRadixSort.hlsl">
+    <None Include="JoyData\shaders\sw_raytracing\PreScan.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="JoyData\shaders\raytracing\BVHAABBMerger.hlsl">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="JoyData\shaders\raytracing\BVHTreeConstructor.hlsl">
+    <None Include="JoyData\shaders\sw_raytracing\GlobalRadixSort.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="JoyData\shaders\raytracing\gizmoAABBDrawer.hlsl">
+    <None Include="JoyData\shaders\sw_raytracing\BVHAABBMerger.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="JoyData\shaders\sw_raytracing\BVHTreeConstructor.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="JoyData\shaders\raytracing\Raytracing.hlsl">
+    <None Include="JoyData\shaders\sw_raytracing\gizmoAABBDrawer.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="JoyData\shaders\raytracing\debugImageCompose.hlsl">
+    <None Include="JoyData\shaders\sw_raytracing\Raytracing.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="JoyData\shaders\sw_raytracing\debugImageCompose.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>
@@ -531,12 +531,12 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="JoyData\shaders\raytracing\debugDrawProbes.hlsl">
+    <None Include="JoyData\shaders\sw_raytracing\debugDrawProbes.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="JoyData\shaders\raytracing\ProbeIrradiance.hlsl">
+    <None Include="JoyData\shaders\sw_raytracing\ProbeIrradiance.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

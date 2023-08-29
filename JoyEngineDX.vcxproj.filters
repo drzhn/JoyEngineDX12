@@ -132,10 +132,10 @@
     <ClCompile Include="JoyEngine\ResourceManager\Buffers\ConstantCpuBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JoyEngine\RenderManager\Raytracing\RaytracedLightProbes.cpp">
+    <ClCompile Include="JoyEngine\RenderManager\Raytracing\SW\SoftwareRaytracedDDGI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JoyEngine\RenderManager\Raytracing\BufferSorter.cpp">
+    <ClCompile Include="JoyEngine\RenderManager\Raytracing\SW\BufferSorter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="JoyEngine\ResourceManager\ShaderCompiler.cpp">
@@ -147,7 +147,7 @@
     <ClCompile Include="JoyEngine\Utils\Log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JoyEngine\RenderManager\Raytracing\BVHConstructor.cpp">
+    <ClCompile Include="JoyEngine\RenderManager\Raytracing\SW\BVHConstructor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="JoyEngine\ResourceManager\Buffers\UAVGpuBuffer.cpp">
@@ -344,13 +344,13 @@
     <ClInclude Include="JoyEngine\ResourceManager\Buffers\ConstantCpuBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JoyEngine\RenderManager\Raytracing\RaytracedLightProbes.h">
+    <ClInclude Include="JoyEngine\RenderManager\Raytracing\SW\SoftwareRaytracedDDGI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JoyEngine\Utils\TimeCounter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JoyEngine\RenderManager\Raytracing\BufferSorter.h">
+    <ClInclude Include="JoyEngine\RenderManager\Raytracing\SW\BufferSorter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JoyEngine\RenderManager\Raytracing\DataBuffer.h">
@@ -365,7 +365,7 @@
     <ClInclude Include="JoyEngine\Utils\Log.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JoyEngine\RenderManager\Raytracing\BVHConstructor.h">
+    <ClInclude Include="JoyEngine\RenderManager\Raytracing\SW\BVHConstructor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JoyEngine\ResourceManager\Buffers\UAVGpuBuffer.h">
@@ -452,20 +452,20 @@
     <None Include="JoyData\shaders\sslrpostprocess.hlsl" />
     <None Include="JoyData\shaders\standardShader.hlsl" />
     <None Include="JoyData\shaders\gizmoAxisDrawer.hlsl" />
-    <None Include="JoyData\shaders\raytracing\LocalRadixSort.hlsl" />
-    <None Include="JoyData\shaders\raytracing\GlobalScan.hlsl" />
-    <None Include="JoyData\shaders\raytracing\BlockSum.hlsl" />
-    <None Include="JoyData\shaders\raytracing\PreScan.hlsl" />
-    <None Include="JoyData\shaders\raytracing\GlobalRadixSort.hlsl" />
-    <None Include="JoyData\shaders\raytracing\BVHTreeConstructor.hlsl" />
-    <None Include="JoyData\shaders\raytracing\BVHAABBMerger.hlsl" />
-    <None Include="JoyData\shaders\raytracing\gizmoAABBDrawer.hlsl" />
-    <None Include="JoyData\shaders\raytracing\Raytracing.hlsl" />
-    <None Include="JoyData\shaders\raytracing\debugImageCompose.hlsl" />
+    <None Include="JoyData\shaders\sw_raytracing\LocalRadixSort.hlsl" />
+    <None Include="JoyData\shaders\sw_raytracing\GlobalScan.hlsl" />
+    <None Include="JoyData\shaders\sw_raytracing\BlockSum.hlsl" />
+    <None Include="JoyData\shaders\sw_raytracing\PreScan.hlsl" />
+    <None Include="JoyData\shaders\sw_raytracing\GlobalRadixSort.hlsl" />
+    <None Include="JoyData\shaders\sw_raytracing\BVHTreeConstructor.hlsl" />
+    <None Include="JoyData\shaders\sw_raytracing\BVHAABBMerger.hlsl" />
+    <None Include="JoyData\shaders\sw_raytracing\gizmoAABBDrawer.hlsl" />
+    <None Include="JoyData\shaders\sw_raytracing\Raytracing.hlsl" />
+    <None Include="JoyData\shaders\sw_raytracing\debugImageCompose.hlsl" />
     <None Include="JoyData\shaders\deferredshadingprocessor.hlsl" />
     <None Include="JoyData\shaders\skybox.hlsl" />
-    <None Include="JoyData\shaders\raytracing\debugDrawProbes.hlsl" />
-    <None Include="JoyData\shaders\raytracing\ProbeIrradiance.hlsl" />
+    <None Include="JoyData\shaders\sw_raytracing\debugDrawProbes.hlsl" />
+    <None Include="JoyData\shaders\sw_raytracing\ProbeIrradiance.hlsl" />
     <None Include="JoyData\shaders\CommonInclude.hlsl" />
   </ItemGroup>
 </Project>

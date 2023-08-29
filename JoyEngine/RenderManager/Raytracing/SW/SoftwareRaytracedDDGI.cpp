@@ -1,4 +1,4 @@
-﻿#include "RaytracedLightProbes.h"
+﻿#include "SoftwareRaytracedDDGI.h"
 
 #include "Common/HashDefs.h"
 #include "ResourceManager/ResourceManager.h"
@@ -80,7 +80,7 @@ namespace JoyEngine
 		return ret;
 	}
 
-	RaytracedLightProbes::RaytracedLightProbes(
+	SoftwareRaytracedDDGI::SoftwareRaytracedDDGI(
 		std::set<SharedMaterial*>& sceneSharedMaterials,
 		DXGI_FORMAT mainColorFormat,
 		DXGI_FORMAT gBufferPositionsFormat,
@@ -266,7 +266,7 @@ namespace JoyEngine
 		}
 	}
 
-	void RaytracedLightProbes::UploadSceneData()
+	void SoftwareRaytracedDDGI::UploadSceneData()
 	{
 		TIME_PERF("Uploading scene data")
 
@@ -321,7 +321,7 @@ namespace JoyEngine
 		m_bvhConstructionData.SetData({.trianglesCount = m_trianglesLength});
 	}
 
-	void RaytracedLightProbes::PrepareBVH() const
+	void SoftwareRaytracedDDGI::PrepareBVH() const
 	{
 		Logger::LogFormat("Triangles length %d\n", m_trianglesLength);
 
@@ -353,7 +353,7 @@ namespace JoyEngine
 		m_bvhConstructor->ConstructBVH();
 	}
 
-	void RaytracedLightProbes::ProcessRaytracing(
+	void SoftwareRaytracedDDGI::ProcessRaytracing(
 		ID3D12GraphicsCommandList* commandList,
 		uint32_t frameIndex,
 		ViewProjectionMatrixData* data,
@@ -396,7 +396,7 @@ namespace JoyEngine
 		m_gbuffer->BarrierColorToRead(commandList);
 	}
 
-	void RaytracedLightProbes::GenerateProbeIrradiance(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex) const
+	void SoftwareRaytracedDDGI::GenerateProbeIrradiance(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex) const
 	{
 		// lightprobe data generation process
 		{
@@ -418,7 +418,7 @@ namespace JoyEngine
 		GraphicsUtils::UAVBarrier(commandList, m_probeDepthTexture->GetImageResource().Get());
 	}
 
-	void RaytracedLightProbes::DebugDrawRaytracedImage(ID3D12GraphicsCommandList* commandList) const
+	void SoftwareRaytracedDDGI::DebugDrawRaytracedImage(ID3D12GraphicsCommandList* commandList) const
 	{
 		auto sm = m_debugRaytracingTextureDrawGraphicsPipeline;
 
@@ -435,7 +435,7 @@ namespace JoyEngine
 		commandList->DrawInstanced(3, 1, 0, 0);
 	}
 
-	void RaytracedLightProbes::DebugDrawAABBGizmo(ID3D12GraphicsCommandList* commandList,
+	void SoftwareRaytracedDDGI::DebugDrawAABBGizmo(ID3D12GraphicsCommandList* commandList,
 	                                              const ViewProjectionMatrixData* viewProjectionMatrixData) const
 	{
 		auto sm = m_debugGizmoAABBDrawerGraphicsPipeline;
@@ -457,7 +457,7 @@ namespace JoyEngine
 			0, 0);
 	}
 
-	void RaytracedLightProbes::DebugDrawProbes(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, const ViewProjectionMatrixData* viewProjectionMatrixData) const
+	void SoftwareRaytracedDDGI::DebugDrawProbes(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, const ViewProjectionMatrixData* viewProjectionMatrixData) const
 	{
 		auto sm = m_debugDrawProbesGraphicsPipeline;
 
@@ -483,7 +483,7 @@ namespace JoyEngine
 			0);
 	}
 
-	RaytracedProbesData* RaytracedLightProbes::GetRaytracedProbesDataPtr() noexcept
+	RaytracedProbesData* SoftwareRaytracedDDGI::GetRaytracedProbesDataPtr() noexcept
 	{
 		return &g_raytracedProbesData;
 	}

@@ -1,5 +1,5 @@
-﻿#ifndef RAYTRACING_H
-#define RAYTRACING_H
+﻿#ifndef SOFTWARE_RAYTRACED_DDGI_H
+#define SOFTWARE_RAYTRACED_DDGI_H
 
 #include <d3d12.h>
 
@@ -93,4 +93,4 @@ namespace JoyEngine
 		ResourceHandle<GraphicsPipeline> m_debugRaytracingTextureDrawGraphicsPipeline;
 	};
 }
-#endif // RAYTRACING_H
+#endif // SOFTWARE_RAYTRACED_DDGI_H

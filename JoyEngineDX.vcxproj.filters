@@ -192,6 +192,9 @@
     <ClCompile Include="JoyEngine\GameplayComponents\LightBehaviour.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="JoyEngine\RenderManager\Raytracing\HW\HardwareRaytracedDDGI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="JoyEngine\JoyEngine.h">
@@ -425,6 +428,9 @@
     <ClInclude Include="JoyEngine\GameplayComponents\LightBehaviour.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="JoyEngine\RenderManager\Raytracing\HW\HardwareRaytracedDDGI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="JoyData\shaders\gbufferwrite.hlsl" />
@@ -467,5 +473,6 @@
     <None Include="JoyData\shaders\sw_raytracing\debugDrawProbes.hlsl" />
     <None Include="JoyData\shaders\sw_raytracing\ProbeIrradiance.hlsl" />
     <None Include="JoyData\shaders\CommonInclude.hlsl" />
+    <None Include="JoyData\shaders\hw_raytracing\Raytracing.hlsl" />
   </ItemGroup>
 </Project>

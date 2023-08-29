@@ -19,6 +19,7 @@
 #include "Tonemapping.h"
 #include "TransformProvider.h"
 #include "LightSystems/ClusteredLightSystem.h"
+#include "Raytracing/HW/HardwareRaytracedDDGI.h"
 #include "Raytracing/SW/SoftwareRaytracedDDGI.h"
 
 using Microsoft::WRL::ComPtr;
@@ -127,6 +128,7 @@ namespace JoyEngine
 
 		std::unique_ptr<Tonemapping> m_tonemapping;
 		std::unique_ptr<SoftwareRaytracedDDGI> m_raytracing;
+		std::unique_ptr<HardwareRaytracedDDGI> m_testHWRaytracing;
 		std::unique_ptr<TransformProvider> m_transformProvider;
 		std::unique_ptr<ClusteredLightSystem> m_lightSystem;
 		std::set<SharedMaterial*> m_sharedMaterials;

@@ -55,6 +55,16 @@ namespace JoyEngine
 				m_fragmentModule
 			);
 		}
+
+		//if (m_shaderType & JoyShaderTypeRaytracing)
+		//{
+		//	CompileShader(
+		//		JoyShaderTypeRaytracing,
+		//		shaderPath.c_str(),
+		//		shaderData,
+		//		m_fragmentModule 
+		//	);
+		//}
 	}
 
 	void Shader::CompileShader(ShaderType type, const char* shaderPath, const std::vector<char>& shaderData, ComPtr<ID3DBlob>& module)

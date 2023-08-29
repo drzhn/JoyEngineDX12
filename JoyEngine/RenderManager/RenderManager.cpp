@@ -117,6 +117,8 @@ namespace JoyEngine
 			m_width,
 			m_height);
 
+		m_testHWRaytracing = std::make_unique<HardwareRaytracedDDGI>();
+
 		m_transformProvider = std::make_unique<TransformProvider>(frameCount);
 		m_lightSystem = std::make_unique<ClusteredLightSystem>(frameCount);
 
@@ -239,7 +241,6 @@ namespace JoyEngine
 			data->screenWidth = m_width;
 			data->screenHeight = m_height;
 			data->cameraAspect = GetAspect();
-
 		}
 
 		m_transformProvider->Update(m_currentFrameIndex);

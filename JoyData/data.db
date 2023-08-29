@@ -1,433 +1,437 @@
 {
-  "type": "database",
-  "database": [
-    {
-      "guid": "46bc949d-eacb-4cff-a7f8-07e738bbfb3e",
-      "path": "models/sponza.obj"
-    },
-    {
-      "guid": "fc972e06-70d9-4271-8615-825003b43f74",
-      "path": "models/viking_room.obj"
-    },
-    {
-      "guid": "7489a35d-1173-48cd-9ad0-606f13c33319",
-      "path": "models/Floor.obj"
-    },
-    {
-      "guid": "13dc6d97-5ced-4b99-b296-bb9e6df2242a",
-      "path": "models/male_head.obj"
-    },
-    {
-      "guid": "854767e3-9417-4303-ab5d-56de6a335128",
-      "path": "models/DefaultCube.obj"
-    },
-    {
-      "guid": "47000776-d056-43a2-bacb-c3e54701294a",
-      "path": "models/Sphere.obj"
-    },
-    {
-      "guid": "f9685ae2-2293-4662-83c1-69a37d1499fe",
-      "path": "models/HugeSphere.obj"
-    },
-    {
-      "guid": "1217dfc4-c38c-47a7-a5ed-9e733243bf92",
-      "path": "models/SponzaCombined.obj"
-    },
-    {
-      "guid": "87b5a0a5-e806-40cd-8051-257091065a76",
-      "path": "models/ExampleObject2.obj"
-    },
-    {
-      "guid": "2529df0e-9a8e-4730-9b8d-a70b4b93251a",
-      "path": "models/Anna_Head.obj"
-    },
-    {
-      "guid": "b6316780-7043-4ca5-96da-c8bb84042b78",
-      "path": "shared_materials/standardSharedMaterial.json"
-    },
-    {
-      "guid": "cbab0eb5-74a0-400f-92c2-8aae39175ed7",
-      "path": "materials/standardMaterial.json"
-    },
-    {
-      "guid": "a254d10b-ba5a-444d-9ef0-4ef7777b918b",
-      "path": "materials/sponza.mtl.json"
-    },
-    {
-      "guid": "c677a3b5-198f-4333-8adc-3e24c75cb10c",
-      "path": "textures/sunset.hdr"
-    },
-    {
-      "guid": "1d451f58-3f84-4b2b-8c6f-fe8e2821d7f0",
-      "path": "textures/viking_room.png"
-    },
-    {
-      "guid": "7e50aa82-5696-428c-a088-538fb78c0ee6",
-      "path": "textures/Chopping-Board.jpg"
-    },
-    {
-      "guid": "e8448435-7baf-4e40-ac72-b99e49284929",
-      "path": "textures/wood.png"
-    },
-    {
-      "guid": "cf021726-708f-42d2-860e-d33a550e631b",
-      "path": "textures/DDSSample.dds"
-    },
-    {
-      "guid": "9694ff4a-d639-4488-a421-c58494d6c56b",
-      "path": "textures/Barce_Rooftop_C_8k.jpg"
-    },
-    {
-      "guid": "65c0d16a-9cf6-46e5-9a5e-a5026b350b8d",
-      "path": "textures/ColorNoise.png"
-    },
-    {
-      "guid": "908a43e5-84b5-4d81-bf17-3bdcbdd4a224",
-      "path": "shaders/standardShader.hlsl"
-    },
-    {
-      "guid": "183d6cfe-ca85-4e0b-ab36-7b1ca0f99d34",
-      "path": "shaders/vikingShader.hlsl"
-    },
-    {
-      "guid": "01da575c-6970-4ac1-97e5-823817af8b34",
-      "path": "shaders/annaShader.hlsl"
-    },
-    {
-      "guid": "4a8ea369-904f-4d9a-9061-b4eedacc3918",
-      "path": "shaders/dynamiccubemapreflections.hlsl"
-    },
-    {
-      "guid": "613710d9-304e-453b-a655-b1c842904f4c",
-      "path": "shaders/dynamiccubemapconvolition.hlsl"
-    },
-    {
-      "guid": "48ffacc9-5c00-4058-b359-cf72189896ac",
-      "path": "shaders/gbufferwrite.hlsl"
-    },
-    {
-      "guid": "f9da7adf-4ebb-4601-8437-a19c07e8471a",
-      "path": "shaders/lightprocessing.hlsl"
-    },
-    {
-      "guid": "1c6cb88f-f3ef-4797-9d65-44682ca7baba",
-      "path": "shaders/directionlightprocessing.hlsl"
-    },
-    {
-      "guid": "9ee0a40a-c055-4b2c-93db-bc19def8e8cc",
-      "path": "shaders/shadowprocessing.hlsl"
-    },
-    {
-      "guid": "9d678808-8c11-4ff3-9ee1-dd1b7fc5f691",
-      "path": "shaders/shadowpointprocessing.hlsl"
-    },
-    {
-      "guid": "3fb4d89b-ceab-46c3-b34f-d41a49e072cf",
-      "path": "shaders/generateMipMaps.hlsl"
-    },
-    {
-      "guid": "a36fff56-b183-418a-9bd1-31cffd247e37",
-      "path": "shaders/particles.hlsl"
-    },
-    {
-      "guid": "38d4f011-405a-4602-8f8e-79b4888d26b6",
-      "path": "shaders/particlesbuffergeneration.hlsl"
-    },
-    {
-      "guid": "5e897d4b-2ed5-4176-890b-2f17e52cb836",
-      "path": "shaders/fogpostprocess.hlsl"
-    },
-    {
-      "guid": "e3e039f4-4f96-4e5b-b90b-1f46d460b724",
-      "path": "shaders/hdrDownscaleFirstPass.hlsl"
-    },
-    {
-      "guid": "c3a1592f-f12d-4c25-bcbb-1e6ace76b0fb",
-      "path": "shaders/hdrDownscaleSecondPass.hlsl"
-    },
-    {
-      "guid": "aa366fc9-b8a7-4cca-b5d3-670216174566",
-      "path": "shaders/hdrToLdrTransition.hlsl"
-    },
-    {
-      "guid": "110f9d5d-008a-4f07-8a7c-e0a208353bf1",
-      "path": "shaders/bloomBrightPass.hlsl"
-    },
-    {
-      "guid": "fcdfbb5b-72ea-4b7b-b432-3f807ffc576d",
-      "path": "shaders/bloomHorizontalFilter.hlsl"
-    },
-    {
-      "guid": "79791a5c-5374-4e44-9ad0-f2cf57e7c8e6",
-      "path": "shaders/bloomVerticalFilter.hlsl"
-    },
-    {
-      "guid": "3cf96278-de88-4614-bb23-5cfa2b54e41a",
-      "path": "shaders/ssaopostprocess.hlsl"
-    },
-    {
-      "guid": "81312dae-c920-4cd6-bd08-87d1a2a3b6f4",
-      "path": "shaders/ssaoblur.hlsl"
-    },
-    {
-      "guid": "c7986e89-5d7e-4348-903e-761f007c3f12",
-      "path": "shaders/ssaoappend.hlsl"
-    },
-    {
-      "guid": "70d5a60a-615a-4344-977f-d2ad9d37b0cf",
-      "path": "shaders/sslrpostprocess.hlsl"
-    },
-    {
-      "guid": "c8478fd3-33c3-4f3f-9e8a-56a9cfa846ce",
-      "path": "shaders/gizmoAxisDrawer.hlsl"
-    },
-    {
-      "guid": "fb423066-e885-4ea4-93d5-01b69037a9aa",
-      "path": "shaders/sw_raytracing/LocalRadixSort.hlsl"
-    },
-    {
-      "guid": "8190cec8-aa5a-420e-8de2-34c6f838476c",
-      "path": "shaders/sw_raytracing/PreScan.hlsl"
-    },
-    {
-      "guid": "d00ec3ea-53c4-48f3-bc42-d775c67db85c",
-      "path": "shaders/sw_raytracing/BlockSum.hlsl"
-    },
-    {
-      "guid": "8e67cd9b-afdf-409e-bb98-a79ad3f692c8",
-      "path": "shaders/sw_raytracing/GlobalScan.hlsl"
-    },
-    {
-      "guid": "fc94651f-874c-49c8-9b01-83a238ce580b",
-      "path": "shaders/sw_raytracing/GlobalRadixSort.hlsl"
-    },
-    {
-      "guid": "326057ce-8c0c-40be-b912-67b63d25211e",
-      "path": "shaders/sw_raytracing/BVHTreeConstructor.hlsl"
-    },
-    {
-      "guid": "d611cd9f-6ce0-42f5-b908-af7289b0eae5",
-      "path": "shaders/sw_raytracing/BVHAABBMerger.hlsl"
-    },
-    {
-      "guid": "a231c467-dc15-4753-a3db-8888efc73c1a",
-      "path": "shaders/sw_raytracing/gizmoAABBDrawer.hlsl"
-    },
-    {
-      "guid": "b24e90ac-fcfa-4754-b0e5-8553b19e27ca",
-      "path": "shaders/sw_raytracing/Raytracing.hlsl"
-    },
-    {
-      "guid": "cc8de13c-0510-4842-99f5-de2327aa95d4",
-      "path": "shaders/sw_raytracing/debugImageCompose.hlsl"
-    },
-    {
-      "guid": "11dcfeba-c2b6-4c2e-a3c7-51054ff06f1d",
-      "path": "scenes/room.json"
-    },
-    {
-      "guid": "26c816d9-b38a-476d-b734-3fa70088cf7f",
-      "path": "textures/background.tga"
-    },
-    {
-      "guid": "16e4623a-31f0-48f6-9800-237c32429b25",
-      "path": "textures/background_ddn.tga"
-    },
-    {
-      "guid": "bdb5f926-0fb0-4ff0-8665-1341065e915e",
-      "path": "textures/chain_texture.tga"
-    },
-    {
-      "guid": "dfe25876-99cc-4dcb-a9ea-727af272f104",
-      "path": "textures/chain_texture_ddn.tga"
-    },
-    {
-      "guid": "79fb12af-0142-431b-ba28-4c8c2e0f52f1",
-      "path": "textures/lion.tga"
-    },
-    {
-      "guid": "33d8e9a8-455c-426f-aef4-573ba4f6d37b",
-      "path": "textures/lion2_ddn.tga"
-    },
-    {
-      "guid": "42eb65a0-a52e-4123-be4e-4155f398e012",
-      "path": "textures/lion_ddn.tga"
-    },
-    {
-      "guid": "d117b49a-f2d7-4d85-a69d-277044d667bc",
-      "path": "textures/spnza_bricks_a_ddn.tga"
-    },
-    {
-      "guid": "fc5e2e23-360c-4fb8-9837-83f1891eb70c",
-      "path": "textures/spnza_bricks_a_diff.tga"
-    },
-    {
-      "guid": "ee265bd9-915e-47a4-9edd-075a3abe7ad6",
-      "path": "textures/sponza_arch_ddn.tga"
-    },
-    {
-      "guid": "cedcb025-2a27-4d4c-811a-88b2e55ab7af",
-      "path": "textures/sponza_arch_diff.tga"
-    },
-    {
-      "guid": "08c5af0e-bcc5-473d-b1f1-4d92924e9e1b",
-      "path": "textures/sponza_ceiling_a_ddn.tga"
-    },
-    {
-      "guid": "d61f57c1-8c15-4ab4-ab20-620880e81e43",
-      "path": "textures/sponza_ceiling_a_diff.tga"
-    },
-    {
-      "guid": "6f50087c-1fe6-47df-a44c-784a108669fb",
-      "path": "textures/sponza_column_a_ddn.tga"
-    },
-    {
-      "guid": "ccf40ffe-7c49-48af-836e-515ae0089add",
-      "path": "textures/sponza_column_a_diff.tga"
-    },
-    {
-      "guid": "38a54645-fe02-4b2a-be18-f7d341ac5497",
-      "path": "textures/sponza_column_b_ddn.tga"
-    },
-    {
-      "guid": "1a320c14-165b-4865-81df-756885a5bcc4",
-      "path": "textures/sponza_column_b_diff.tga"
-    },
-    {
-      "guid": "734d385a-6e69-45c2-a88d-71d1278b6525",
-      "path": "textures/sponza_column_c_ddn.tga"
-    },
-    {
-      "guid": "9327fb81-5469-4cdc-a7d9-b6d16b371c97",
-      "path": "textures/sponza_column_c_diff.tga"
-    },
-    {
-      "guid": "ea6cf202-c263-4ad5-aeb0-148d53fa1d4a",
-      "path": "textures/sponza_curtain_blue_diff.tga"
-    },
-    {
-      "guid": "b8a33f87-749d-43dd-8bed-747cb8e798e3",
-      "path": "textures/sponza_curtain_ddn.tga"
-    },
-    {
-      "guid": "40ca896d-ce72-44aa-8ab4-3f31e06bc038",
-      "path": "textures/sponza_curtain_diff.tga"
-    },
-    {
-      "guid": "f6a727db-ab78-4d5e-bc1a-86e1dd798427",
-      "path": "textures/sponza_curtain_green_diff.tga"
-    },
-    {
-      "guid": "58d0c395-964a-4c68-887c-9956ab4aac4e",
-      "path": "textures/sponza_details_ddn.tga"
-    },
-    {
-      "guid": "7c279a0d-33e1-432a-8928-17b75934e7fd",
-      "path": "textures/sponza_details_diff.tga"
-    },
-    {
-      "guid": "2c7f6e8a-52f3-4960-a03e-b24725bb5d40",
-      "path": "textures/sponza_fabric_blue_diff.tga"
-    },
-    {
-      "guid": "92ca0659-0ebc-4128-a668-d127bd36e639",
-      "path": "textures/sponza_fabric_ddn.tga"
-    },
-    {
-      "guid": "8c7bc276-4360-44d1-a4b9-dd671c32be4f",
-      "path": "textures/sponza_fabric_diff.tga"
-    },
-    {
-      "guid": "67c87600-d57a-4cef-beb0-0cd479d84eed",
-      "path": "textures/sponza_fabric_green_diff.tga"
-    },
-    {
-      "guid": "44c5ac89-d1d1-42fc-ab3e-39886c88f698",
-      "path": "textures/sponza_flagpole_ddn.tga"
-    },
-    {
-      "guid": "8377f2f5-1dab-4815-8f51-3536b0aeff2c",
-      "path": "textures/sponza_flagpole_diff.tga"
-    },
-    {
-      "guid": "ea4e4257-78c9-410e-a742-1a28bf17a6ce",
-      "path": "textures/sponza_floor_a_ddn.tga"
-    },
-    {
-      "guid": "7491835c-3a56-4386-8226-72e1ac8e8e7a",
-      "path": "textures/sponza_floor_a_diff.tga"
-    },
-    {
-      "guid": "2bf04450-b8e9-4d82-aa67-ab6697c5ba18",
-      "path": "textures/sponza_roof_ddn.tga"
-    },
-    {
-      "guid": "b0bf0a2d-e203-4921-b49e-ac8f53dbc797",
-      "path": "textures/sponza_roof_diff.tga"
-    },
-    {
-      "guid": "79b959c5-6775-4edb-a3f6-0b86efe4069f",
-      "path": "textures/sponza_thorn_ddn.tga"
-    },
-    {
-      "guid": "adf0aa49-dc9c-447a-8ac1-29e3a22e1d20",
-      "path": "textures/sponza_thorn_diff.tga"
-    },
-    {
-      "guid": "72a39be4-13c8-4a14-8f62-7e8b2ca6d607",
-      "path": "textures/vase_ddn.tga"
-    },
-    {
-      "guid": "3cc9bbac-c7c9-4591-8e6d-d58b692ad27d",
-      "path": "textures/vase_dif.tga"
-    },
-    {
-      "guid": "2970efac-221b-44b9-bc80-cd0d7869ee3b",
-      "path": "textures/vase_hanging.tga"
-    },
-    {
-      "guid": "e8d48775-dd45-49a6-9a31-876822c4f597",
-      "path": "textures/vase_hanging_ddn.tga"
-    },
-    {
-      "guid": "7b5b5e96-2ac1-48cf-a65d-6ddd84fcd27f",
-      "path": "textures/vase_plant.tga"
-    },
-    {
-      "guid": "7b2fc193-7eb8-4e13-9333-e22e3a2f0039",
-      "path": "textures/vase_round.tga"
-    },
-    {
-      "guid": "7c23ddc7-4f4d-4ce0-b3be-f1a308515e77",
-      "path": "textures/vase_round_ddn.tga"
-    },
-    {
-      "guid": "b7d27f1a-006b-41fa-b10b-01b212ebfebe",
-      "path": "models/DefaultSphere.obj"
-    },
-    {
-      "guid": "e8f0a9b4-ddd9-4171-b78f-80a0fb474263",
-      "path": "shaders/deferredshadingprocessor.hlsl"
-    },
-    {
-      "guid": "17663088-100d-4e78-8305-17b5818256db",
-      "path": "textures/sunset2.hdr"
-    },
-    {
-      "guid": "ea629227-9da1-45e7-99f7-cd4869dd775b",
-      "path": "textures/sunset3.hdr"
-    },
-    {
-      "guid": "7e43e76d-9d5f-4fc8-a8f1-c8ec0dce95ef",
-      "path": "shaders/skybox.hlsl"
-    },
-    {
-      "guid": "8757d834-8dd7-4858-836b-bb6a4eb6fea0",
-      "path": "shaders/sw_raytracing/debugDrawProbes.hlsl"
-    },
-    {
-      "guid": "1d69c9ec-de6a-4fff-96ea-3a68808ca8f7",
-      "path": "shaders/sw_raytracing/ProbeIrradiance.hlsl"
-    }
-  ]
+    "type": "database",
+    "database": [
+        {
+            "guid": "46bc949d-eacb-4cff-a7f8-07e738bbfb3e",
+            "path": "models/sponza.obj"
+        },
+        {
+            "guid": "fc972e06-70d9-4271-8615-825003b43f74",
+            "path": "models/viking_room.obj"
+        },
+        {
+            "guid": "7489a35d-1173-48cd-9ad0-606f13c33319",
+            "path": "models/Floor.obj"
+        },
+        {
+            "guid": "13dc6d97-5ced-4b99-b296-bb9e6df2242a",
+            "path": "models/male_head.obj"
+        },
+        {
+            "guid": "854767e3-9417-4303-ab5d-56de6a335128",
+            "path": "models/DefaultCube.obj"
+        },
+        {
+            "guid": "47000776-d056-43a2-bacb-c3e54701294a",
+            "path": "models/Sphere.obj"
+        },
+        {
+            "guid": "f9685ae2-2293-4662-83c1-69a37d1499fe",
+            "path": "models/HugeSphere.obj"
+        },
+        {
+            "guid": "1217dfc4-c38c-47a7-a5ed-9e733243bf92",
+            "path": "models/SponzaCombined.obj"
+        },
+        {
+            "guid": "87b5a0a5-e806-40cd-8051-257091065a76",
+            "path": "models/ExampleObject2.obj"
+        },
+        {
+            "guid": "2529df0e-9a8e-4730-9b8d-a70b4b93251a",
+            "path": "models/Anna_Head.obj"
+        },
+        {
+            "guid": "b6316780-7043-4ca5-96da-c8bb84042b78",
+            "path": "shared_materials/standardSharedMaterial.json"
+        },
+        {
+            "guid": "cbab0eb5-74a0-400f-92c2-8aae39175ed7",
+            "path": "materials/standardMaterial.json"
+        },
+        {
+            "guid": "a254d10b-ba5a-444d-9ef0-4ef7777b918b",
+            "path": "materials/sponza.mtl.json"
+        },
+        {
+            "guid": "c677a3b5-198f-4333-8adc-3e24c75cb10c",
+            "path": "textures/sunset.hdr"
+        },
+        {
+            "guid": "1d451f58-3f84-4b2b-8c6f-fe8e2821d7f0",
+            "path": "textures/viking_room.png"
+        },
+        {
+            "guid": "7e50aa82-5696-428c-a088-538fb78c0ee6",
+            "path": "textures/Chopping-Board.jpg"
+        },
+        {
+            "guid": "e8448435-7baf-4e40-ac72-b99e49284929",
+            "path": "textures/wood.png"
+        },
+        {
+            "guid": "cf021726-708f-42d2-860e-d33a550e631b",
+            "path": "textures/DDSSample.dds"
+        },
+        {
+            "guid": "9694ff4a-d639-4488-a421-c58494d6c56b",
+            "path": "textures/Barce_Rooftop_C_8k.jpg"
+        },
+        {
+            "guid": "65c0d16a-9cf6-46e5-9a5e-a5026b350b8d",
+            "path": "textures/ColorNoise.png"
+        },
+        {
+            "guid": "908a43e5-84b5-4d81-bf17-3bdcbdd4a224",
+            "path": "shaders/standardShader.hlsl"
+        },
+        {
+            "guid": "183d6cfe-ca85-4e0b-ab36-7b1ca0f99d34",
+            "path": "shaders/vikingShader.hlsl"
+        },
+        {
+            "guid": "01da575c-6970-4ac1-97e5-823817af8b34",
+            "path": "shaders/annaShader.hlsl"
+        },
+        {
+            "guid": "4a8ea369-904f-4d9a-9061-b4eedacc3918",
+            "path": "shaders/dynamiccubemapreflections.hlsl"
+        },
+        {
+            "guid": "613710d9-304e-453b-a655-b1c842904f4c",
+            "path": "shaders/dynamiccubemapconvolition.hlsl"
+        },
+        {
+            "guid": "48ffacc9-5c00-4058-b359-cf72189896ac",
+            "path": "shaders/gbufferwrite.hlsl"
+        },
+        {
+            "guid": "f9da7adf-4ebb-4601-8437-a19c07e8471a",
+            "path": "shaders/lightprocessing.hlsl"
+        },
+        {
+            "guid": "1c6cb88f-f3ef-4797-9d65-44682ca7baba",
+            "path": "shaders/directionlightprocessing.hlsl"
+        },
+        {
+            "guid": "9ee0a40a-c055-4b2c-93db-bc19def8e8cc",
+            "path": "shaders/shadowprocessing.hlsl"
+        },
+        {
+            "guid": "9d678808-8c11-4ff3-9ee1-dd1b7fc5f691",
+            "path": "shaders/shadowpointprocessing.hlsl"
+        },
+        {
+            "guid": "3fb4d89b-ceab-46c3-b34f-d41a49e072cf",
+            "path": "shaders/generateMipMaps.hlsl"
+        },
+        {
+            "guid": "a36fff56-b183-418a-9bd1-31cffd247e37",
+            "path": "shaders/particles.hlsl"
+        },
+        {
+            "guid": "38d4f011-405a-4602-8f8e-79b4888d26b6",
+            "path": "shaders/particlesbuffergeneration.hlsl"
+        },
+        {
+            "guid": "5e897d4b-2ed5-4176-890b-2f17e52cb836",
+            "path": "shaders/fogpostprocess.hlsl"
+        },
+        {
+            "guid": "e3e039f4-4f96-4e5b-b90b-1f46d460b724",
+            "path": "shaders/hdrDownscaleFirstPass.hlsl"
+        },
+        {
+            "guid": "c3a1592f-f12d-4c25-bcbb-1e6ace76b0fb",
+            "path": "shaders/hdrDownscaleSecondPass.hlsl"
+        },
+        {
+            "guid": "aa366fc9-b8a7-4cca-b5d3-670216174566",
+            "path": "shaders/hdrToLdrTransition.hlsl"
+        },
+        {
+            "guid": "110f9d5d-008a-4f07-8a7c-e0a208353bf1",
+            "path": "shaders/bloomBrightPass.hlsl"
+        },
+        {
+            "guid": "fcdfbb5b-72ea-4b7b-b432-3f807ffc576d",
+            "path": "shaders/bloomHorizontalFilter.hlsl"
+        },
+        {
+            "guid": "79791a5c-5374-4e44-9ad0-f2cf57e7c8e6",
+            "path": "shaders/bloomVerticalFilter.hlsl"
+        },
+        {
+            "guid": "3cf96278-de88-4614-bb23-5cfa2b54e41a",
+            "path": "shaders/ssaopostprocess.hlsl"
+        },
+        {
+            "guid": "81312dae-c920-4cd6-bd08-87d1a2a3b6f4",
+            "path": "shaders/ssaoblur.hlsl"
+        },
+        {
+            "guid": "c7986e89-5d7e-4348-903e-761f007c3f12",
+            "path": "shaders/ssaoappend.hlsl"
+        },
+        {
+            "guid": "70d5a60a-615a-4344-977f-d2ad9d37b0cf",
+            "path": "shaders/sslrpostprocess.hlsl"
+        },
+        {
+            "guid": "c8478fd3-33c3-4f3f-9e8a-56a9cfa846ce",
+            "path": "shaders/gizmoAxisDrawer.hlsl"
+        },
+        {
+            "guid": "fb423066-e885-4ea4-93d5-01b69037a9aa",
+            "path": "shaders/sw_raytracing/LocalRadixSort.hlsl"
+        },
+        {
+            "guid": "8190cec8-aa5a-420e-8de2-34c6f838476c",
+            "path": "shaders/sw_raytracing/PreScan.hlsl"
+        },
+        {
+            "guid": "d00ec3ea-53c4-48f3-bc42-d775c67db85c",
+            "path": "shaders/sw_raytracing/BlockSum.hlsl"
+        },
+        {
+            "guid": "8e67cd9b-afdf-409e-bb98-a79ad3f692c8",
+            "path": "shaders/sw_raytracing/GlobalScan.hlsl"
+        },
+        {
+            "guid": "fc94651f-874c-49c8-9b01-83a238ce580b",
+            "path": "shaders/sw_raytracing/GlobalRadixSort.hlsl"
+        },
+        {
+            "guid": "326057ce-8c0c-40be-b912-67b63d25211e",
+            "path": "shaders/sw_raytracing/BVHTreeConstructor.hlsl"
+        },
+        {
+            "guid": "d611cd9f-6ce0-42f5-b908-af7289b0eae5",
+            "path": "shaders/sw_raytracing/BVHAABBMerger.hlsl"
+        },
+        {
+            "guid": "a231c467-dc15-4753-a3db-8888efc73c1a",
+            "path": "shaders/sw_raytracing/gizmoAABBDrawer.hlsl"
+        },
+        {
+            "guid": "b24e90ac-fcfa-4754-b0e5-8553b19e27ca",
+            "path": "shaders/sw_raytracing/Raytracing.hlsl"
+        },
+        {
+            "guid": "cc8de13c-0510-4842-99f5-de2327aa95d4",
+            "path": "shaders/sw_raytracing/debugImageCompose.hlsl"
+        },
+        {
+            "guid": "b2597599-94ef-43ed-abd8-46d3adbb75d4",
+            "path": "shaders/hw_raytracing/Raytracing.hlsl"
+        },
+        {
+            "guid": "11dcfeba-c2b6-4c2e-a3c7-51054ff06f1d",
+            "path": "scenes/room.json"
+        },
+        {
+            "guid": "26c816d9-b38a-476d-b734-3fa70088cf7f",
+            "path": "textures/background.tga"
+        },
+        {
+            "guid": "16e4623a-31f0-48f6-9800-237c32429b25",
+            "path": "textures/background_ddn.tga"
+        },
+        {
+            "guid": "bdb5f926-0fb0-4ff0-8665-1341065e915e",
+            "path": "textures/chain_texture.tga"
+        },
+        {
+            "guid": "dfe25876-99cc-4dcb-a9ea-727af272f104",
+            "path": "textures/chain_texture_ddn.tga"
+        },
+        {
+            "guid": "79fb12af-0142-431b-ba28-4c8c2e0f52f1",
+            "path": "textures/lion.tga"
+        },
+        {
+            "guid": "33d8e9a8-455c-426f-aef4-573ba4f6d37b",
+            "path": "textures/lion2_ddn.tga"
+        },
+        {
+            "guid": "42eb65a0-a52e-4123-be4e-4155f398e012",
+            "path": "textures/lion_ddn.tga"
+        },
+        {
+            "guid": "d117b49a-f2d7-4d85-a69d-277044d667bc",
+            "path": "textures/spnza_bricks_a_ddn.tga"
+        },
+        {
+            "guid": "fc5e2e23-360c-4fb8-9837-83f1891eb70c",
+            "path": "textures/spnza_bricks_a_diff.tga"
+        },
+        {
+            "guid": "ee265bd9-915e-47a4-9edd-075a3abe7ad6",
+            "path": "textures/sponza_arch_ddn.tga"
+        },
+        {
+            "guid": "cedcb025-2a27-4d4c-811a-88b2e55ab7af",
+            "path": "textures/sponza_arch_diff.tga"
+        },
+        {
+            "guid": "08c5af0e-bcc5-473d-b1f1-4d92924e9e1b",
+            "path": "textures/sponza_ceiling_a_ddn.tga"
+        },
+        {
+            "guid": "d61f57c1-8c15-4ab4-ab20-620880e81e43",
+            "path": "textures/sponza_ceiling_a_diff.tga"
+        },
+        {
+            "guid": "6f50087c-1fe6-47df-a44c-784a108669fb",
+            "path": "textures/sponza_column_a_ddn.tga"
+        },
+        {
+            "guid": "ccf40ffe-7c49-48af-836e-515ae0089add",
+            "path": "textures/sponza_column_a_diff.tga"
+        },
+        {
+            "guid": "38a54645-fe02-4b2a-be18-f7d341ac5497",
+            "path": "textures/sponza_column_b_ddn.tga"
+        },
+        {
+            "guid": "1a320c14-165b-4865-81df-756885a5bcc4",
+            "path": "textures/sponza_column_b_diff.tga"
+        },
+        {
+            "guid": "734d385a-6e69-45c2-a88d-71d1278b6525",
+            "path": "textures/sponza_column_c_ddn.tga"
+        },
+        {
+            "guid": "9327fb81-5469-4cdc-a7d9-b6d16b371c97",
+            "path": "textures/sponza_column_c_diff.tga"
+        },
+        {
+            "guid": "ea6cf202-c263-4ad5-aeb0-148d53fa1d4a",
+            "path": "textures/sponza_curtain_blue_diff.tga"
+        },
+        {
+            "guid": "b8a33f87-749d-43dd-8bed-747cb8e798e3",
+            "path": "textures/sponza_curtain_ddn.tga"
+        },
+        {
+            "guid": "40ca896d-ce72-44aa-8ab4-3f31e06bc038",
+            "path": "textures/sponza_curtain_diff.tga"
+        },
+        {
+            "guid": "f6a727db-ab78-4d5e-bc1a-86e1dd798427",
+            "path": "textures/sponza_curtain_green_diff.tga"
+        },
+        {
+            "guid": "58d0c395-964a-4c68-887c-9956ab4aac4e",
+            "path": "textures/sponza_details_ddn.tga"
+        },
+        {
+            "guid": "7c279a0d-33e1-432a-8928-17b75934e7fd",
+            "path": "textures/sponza_details_diff.tga"
+        },
+        {
+            "guid": "2c7f6e8a-52f3-4960-a03e-b24725bb5d40",
+            "path": "textures/sponza_fabric_blue_diff.tga"
+        },
+        {
+            "guid": "92ca0659-0ebc-4128-a668-d127bd36e639",
+            "path": "textures/sponza_fabric_ddn.tga"
+        },
+        {
+            "guid": "8c7bc276-4360-44d1-a4b9-dd671c32be4f",
+            "path": "textures/sponza_fabric_diff.tga"
+        },
+        {
+            "guid": "67c87600-d57a-4cef-beb0-0cd479d84eed",
+            "path": "textures/sponza_fabric_green_diff.tga"
+        },
+        {
+            "guid": "44c5ac89-d1d1-42fc-ab3e-39886c88f698",
+            "path": "textures/sponza_flagpole_ddn.tga"
+        },
+        {
+            "guid": "8377f2f5-1dab-4815-8f51-3536b0aeff2c",
+            "path": "textures/sponza_flagpole_diff.tga"
+        },
+        {
+            "guid": "ea4e4257-78c9-410e-a742-1a28bf17a6ce",
+            "path": "textures/sponza_floor_a_ddn.tga"
+        },
+        {
+            "guid": "7491835c-3a56-4386-8226-72e1ac8e8e7a",
+            "path": "textures/sponza_floor_a_diff.tga"
+        },
+        {
+            "guid": "2bf04450-b8e9-4d82-aa67-ab6697c5ba18",
+            "path": "textures/sponza_roof_ddn.tga"
+        },
+        {
+            "guid": "b0bf0a2d-e203-4921-b49e-ac8f53dbc797",
+            "path": "textures/sponza_roof_diff.tga"
+        },
+        {
+            "guid": "79b959c5-6775-4edb-a3f6-0b86efe4069f",
+            "path": "textures/sponza_thorn_ddn.tga"
+        },
+        {
+            "guid": "adf0aa49-dc9c-447a-8ac1-29e3a22e1d20",
+            "path": "textures/sponza_thorn_diff.tga"
+        },
+        {
+            "guid": "72a39be4-13c8-4a14-8f62-7e8b2ca6d607",
+            "path": "textures/vase_ddn.tga"
+        },
+        {
+            "guid": "3cc9bbac-c7c9-4591-8e6d-d58b692ad27d",
+            "path": "textures/vase_dif.tga"
+        },
+        {
+            "guid": "2970efac-221b-44b9-bc80-cd0d7869ee3b",
+            "path": "textures/vase_hanging.tga"
+        },
+        {
+            "guid": "e8d48775-dd45-49a6-9a31-876822c4f597",
+            "path": "textures/vase_hanging_ddn.tga"
+        },
+        {
+            "guid": "7b5b5e96-2ac1-48cf-a65d-6ddd84fcd27f",
+            "path": "textures/vase_plant.tga"
+        },
+        {
+            "guid": "7b2fc193-7eb8-4e13-9333-e22e3a2f0039",
+            "path": "textures/vase_round.tga"
+        },
+        {
+            "guid": "7c23ddc7-4f4d-4ce0-b3be-f1a308515e77",
+            "path": "textures/vase_round_ddn.tga"
+        },
+        {
+            "guid": "b7d27f1a-006b-41fa-b10b-01b212ebfebe",
+            "path": "models/DefaultSphere.obj"
+        },
+        {
+            "guid": "e8f0a9b4-ddd9-4171-b78f-80a0fb474263",
+            "path": "shaders/deferredshadingprocessor.hlsl"
+        },
+        {
+            "guid": "17663088-100d-4e78-8305-17b5818256db",
+            "path": "textures/sunset2.hdr"
+        },
+        {
+            "guid": "ea629227-9da1-45e7-99f7-cd4869dd775b",
+            "path": "textures/sunset3.hdr"
+        },
+        {
+            "guid": "7e43e76d-9d5f-4fc8-a8f1-c8ec0dce95ef",
+            "path": "shaders/skybox.hlsl"
+        },
+        {
+            "guid": "8757d834-8dd7-4858-836b-bb6a4eb6fea0",
+            "path": "shaders/sw_raytracing/debugDrawProbes.hlsl"
+        },
+        {
+            "guid": "1d69c9ec-de6a-4fff-96ea-3a68808ca8f7",
+            "path": "shaders/sw_raytracing/ProbeIrradiance.hlsl"
+        }
+    ]
 }

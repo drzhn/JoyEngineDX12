@@ -216,6 +216,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="JoyEngine\RenderManager\Raytracing\HW\HardwareRaytracedDDGI.cpp" />
     <ClCompile Include="JoyEngine\Common\CameraUnit.cpp" />
     <ClCompile Include="JoyEngine\Components\Camera.cpp" />
     <ClCompile Include="JoyEngine\Components\Component.cpp" />
@@ -277,6 +278,7 @@
     <ClCompile Include="JoyEngine\WindowHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="JoyEngine\RenderManager\Raytracing\HW\HardwareRaytracedDDGI.h" />
     <ClInclude Include="JoyEngine\Common\CameraUnit.h" />
     <ClInclude Include="JoyEngine\Common\Singleton.h" />
     <ClInclude Include="JoyEngine\Components\Camera.h" />
@@ -542,6 +544,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="JoyData\shaders\CommonInclude.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="JoyData\shaders\hw_raytracing\Raytracing.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

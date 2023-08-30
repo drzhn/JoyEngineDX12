@@ -2,8 +2,6 @@
 
 namespace JoyEngine
 {
-	IMPLEMENT_SINGLETON(InputManager)
-
 	void InputManager::HandleWinMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		if (uMsg == WM_KEYDOWN)

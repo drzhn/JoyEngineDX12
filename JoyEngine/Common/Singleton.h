@@ -12,14 +12,11 @@ namespace JoyEngine
 			m_instance = static_cast<T*>(this);
 		}
 
-		static T* Get() { return m_instance; }
+		static inline T* Get() { return m_instance; }
 
 	protected:
-		static T* m_instance;
+		static inline T* m_instance;
 	};
 }
-
-#define IMPLEMENT_SINGLETON(T) T* Singleton<T>::m_instance = nullptr;
-
 
 #endif // SINGLETON_H

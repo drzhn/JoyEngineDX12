@@ -10,12 +10,8 @@
 #include "ResourceManager/ResourceManager.h"
 #include "ResourceManager/SharedMaterial.h"
 
-using Microsoft::WRL::ComPtr;
-
 namespace JoyEngine
 {
-	IMPLEMENT_SINGLETON(EngineMaterialProvider)
-
 	void EngineMaterialProvider::Init()
 	{
 		TIME_PERF("EngineMaterialProvider init")

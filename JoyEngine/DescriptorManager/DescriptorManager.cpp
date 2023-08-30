@@ -8,8 +8,6 @@
 
 namespace JoyEngine
 {
-	IMPLEMENT_SINGLETON(DescriptorManager)
-
 	D3D12_DESCRIPTOR_HEAP_TYPE GetNativeDescriptorType(DescriptorHeapType type)
 	{
 		switch (type)

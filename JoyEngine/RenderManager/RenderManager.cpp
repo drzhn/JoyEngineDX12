@@ -30,8 +30,6 @@
 
 namespace JoyEngine
 {
-	IMPLEMENT_SINGLETON(RenderManager)
-
 	void RenderManager::Init()
 	{
 		TIME_PERF("RenderManager init")

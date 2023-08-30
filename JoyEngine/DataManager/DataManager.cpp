@@ -16,8 +16,6 @@
 
 namespace JoyEngine
 {
-	IMPLEMENT_SINGLETON(DataManager)
-
 	DataManager::DataManager() :
 		m_dataPath(std::filesystem::absolute(R"(JoyData/)").generic_string()),
 		m_databaseFilename(R"(data.db)")

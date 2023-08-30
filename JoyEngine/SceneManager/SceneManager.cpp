@@ -5,8 +5,6 @@
 
 namespace JoyEngine
 {
-	IMPLEMENT_SINGLETON(SceneManager)
-
 	void SceneManager::Init()
 	{
 		TIME_PERF("SceneManager init")

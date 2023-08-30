@@ -5,8 +5,6 @@
 
 namespace JoyEngine
 {
-	IMPLEMENT_SINGLETON(GraphicsManager)
-
 	GraphicsManager::GraphicsManager(HINSTANCE instance, HWND windowHandle, uint32_t width, uint32_t height) :
 		m_width(width),
 		m_height(height),

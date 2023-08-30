@@ -137,6 +137,11 @@ namespace JoyEngine
 			targetL = L"cs_6_5";
 			visibility = D3D12_SHADER_VISIBILITY_ALL;
 			break;
+		case JoyShaderTypeRaytracing:
+			entryPointL = L"RTMain";
+			targetL = L"lib_6_7";
+			visibility = D3D12_SHADER_VISIBILITY_ALL;
+			break;
 		default:
 			ASSERT(false);
 		}

@@ -2,7 +2,7 @@
 #define SHADER_COMPILER_H
 #include <d3d12.h>
 #include <d3dcommon.h>
-#include <dxcapi.h>
+#include <dxc/dxcapi.h>
 #include <map>
 #include <memory>
 #include <vector>

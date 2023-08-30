@@ -30,17 +30,17 @@ namespace JoyEngine
 			m_standardSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial>(standardSharedMaterialGuid);
 		}
 
-		// Mip map generation
-		{
-			const GUID mipMapGenerationShaderGuid = GUID::StringToGuid("3fb4d89b-ceab-46c3-b34f-d41a49e072cf"); //shaders/generateMipMaps.hlsl
-			const GUID mipMapGenerationPipelineGuid = GUID::Random();
+		//// Mip map generation
+		//{
+		//	const GUID mipMapGenerationShaderGuid = GUID::StringToGuid("3fb4d89b-ceab-46c3-b34f-d41a49e072cf"); //shaders/generateMipMaps.hlsl
+		//	const GUID mipMapGenerationPipelineGuid = GUID::Random();
 
-			m_generateMipsComputePipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
-				mipMapGenerationPipelineGuid,
-				{
-					mipMapGenerationShaderGuid,
-				});
-		}
+		//	m_generateMipsComputePipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
+		//		mipMapGenerationPipelineGuid,
+		//		{
+		//			mipMapGenerationShaderGuid,
+		//		});
+		//}
 
 		// Gizmo Axis draw 
 		{

@@ -2,7 +2,6 @@
 
 #include <d3d12.h>
 #include <D3Dcompiler.h>
-#include <dxcapi.h>
 
 #include "DataManager/DataManager.h"
 #include "Utils/Log.h"
@@ -68,7 +67,8 @@ namespace JoyEngine
 	{
 		if (dxil_module == nullptr)
 		{
-			dxil_module = LoadLibrary(L"dxil.dll");
+			
+			dxil_module = LoadLibrary(L"ThirdParty/dxc/bin/x64/dxil.dll");
 			ASSERT(dxil_module != nullptr);
 			dxil_create_func = (DxcCreateInstanceProc)GetProcAddress(dxil_module, "DxcCreateInstance");
 			ASSERT(dxil_create_func != nullptr);
@@ -76,7 +76,7 @@ namespace JoyEngine
 
 		if (dxc_module == nullptr)
 		{
-			dxc_module = LoadLibrary(L"dxcompiler.dll");
+			dxc_module = LoadLibrary(L"ThirdParty/dxc/bin/x64/dxcompiler.dll");
 			ASSERT(dxc_module != nullptr);
 			dxc_create_func = (DxcCreateInstanceProc)GetProcAddress(dxc_module, "DxcCreateInstance");
 			ASSERT(dxc_create_func != nullptr);

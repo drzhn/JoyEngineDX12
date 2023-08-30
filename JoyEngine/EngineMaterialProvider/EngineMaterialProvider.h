@@ -19,7 +19,7 @@ namespace JoyEngine
 		void Init();
 
 		[[nodiscard]] ResourceHandle<SharedMaterial> GetStandardSharedMaterial() const noexcept { return m_standardSharedMaterial; }
-		[[nodiscard]] ResourceHandle<ComputePipeline> GetMipsGenerationComputePipeline() const noexcept { return m_generateMipsComputePipeline; }
+		//[[nodiscard]] ResourceHandle<ComputePipeline> GetMipsGenerationComputePipeline() const noexcept { return m_generateMipsComputePipeline; }
 		[[nodiscard]] ResourceHandle<SharedMaterial> GetGizmoAxisDrawerSharedMaterial() const noexcept { return m_gizmoAxisDrawerSharedMaterial; }
 		[[nodiscard]] ResourceHandle<SharedMaterial> GetGBufferWriteSharedMaterial() const noexcept { return m_gbufferWriteSharedMaterial; }
 		[[nodiscard]] ResourceHandle<SharedMaterial> GetDeferredShadingProcessorSharedMaterial() const noexcept { return m_deferredShadingProcessorSharedMaterial; }
@@ -51,7 +51,7 @@ namespace JoyEngine
 	private:
 		ResourceHandle<SharedMaterial> m_standardSharedMaterial;
 
-		ResourceHandle<ComputePipeline> m_generateMipsComputePipeline;
+		//ResourceHandle<ComputePipeline> m_generateMipsComputePipeline;
 
 		ResourceHandle<SharedMaterial> m_gizmoAxisDrawerSharedMaterial;
 

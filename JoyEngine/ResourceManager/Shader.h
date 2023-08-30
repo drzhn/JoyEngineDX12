@@ -41,6 +41,7 @@ namespace JoyEngine
 		ComPtr<ID3DBlob> m_fragmentModule;
 		ComPtr<ID3DBlob> m_geometryModule;
 		ComPtr<ID3DBlob> m_computeModule;
+		ComPtr<ID3DBlob> m_raytracingModule;
 
 		std::map<std::string, ShaderInput> m_inputMap;
 	};

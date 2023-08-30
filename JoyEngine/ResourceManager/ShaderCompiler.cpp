@@ -67,7 +67,6 @@ namespace JoyEngine
 	{
 		if (dxil_module == nullptr)
 		{
-			
 			dxil_module = LoadLibrary(L"ThirdParty/dxc/bin/x64/dxil.dll");
 			ASSERT(dxil_module != nullptr);
 			dxil_create_func = (DxcCreateInstanceProc)GetProcAddress(dxil_module, "DxcCreateInstance");
@@ -109,9 +108,7 @@ namespace JoyEngine
 		}
 
 
-		const char* entryPoint = nullptr;
 		LPCWSTR entryPointL = nullptr;
-		const char* target = nullptr;
 		LPCWSTR targetL = nullptr;
 		D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL;
 
@@ -146,10 +143,8 @@ namespace JoyEngine
 			ASSERT(false);
 		}
 
-		ComPtr<ID3D12ShaderReflection> reflection;
 
-
-		DxcDefine Shader_Macros[] = { {L"SHADER", L"1"}, nullptr, nullptr };
+		DxcDefine Shader_Macros[] = {{L"SHADER", L"1"}, nullptr, nullptr};
 		IDxcIncludeHandler* includeHandler = m_commonEngineStructsInclude.get();
 
 		ComPtr<IDxcBlobEncoding> sourceBlob;
@@ -166,8 +161,9 @@ namespace JoyEngine
 		LPCWSTR arguments[] = {
 			L"/Od", // D3DCOMPILE_SKIP_OPTIMIZATION 
 			L"/Zi", // D3DCOMPILE_DEBUG
+			L"-Qembed_debug",
 		};
-		uint32_t argCount = 2;
+		uint32_t argCount = 3;
 #else
 		LPCWSTR* arguments = nullptr;
 		uint32_t argCount = 0;
@@ -220,19 +216,11 @@ namespace JoyEngine
 
 		uint32_t shaderId;
 		ASSERT_SUCC(s_dxcReflection->FindFirstPartKind(DXIL_FOURCC('D', 'X', 'I', 'L'), &shaderId));
-		ASSERT_SUCC(s_dxcReflection->GetPartReflection(shaderId, __uuidof(ID3D12ShaderReflection), (void**)&reflection));
 
-
-		D3D12_SHADER_DESC desc;
-		reflection->GetDesc(&desc);
-
-		for (uint32_t i = 0; i < desc.BoundResources; i++)
+		auto processShaderInputBindDesc = [&](D3D12_SHADER_INPUT_BIND_DESC& inputBindDesc)
 		{
-			D3D12_SHADER_INPUT_BIND_DESC inputBindDesc;
-			reflection->GetResourceBindingDesc(i, &inputBindDesc);
-
 			std::string name = inputBindDesc.Name;
-			if (m_inputMap.find(name) == m_inputMap.end())
+			if (!m_inputMap.contains(name))
 			{
 				m_inputMap.insert({
 					inputBindDesc.Name,
@@ -243,11 +231,51 @@ namespace JoyEngine
 						inputBindDesc.Space,
 						visibility
 					}
-					});
+				});
 			}
 			else
 			{
 				m_inputMap[name].Visibility = D3D12_SHADER_VISIBILITY_ALL;
+			}
+		};
+
+		if (type == JoyShaderTypeRaytracing)
+		{
+			D3D12_LIBRARY_DESC libraryDesc;
+			ComPtr<ID3D12LibraryReflection> libraryReflection;
+
+			ASSERT_SUCC(s_dxcReflection->GetPartReflection(shaderId, __uuidof(ID3D12LibraryReflection), (void**)&libraryReflection));
+			libraryReflection->GetDesc(&libraryDesc);
+
+			for (uint32_t i = 0; i < libraryDesc.FunctionCount; i++)
+			{
+				ID3D12FunctionReflection* functionReflection = libraryReflection->GetFunctionByIndex(i);
+				D3D12_FUNCTION_DESC functionDesc;
+				functionReflection->GetDesc(&functionDesc);
+
+				for (uint32_t j = 0; j < functionDesc.BoundResources; j++)
+				{
+					D3D12_SHADER_INPUT_BIND_DESC inputBindDesc;
+					functionReflection->GetResourceBindingDesc(j, &inputBindDesc);
+
+					processShaderInputBindDesc(inputBindDesc);
+				}
+			}
+		}
+		else
+		{
+			D3D12_SHADER_DESC shaderDesc;
+			ComPtr<ID3D12ShaderReflection> shaderReflection;
+
+			ASSERT_SUCC(s_dxcReflection->GetPartReflection(shaderId, __uuidof(ID3D12ShaderReflection), (void**)&shaderReflection));
+			shaderReflection->GetDesc(&shaderDesc);
+
+			for (uint32_t i = 0; i < shaderDesc.BoundResources; i++)
+			{
+				D3D12_SHADER_INPUT_BIND_DESC inputBindDesc;
+				shaderReflection->GetResourceBindingDesc(i, &inputBindDesc);
+
+				processShaderInputBindDesc(inputBindDesc);
 			}
 		}
 	}

@@ -18,8 +18,6 @@ namespace JoyEngine
 		m_skyboxTextureIndexData.SetData(TextureIndexData{.data = m_skyboxTexture->GetSRV()->GetDescriptorIndex()});
 
 		const GUID skyboxShaderGuid = GUID::StringToGuid("7e43e76d-9d5f-4fc8-a8f1-c8ec0dce95ef"); //shaders/skybox.hlsl
-		const GUID skyboxSharedMaterialGuid = GUID::Random();
-
 
 		//const D3D12_RENDER_TARGET_BLEND_DESC blendDesc = {
 		//	true,
@@ -40,8 +38,7 @@ namespace JoyEngine
 		//};
 		//blend.RenderTarget[0] = blendDesc;
 
-		m_skyboxPipeline = ResourceManager::Get()->LoadResource<GraphicsPipeline, GraphicsPipelineArgs>(
-			skyboxSharedMaterialGuid,
+		m_skyboxPipeline = std::make_unique<GraphicsPipeline>(GraphicsPipelineArgs
 			{
 				skyboxShaderGuid,
 				JoyShaderTypeVertex | JoyShaderTypePixel,

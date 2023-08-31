@@ -29,10 +29,8 @@ namespace JoyEngine
 		// Downscaling first pass
 		{
 			const GUID hdrDownscaleFirstPassShaderGuid = GUID::StringToGuid("e3e039f4-4f96-4e5b-b90b-1f46d460b724"); //shaders/hdrDownscaleFirstPass.hlsl
-			const GUID hdrDownscaleFirstPassPipelineGuid = GUID::Random();
 
-			m_hdrDownscaleFirstPassComputePipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
-				hdrDownscaleFirstPassPipelineGuid,
+			m_hdrDownscaleFirstPassComputePipeline = std::make_unique<ComputePipeline>(ComputePipelineArgs
 				{
 					hdrDownscaleFirstPassShaderGuid,
 				});
@@ -41,10 +39,8 @@ namespace JoyEngine
 		// Downscaling second pass
 		{
 			const GUID hdrDownscaleSecondPassShaderGuid = GUID::StringToGuid("c3a1592f-f12d-4c25-bcbb-1e6ace76b0fb"); //shaders/hdrDownscaleSecondPass.hlsl
-			const GUID hdrDownscaleSecondPassPipelineGuid = GUID::Random();
 
-			m_hdrDownscaleSecondPassComputePipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
-				hdrDownscaleSecondPassPipelineGuid,
+			m_hdrDownscaleSecondPassComputePipeline = std::make_unique<ComputePipeline>(ComputePipelineArgs
 				{
 					hdrDownscaleSecondPassShaderGuid,
 				});
@@ -53,10 +49,8 @@ namespace JoyEngine
 		// HDR -> LDR transition
 		{
 			const GUID hdrToLdrTransitionShaderGuid = GUID::StringToGuid("aa366fc9-b8a7-4cca-b5d3-670216174566"); //shaders/hdrToLdrTransition.hlsl
-			const GUID hdrToLdrTransitionSharedMaterialGuid = GUID::Random();
 
-			m_hdrToLdrTransitionGraphicsPipeline = ResourceManager::Get()->LoadResource<GraphicsPipeline, GraphicsPipelineArgs>(
-				hdrToLdrTransitionSharedMaterialGuid,
+			m_hdrToLdrTransitionGraphicsPipeline = std::make_unique<GraphicsPipeline>(GraphicsPipelineArgs
 				{
 					hdrToLdrTransitionShaderGuid,
 					JoyShaderTypeVertex | JoyShaderTypePixel,
@@ -140,7 +134,7 @@ namespace JoyEngine
 
 			commandList->Dispatch(m_groupSize, 1, 1);
 		}
-		
+
 		GraphicsUtils::UAVBarrier(commandList, m_hdrLuminationBuffer->GetBuffer()->GetBufferResource().Get());
 
 		// Transition

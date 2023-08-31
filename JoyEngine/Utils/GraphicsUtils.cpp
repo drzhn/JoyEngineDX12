@@ -72,7 +72,7 @@ namespace JoyEngine
 
 	void GraphicsUtils::AttachViewToGraphics(
 		ID3D12GraphicsCommandList* commandList,
-		const ResourceHandle<GraphicsPipeline>& pipeline,
+		const std::unique_ptr<GraphicsPipeline>& pipeline,
 		const char* paramName,
 		const ResourceView* view
 	)
@@ -115,7 +115,7 @@ namespace JoyEngine
 
 	void GraphicsUtils::AttachViewToCompute(
 		ID3D12GraphicsCommandList* commandList,
-		const ResourceHandle<ComputePipeline>& pipeline,
+		const std::unique_ptr<ComputePipeline>& pipeline,
 		const char* paramName,
 		D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle)
 	{
@@ -126,7 +126,7 @@ namespace JoyEngine
 
 	void GraphicsUtils::AttachViewToCompute(
 		ID3D12GraphicsCommandList* commandList,
-		const ResourceHandle<ComputePipeline>& pipeline,
+		const std::unique_ptr<ComputePipeline>& pipeline,
 		const char* paramName,
 		const ResourceView* view)
 	{

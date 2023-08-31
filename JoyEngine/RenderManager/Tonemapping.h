@@ -39,9 +39,9 @@ namespace JoyEngine
 		HDRDownScaleConstants* GetConstantsPtr() noexcept { return &m_constantsValues; }
 		void UpdateConstants(uint32_t frameIndex) const;
 	private:
-		ResourceHandle<ComputePipeline> m_hdrDownscaleFirstPassComputePipeline;
-		ResourceHandle<ComputePipeline> m_hdrDownscaleSecondPassComputePipeline;
-		ResourceHandle<GraphicsPipeline> m_hdrToLdrTransitionGraphicsPipeline;
+		std::unique_ptr<ComputePipeline> m_hdrDownscaleFirstPassComputePipeline;
+		std::unique_ptr<ComputePipeline> m_hdrDownscaleSecondPassComputePipeline;
+		std::unique_ptr<GraphicsPipeline> m_hdrToLdrTransitionGraphicsPipeline;
 
 		std::unique_ptr<UAVTexture> m_hrdDownScaledTexture;
 		std::unique_ptr<UAVGpuBuffer> m_hdrLuminationBuffer;

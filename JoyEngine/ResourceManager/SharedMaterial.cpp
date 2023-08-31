@@ -191,8 +191,7 @@ namespace JoyEngine
 
 	// =============================== COMPUTE PIPELINE =================================
 
-	ComputePipeline::ComputePipeline(GUID guid, ComputePipelineArgs args) :
-		Resource(guid)
+	ComputePipeline::ComputePipeline(ComputePipelineArgs args)
 	{
 		CreateShaderAndRootSignature(args.computeShaderGuid, JoyShaderTypeCompute);
 		CreateComputePipeline();
@@ -314,8 +313,7 @@ namespace JoyEngine
 		args.topology = topology;
 		args.renderTargetsFormats = renderTargetsFormats;
 
-		GUID graphicsPipelineGuid = GUID::Random();
-		m_graphicsPipeline = ResourceManager::Get()->LoadResource<GraphicsPipeline>(graphicsPipelineGuid, args);
+		m_graphicsPipeline = std::make_unique<GraphicsPipeline>(args);
 
 		RenderManager::Get()->RegisterSharedMaterial(this);
 	}
@@ -324,7 +322,7 @@ namespace JoyEngine
 		Resource(guid)
 	{
 		GUID graphicsPipelineGuid = GUID::Random();
-		m_graphicsPipeline = ResourceManager::Get()->LoadResource<GraphicsPipeline>(graphicsPipelineGuid, args);
+		m_graphicsPipeline = std::make_unique<GraphicsPipeline>(args);
 
 		RenderManager::Get()->RegisterSharedMaterial(this);
 	}
@@ -337,7 +335,7 @@ namespace JoyEngine
 
 	bool SharedMaterial::IsLoaded() const noexcept
 	{
-		return m_graphicsPipeline->IsLoaded();
+		return true;
 	}
 
 	void SharedMaterial::RegisterMeshRenderer(MeshRenderer* meshRenderer)
@@ -359,9 +357,9 @@ namespace JoyEngine
 		return m_meshRenderers;
 	}
 
-	GraphicsPipeline* SharedMaterial::GetGraphicsPipeline()
+	GraphicsPipeline* SharedMaterial::GetGraphicsPipeline() const
 	{
-		return m_graphicsPipeline;
+		return m_graphicsPipeline.get();
 	}
 
 	uint32_t SharedMaterial::GetBindingIndexByHash(uint32_t hash) const
@@ -390,8 +388,7 @@ namespace JoyEngine
 		},
 	};
 
-	GraphicsPipeline::GraphicsPipeline(const GUID guid, const GraphicsPipelineArgs& args) :
-		Resource(guid),
+	GraphicsPipeline::GraphicsPipeline(const GraphicsPipelineArgs& args) :
 		m_topology(args.topology),
 		m_hasVertexInput(args.hasVertexInput),
 		m_depthTest(args.depthTest),

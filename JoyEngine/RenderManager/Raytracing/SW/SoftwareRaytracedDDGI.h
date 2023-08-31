@@ -83,14 +83,14 @@ namespace JoyEngine
 		std::unique_ptr<BVHConstructor> m_bvhConstructor;
 		std::unique_ptr<ComputeDispatcher> m_dispatcher;
 
-		ResourceHandle<ComputePipeline> m_raytracingPipeline;
-		ResourceHandle<ComputePipeline> m_probeIrradiancePipeline;
-		ResourceHandle<GraphicsPipeline> m_raytracedImageApplier;
+		std::unique_ptr<ComputePipeline> m_raytracingPipeline;
+		std::unique_ptr<ComputePipeline> m_probeIrradiancePipeline;
+		std::unique_ptr<GraphicsPipeline> m_raytracedImageApplier;
 
 		ResourceHandle<Mesh> m_debugSphereProbeMesh;
-		ResourceHandle<GraphicsPipeline> m_debugDrawProbesGraphicsPipeline;
-		ResourceHandle<GraphicsPipeline> m_debugGizmoAABBDrawerGraphicsPipeline;
-		ResourceHandle<GraphicsPipeline> m_debugRaytracingTextureDrawGraphicsPipeline;
+		std::unique_ptr<GraphicsPipeline> m_debugDrawProbesGraphicsPipeline;
+		std::unique_ptr<GraphicsPipeline> m_debugGizmoAABBDrawerGraphicsPipeline;
+		std::unique_ptr<GraphicsPipeline> m_debugRaytracingTextureDrawGraphicsPipeline;
 	};
 }
 #endif // SOFTWARE_RAYTRACED_DDGI_H

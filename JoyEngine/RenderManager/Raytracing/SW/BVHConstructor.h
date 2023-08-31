@@ -28,7 +28,7 @@ namespace JoyEngine
 		);
 
 		void ConstructTree();
-		void ConstructBVH();
+		void ConstructBVH() const;
 	private:
 		DataBuffer<uint32_t>* m_sortedMortonCodes;
 		DataBuffer<uint32_t>* m_sortedTriangleIndices;
@@ -40,8 +40,8 @@ namespace JoyEngine
 
 		std::unique_ptr<DataBuffer<uint32_t>> m_atomics;
 
-		ResourceHandle<ComputePipeline> m_bvhTreeConstructorPipeline;
-		ResourceHandle<ComputePipeline> m_bvhMergerPipeline;
+		std::unique_ptr<ComputePipeline> m_bvhTreeConstructorPipeline;
+		std::unique_ptr<ComputePipeline> m_bvhMergerPipeline;
 
 
 		ComputeDispatcher* m_dispatcher = nullptr;

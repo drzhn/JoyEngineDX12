@@ -65,22 +65,20 @@ namespace JoyEngine
 		void CreateRootSignature(const CD3DX12_ROOT_PARAMETER1* params, uint32_t paramsCount);
 	};
 
-	class ComputePipeline final : public Resource, public AbstractPipelineObject
+	class ComputePipeline final : public AbstractPipelineObject
 	{
 	public:
 		ComputePipeline() = delete;
-		explicit ComputePipeline(GUID, ComputePipelineArgs);
-		[[nodiscard]] bool IsLoaded() const noexcept override { return true; }
+		explicit ComputePipeline(ComputePipelineArgs);
 	private:
 		void CreateComputePipeline();
 	};
 
-	class GraphicsPipeline : public Resource, public AbstractPipelineObject
+	class GraphicsPipeline : public AbstractPipelineObject
 	{
 	public:
-		explicit GraphicsPipeline(GUID, const GraphicsPipelineArgs&);
+		explicit GraphicsPipeline(const GraphicsPipelineArgs&);
 		[[nodiscard]] D3D12_PRIMITIVE_TOPOLOGY_TYPE GetTopology() const { return m_topology; }
-		[[nodiscard]] bool IsLoaded() const noexcept override { return true; }
 
 	private:
 		void CreateGraphicsPipeline(const std::vector<DXGI_FORMAT>& renderTargetsFormats, CD3DX12_BLEND_DESC blendDesc, DXGI_FORMAT depthFormat, D3D12_PRIMITIVE_TOPOLOGY_TYPE topology);
@@ -109,7 +107,7 @@ namespace JoyEngine
 		[[nodiscard]] bool IsLoaded() const noexcept override;
 
 		[[nodiscard]] std::set<MeshRenderer*>& GetMeshRenderers();
-		[[nodiscard]] GraphicsPipeline* GetGraphicsPipeline();
+		[[nodiscard]] GraphicsPipeline* GetGraphicsPipeline() const;
 		[[nodiscard]] uint32_t GetBindingIndexByHash(uint32_t hash) const;
 
 		void RegisterMeshRenderer(MeshRenderer* meshRenderer);
@@ -118,7 +116,7 @@ namespace JoyEngine
 
 	private :
 		std::set<MeshRenderer*> m_meshRenderers;
-		ResourceHandle<GraphicsPipeline> m_graphicsPipeline;
+		std::unique_ptr<GraphicsPipeline> m_graphicsPipeline;
 	};
 }
 

@@ -20,10 +20,8 @@ namespace JoyEngine
 			{
 				//shaders/raytracing/LocalRadixSort.hlsl
 				const GUID localRadixSortShaderGuid = GUID::StringToGuid("fb423066-e885-4ea4-93d5-01b69037a9aa");
-				const GUID localRaidxSortPipelineGuid = GUID::Random();
 
-				m_localRaidxSortPipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
-					localRaidxSortPipelineGuid,
+				m_localRaidxSortPipeline = std::make_unique<ComputePipeline>(ComputePipelineArgs
 					{
 						localRadixSortShaderGuid,
 						D3D_SHADER_MODEL_6_5
@@ -35,10 +33,8 @@ namespace JoyEngine
 			{
 				//shaders/raytracing/PreScan.hlsl
 				const GUID preScanShaderGuid = GUID::StringToGuid("8190cec8-aa5a-420e-8de2-34c6f838476c");
-				const GUID preScanPipelineGuid = GUID::Random();
 
-				m_preScanPipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
-					preScanPipelineGuid,
+				m_preScanPipeline = std::make_unique<ComputePipeline>(ComputePipelineArgs
 					{
 						preScanShaderGuid,
 						D3D_SHADER_MODEL_6_5
@@ -47,10 +43,8 @@ namespace JoyEngine
 			{
 				//shaders/raytracing/BlockSum.hlsl
 				const GUID blockSumShaderGuid = GUID::StringToGuid("d00ec3ea-53c4-48f3-bc42-d775c67db85c");
-				const GUID blockSumPipelineGuid = GUID::Random();
 
-				m_blockSumSortPipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
-					blockSumPipelineGuid,
+				m_blockSumSortPipeline = std::make_unique<ComputePipeline>(ComputePipelineArgs
 					{
 						blockSumShaderGuid,
 						D3D_SHADER_MODEL_6_5
@@ -59,10 +53,8 @@ namespace JoyEngine
 			{
 				//shaders/raytracing/GlobalScan.hlsl
 				const GUID globalScanShaderGuid = GUID::StringToGuid("8e67cd9b-afdf-409e-bb98-a79ad3f692c8");
-				const GUID globalScanPipelineGuid = GUID::Random();
 
-				m_globalScanPipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
-					globalScanPipelineGuid,
+				m_globalScanPipeline = std::make_unique<ComputePipeline>(ComputePipelineArgs
 					{
 						globalScanShaderGuid,
 						D3D_SHADER_MODEL_6_5
@@ -75,10 +67,8 @@ namespace JoyEngine
 			{
 				//shaders/raytracing/GlobalRadixSort.hlsl
 				const GUID globalRadixSortShaderGuid = GUID::StringToGuid("fc94651f-874c-49c8-9b01-83a238ce580b");
-				const GUID globalRadixSortPipelineGuid = GUID::Random();
 
-				m_globalRadixSortPipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
-					globalRadixSortPipelineGuid,
+				m_globalRadixSortPipeline = std::make_unique<ComputePipeline>(ComputePipelineArgs
 					{
 						globalRadixSortShaderGuid,
 						D3D_SHADER_MODEL_6_5

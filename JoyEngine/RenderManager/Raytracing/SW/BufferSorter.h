@@ -21,11 +21,11 @@ namespace JoyEngine
 		DataBuffer<uint32_t>* m_keys;
 		DataBuffer<uint32_t>* m_values;
 
-		ResourceHandle<ComputePipeline> m_localRaidxSortPipeline;
-		ResourceHandle<ComputePipeline> m_preScanPipeline;
-		ResourceHandle<ComputePipeline> m_blockSumSortPipeline;
-		ResourceHandle<ComputePipeline> m_globalScanPipeline;
-		ResourceHandle<ComputePipeline> m_globalRadixSortPipeline;
+		std::unique_ptr<ComputePipeline> m_localRaidxSortPipeline;
+		std::unique_ptr<ComputePipeline> m_preScanPipeline;
+		std::unique_ptr<ComputePipeline> m_blockSumSortPipeline;
+		std::unique_ptr<ComputePipeline> m_globalScanPipeline;
+		std::unique_ptr<ComputePipeline> m_globalRadixSortPipeline;
 
 		std::unique_ptr<DataBuffer<uint32_t>> m_sortedBlocksKeysData;
 		std::unique_ptr<DataBuffer<uint32_t>> m_sortedBlocksValuesData;

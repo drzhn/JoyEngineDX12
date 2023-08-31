@@ -21,7 +21,7 @@ namespace JoyEngine
 	private:
 		ResourceHandle<Texture> m_skyboxTexture;
 		ResourceHandle<Mesh> m_skyboxMesh;
-		ResourceHandle<GraphicsPipeline> m_skyboxPipeline;
+		std::unique_ptr<GraphicsPipeline> m_skyboxPipeline;
 
 		ConstantCpuBuffer<TextureIndexData> m_skyboxTextureIndexData;
 	};

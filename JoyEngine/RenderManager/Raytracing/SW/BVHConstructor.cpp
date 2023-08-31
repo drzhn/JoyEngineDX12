@@ -34,10 +34,8 @@ namespace JoyEngine
 		{
 			//shaders/raytracing/BVHTreeConstructor.hlsl
 			const GUID bvhTreeConstructorShaderGuid = GUID::StringToGuid("326057ce-8c0c-40be-b912-67b63d25211e");
-			const GUID bvhTreeConstructorPipelineGuid = GUID::Random();
 
-			m_bvhTreeConstructorPipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
-				bvhTreeConstructorPipelineGuid,
+			m_bvhTreeConstructorPipeline = std::make_unique<ComputePipeline>(ComputePipelineArgs
 				{
 					bvhTreeConstructorShaderGuid,
 					D3D_SHADER_MODEL_6_5
@@ -48,10 +46,8 @@ namespace JoyEngine
 		{
 			//shaders/raytracing/BVHAABBMerger.hlsl
 			const GUID bvhMergerShaderGuid = GUID::StringToGuid("d611cd9f-6ce0-42f5-b908-af7289b0eae5");
-			const GUID bvhMergerPipelineGuid = GUID::Random();
 
-			m_bvhMergerPipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
-				bvhMergerPipelineGuid,
+			m_bvhMergerPipeline = std::make_unique<ComputePipeline>(ComputePipelineArgs
 				{
 					bvhMergerShaderGuid,
 					D3D_SHADER_MODEL_6_5
@@ -89,7 +85,7 @@ namespace JoyEngine
 		m_dispatcher->ExecuteAndWait();
 	}
 
-	void BVHConstructor::ConstructBVH()
+	void BVHConstructor::ConstructBVH() const
 	{
 		TIME_PERF("Scene BVH merge");
 

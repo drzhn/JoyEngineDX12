@@ -164,10 +164,8 @@ namespace JoyEngine
 			{
 				// generate texture w = probesCount, h = DDGI_RAYS_COUNT
 				const GUID raytracingShaderGuid = GUID::StringToGuid("b24e90ac-fcfa-4754-b0e5-8553b19e27ca"); //shaders/raytracing/Raytracing.hlsl
-				const GUID raytracingPipelineGuid = GUID::Random();
 
-				m_raytracingPipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
-					raytracingPipelineGuid,
+				m_raytracingPipeline = std::make_unique<ComputePipeline>(ComputePipelineArgs
 					{
 						raytracingShaderGuid,
 						D3D_SHADER_MODEL_6_5
@@ -179,8 +177,7 @@ namespace JoyEngine
 				const GUID pipelineIrradianceShaderGuid = GUID::StringToGuid("1d69c9ec-de6a-4fff-96ea-3a68808ca8f7"); //shaders/raytracing/ProbeIrradiance.hlsl
 				const GUID pipelineIrradiancePipelineGuid = GUID::Random();
 
-				m_probeIrradiancePipeline = ResourceManager::Get()->LoadResource<ComputePipeline, ComputePipelineArgs>(
-					pipelineIrradiancePipelineGuid,
+				m_probeIrradiancePipeline = std::make_unique<ComputePipeline>(ComputePipelineArgs
 					{
 						pipelineIrradianceShaderGuid
 					});
@@ -192,9 +189,7 @@ namespace JoyEngine
 			const GUID debugImageComposerShaderGuid = GUID::StringToGuid("cc8de13c-0510-4842-99f5-de2327aa95d4"); // shaders/raytracing/debugImageCompose.hlsl
 			const GUID debugImageComposerSharedMaterialGuid = GUID::Random();
 
-			m_debugRaytracingTextureDrawGraphicsPipeline = ResourceManager::Get()->LoadResource<
-				GraphicsPipeline, GraphicsPipelineArgs>(
-				debugImageComposerSharedMaterialGuid,
+			m_debugRaytracingTextureDrawGraphicsPipeline = std::make_unique<GraphicsPipeline>(GraphicsPipelineArgs
 				{
 					debugImageComposerShaderGuid,
 					JoyShaderTypeVertex | JoyShaderTypePixel,
@@ -216,10 +211,8 @@ namespace JoyEngine
 		{
 			const GUID gizmoAABBDrawerShaderGuid = GUID::StringToGuid("a231c467-dc15-4753-a3db-8888efc73c1a");
 			// shaders/raytracing/gizmoAABBDrawer.hlsl
-			const GUID gizmoAABBDrawerSharedMaterialGuid = GUID::Random();
 
-			m_debugGizmoAABBDrawerGraphicsPipeline = ResourceManager::Get()->LoadResource<GraphicsPipeline, GraphicsPipelineArgs>(
-				gizmoAABBDrawerSharedMaterialGuid,
+			m_debugGizmoAABBDrawerGraphicsPipeline = std::make_unique<GraphicsPipeline>(GraphicsPipelineArgs
 				{
 					gizmoAABBDrawerShaderGuid,
 					JoyShaderTypeVertex | JoyShaderTypePixel,
@@ -246,8 +239,7 @@ namespace JoyEngine
 			const GUID drawProbesShaderGuid = GUID::StringToGuid("8757d834-8dd7-4858-836b-bb6a4eb6fea0"); //shaders/raytracing/debugDrawProbes.hlsl
 			const GUID drawProbesSharedMaterialGuid = GUID::Random();
 
-			m_debugDrawProbesGraphicsPipeline = ResourceManager::Get()->LoadResource<GraphicsPipeline, GraphicsPipelineArgs>(
-				drawProbesSharedMaterialGuid,
+			m_debugDrawProbesGraphicsPipeline = std::make_unique<GraphicsPipeline>(GraphicsPipelineArgs
 				{
 					drawProbesShaderGuid,
 					JoyShaderTypeVertex | JoyShaderTypePixel,
@@ -420,7 +412,7 @@ namespace JoyEngine
 
 	void SoftwareRaytracedDDGI::DebugDrawRaytracedImage(ID3D12GraphicsCommandList* commandList) const
 	{
-		auto sm = m_debugRaytracingTextureDrawGraphicsPipeline;
+		auto& sm = m_debugRaytracingTextureDrawGraphicsPipeline;
 
 		commandList->SetPipelineState(sm->GetPipelineObject().Get());
 		commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
@@ -436,9 +428,9 @@ namespace JoyEngine
 	}
 
 	void SoftwareRaytracedDDGI::DebugDrawAABBGizmo(ID3D12GraphicsCommandList* commandList,
-	                                              const ViewProjectionMatrixData* viewProjectionMatrixData) const
+	                                               const ViewProjectionMatrixData* viewProjectionMatrixData) const
 	{
-		auto sm = m_debugGizmoAABBDrawerGraphicsPipeline;
+		auto& sm = m_debugGizmoAABBDrawerGraphicsPipeline;
 
 		commandList->SetPipelineState(sm->GetPipelineObject().Get());
 		commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
@@ -459,7 +451,7 @@ namespace JoyEngine
 
 	void SoftwareRaytracedDDGI::DebugDrawProbes(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, const ViewProjectionMatrixData* viewProjectionMatrixData) const
 	{
-		auto sm = m_debugDrawProbesGraphicsPipeline;
+		auto& sm = m_debugDrawProbesGraphicsPipeline;
 
 		commandList->SetPipelineState(sm->GetPipelineObject().Get());
 		commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());

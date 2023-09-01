@@ -57,6 +57,10 @@ namespace JoyEngine
 	private:
 		ResourceHandle<Shader> m_raytracingShader;
 		ComPtr<ID3D12StateObject> m_stateObject;
+
+		// Root signatures
+		ComPtr<ID3D12RootSignature> m_raytracingGlobalRootSignature;
+		ComPtr<ID3D12RootSignature> m_raytracingLocalRootSignature;
 	};
 
 	class AbstractPipelineObject

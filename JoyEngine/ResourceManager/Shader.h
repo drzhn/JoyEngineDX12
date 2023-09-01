@@ -31,6 +31,7 @@ namespace JoyEngine
 		[[nodiscard]] ComPtr<ID3DBlob> GetFragmentShadeModule() const noexcept { return m_fragmentModule; }
 		[[nodiscard]] ComPtr<ID3DBlob> GetGeometryShadeModule() const noexcept { return m_geometryModule; }
 		[[nodiscard]] ComPtr<ID3DBlob> GetComputeShadeModule() const noexcept { return m_computeModule; }
+		[[nodiscard]] ComPtr<ID3DBlob> GetRaytracingShadeModule() const noexcept { return m_raytracingModule; }
 		// TODO other types
 		[[nodiscard]] bool IsLoaded() const noexcept override { return true; }
 

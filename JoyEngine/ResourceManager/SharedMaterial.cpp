@@ -26,6 +26,11 @@ using Microsoft::WRL::ComPtr;
 
 namespace JoyEngine
 {
+	const wchar_t* g_hitGroupName = L"MyHitGroup";
+	const wchar_t* g_raygenShaderName = L"MyRaygenShader";
+	const wchar_t* g_closestHitShaderName = L"MyClosestHitShader";
+	const wchar_t* g_missShaderName = L"MyMissShader";
+
 	RaytracingPipeline::RaytracingPipeline(const RaytracingPipelineArgs& args)
 	{
 		m_raytracingShader = ResourceManager::Get()->LoadResource<Shader>(
@@ -33,8 +38,85 @@ namespace JoyEngine
 			JoyShaderTypeRaytracing
 		);
 
-		// D3D12_STATE_OBJECT_DESC stateObjectDesc{};
-		// ASSERT_SUCC(GraphicsManager::Get()->GetDevice()->CreateStateObject(&stateObjectDesc, IID_PPV_ARGS(&m_stateObject)));
+		D3D12_STATE_SUBOBJECT stateSubobjects[8];
+		auto& dxilLibrarySubobject = stateSubobjects[0];
+		auto& raytracingShaderConfigSubobject = stateSubobjects[1];
+		auto& raytracingPipelineConfigSubobject = stateSubobjects[2];
+		auto& localRootSignatureSubobject = stateSubobjects[3];
+
+		const uint32_t numSubobjects = 4;
+
+		// dxil Library
+		D3D12_EXPORT_DESC exportDescs[3] = {
+			{
+				.Name = g_raygenShaderName,
+				.ExportToRename = nullptr,
+				.Flags = D3D12_EXPORT_FLAG_NONE
+			},
+			{
+				.Name = g_closestHitShaderName,
+				.ExportToRename = nullptr,
+				.Flags = D3D12_EXPORT_FLAG_NONE
+			},
+			{
+				.Name = g_missShaderName,
+				.ExportToRename = nullptr,
+				.Flags = D3D12_EXPORT_FLAG_NONE
+			}
+		};
+
+		D3D12_DXIL_LIBRARY_DESC libraryDesc{
+			.DXILLibrary = CD3DX12_SHADER_BYTECODE(m_raytracingShader->GetRaytracingShadeModule().Get()),
+			.NumExports = 3,
+			.pExports = exportDescs
+		};
+
+		dxilLibrarySubobject = {
+			.Type = D3D12_STATE_SUBOBJECT_TYPE_DXIL_LIBRARY,
+			.pDesc = &libraryDesc
+		};
+
+		// raystracing shader config
+		D3D12_RAYTRACING_SHADER_CONFIG raytracingShaderConfig{
+			.MaxPayloadSizeInBytes = 4 * sizeof(float), // float4 color
+			.MaxAttributeSizeInBytes = 2 * sizeof(float) // float2 barycentrics
+		};
+
+		raytracingShaderConfigSubobject = {
+			.Type = D3D12_STATE_SUBOBJECT_TYPE_RAYTRACING_SHADER_CONFIG,
+			.pDesc = &raytracingShaderConfig
+		};
+
+		// raytracing Pipeline Config Subobject
+		D3D12_RAYTRACING_PIPELINE_CONFIG raytracingPipelineConfig{
+			.MaxTraceRecursionDepth = 1 // ~ primary rays only. 
+		};
+
+		raytracingPipelineConfigSubobject = {
+			.Type = D3D12_STATE_SUBOBJECT_TYPE_RAYTRACING_PIPELINE_CONFIG,
+			.pDesc = &raytracingPipelineConfig
+		};
+
+		// local Root Signature Subobject
+		D3D12_LOCAL_ROOT_SIGNATURE localRootSignature{
+			.pLocalRootSignature = nullptr
+		};
+
+		localRootSignatureSubobject = {
+			.Type = D3D12_STATE_SUBOBJECT_TYPE_LOCAL_ROOT_SIGNATURE,
+			.pDesc = &localRootSignature
+		};
+
+		// ===================================
+
+		D3D12_STATE_OBJECT_DESC stateObjectDesc{
+			.Type = D3D12_STATE_OBJECT_TYPE_RAYTRACING_PIPELINE,
+			.NumSubobjects = numSubobjects,
+			.pSubobjects = stateSubobjects
+		};
+
+		ASSERT_SUCC(GraphicsManager::Get()->GetDevice()->CreateStateObject(&stateObjectDesc, IID_PPV_ARGS(&m_stateObject)));
+		int a = 5;
 	}
 
 	// =============================== ABSTRACT PIPELINE =================================

@@ -115,7 +115,7 @@ namespace JoyEngine
 			m_width,
 			m_height);
 
-		m_testHWRaytracing = std::make_unique<HardwareRaytracedDDGI>();
+		//m_testHWRaytracing = std::make_unique<HardwareRaytracedDDGI>();
 
 		m_transformProvider = std::make_unique<TransformProvider>(frameCount);
 		m_lightSystem = std::make_unique<ClusteredLightSystem>(frameCount);

@@ -43,6 +43,22 @@ namespace JoyEngine
 		D3D_SHADER_MODEL shaderModel;
 	};
 
+	struct RaytracingPipelineArgs
+	{
+		GUID raytracingShaderGuid;
+	};
+
+	// TODO merge with abstract pipeline object?
+	class RaytracingPipeline
+	{
+	public:
+		RaytracingPipeline() = delete;
+		explicit RaytracingPipeline(const RaytracingPipelineArgs&);
+	private:
+		ResourceHandle<Shader> m_raytracingShader;
+		ComPtr<ID3D12StateObject> m_stateObject;
+	};
+
 	class AbstractPipelineObject
 	{
 	public:
@@ -70,7 +86,7 @@ namespace JoyEngine
 	{
 	public:
 		ComputePipeline() = delete;
-		explicit ComputePipeline(ComputePipelineArgs);
+		explicit ComputePipeline(const ComputePipelineArgs&);
 	private:
 		void CreateComputePipeline();
 	};
@@ -78,6 +94,7 @@ namespace JoyEngine
 	class GraphicsPipeline : public AbstractPipelineObject
 	{
 	public:
+		GraphicsPipeline() = delete;
 		explicit GraphicsPipeline(const GraphicsPipelineArgs&);
 		[[nodiscard]] D3D12_PRIMITIVE_TOPOLOGY_TYPE GetTopology() const { return m_topology; }
 

@@ -29,8 +29,8 @@ namespace JoyEngine
 		[[nodiscard]] HINSTANCE GetHINSTANCE() const noexcept { return m_windowInstance; }
 		[[nodiscard]] HWND GetHWND() const noexcept { return m_windowHandle; }
 		[[nodiscard]] IDXGIAdapter4* GetPhysicalDevice() const noexcept { return m_physicalDevice.Get(); }
-		[[nodiscard]] ID3D12Device2* GetDevice() const noexcept { return m_logicalDevice.Get(); }
-		[[nodiscard]] IDXGIFactory4* GetFactory() const noexcept { return m_dxgiFactory.Get(); }
+		[[nodiscard]] ID3D12Device5* GetDevice() const noexcept { return m_logicalDevice.Get(); }
+		[[nodiscard]] IDXGIFactory5* GetFactory() const noexcept { return m_dxgiFactory.Get(); }
 		[[nodiscard]] uint32_t GetWidth() const noexcept { return m_width; }
 		[[nodiscard]] uint32_t GetHeight() const noexcept { return m_height; }
 		[[nodiscard]] bool GetTearingSupport() const noexcept { return m_allowTearing; }

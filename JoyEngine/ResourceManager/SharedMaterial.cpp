@@ -26,11 +26,22 @@ using Microsoft::WRL::ComPtr;
 
 namespace JoyEngine
 {
+	RaytracingPipeline::RaytracingPipeline(const RaytracingPipelineArgs& args)
+	{
+		m_raytracingShader = ResourceManager::Get()->LoadResource<Shader>(
+			args.raytracingShaderGuid,
+			JoyShaderTypeRaytracing
+		);
+
+		// D3D12_STATE_OBJECT_DESC stateObjectDesc{};
+		// ASSERT_SUCC(GraphicsManager::Get()->GetDevice()->CreateStateObject(&stateObjectDesc, IID_PPV_ARGS(&m_stateObject)));
+	}
+
 	// =============================== ABSTRACT PIPELINE =================================
 
 	ShaderInput const* AbstractPipelineObject::GetShaderInputByName(const std::string& name) const
 	{
-		if (m_shader->GetInputMap().find(name) != m_shader->GetInputMap().end())
+		if (m_shader->GetInputMap().contains(name))
 		{
 			return &m_shader->GetInputMap().find(name)->second;
 		}
@@ -39,7 +50,7 @@ namespace JoyEngine
 
 	uint32_t AbstractPipelineObject::GetBindingIndexByName(const std::string& name) const
 	{
-		ASSERT(m_rootIndices.find(strHash(name.c_str())) != m_rootIndices.end());
+		ASSERT(m_rootIndices.contains(strHash(name.c_str())));
 		return m_rootIndices.find(strHash(name.c_str()))->second;
 	}
 
@@ -47,7 +58,7 @@ namespace JoyEngine
 	{
 		if (!m_rootIndices.contains(hash))
 		{
-			Logger::LogFormat("Warning: pipline doesn't contain hash %d", hash);
+			Logger::LogFormat("Warning: pipeline doesn't contain hash %d", hash);
 			return -1;
 		}
 		return m_rootIndices.find(hash)->second;
@@ -175,13 +186,22 @@ namespace JoyEngine
 			D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
 		ComPtr<ID3DBlob> signature;
+		ID3D10Blob** errorPtr = nullptr;
+#ifdef _DEBUG
 		ComPtr<ID3DBlob> error;
+		errorPtr = &error;
+#endif
+
 		const HRESULT result = D3DX12SerializeVersionedRootSignature(
 			&rootSignatureDesc,
 			GraphicsManager::Get()->GetHighestRootSignatureVersion(),
 			&signature,
-			&error);
+			errorPtr);
+
+#ifdef _DEBUG
 		ASSERT_DESC(result == S_OK, static_cast<const char*>(error->GetBufferPointer()));
+#endif
+
 		ASSERT_SUCC(GraphicsManager::Get()->GetDevice()->CreateRootSignature(
 			0,
 			signature->GetBufferPointer(),
@@ -191,7 +211,7 @@ namespace JoyEngine
 
 	// =============================== COMPUTE PIPELINE =================================
 
-	ComputePipeline::ComputePipeline(ComputePipelineArgs args)
+	ComputePipeline::ComputePipeline(const ComputePipelineArgs& args)
 	{
 		CreateShaderAndRootSignature(args.computeShaderGuid, JoyShaderTypeCompute);
 		CreateComputePipeline();

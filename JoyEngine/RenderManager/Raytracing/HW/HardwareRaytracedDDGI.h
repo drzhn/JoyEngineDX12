@@ -1,8 +1,9 @@
 #ifndef HARDWARE_RAYTRACED_DDGI_H
 #define HARDWARE_RAYTRACED_DDGI_H
+#include <memory>
 
-#include "ResourceManager/ResourceHandle.h"
-#include "ResourceManager/Shader.h"
+#include "ResourceManager/SharedMaterial.h"
+
 
 namespace JoyEngine
 {
@@ -11,7 +12,7 @@ namespace JoyEngine
 	public:
 		HardwareRaytracedDDGI();
 	private:
-		ResourceHandle<Shader> m_testRaytracingShader;
+		std::unique_ptr<RaytracingPipeline> m_raytracingPipeline;
 	};
 }
 

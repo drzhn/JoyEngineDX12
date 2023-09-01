@@ -6,9 +6,8 @@ namespace JoyEngine
 {
 	HardwareRaytracedDDGI::HardwareRaytracedDDGI()
 	{
-		m_testRaytracingShader = ResourceManager::Get()->LoadResource<Shader>(
-			GUID::StringToGuid("b2597599-94ef-43ed-abd8-46d3adbb75d4"),
-			JoyShaderTypeRaytracing
-		);
+		m_raytracingPipeline = std::make_unique<RaytracingPipeline>(RaytracingPipelineArgs{
+			GUID::StringToGuid("b2597599-94ef-43ed-abd8-46d3adbb75d4")
+		});
 	}
 }

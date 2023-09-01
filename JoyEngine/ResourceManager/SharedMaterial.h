@@ -31,7 +31,8 @@ namespace JoyEngine
 		D3D12_CULL_MODE cullMode;
 		D3D12_COMPARISON_FUNC depthComparisonFunc;
 		CD3DX12_BLEND_DESC blendDesc;
-		std::vector<DXGI_FORMAT> renderTargetsFormats;
+		DXGI_FORMAT renderTargetsFormats[8];
+		uint32_t renderTargetsFormatsSize;
 		DXGI_FORMAT depthFormat;
 		D3D12_PRIMITIVE_TOPOLOGY_TYPE topology;
 	};
@@ -81,7 +82,7 @@ namespace JoyEngine
 		[[nodiscard]] D3D12_PRIMITIVE_TOPOLOGY_TYPE GetTopology() const { return m_topology; }
 
 	private:
-		void CreateGraphicsPipeline(const std::vector<DXGI_FORMAT>& renderTargetsFormats, CD3DX12_BLEND_DESC blendDesc, DXGI_FORMAT depthFormat, D3D12_PRIMITIVE_TOPOLOGY_TYPE topology);
+		void CreateGraphicsPipeline(const GraphicsPipelineArgs& args);
 
 		static std::vector<D3D12_INPUT_ELEMENT_DESC> m_inputLayout;
 

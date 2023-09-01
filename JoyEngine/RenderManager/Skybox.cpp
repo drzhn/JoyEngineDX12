@@ -51,6 +51,7 @@ namespace JoyEngine
 				{
 					RenderManager::GetMainColorFormat(),
 				},
+				1,
 				RenderManager::GetDepthFormat(),
 				D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 			});

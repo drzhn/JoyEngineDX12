@@ -273,12 +273,6 @@ namespace JoyEngine
 			ASSERT(false);
 		}
 
-		std::vector<DXGI_FORMAT> renderTargetsFormats
-		{
-			RenderManager::Get()->GetMainColorFormat()
-			// materials created form GUIDs can only write to one main color rtv
-		};
-
 		// Shader creation
 		args.shaderTypes = 0;
 
@@ -311,7 +305,8 @@ namespace JoyEngine
 		args.depthFormat = RenderManager::Get()->GetDepthFormat();
 		args.blendDesc = blendDesc;
 		args.topology = topology;
-		args.renderTargetsFormats = renderTargetsFormats;
+		args.renderTargetsFormats[0] = RenderManager::Get()->GetMainColorFormat();
+		args.renderTargetsFormatsSize = 1;
 
 		m_graphicsPipeline = std::make_unique<GraphicsPipeline>(args);
 
@@ -397,14 +392,10 @@ namespace JoyEngine
 		m_cullMode(args.cullMode)
 	{
 		CreateShaderAndRootSignature(args.shader, args.shaderTypes);
-		CreateGraphicsPipeline(args.renderTargetsFormats, args.blendDesc, args.depthFormat, args.topology);
+		CreateGraphicsPipeline(args);
 	}
 
-	void GraphicsPipeline::CreateGraphicsPipeline(
-		const std::vector<DXGI_FORMAT>& renderTargetsFormats,
-		CD3DX12_BLEND_DESC blendDesc,
-		DXGI_FORMAT depthFormat,
-		D3D12_PRIMITIVE_TOPOLOGY_TYPE topology)
+	void GraphicsPipeline::CreateGraphicsPipeline(const GraphicsPipelineArgs& args)
 	{
 		// Create the vertex input layout
 
@@ -427,7 +418,7 @@ namespace JoyEngine
 				? CD3DX12_SHADER_BYTECODE(m_shader->GetGeometryShadeModule().Get())
 				: emptyBytecode,
 			{},
-			blendDesc,
+			args.blendDesc,
 			UINT_MAX,
 			rasterizerDesc,
 			{
@@ -445,20 +436,19 @@ namespace JoyEngine
 				m_hasVertexInput ? static_cast<uint32_t>(m_inputLayout.size()) : 0
 			},
 			{},
-			topology,
-			// i'm sorry
-			static_cast<uint32_t>(renderTargetsFormats.size()),
+			args.topology,
+			args.renderTargetsFormatsSize,
 			{
-				renderTargetsFormats.size() > 0 ? renderTargetsFormats[0] : DXGI_FORMAT_UNKNOWN,
-				renderTargetsFormats.size() > 1 ? renderTargetsFormats[1] : DXGI_FORMAT_UNKNOWN,
-				renderTargetsFormats.size() > 2 ? renderTargetsFormats[2] : DXGI_FORMAT_UNKNOWN,
-				renderTargetsFormats.size() > 3 ? renderTargetsFormats[3] : DXGI_FORMAT_UNKNOWN,
-				renderTargetsFormats.size() > 4 ? renderTargetsFormats[4] : DXGI_FORMAT_UNKNOWN,
-				renderTargetsFormats.size() > 5 ? renderTargetsFormats[5] : DXGI_FORMAT_UNKNOWN,
-				renderTargetsFormats.size() > 6 ? renderTargetsFormats[6] : DXGI_FORMAT_UNKNOWN,
-				renderTargetsFormats.size() > 7 ? renderTargetsFormats[7] : DXGI_FORMAT_UNKNOWN
+				args.renderTargetsFormatsSize > 0 ? args.renderTargetsFormats[0] : DXGI_FORMAT_UNKNOWN,
+				args.renderTargetsFormatsSize > 1 ? args.renderTargetsFormats[1] : DXGI_FORMAT_UNKNOWN,
+				args.renderTargetsFormatsSize > 2 ? args.renderTargetsFormats[2] : DXGI_FORMAT_UNKNOWN,
+				args.renderTargetsFormatsSize > 3 ? args.renderTargetsFormats[3] : DXGI_FORMAT_UNKNOWN,
+				args.renderTargetsFormatsSize > 4 ? args.renderTargetsFormats[4] : DXGI_FORMAT_UNKNOWN,
+				args.renderTargetsFormatsSize > 5 ? args.renderTargetsFormats[5] : DXGI_FORMAT_UNKNOWN,
+				args.renderTargetsFormatsSize > 6 ? args.renderTargetsFormats[6] : DXGI_FORMAT_UNKNOWN,
+				args.renderTargetsFormatsSize > 7 ? args.renderTargetsFormats[7] : DXGI_FORMAT_UNKNOWN
 			},
-			depthFormat,
+			args.depthFormat,
 			{1, 0},
 			0,
 			{},

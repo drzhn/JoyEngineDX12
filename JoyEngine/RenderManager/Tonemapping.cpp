@@ -63,6 +63,7 @@ namespace JoyEngine
 					{
 						m_ldrRTVFormat
 					},
+					1,
 					m_depthFormat,
 					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 				});

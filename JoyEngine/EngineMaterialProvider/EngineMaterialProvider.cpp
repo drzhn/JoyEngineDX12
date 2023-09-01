@@ -61,6 +61,7 @@ namespace JoyEngine
 					{
 						swapchainLdrFormat
 					},
+					1,
 					mainDSVFormat,
 					D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE,
 				});
@@ -126,6 +127,7 @@ namespace JoyEngine
 						mainGBufferFormat,
 						mainGBufferFormat,
 					},
+					3,
 					mainDSVFormat,
 					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 				});
@@ -150,6 +152,7 @@ namespace JoyEngine
 					{
 						mainGBufferFormat,
 					},
+					1,
 					mainDSVFormat,
 					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 				});
@@ -172,6 +175,7 @@ namespace JoyEngine
 					D3D12_COMPARISON_FUNC_LESS_EQUAL,
 					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 					{}, // no rtv, only depth
+					0,
 					mainDSVFormat,
 					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 				});

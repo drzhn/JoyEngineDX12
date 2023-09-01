@@ -202,6 +202,7 @@ namespace JoyEngine
 					{
 						mainColorFormat
 					},
+					1,
 					DXGI_FORMAT_UNKNOWN,
 					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 				});
@@ -225,6 +226,7 @@ namespace JoyEngine
 					{
 						swapchainFormat
 					},
+					1,
 					DXGI_FORMAT_UNKNOWN,
 					D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE,
 				});
@@ -252,6 +254,7 @@ namespace JoyEngine
 					{
 						mainColorFormat,
 					},
+					1,
 					depthFormat,
 					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 				});

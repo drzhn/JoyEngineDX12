@@ -225,8 +225,8 @@ namespace JoyEngine
 
 			GraphicsUtils::ProcessEngineBindings(
 				commandList,
+				sm->GetGraphicsPipeline(),
 				frameIndex,
-				sm->GetGraphicsPipeline()->GetEngineBindings(),
 				mr->GetGameObject().GetTransformIndexPtr(),
 				&viewProjectionMatrixData);
 

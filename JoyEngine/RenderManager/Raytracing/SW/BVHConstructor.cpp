@@ -74,11 +74,11 @@ namespace JoyEngine
 			commandList->SetPipelineState(m_bvhTreeConstructorPipeline->GetPipelineObject().Get());
 
 
-			GraphicsUtils::AttachViewToCompute(commandList, m_bvhTreeConstructorPipeline, "data", m_bvhConstructionData->GetView());
+			GraphicsUtils::AttachView(commandList, m_bvhTreeConstructorPipeline.get(), "data", m_bvhConstructionData->GetView());
 
-			GraphicsUtils::AttachViewToCompute(commandList, m_bvhTreeConstructorPipeline, "sortedMortonCodes", m_sortedMortonCodes->GetSRV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_bvhTreeConstructorPipeline, "internalNodes", m_internalNodes->GetUAV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_bvhTreeConstructorPipeline, "leafNodes", m_leafNodes->GetUAV());
+			GraphicsUtils::AttachView(commandList, m_bvhTreeConstructorPipeline.get(), "sortedMortonCodes", m_sortedMortonCodes->GetSRV());
+			GraphicsUtils::AttachView(commandList, m_bvhTreeConstructorPipeline.get(), "internalNodes", m_internalNodes->GetUAV());
+			GraphicsUtils::AttachView(commandList, m_bvhTreeConstructorPipeline.get(), "leafNodes", m_leafNodes->GetUAV());
 		}
 
 		commandList->Dispatch(BLOCK_SIZE, 1, 1);
@@ -103,14 +103,14 @@ namespace JoyEngine
 			commandList->SetComputeRootSignature(m_bvhMergerPipeline->GetRootSignature().Get());
 			commandList->SetPipelineState(m_bvhMergerPipeline->GetPipelineObject().Get());
 
-			GraphicsUtils::AttachViewToCompute(commandList, m_bvhMergerPipeline, "data", m_bvhConstructionData->GetView());
+			GraphicsUtils::AttachView(commandList, m_bvhMergerPipeline.get(), "data", m_bvhConstructionData->GetView());
 
-			GraphicsUtils::AttachViewToCompute(commandList, m_bvhMergerPipeline, "sortedTriangleIndices", m_sortedTriangleIndices->GetSRV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_bvhMergerPipeline, "triangleAABB", m_triangleAABB->GetSRV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_bvhMergerPipeline, "internalNodes", m_internalNodes->GetSRV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_bvhMergerPipeline, "leafNodes", m_leafNodes->GetSRV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_bvhMergerPipeline, "atomicsData", m_atomics->GetUAV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_bvhMergerPipeline, "BVHData", m_bvhData->GetUAV());
+			GraphicsUtils::AttachView(commandList, m_bvhMergerPipeline.get(), "sortedTriangleIndices", m_sortedTriangleIndices->GetSRV());
+			GraphicsUtils::AttachView(commandList, m_bvhMergerPipeline.get(), "triangleAABB", m_triangleAABB->GetSRV());
+			GraphicsUtils::AttachView(commandList, m_bvhMergerPipeline.get(), "internalNodes", m_internalNodes->GetSRV());
+			GraphicsUtils::AttachView(commandList, m_bvhMergerPipeline.get(), "leafNodes", m_leafNodes->GetSRV());
+			GraphicsUtils::AttachView(commandList, m_bvhMergerPipeline.get(), "atomicsData", m_atomics->GetUAV());
+			GraphicsUtils::AttachView(commandList, m_bvhMergerPipeline.get(), "BVHData", m_bvhData->GetUAV());
 		}
 
 		commandList->Dispatch(BLOCK_SIZE, 1, 1);

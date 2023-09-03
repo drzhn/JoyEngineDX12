@@ -15,10 +15,8 @@ namespace JoyEngine
 	{
 		ObjectIndexData,
 		ModelMatrixData,
-		ViewProjectionMatrixDataGraphics,
-		ViewProjectionMatrixDataCompute,
-		EngineDataGraphics,
-		EngineDataCompute,
+		ViewProjectionMatrixData,
+		EngineData,
 	};
 
 	struct GraphicsPipelineArgs
@@ -71,7 +69,7 @@ namespace JoyEngine
 		[[nodiscard]] ShaderInput const* GetShaderInputByName(const std::string&) const;
 		[[nodiscard]] uint32_t GetBindingIndexByName(const std::string&) const;
 		[[nodiscard]] uint32_t GetBindingIndexByHash(const uint32_t hash) const;
-		[[nodiscard]] std::map<uint32_t, EngineBindingType>& GetEngineBindings();
+		[[nodiscard]] const std::map<uint32_t, EngineBindingType>& GetEngineBindings() const;
 
 	protected:
 		ComPtr<ID3D12RootSignature> m_rootSignature;

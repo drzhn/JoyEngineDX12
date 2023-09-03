@@ -362,25 +362,29 @@ namespace JoyEngine
 			commandList->SetPipelineState(m_raytracingPipeline->GetPipelineObject().Get());
 
 
-			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "colorTexture", m_gbuffer->GetColorUAV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "normalsTexture", m_gbuffer->GetNormalsUAV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "positionTexture", m_gbuffer->GetPositionUAV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "textures", DescriptorManager::Get()->GetSRVHeapStartDescriptorHandle());
-			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "materials", EngineMaterialProvider::Get()->GetMaterialsDataView());
-			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "sortedTriangleIndices", m_triangleIndexBuffer->GetSRV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "triangleAABB", m_triangleAABBBuffer->GetSRV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "internalNodes", m_bvhInternalNodesBuffer->GetSRV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "leafNodes", m_bvhLeafNodesBuffer->GetSRV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "bvhData", m_bvhDataBuffer->GetSRV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "triangleData", m_triangleDataBuffer->GetSRV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "linearClampSampler", EngineSamplersProvider::GetLinearWrapSampler());
+			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "colorTexture", m_gbuffer->GetColorUAV());
+			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "normalsTexture", m_gbuffer->GetNormalsUAV());
+			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "positionTexture", m_gbuffer->GetPositionUAV());
+			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "textures", DescriptorManager::Get()->GetSRVHeapStartDescriptorHandle());
+			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "materials", EngineMaterialProvider::Get()->GetMaterialsDataView());
+			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "sortedTriangleIndices", m_triangleIndexBuffer->GetSRV());
+			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "triangleAABB", m_triangleAABBBuffer->GetSRV());
+			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "internalNodes", m_bvhInternalNodesBuffer->GetSRV());
+			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "leafNodes", m_bvhLeafNodesBuffer->GetSRV());
+			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "bvhData", m_bvhDataBuffer->GetSRV());
+			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "triangleData", m_triangleDataBuffer->GetSRV());
+			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "linearClampSampler", EngineSamplersProvider::GetLinearWrapSampler());
 #if !defined(CAMERA_TRACE)
-			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "raytracedProbesData", m_raytracedProbesData.GetView(frameIndex));
+			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "raytracedProbesData", m_raytracedProbesData.GetView(frameIndex));
 #endif
-			GraphicsUtils::AttachViewToCompute(commandList, m_raytracingPipeline, "skyboxTextureIndex", skyboxTextureIndexDataView);
+			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "skyboxTextureIndex", skyboxTextureIndexDataView);
 
-			GraphicsUtils::ProcessEngineBindings(commandList, frameIndex, m_raytracingPipeline->GetEngineBindings(),
-			                                     nullptr, data);
+			GraphicsUtils::ProcessEngineBindings(
+				commandList,
+				m_raytracingPipeline.get(),
+				frameIndex,
+				nullptr, 
+				data);
 		}
 #if defined(CAMERA_TRACE)
 		commandList->Dispatch((m_raytracedTextureWidth / 32) + 1, (m_raytracedTextureHeight / 32) + 1, 1);
@@ -399,13 +403,13 @@ namespace JoyEngine
 			commandList->SetPipelineState(m_probeIrradiancePipeline->GetPipelineObject().Get());
 
 
-			GraphicsUtils::AttachViewToCompute(commandList, m_probeIrradiancePipeline, "shadedColorTexture", m_shadedRenderTexture->GetSRV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_probeIrradiancePipeline, "positionsTexture", m_gbuffer->GetPositionSRV());
+			GraphicsUtils::AttachView(commandList, m_probeIrradiancePipeline.get(), "shadedColorTexture", m_shadedRenderTexture->GetSRV());
+			GraphicsUtils::AttachView(commandList, m_probeIrradiancePipeline.get(), "positionsTexture", m_gbuffer->GetPositionSRV());
 
-			GraphicsUtils::AttachViewToCompute(commandList, m_probeIrradiancePipeline, "probeIrradianceTexture", m_probeIrradianceTexture->GetUAV());
-			GraphicsUtils::AttachViewToCompute(commandList, m_probeIrradiancePipeline, "probeDepthTexture", m_probeDepthTexture->GetUAV());
+			GraphicsUtils::AttachView(commandList, m_probeIrradiancePipeline.get(), "probeIrradianceTexture", m_probeIrradianceTexture->GetUAV());
+			GraphicsUtils::AttachView(commandList, m_probeIrradiancePipeline.get(), "probeDepthTexture", m_probeDepthTexture->GetUAV());
 
-			GraphicsUtils::AttachViewToCompute(commandList, m_probeIrradiancePipeline, "raytracedProbesData", m_raytracedProbesData.GetView(frameIndex));
+			GraphicsUtils::AttachView(commandList, m_probeIrradiancePipeline.get(), "raytracedProbesData", m_raytracedProbesData.GetView(frameIndex));
 		}
 		commandList->Dispatch(g_raytracedProbesData.gridX, g_raytracedProbesData.gridY, g_raytracedProbesData.gridZ);
 
@@ -422,9 +426,9 @@ namespace JoyEngine
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 #if defined(CAMERA_TRACE)
-		GraphicsUtils::AttachViewToGraphics(commandList, sm, "shadedColorTexture", m_shadedRenderTexture->GetSRV());
+		GraphicsUtils::AttachView(commandList, sm.get(), "shadedColorTexture", m_shadedRenderTexture->GetSRV());
 #else
-		GraphicsUtils::AttachViewToGraphics(commandList, sm, "shadedColorTexture", m_probeIrradianceTexture->GetSRV());
+		GraphicsUtils::AttachView(commandList, sm.get(), "shadedColorTexture", m_probeIrradianceTexture->GetSRV());
 #endif
 
 		commandList->DrawInstanced(3, 1, 0, 0);
@@ -444,7 +448,7 @@ namespace JoyEngine
 		                                           viewProjectionMatrixData,
 		                                           0);
 
-		GraphicsUtils::AttachViewToGraphics(commandList, sm, "BVHData", m_bvhDataBuffer->GetSRV());
+		GraphicsUtils::AttachView(commandList, sm.get(), "BVHData", m_bvhDataBuffer->GetSRV());
 
 		commandList->DrawInstanced(
 			24,
@@ -463,11 +467,11 @@ namespace JoyEngine
 		commandList->IASetVertexBuffers(0, 1, m_debugSphereProbeMesh->GetVertexBufferView());
 		commandList->IASetIndexBuffer(m_debugSphereProbeMesh->GetIndexBufferView());
 
-		GraphicsUtils::ProcessEngineBindings(commandList, frameIndex, sm->GetEngineBindings(), nullptr, viewProjectionMatrixData);
+		GraphicsUtils::ProcessEngineBindings(commandList, sm.get(), frameIndex, nullptr, viewProjectionMatrixData);
 
-		GraphicsUtils::AttachViewToGraphics(commandList, sm, "raytracedProbesData", m_raytracedProbesData.GetView(frameIndex));
-		GraphicsUtils::AttachViewToGraphics(commandList, sm, "irradianceTexture", m_probeIrradianceTexture->GetSRV());
-		GraphicsUtils::AttachViewToGraphics(commandList, sm, "linearClampSampler", EngineSamplersProvider::GetLinearWrapSampler());
+		GraphicsUtils::AttachView(commandList, sm.get(), "raytracedProbesData", m_raytracedProbesData.GetView(frameIndex));
+		GraphicsUtils::AttachView(commandList, sm.get(), "irradianceTexture", m_probeIrradianceTexture->GetSRV());
+		GraphicsUtils::AttachView(commandList, sm.get(), "linearClampSampler", EngineSamplersProvider::GetLinearWrapSampler());
 
 		const uint32_t instanceCount = g_raytracedProbesData.gridX * g_raytracedProbesData.gridY * g_raytracedProbesData.gridZ;
 

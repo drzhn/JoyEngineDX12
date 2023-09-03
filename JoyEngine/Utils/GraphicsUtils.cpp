@@ -50,38 +50,8 @@ namespace JoyEngine
 		commandList->ResourceBarrier(1, &barrier);
 	}
 
-	void GraphicsUtils::AttachViewToGraphics(
-		ID3D12GraphicsCommandList* commandList,
-		uint32_t rootParameterIndex,
-		D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle
-	)
-	{
-		commandList->SetGraphicsRootDescriptorTable(
-			rootParameterIndex, gpuHandle);
-	}
 
-	void GraphicsUtils::AttachViewToGraphics(
-		ID3D12GraphicsCommandList* commandList,
-		uint32_t rootParameterIndex,
-		const ResourceView* view
-	)
-	{
-		commandList->SetGraphicsRootDescriptorTable(
-			rootParameterIndex, view->GetGPUHandle());
-	}
-
-	void GraphicsUtils::AttachViewToGraphics(
-		ID3D12GraphicsCommandList* commandList,
-		const std::unique_ptr<GraphicsPipeline>& pipeline,
-		const char* paramName,
-		const ResourceView* view
-	)
-	{
-		commandList->SetGraphicsRootDescriptorTable(
-			pipeline->GetBindingIndexByHash(strHash(paramName)), view->GetGPUHandle());
-	}
-
-	void GraphicsUtils::AttachViewToGraphics(
+	void GraphicsUtils::AttachView(
 		ID3D12GraphicsCommandList* commandList,
 		const GraphicsPipeline* pipeline,
 		const char* paramName,
@@ -90,48 +60,40 @@ namespace JoyEngine
 	{
 		const uint32_t rootParamIndex = pipeline->GetBindingIndexByHash(strHash(paramName));
 		if (rootParamIndex == -1) return;
+
+		AttachView(commandList, pipeline, rootParamIndex, view);
+	}
+
+	void GraphicsUtils::AttachView(ID3D12GraphicsCommandList* commandList, const GraphicsPipeline* pipeline, uint32_t rootParamIndex, const ResourceView* view)
+	{
 		commandList->SetGraphicsRootDescriptorTable(rootParamIndex, view->GetGPUHandle());
 	}
 
-	void GraphicsUtils::AttachViewToCompute(
+	void GraphicsUtils::AttachView(
 		ID3D12GraphicsCommandList* commandList,
-		uint32_t rootParameterIndex,
-		D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle
-	)
-	{
-		commandList->SetComputeRootDescriptorTable(
-			rootParameterIndex, gpuHandle);
-	}
-
-	void GraphicsUtils::AttachViewToCompute(
-		ID3D12GraphicsCommandList* commandList,
-		uint32_t rootParameterIndex,
-		const ResourceView* view
-	)
-	{
-		commandList->SetComputeRootDescriptorTable(
-			rootParameterIndex, view->GetGPUHandle());
-	}
-
-	void GraphicsUtils::AttachViewToCompute(
-		ID3D12GraphicsCommandList* commandList,
-		const std::unique_ptr<ComputePipeline>& pipeline,
+		const ComputePipeline* pipeline,
 		const char* paramName,
 		D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle)
 	{
-		commandList->SetComputeRootDescriptorTable(
-			pipeline->GetBindingIndexByHash(strHash(paramName)), gpuHandle);
+		commandList->SetComputeRootDescriptorTable(pipeline->GetBindingIndexByHash(strHash(paramName)), gpuHandle);
 	}
 
 
-	void GraphicsUtils::AttachViewToCompute(
+	void GraphicsUtils::AttachView(
 		ID3D12GraphicsCommandList* commandList,
-		const std::unique_ptr<ComputePipeline>& pipeline,
+		const ComputePipeline* pipeline,
 		const char* paramName,
 		const ResourceView* view)
 	{
-		commandList->SetComputeRootDescriptorTable(
-			pipeline->GetBindingIndexByHash(strHash(paramName)), view->GetGPUHandle());
+		const uint32_t rootParamIndex = pipeline->GetBindingIndexByHash(strHash(paramName));
+		if (rootParamIndex == -1) return;
+
+		AttachView(commandList, pipeline, rootParamIndex, view);
+	}
+
+	void GraphicsUtils::AttachView(ID3D12GraphicsCommandList* commandList, const ComputePipeline* pipeline, uint32_t rootParamIndex, const ResourceView* view)
+	{
+		commandList->SetComputeRootDescriptorTable(rootParamIndex, view->GetGPUHandle());
 	}
 
 	void GraphicsUtils::SetViewportAndScissor(
@@ -159,13 +121,13 @@ namespace JoyEngine
 
 	void GraphicsUtils::ProcessEngineBindings(
 		ID3D12GraphicsCommandList* commandList,
+		const GraphicsPipeline* pipeline,
 		uint32_t frameIndex,
-		const std::map<uint32_t, EngineBindingType>& bindings,
 		const uint32_t* modelIndex,
 		const ViewProjectionMatrixData* viewProjectionMatrix
 	)
 	{
-		for (const auto& pair : bindings)
+		for (const auto& pair : pipeline->GetEngineBindings())
 		{
 			const auto type = pair.second;
 			const auto rootIndex = pair.first;
@@ -190,7 +152,7 @@ namespace JoyEngine
 					);
 					break;
 				}
-			case EngineBindingType::ViewProjectionMatrixDataGraphics:
+			case EngineBindingType::ViewProjectionMatrixData:
 				{
 					commandList->SetGraphicsRoot32BitConstants(
 						rootIndex,
@@ -199,7 +161,49 @@ namespace JoyEngine
 						0);
 					break;
 				}
-			case EngineBindingType::ViewProjectionMatrixDataCompute:
+			case EngineBindingType::EngineData:
+				{
+					AttachView(
+						commandList,
+						pipeline,
+						rootIndex,
+						EngineMaterialProvider::Get()->GetEngineDataView(frameIndex));
+					break;
+				}
+			default:
+				ASSERT(false);
+			}
+		}
+	}
+
+	void GraphicsUtils::ProcessEngineBindings(ID3D12GraphicsCommandList* commandList, const ComputePipeline* pipeline, uint32_t frameIndex, const uint32_t* modelIndex, const ViewProjectionMatrixData* viewProjectionMatrix)
+	{
+		for (const auto& pair : pipeline->GetEngineBindings())
+		{
+			const auto type = pair.second;
+			const auto rootIndex = pair.first;
+
+			switch (type)
+			{
+			case EngineBindingType::ObjectIndexData:
+				{
+					ASSERT(modelIndex != nullptr);
+					commandList->SetComputeRoot32BitConstants(
+						rootIndex,
+						sizeof(uint32_t) / 4,
+						modelIndex,
+						0);
+					break;
+				}
+			case EngineBindingType::ModelMatrixData:
+				{
+					commandList->SetComputeRootDescriptorTable(
+						rootIndex,
+						RenderManager::Get()->GetTransformProvider()->GetObjectMatricesBufferView(frameIndex)->GetGPUHandle()
+					);
+					break;
+				}
+			case EngineBindingType::ViewProjectionMatrixData:
 				{
 					commandList->SetComputeRoot32BitConstants(
 						rootIndex,
@@ -208,16 +212,13 @@ namespace JoyEngine
 						0);
 					break;
 				}
-			case EngineBindingType::EngineDataGraphics:
+			case EngineBindingType::EngineData:
 				{
-					AttachViewToGraphics(commandList, rootIndex,
-					                     EngineMaterialProvider::Get()->GetEngineDataView(frameIndex));
-					break;
-				}
-			case EngineBindingType::EngineDataCompute:
-				{
-					AttachViewToCompute(commandList, rootIndex,
-					                    EngineMaterialProvider::Get()->GetEngineDataView(frameIndex));
+					AttachView(
+						commandList,
+						pipeline,
+						rootIndex,
+						EngineMaterialProvider::Get()->GetEngineDataView(frameIndex));
 					break;
 				}
 			default:

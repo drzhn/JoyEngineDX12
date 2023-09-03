@@ -105,14 +105,14 @@ namespace JoyEngine
 				commandList->SetPipelineState(m_localRaidxSortPipeline->GetPipelineObject().Get());
 
 
-				GraphicsUtils::AttachViewToCompute(commandList, m_localRaidxSortPipeline, "data", m_data.GetView());
+				GraphicsUtils::AttachView(commandList, m_localRaidxSortPipeline.get(), "data", m_data.GetView());
 
-				GraphicsUtils::AttachViewToCompute(commandList, m_localRaidxSortPipeline, "keysData", m_keys->GetSRV());
-				GraphicsUtils::AttachViewToCompute(commandList, m_localRaidxSortPipeline, "valuesData", m_values->GetSRV());
-				GraphicsUtils::AttachViewToCompute(commandList, m_localRaidxSortPipeline, "sortedBlocksKeysData", m_sortedBlocksKeysData->GetUAV());
-				GraphicsUtils::AttachViewToCompute(commandList, m_localRaidxSortPipeline, "sortedBlocksValuesData", m_sortedBlocksValuesData->GetUAV());
-				GraphicsUtils::AttachViewToCompute(commandList, m_localRaidxSortPipeline, "offsetsData", m_offsetsData->GetUAV());
-				GraphicsUtils::AttachViewToCompute(commandList, m_localRaidxSortPipeline, "sizesData", m_sizesData->GetUAV());
+				GraphicsUtils::AttachView(commandList, m_localRaidxSortPipeline.get(), "keysData", m_keys->GetSRV());
+				GraphicsUtils::AttachView(commandList, m_localRaidxSortPipeline.get(), "valuesData", m_values->GetSRV());
+				GraphicsUtils::AttachView(commandList, m_localRaidxSortPipeline.get(), "sortedBlocksKeysData", m_sortedBlocksKeysData->GetUAV());
+				GraphicsUtils::AttachView(commandList, m_localRaidxSortPipeline.get(), "sortedBlocksValuesData", m_sortedBlocksValuesData->GetUAV());
+				GraphicsUtils::AttachView(commandList, m_localRaidxSortPipeline.get(), "offsetsData", m_offsetsData->GetUAV());
+				GraphicsUtils::AttachView(commandList, m_localRaidxSortPipeline.get(), "sizesData", m_sizesData->GetUAV());
 
 				commandList->Dispatch(BLOCK_SIZE, 1, 1);
 			}
@@ -130,8 +130,8 @@ namespace JoyEngine
 				commandList->SetPipelineState(m_preScanPipeline->GetPipelineObject().Get());
 
 
-				GraphicsUtils::AttachViewToCompute(commandList, m_preScanPipeline, "data", m_sizesData->GetUAV());
-				GraphicsUtils::AttachViewToCompute(commandList, m_preScanPipeline, "blockSumsData", m_sizesPrefixSumData->GetUAV());
+				GraphicsUtils::AttachView(commandList, m_preScanPipeline.get(), "data", m_sizesData->GetUAV());
+				GraphicsUtils::AttachView(commandList, m_preScanPipeline.get(), "blockSumsData", m_sizesPrefixSumData->GetUAV());
 
 				commandList->Dispatch(BLOCK_SIZE / (THREADS_PER_BLOCK / BUCKET_SIZE), 1, 1);
 			}
@@ -145,7 +145,7 @@ namespace JoyEngine
 				commandList->SetPipelineState(m_blockSumSortPipeline->GetPipelineObject().Get());
 
 
-				GraphicsUtils::AttachViewToCompute(commandList, m_blockSumSortPipeline, "blockSumsData", m_sizesPrefixSumData->GetUAV());
+				GraphicsUtils::AttachView(commandList, m_blockSumSortPipeline.get(), "blockSumsData", m_sizesPrefixSumData->GetUAV());
 
 				commandList->Dispatch(1, 1, 1);
 			}
@@ -158,8 +158,8 @@ namespace JoyEngine
 				commandList->SetPipelineState(m_globalScanPipeline->GetPipelineObject().Get());
 
 
-				GraphicsUtils::AttachViewToCompute(commandList, m_globalScanPipeline, "data", m_sizesData->GetUAV());
-				GraphicsUtils::AttachViewToCompute(commandList, m_globalScanPipeline, "blockSumsData", m_sizesPrefixSumData->GetUAV());
+				GraphicsUtils::AttachView(commandList, m_globalScanPipeline.get(), "data", m_sizesData->GetUAV());
+				GraphicsUtils::AttachView(commandList, m_globalScanPipeline.get(), "blockSumsData", m_sizesPrefixSumData->GetUAV());
 
 				commandList->Dispatch(BLOCK_SIZE / (THREADS_PER_BLOCK / BUCKET_SIZE), 1, 1);
 			}
@@ -173,14 +173,14 @@ namespace JoyEngine
 				commandList->SetPipelineState(m_globalRadixSortPipeline->GetPipelineObject().Get());
 
 
-				GraphicsUtils::AttachViewToCompute(commandList, m_globalRadixSortPipeline, "data", m_data.GetView());
+				GraphicsUtils::AttachView(commandList, m_globalRadixSortPipeline.get(), "data", m_data.GetView());
 
-				GraphicsUtils::AttachViewToCompute(commandList, m_globalRadixSortPipeline, "sortedBlocksKeysData", m_sortedBlocksKeysData->GetSRV());
-				GraphicsUtils::AttachViewToCompute(commandList, m_globalRadixSortPipeline, "sortedBlocksValuesData", m_sortedBlocksValuesData->GetSRV());
-				GraphicsUtils::AttachViewToCompute(commandList, m_globalRadixSortPipeline, "offsetsData", m_offsetsData->GetSRV());
-				GraphicsUtils::AttachViewToCompute(commandList, m_globalRadixSortPipeline, "sizesData", m_sizesData->GetSRV());
-				GraphicsUtils::AttachViewToCompute(commandList, m_globalRadixSortPipeline, "sortedKeysData", m_keys->GetUAV());
-				GraphicsUtils::AttachViewToCompute(commandList, m_globalRadixSortPipeline, "sortedValuesData", m_values->GetUAV());
+				GraphicsUtils::AttachView(commandList, m_globalRadixSortPipeline.get(), "sortedBlocksKeysData", m_sortedBlocksKeysData->GetSRV());
+				GraphicsUtils::AttachView(commandList, m_globalRadixSortPipeline.get(), "sortedBlocksValuesData", m_sortedBlocksValuesData->GetSRV());
+				GraphicsUtils::AttachView(commandList, m_globalRadixSortPipeline.get(), "offsetsData", m_offsetsData->GetSRV());
+				GraphicsUtils::AttachView(commandList, m_globalRadixSortPipeline.get(), "sizesData", m_sizesData->GetSRV());
+				GraphicsUtils::AttachView(commandList, m_globalRadixSortPipeline.get(), "sortedKeysData", m_keys->GetUAV());
+				GraphicsUtils::AttachView(commandList, m_globalRadixSortPipeline.get(), "sortedValuesData", m_values->GetUAV());
 
 				commandList->Dispatch(BLOCK_SIZE, 1, 1);
 			}

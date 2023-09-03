@@ -69,13 +69,13 @@ namespace JoyEngine
 
 		GraphicsUtils::ProcessEngineBindings(
 			commandList,
+			m_skyboxPipeline.get(),
 			frameIndex,
-			m_skyboxPipeline->GetEngineBindings(),
 			nullptr,
 			viewProjectionData);
 
-		GraphicsUtils::AttachViewToGraphics(commandList, m_skyboxPipeline, "skyboxTexture", m_skyboxTexture->GetSRV());
-		GraphicsUtils::AttachViewToGraphics(commandList, m_skyboxPipeline, "textureSampler", EngineSamplersProvider::GetLinearClampSampler());
+		GraphicsUtils::AttachView(commandList, m_skyboxPipeline.get(), "skyboxTexture", m_skyboxTexture->GetSRV());
+		GraphicsUtils::AttachView(commandList, m_skyboxPipeline.get(), "textureSampler", EngineSamplersProvider::GetLinearClampSampler());
 
 		commandList->DrawIndexedInstanced(
 			m_skyboxMesh->GetIndexCount(),

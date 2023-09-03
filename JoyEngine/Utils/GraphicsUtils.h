@@ -14,18 +14,30 @@ namespace JoyEngine
 	class GraphicsUtils
 	{
 	public:
-		static void AttachViewToGraphics(ID3D12GraphicsCommandList* commandList, uint32_t rootParameterIndex, D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle);
-		static void AttachViewToGraphics(ID3D12GraphicsCommandList* commandList, uint32_t rootParameterIndex, const ResourceView* view);
-		static void AttachViewToGraphics(ID3D12GraphicsCommandList* commandList, const std::unique_ptr<GraphicsPipeline>& pipeline, const char* paramName, const ResourceView* view);
-		static void AttachViewToGraphics(ID3D12GraphicsCommandList* commandList, const GraphicsPipeline* pipeline, const char* paramName, const ResourceView* view);
-		static void AttachViewToCompute(ID3D12GraphicsCommandList* commandList, uint32_t rootParameterIndex, D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle);
-		static void AttachViewToCompute(ID3D12GraphicsCommandList* commandList, uint32_t rootParameterIndex, const ResourceView* view);
-		static void AttachViewToCompute(ID3D12GraphicsCommandList* commandList, const std::unique_ptr<ComputePipeline>& pipeline, const char* paramName, D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle);
-		static void AttachViewToCompute(ID3D12GraphicsCommandList* commandList, const std::unique_ptr<ComputePipeline>& pipeline, const char* paramName, const ResourceView* view);
+		static void AttachView(ID3D12GraphicsCommandList* commandList, const GraphicsPipeline* pipeline, const char* paramName, const ResourceView* view);
+		static void AttachView(ID3D12GraphicsCommandList* commandList, const GraphicsPipeline* pipeline, uint32_t rootParamIndex, const ResourceView* view);
+
+		static void AttachView(ID3D12GraphicsCommandList* commandList, const ComputePipeline* pipeline, const char* paramName, D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle);
+		static void AttachView(ID3D12GraphicsCommandList* commandList, const ComputePipeline* pipeline, const char* paramName, const ResourceView* view);
+		static void AttachView(ID3D12GraphicsCommandList* commandList, const ComputePipeline* pipeline, uint32_t rootParamIndex, const ResourceView* view);
+
 		static void Barrier(ID3D12GraphicsCommandList* commandList, ID3D12Resource* pResource, D3D12_RESOURCE_STATES stateBefore, D3D12_RESOURCE_STATES stateAfter);
 		static void UAVBarrier(ID3D12GraphicsCommandList* commandList, ID3D12Resource* pResource);
 		static void SetViewportAndScissor(ID3D12GraphicsCommandList* commandList, uint32_t width, uint32_t height);
-		static void ProcessEngineBindings(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, const std::map<uint32_t, EngineBindingType>& bindings, const uint32_t* modelIndex, const ViewProjectionMatrixData* viewProjectionMatrix);
+
+		static void ProcessEngineBindings(
+			ID3D12GraphicsCommandList* commandList,
+			const GraphicsPipeline* pipeline,
+			uint32_t frameIndex,
+			const uint32_t* modelIndex,
+			const ViewProjectionMatrixData* viewProjectionMatrix);
+
+		static void ProcessEngineBindings(
+			ID3D12GraphicsCommandList* commandList,
+			const ComputePipeline* pipeline,
+			uint32_t frameIndex,
+			const uint32_t* modelIndex,
+			const ViewProjectionMatrixData* viewProjectionMatrix);
 	};
 }
 #endif // GRAPHICS_UTILS_H

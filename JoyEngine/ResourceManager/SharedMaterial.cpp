@@ -146,7 +146,7 @@ namespace JoyEngine
 		return m_rootIndices.find(hash)->second;
 	}
 
-	std::map<uint32_t, EngineBindingType>& AbstractPipelineObject::GetEngineBindings()
+	const std::map<uint32_t, EngineBindingType>& AbstractPipelineObject::GetEngineBindings() const
 	{
 		return m_engineBindings;
 	}
@@ -158,97 +158,83 @@ namespace JoyEngine
 
 		CD3DX12_ROOT_PARAMETER1 params[DESCRIPTOR_ARRAY_SIZE];
 		uint32_t paramsIndex = 0;
+
+		m_shader = ResourceManager::Get()->LoadResource<Shader>(shaderGuid, shaderTypes);
+
+		for (const auto& pair : m_shader->GetInputMap())
 		{
-			m_shader = ResourceManager::Get()->LoadResource<Shader>(shaderGuid, shaderTypes);
+			const std::string& name = pair.first;
+			const ShaderInput& input = pair.second;
 
-			for (const auto& pair : m_shader->GetInputMap())
+			if (name == "objectIndex")
 			{
-				const std::string& name = pair.first;
-				const ShaderInput& input = pair.second;
+				params[paramsIndex].InitAsConstants(
+					sizeof(uint32_t) / 4, input.BindPoint, input.Space, input.Visibility);
+				m_engineBindings.insert({paramsIndex, EngineBindingType::ObjectIndexData});
+				paramsIndex++;
+			}
+			else if (name == "viewProjectionData")
+			{
+				params[paramsIndex].InitAsConstants(
+					sizeof(ViewProjectionMatrixData) / 4, input.BindPoint, input.Space, input.Visibility);
 
-				if (name == "objectIndex")
+				m_engineBindings.insert({paramsIndex, EngineBindingType::ViewProjectionMatrixData});
+				paramsIndex++;
+			}
+			else if (name == "objectMatricesData")
+			{
+				ranges[rangesIndex].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, input.BindPoint, input.Space,
+				                         D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
+				params[paramsIndex].InitAsDescriptorTable(1, &ranges[rangesIndex], input.Visibility);
+				m_engineBindings.insert({paramsIndex, EngineBindingType::ModelMatrixData});
+				rangesIndex++;
+				paramsIndex++;
+			}
+			else if (name == "engineData")
+			{
+				ranges[rangesIndex].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, input.BindPoint, input.Space,
+				                         D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
+				params[paramsIndex].InitAsDescriptorTable(1, &ranges[rangesIndex], input.Visibility);
+				m_engineBindings.insert({paramsIndex, EngineBindingType::EngineData});
+				rangesIndex++;
+				paramsIndex++;
+			}
+			else
+			{
+				D3D12_DESCRIPTOR_RANGE_TYPE type;
+				switch (input.Type)
 				{
-					params[paramsIndex].InitAsConstants(
-						sizeof(uint32_t) / 4, input.BindPoint, input.Space, input.Visibility);
-					m_engineBindings.insert({paramsIndex, EngineBindingType::ObjectIndexData});
-					paramsIndex++;
-				}
-				else if (name == "viewProjectionData")
-				{
-					params[paramsIndex].InitAsConstants(
-						sizeof(ViewProjectionMatrixData) / 4, input.BindPoint, input.Space, input.Visibility);
-					if (shaderTypes & JoyShaderTypeCompute)
-					{
-						m_engineBindings.insert({paramsIndex, EngineBindingType::ViewProjectionMatrixDataCompute});
-					}
-					else
-					{
-						m_engineBindings.insert({paramsIndex, EngineBindingType::ViewProjectionMatrixDataGraphics});
-					}
-					paramsIndex++;
-				}
-				else if (name == "objectMatricesData")
-				{
-					ranges[rangesIndex].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, input.BindPoint, input.Space,
-					                         D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
-					params[paramsIndex].InitAsDescriptorTable(1, &ranges[rangesIndex], input.Visibility);
-					m_engineBindings.insert({paramsIndex, EngineBindingType::ModelMatrixData});
-					rangesIndex++;
-					paramsIndex++;
-				}
-				else if (name == "engineData")
-				{
-					ranges[rangesIndex].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, input.BindPoint, input.Space,
-					                         D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
-					params[paramsIndex].InitAsDescriptorTable(1, &ranges[rangesIndex], input.Visibility);
-					if (shaderTypes & JoyShaderTypeCompute)
-					{
-						m_engineBindings.insert({paramsIndex, EngineBindingType::EngineDataCompute});
-					}
-					else
-					{
-						m_engineBindings.insert({paramsIndex, EngineBindingType::EngineDataGraphics});
-					}
-					rangesIndex++;
-					paramsIndex++;
-				}
-				else
-				{
-					D3D12_DESCRIPTOR_RANGE_TYPE type;
-					switch (input.Type)
-					{
-					case D3D_SIT_CBUFFER: type = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
-						break;
+				case D3D_SIT_CBUFFER: type = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+					break;
 
-					case D3D_SIT_STRUCTURED: // i dunno, don't ask me
-					case D3D_SIT_TEXTURE: type = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-						break;
-					case D3D_SIT_SAMPLER: type = D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
-						break;
+				case D3D_SIT_STRUCTURED: // i dunno, don't ask me
+				case D3D_SIT_TEXTURE: type = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+					break;
+				case D3D_SIT_SAMPLER: type = D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
+					break;
 
-					case D3D_SIT_UAV_RWTYPED:
-					case D3D_SIT_UAV_RWSTRUCTURED:
-					case D3D_SIT_UAV_RWBYTEADDRESS:
-					case D3D_SIT_UAV_APPEND_STRUCTURED:
-					case D3D_SIT_UAV_CONSUME_STRUCTURED:
-					case D3D_SIT_UAV_RWSTRUCTURED_WITH_COUNTER:
-					case D3D_SIT_UAV_FEEDBACKTEXTURE:
-						type = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
-						break;
+				case D3D_SIT_UAV_RWTYPED:
+				case D3D_SIT_UAV_RWSTRUCTURED:
+				case D3D_SIT_UAV_RWBYTEADDRESS:
+				case D3D_SIT_UAV_APPEND_STRUCTURED:
+				case D3D_SIT_UAV_CONSUME_STRUCTURED:
+				case D3D_SIT_UAV_RWSTRUCTURED_WITH_COUNTER:
+				case D3D_SIT_UAV_FEEDBACKTEXTURE:
+					type = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
+					break;
 
-					case D3D_SIT_TBUFFER:
-					case D3D_SIT_BYTEADDRESS:
-					case D3D_SIT_RTACCELERATIONSTRUCTURE:
-					default:
-						ASSERT(false);
-					}
-					ranges[rangesIndex].Init(type, input.BindCount == 0 ? READONLY_TEXTURES_COUNT : input.BindCount,
-					                         input.BindPoint, input.Space, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
-					params[paramsIndex].InitAsDescriptorTable(1, &ranges[rangesIndex], input.Visibility);
-					m_rootIndices.insert({strHash(name.c_str()), paramsIndex});
-					rangesIndex++;
-					paramsIndex++;
+				case D3D_SIT_TBUFFER:
+				case D3D_SIT_BYTEADDRESS:
+				case D3D_SIT_RTACCELERATIONSTRUCTURE:
+				default:
+					ASSERT(false);
 				}
+				ranges[rangesIndex].Init(type, input.BindCount == 0 ? READONLY_TEXTURES_COUNT : input.BindCount,
+				                         input.BindPoint, input.Space, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
+				params[paramsIndex].InitAsDescriptorTable(1, &ranges[rangesIndex], input.Visibility);
+				m_rootIndices.insert({strHash(name.c_str()), paramsIndex});
+				rangesIndex++;
+				paramsIndex++;
 			}
 		}
 

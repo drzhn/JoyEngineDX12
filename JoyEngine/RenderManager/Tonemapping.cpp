@@ -113,10 +113,10 @@ namespace JoyEngine
 			commandList->SetPipelineState(sm->GetPipelineObject().Get());
 
 
-			GraphicsUtils::AttachViewToCompute(commandList, sm->GetBindingIndexByHash(strHash("AverageLum")), m_hdrLuminationBuffer->GetUAV());
-			GraphicsUtils::AttachViewToCompute(commandList, sm->GetBindingIndexByHash(strHash("HDRDownScale")), m_hrdDownScaledTexture->GetUAV());
-			GraphicsUtils::AttachViewToCompute(commandList, sm->GetBindingIndexByHash(strHash("HDRTex")), m_hdrRenderTarget->GetSRV());
-			GraphicsUtils::AttachViewToCompute(commandList, sm->GetBindingIndexByHash(strHash("Constants")), m_constantsBuffer->GetView(frameIndex));
+			GraphicsUtils::AttachView(commandList, sm.get(), "AverageLum", m_hdrLuminationBuffer->GetUAV());
+			GraphicsUtils::AttachView(commandList, sm.get(), "HDRDownScale", m_hrdDownScaledTexture->GetUAV());
+			GraphicsUtils::AttachView(commandList, sm.get(), "HDRTex", m_hdrRenderTarget->GetSRV());
+			GraphicsUtils::AttachView(commandList, sm.get(), "Constants", m_constantsBuffer->GetView(frameIndex));
 
 			commandList->Dispatch(m_groupSize, 1, 1);
 		}
@@ -129,9 +129,9 @@ namespace JoyEngine
 			commandList->SetComputeRootSignature(sm->GetRootSignature().Get());
 			commandList->SetPipelineState(sm->GetPipelineObject().Get());
 
-			GraphicsUtils::AttachViewToCompute(commandList, sm->GetBindingIndexByHash(strHash("AverageLum")), m_hdrLuminationBuffer->GetUAV());
-			GraphicsUtils::AttachViewToCompute(commandList, sm->GetBindingIndexByHash(strHash("PrevAverageLum")), m_hdrPrevLuminationBuffer->GetUAV());
-			GraphicsUtils::AttachViewToCompute(commandList, sm->GetBindingIndexByHash(strHash("Constants")), m_constantsBuffer->GetView(frameIndex));
+			GraphicsUtils::AttachView(commandList, sm.get(), "AverageLum", m_hdrLuminationBuffer->GetUAV());
+			GraphicsUtils::AttachView(commandList, sm.get(), "PrevAverageLum", m_hdrPrevLuminationBuffer->GetUAV());
+			GraphicsUtils::AttachView(commandList, sm.get(), "Constants", m_constantsBuffer->GetView(frameIndex));
 
 			commandList->Dispatch(m_groupSize, 1, 1);
 		}
@@ -146,9 +146,9 @@ namespace JoyEngine
 			commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
 			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-			GraphicsUtils::AttachViewToGraphics(commandList, sm->GetBindingIndexByHash(strHash("AvgLum")), m_hdrLuminationBuffer->GetSRV());
-			GraphicsUtils::AttachViewToGraphics(commandList, sm->GetBindingIndexByHash(strHash("HdrTexture")), m_hdrRenderTarget->GetSRV());
-			GraphicsUtils::AttachViewToGraphics(commandList, sm->GetBindingIndexByHash(strHash("Constants")), m_constantsBuffer->GetView(frameIndex));
+			GraphicsUtils::AttachView(commandList, sm.get(), "AvgLum", m_hdrLuminationBuffer->GetSRV());
+			GraphicsUtils::AttachView(commandList, sm.get(), "HdrTexture", m_hdrRenderTarget->GetSRV());
+			GraphicsUtils::AttachView(commandList, sm.get(), "Constants", m_constantsBuffer->GetView(frameIndex));
 
 			commandList->DrawInstanced(
 				3,

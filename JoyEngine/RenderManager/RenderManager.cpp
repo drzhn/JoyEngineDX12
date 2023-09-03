@@ -433,9 +433,11 @@ namespace JoyEngine
 			commandList->RSSetViewports(1, &viewport);
 			commandList->RSSetScissorRects(1, &scissorRect);
 
-			GraphicsUtils::ProcessEngineBindings(commandList, m_currentFrameIndex,
-			                                     sm->GetGraphicsPipeline()->GetEngineBindings(), nullptr,
-			                                     viewProjectionData);
+			GraphicsUtils::ProcessEngineBindings(
+				commandList, sm->GetGraphicsPipeline(),
+				m_currentFrameIndex,
+				nullptr,
+				viewProjectionData);
 
 			commandList->DrawInstanced(
 				6,
@@ -499,13 +501,13 @@ namespace JoyEngine
 				for (const auto param : mr->GetMaterial()->GetRootParams())
 				{
 					const uint32_t index = param.first;
-					GraphicsUtils::AttachViewToGraphics(commandList, index, param.second);
+					GraphicsUtils::AttachView(commandList, sm->GetGraphicsPipeline(), index, param.second);
 				}
 
 				GraphicsUtils::ProcessEngineBindings(
 					commandList,
+					sm->GetGraphicsPipeline(),
 					m_currentFrameIndex,
-					sm->GetGraphicsPipeline()->GetEngineBindings(),
 					mr->GetGameObject().GetTransformIndexPtr(),
 					viewProjectionData);
 
@@ -536,13 +538,13 @@ namespace JoyEngine
 			for (const auto param : mr->GetMaterial()->GetRootParams())
 			{
 				const uint32_t index = param.first;
-				GraphicsUtils::AttachViewToGraphics(commandList, index, param.second);
+				GraphicsUtils::AttachView(commandList, sharedMaterial->GetGraphicsPipeline(), index, param.second);
 			}
 
 			GraphicsUtils::ProcessEngineBindings(
 				commandList,
+				sharedMaterial->GetGraphicsPipeline(),
 				m_currentFrameIndex,
-				sharedMaterial->GetGraphicsPipeline()->GetEngineBindings(),
 				mr->GetGameObject().GetTransformIndexPtr(),
 				viewProjectionData);
 
@@ -566,26 +568,26 @@ namespace JoyEngine
 
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "colorTexture", gBuffer->GetColorSRV());
-		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "normalsTexture", gBuffer->GetNormalsSRV());
-		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "positionTexture", gBuffer->GetPositionSRV());
-		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "directionalLightData", m_lightSystem->GetDirectionalLightDataView(m_currentFrameIndex));
-		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "directionalLightShadowmap", m_lightSystem->GetDirectionalShadowmapView());
-		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "PCFSampler", EngineSamplersProvider::GetDepthPCFSampler());
+		GraphicsUtils::AttachView(commandList, sm->GetGraphicsPipeline(), "colorTexture", gBuffer->GetColorSRV());
+		GraphicsUtils::AttachView(commandList, sm->GetGraphicsPipeline(), "normalsTexture", gBuffer->GetNormalsSRV());
+		GraphicsUtils::AttachView(commandList, sm->GetGraphicsPipeline(), "positionTexture", gBuffer->GetPositionSRV());
+		GraphicsUtils::AttachView(commandList, sm->GetGraphicsPipeline(), "directionalLightData", m_lightSystem->GetDirectionalLightDataView(m_currentFrameIndex));
+		GraphicsUtils::AttachView(commandList, sm->GetGraphicsPipeline(), "directionalLightShadowmap", m_lightSystem->GetDirectionalShadowmapView());
+		GraphicsUtils::AttachView(commandList, sm->GetGraphicsPipeline(), "PCFSampler", EngineSamplersProvider::GetDepthPCFSampler());
 
 
-		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "raytracedProbesData", m_raytracing->GetRaytracedProbesDataView(m_currentFrameIndex));
-		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "linearBlackBorderSampler", EngineSamplersProvider::GetLinearBlackBorderSampler());
+		GraphicsUtils::AttachView(commandList, sm->GetGraphicsPipeline(), "raytracedProbesData", m_raytracing->GetRaytracedProbesDataView(m_currentFrameIndex));
+		GraphicsUtils::AttachView(commandList, sm->GetGraphicsPipeline(), "linearBlackBorderSampler", EngineSamplersProvider::GetLinearBlackBorderSampler());
 
-		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "probeIrradianceTexture", m_raytracing->GetProbeIrradianceTexture()->GetSRV());
-		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "probeDepthTexture", m_raytracing->GetProbeDepthTexture()->GetSRV());
+		GraphicsUtils::AttachView(commandList, sm->GetGraphicsPipeline(), "probeIrradianceTexture", m_raytracing->GetProbeIrradianceTexture()->GetSRV());
+		GraphicsUtils::AttachView(commandList, sm->GetGraphicsPipeline(), "probeDepthTexture", m_raytracing->GetProbeDepthTexture()->GetSRV());
 
-		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "clusteredEntryData", m_lightSystem->GetClusterEntryDataView(m_currentFrameIndex));
-		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "clusteredItemData", m_lightSystem->GetClusterItemDataView(m_currentFrameIndex));
-		GraphicsUtils::AttachViewToGraphics(commandList, sm->GetGraphicsPipeline(), "lightData", m_lightSystem->GetLightDataView(m_currentFrameIndex));
+		GraphicsUtils::AttachView(commandList, sm->GetGraphicsPipeline(), "clusteredEntryData", m_lightSystem->GetClusterEntryDataView(m_currentFrameIndex));
+		GraphicsUtils::AttachView(commandList, sm->GetGraphicsPipeline(), "clusteredItemData", m_lightSystem->GetClusterItemDataView(m_currentFrameIndex));
+		GraphicsUtils::AttachView(commandList, sm->GetGraphicsPipeline(), "lightData", m_lightSystem->GetLightDataView(m_currentFrameIndex));
 
-		GraphicsUtils::ProcessEngineBindings(commandList, m_currentFrameIndex,
-		                                     sm->GetGraphicsPipeline()->GetEngineBindings(), nullptr,
+		GraphicsUtils::ProcessEngineBindings(commandList, sm->GetGraphicsPipeline(), m_currentFrameIndex,
+		                                     nullptr,
 		                                     cameraVP);
 
 		commandList->DrawIndexedInstanced(

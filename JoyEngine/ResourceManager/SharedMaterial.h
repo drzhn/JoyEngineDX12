@@ -46,42 +46,77 @@ namespace JoyEngine
 		GUID raytracingShaderGuid;
 	};
 
-	// TODO merge with abstract pipeline object?
+	class ShaderInputContainer
+	{
+	public :
+		ShaderInputContainer() = default;
+		void InitContainer(const ShaderInputMap& inputMap);
+
+		[[nodiscard]] ComPtr<ID3D12RootSignature> GetRootSignature() const noexcept { return m_rootSignature; }
+		[[nodiscard]] uint32_t GetBindingIndexByName(const std::string&) const;
+		[[nodiscard]] uint32_t GetBindingIndexByHash(const uint32_t hash) const;
+		[[nodiscard]] const std::map<uint32_t, EngineBindingType>& GetEngineBindings() const;
+
+	private:
+		ComPtr<ID3D12RootSignature> m_rootSignature;
+		std::map<uint32_t, uint32_t> m_rootIndices;
+		std::map<uint32_t, EngineBindingType> m_engineBindings;
+		void CreateRootSignature(const CD3DX12_ROOT_PARAMETER1* params, uint32_t paramsCount);
+	};
+
+
 	class RaytracingPipeline
 	{
 	public:
 		RaytracingPipeline() = delete;
 		explicit RaytracingPipeline(const RaytracingPipelineArgs&);
+
 	private:
 		ResourceHandle<Shader> m_raytracingShader;
 		ComPtr<ID3D12StateObject> m_stateObject;
 
-		// Root signatures
-		ComPtr<ID3D12RootSignature> m_raytracingGlobalRootSignature;
-		ComPtr<ID3D12RootSignature> m_raytracingLocalRootSignature;
+		ShaderInputContainer m_globalInputContainer;
+		std::map<std::wstring, ShaderInputContainer> m_localInputContainers;
+
+		//// Root signatures
+		//ComPtr<ID3D12RootSignature> m_raytracingGlobalRootSignature;
+		//ComPtr<ID3D12RootSignature> m_raytracingLocalRootSignature;
 	};
 
 	class AbstractPipelineObject
 	{
 	public:
-		[[nodiscard]] ComPtr<ID3D12RootSignature> GetRootSignature() const noexcept { return m_rootSignature; }
-		[[nodiscard]] ComPtr<ID3D12PipelineState> GetPipelineObject() const noexcept { return m_pipelineState; };
+		AbstractPipelineObject() = delete;
+		explicit AbstractPipelineObject(GUID shaderGuid, ShaderTypeFlags shaderTypes);
+
+		[[nodiscard]] ComPtr<ID3D12PipelineState> GetPipelineObject() const noexcept { return m_pipelineState; }
 		[[nodiscard]] ShaderInput const* GetShaderInputByName(const std::string&) const;
-		[[nodiscard]] uint32_t GetBindingIndexByName(const std::string&) const;
-		[[nodiscard]] uint32_t GetBindingIndexByHash(const uint32_t hash) const;
-		[[nodiscard]] const std::map<uint32_t, EngineBindingType>& GetEngineBindings() const;
+
+
+		[[nodiscard]] ComPtr<ID3D12RootSignature> GetRootSignature() const noexcept
+		{
+			return m_inputContainer.GetRootSignature();
+		}
+
+		[[nodiscard]] uint32_t GetBindingIndexByName(const std::string& name) const
+		{
+			return m_inputContainer.GetBindingIndexByName(name);
+		}
+
+		[[nodiscard]] uint32_t GetBindingIndexByHash(const uint32_t hash) const
+		{
+			return m_inputContainer.GetBindingIndexByHash(hash);
+		}
+
+		[[nodiscard]] const std::map<uint32_t, EngineBindingType>& GetEngineBindings() const
+		{
+			return m_inputContainer.GetEngineBindings();
+		}
 
 	protected:
-		ComPtr<ID3D12RootSignature> m_rootSignature;
 		ComPtr<ID3D12PipelineState> m_pipelineState;
 		ResourceHandle<Shader> m_shader;
-		std::map<uint32_t, uint32_t> m_rootIndices;
-		std::map<uint32_t, EngineBindingType> m_engineBindings;
-
-	protected:
-		void CreateShaderAndRootSignature(GUID shaderGuid, ShaderTypeFlags shaderTypes);
-	private:
-		void CreateRootSignature(const CD3DX12_ROOT_PARAMETER1* params, uint32_t paramsCount);
+		ShaderInputContainer m_inputContainer;
 	};
 
 	class ComputePipeline final : public AbstractPipelineObject
@@ -89,8 +124,6 @@ namespace JoyEngine
 	public:
 		ComputePipeline() = delete;
 		explicit ComputePipeline(const ComputePipelineArgs&);
-	private:
-		void CreateComputePipeline();
 	};
 
 	class GraphicsPipeline : public AbstractPipelineObject
@@ -99,9 +132,6 @@ namespace JoyEngine
 		GraphicsPipeline() = delete;
 		explicit GraphicsPipeline(const GraphicsPipelineArgs&);
 		[[nodiscard]] D3D12_PRIMITIVE_TOPOLOGY_TYPE GetTopology() const { return m_topology; }
-
-	private:
-		void CreateGraphicsPipeline(const GraphicsPipelineArgs& args);
 
 		static std::vector<D3D12_INPUT_ELEMENT_DESC> m_inputLayout;
 

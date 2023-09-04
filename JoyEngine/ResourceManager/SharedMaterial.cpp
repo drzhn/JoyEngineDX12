@@ -111,24 +111,15 @@ namespace JoyEngine
 		int a = 5;
 	}
 
-	// =============================== ABSTRACT PIPELINE =================================
+	// ================ SHADER INPUT CONTAINER ===========================
 
-	ShaderInput const* AbstractPipelineObject::GetShaderInputByName(const std::string& name) const
-	{
-		if (m_shader->GetInputMap().contains(name))
-		{
-			return &m_shader->GetInputMap().find(name)->second;
-		}
-		return nullptr;
-	}
-
-	uint32_t AbstractPipelineObject::GetBindingIndexByName(const std::string& name) const
+	uint32_t ShaderInputContainer::GetBindingIndexByName(const std::string& name) const
 	{
 		ASSERT(m_rootIndices.contains(strHash(name.c_str())));
 		return m_rootIndices.find(strHash(name.c_str()))->second;
 	}
 
-	uint32_t AbstractPipelineObject::GetBindingIndexByHash(const uint32_t hash) const
+	uint32_t ShaderInputContainer::GetBindingIndexByHash(const uint32_t hash) const
 	{
 		if (!m_rootIndices.contains(hash))
 		{
@@ -138,12 +129,12 @@ namespace JoyEngine
 		return m_rootIndices.find(hash)->second;
 	}
 
-	const std::map<uint32_t, EngineBindingType>& AbstractPipelineObject::GetEngineBindings() const
+	const std::map<uint32_t, EngineBindingType>& ShaderInputContainer::GetEngineBindings() const
 	{
 		return m_engineBindings;
 	}
 
-	void AbstractPipelineObject::CreateShaderAndRootSignature(GUID shaderGuid, ShaderTypeFlags shaderTypes)
+	void ShaderInputContainer::InitContainer(const ShaderInputMap& inputMap)
 	{
 		CD3DX12_DESCRIPTOR_RANGE1 ranges[DESCRIPTOR_ARRAY_SIZE];
 		uint32_t rangesIndex = 0;
@@ -151,9 +142,7 @@ namespace JoyEngine
 		CD3DX12_ROOT_PARAMETER1 params[DESCRIPTOR_ARRAY_SIZE];
 		uint32_t paramsIndex = 0;
 
-		m_shader = ResourceManager::Get()->LoadResource<Shader>(shaderGuid, shaderTypes);
-
-		for (const auto& pair : m_shader->GetInputMap())
+		for (const auto& pair : inputMap)
 		{
 			const std::string& name = pair.first;
 			const ShaderInput& input = pair.second;
@@ -233,7 +222,7 @@ namespace JoyEngine
 		CreateRootSignature(params, paramsIndex);
 	}
 
-	void AbstractPipelineObject::CreateRootSignature(const CD3DX12_ROOT_PARAMETER1* params, uint32_t paramsCount)
+	void ShaderInputContainer::CreateRootSignature(const CD3DX12_ROOT_PARAMETER1* params, uint32_t paramsCount)
 	{
 		// TODO should I make compatibility with 1.0?
 		ASSERT(GraphicsManager::Get()->GetHighestRootSignatureVersion() == D3D_ROOT_SIGNATURE_VERSION_1_1);
@@ -269,18 +258,30 @@ namespace JoyEngine
 			IID_PPV_ARGS(&m_rootSignature)));
 	}
 
-	// =============================== COMPUTE PIPELINE =================================
+	// =============================== ABSTRACT PIPELINE =================================
 
-	ComputePipeline::ComputePipeline(const ComputePipelineArgs& args)
+	AbstractPipelineObject::AbstractPipelineObject(GUID shaderGuid, ShaderTypeFlags shaderTypes)
 	{
-		CreateShaderAndRootSignature(args.computeShaderGuid, JoyShaderTypeCompute);
-		CreateComputePipeline();
+		m_shader = ResourceManager::Get()->LoadResource<Shader>(shaderGuid, shaderTypes);
+		m_inputContainer.InitContainer(m_shader.Get()->GetInputMap());
 	}
 
-	void ComputePipeline::CreateComputePipeline()
+	ShaderInput const* AbstractPipelineObject::GetShaderInputByName(const std::string& name) const
+	{
+		if (m_shader->GetInputMap().contains(name))
+		{
+			return &m_shader->GetInputMap().find(name)->second;
+		}
+		return nullptr;
+	}
+
+	// =============================== COMPUTE PIPELINE =================================
+
+	ComputePipeline::ComputePipeline(const ComputePipelineArgs& args):
+		AbstractPipelineObject(args.computeShaderGuid, JoyShaderTypeCompute)
 	{
 		const D3D12_COMPUTE_PIPELINE_STATE_DESC computePipelineStateDesc = {
-			m_rootSignature.Get(),
+			m_inputContainer.GetRootSignature().Get(),
 			CD3DX12_SHADER_BYTECODE(m_shader->GetComputeShadeModule().Get()),
 			0,
 			{},
@@ -464,18 +465,13 @@ namespace JoyEngine
 	};
 
 	GraphicsPipeline::GraphicsPipeline(const GraphicsPipelineArgs& args) :
+		AbstractPipelineObject(args.shader, args.shaderTypes),
 		m_topology(args.topology),
 		m_hasVertexInput(args.hasVertexInput),
 		m_depthTest(args.depthTest),
 		m_depthWrite(args.depthWrite),
 		m_depthComparisonFunc(args.depthComparisonFunc),
 		m_cullMode(args.cullMode)
-	{
-		CreateShaderAndRootSignature(args.shader, args.shaderTypes);
-		CreateGraphicsPipeline(args);
-	}
-
-	void GraphicsPipeline::CreateGraphicsPipeline(const GraphicsPipelineArgs& args)
 	{
 		// Create the vertex input layout
 
@@ -485,7 +481,7 @@ namespace JoyEngine
 		constexpr CD3DX12_SHADER_BYTECODE emptyBytecode = {};
 
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc = {
-			m_rootSignature.Get(),
+			m_inputContainer.GetRootSignature().Get(),
 			m_shader->GetShaderType() & JoyShaderTypeVertex
 				? CD3DX12_SHADER_BYTECODE(m_shader->GetVertexShadeModule().Get())
 				: emptyBytecode,

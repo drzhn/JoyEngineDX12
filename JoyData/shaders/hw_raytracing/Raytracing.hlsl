@@ -27,8 +27,8 @@ struct RayGenConstantBuffer
 };
 
 // global
-RaytracingAccelerationStructure SceneAccelerationStructure : register(t0, space0);
-RWTexture2D<float4> OutputRenderTarget : register(u0);
+RaytracingAccelerationStructure g_SceneAccelerationStructure : register(t0, space0);
+RWTexture2D<float4> g_OutputRenderTarget : register(u0);
 
 // local
 ConstantBuffer<RayGenConstantBuffer> screenParams : register(b0);
@@ -70,15 +70,15 @@ void MyRaygenShader()
 		ray.TMin = 0.001;
 		ray.TMax = 10000.0;
 		RayPayload payload = {float4(0, 0, 0, 0)};
-		TraceRay(SceneAccelerationStructure, RAY_FLAG_CULL_BACK_FACING_TRIANGLES, ~0, 0, 1, 0, ray, payload);
+		TraceRay(g_SceneAccelerationStructure, RAY_FLAG_CULL_BACK_FACING_TRIANGLES, ~0, 0, 1, 0, ray, payload);
 
 		// Write the raytraced color to the output texture.
-		OutputRenderTarget[DispatchRaysIndex().xy] = payload.color;
+		g_OutputRenderTarget[DispatchRaysIndex().xy] = payload.color;
 	}
 	else
 	{
 		// Render interpolated DispatchRaysIndex outside the stencil window
-		OutputRenderTarget[DispatchRaysIndex().xy] = float4(lerpValues, 0, 1);
+		g_OutputRenderTarget[DispatchRaysIndex().xy] = float4(lerpValues, 0, 1);
 	}
 }
 

@@ -14,6 +14,7 @@ using Microsoft::WRL::ComPtr;
 
 namespace JoyEngine
 {
+
 	struct EngineStructsInclude final : ID3DInclude, IDxcIncludeHandler
 	{
 		EngineStructsInclude() = delete;
@@ -71,6 +72,7 @@ namespace JoyEngine
 	};
 
 	typedef uint32_t ShaderTypeFlags;
+	typedef std::map<std::string, ShaderInput> ShaderInputMap;
 
 
 	class ShaderCompiler
@@ -81,7 +83,7 @@ namespace JoyEngine
 			const char* shaderPath,
 			const std::vector<char>& shaderData,
 			ID3DBlob** module,
-			std::map<std::string, ShaderInput>& m_inputMap
+			std::map<std::string, ShaderInput>& globalInputMap, std::map<std::string, ShaderInputMap> localInputMaps
 		);
 
 

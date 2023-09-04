@@ -13,6 +13,7 @@ using Microsoft::WRL::ComPtr;
 
 namespace JoyEngine
 {
+
 	class Shader final : public Resource
 	{
 	public :
@@ -25,7 +26,12 @@ namespace JoyEngine
 		~Shader() final = default;
 
 		[[nodiscard]] ShaderTypeFlags GetShaderType() const noexcept { return m_shaderType; }
-		[[nodiscard]] const std::map<std::string, ShaderInput>& GetInputMap() { return m_inputMap; }
+		[[nodiscard]] const ShaderInputMap& GetInputMap() { return m_globalInputMap; }
+		[[nodiscard]] const std::map<std::string, ShaderInputMap>& GetLocalInputMaps()
+		{
+			ASSERT((m_shaderType & JoyShaderTypeRaytracing) != 0);
+			return m_localInputMaps;
+		}
 
 		[[nodiscard]] ComPtr<ID3DBlob> GetVertexShadeModule() const noexcept { return m_vertexModule; }
 		[[nodiscard]] ComPtr<ID3DBlob> GetFragmentShadeModule() const noexcept { return m_fragmentModule; }
@@ -44,7 +50,8 @@ namespace JoyEngine
 		ComPtr<ID3DBlob> m_computeModule;
 		ComPtr<ID3DBlob> m_raytracingModule;
 
-		std::map<std::string, ShaderInput> m_inputMap;
+		ShaderInputMap m_globalInputMap;
+		std::map<std::string, ShaderInputMap> m_localInputMaps;
 	};
 }
 

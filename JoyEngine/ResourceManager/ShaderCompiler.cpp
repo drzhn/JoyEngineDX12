@@ -1,7 +1,9 @@
 ﻿#include "ShaderCompiler.h"
 
+#include <codecvt>
 #include <d3d12.h>
 #include <D3Dcompiler.h>
+#include <functional>
 
 #include "DataManager/DataManager.h"
 #include "Utils/Log.h"
@@ -64,7 +66,7 @@ namespace JoyEngine
 		const std::vector<char>& shaderData,
 		ID3DBlob** module,
 		ShaderInputMap& globalInputMap,
-		std::map<std::string, ShaderInputMap> localInputMaps)
+		std::map<std::wstring, ShaderInputMap>& localInputMaps)
 	{
 		if (dxil_module == nullptr)
 		{
@@ -252,22 +254,30 @@ namespace JoyEngine
 				// D3D12_FUNCTION_DESC.Name is mangled https://github.com/microsoft/DirectXShaderCompiler/blob/main/docs/DXIL.rst#identifiers
 				// dxc header doesn't support translation this name to unmangled version,
 				// but library subobjects require them to be unmangled
-				auto GetUnmangledName = [](std::string name)
+				auto GetUnmangledName = [](const std::string& name)
 				{
-					if (!name.starts_with("\x1?"))
-						return name;
+					auto ToWstring = [](const std::string& str)
+					{
+						return std::wstring(str.begin(), str.end());
+					};
 
+					if (!name.starts_with("\x1?"))
+					{
+						return ToWstring(name);
+					}
 					const size_t pos = name.find("@@");
 					if (pos == name.npos)
-						return name;
+					{
+						return ToWstring(name);
+					}
 
-					return name.substr(2, pos - 2);
+					return ToWstring(name.substr(2, pos - 2));
 				};
 
 				ID3D12FunctionReflection* functionReflection = libraryReflection->GetFunctionByIndex(i);
 				D3D12_FUNCTION_DESC functionDesc;
 				functionReflection->GetDesc(&functionDesc);
-				std::string unmangledName = GetUnmangledName(functionDesc.Name);
+				std::wstring unmangledName = GetUnmangledName(functionDesc.Name);
 				localInputMaps.insert({unmangledName, {}});
 
 				for (uint32_t j = 0; j < functionDesc.BoundResources; j++)

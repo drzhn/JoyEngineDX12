@@ -83,7 +83,7 @@ namespace JoyEngine
 			const char* shaderPath,
 			const std::vector<char>& shaderData,
 			ID3DBlob** module,
-			std::map<std::string, ShaderInput>& globalInputMap, std::map<std::string, ShaderInputMap> localInputMaps
+			std::map<std::string, ShaderInput>& globalInputMap, std::map<std::wstring, ShaderInputMap>& localInputMaps
 		);
 
 

@@ -26,10 +26,7 @@ using Microsoft::WRL::ComPtr;
 
 namespace JoyEngine
 {
-	const wchar_t* g_hitGroupName = L"MyHitGroup";
-	const wchar_t* g_raygenShaderName = L"MyRaygenShader";
-	const wchar_t* g_closestHitShaderName = L"MyClosestHitShader";
-	const wchar_t* g_missShaderName = L"MyMissShader";
+	const wchar_t* g_hitGroupName = L"HitGroup";
 
 	RaytracingPipeline::RaytracingPipeline(const RaytracingPipelineArgs& args)
 	{
@@ -47,27 +44,22 @@ namespace JoyEngine
 		const uint32_t numSubobjects = 4;
 
 		// dxil Library
-		D3D12_EXPORT_DESC exportDescs[3] = {
+		D3D12_EXPORT_DESC exportDescs[5];
+		int index = 0;
+		for (const auto& inputMap : m_raytracingShader.Get()->GetLocalInputMaps())
+		{
+			exportDescs[index] = D3D12_EXPORT_DESC
 			{
-				.Name = g_raygenShaderName,
+				.Name = inputMap.first.c_str(),
 				.ExportToRename = nullptr,
 				.Flags = D3D12_EXPORT_FLAG_NONE
-			},
-			{
-				.Name = g_closestHitShaderName,
-				.ExportToRename = nullptr,
-				.Flags = D3D12_EXPORT_FLAG_NONE
-			},
-			{
-				.Name = g_missShaderName,
-				.ExportToRename = nullptr,
-				.Flags = D3D12_EXPORT_FLAG_NONE
-			}
-		};
+			};
+			index++;
+		}
 
 		D3D12_DXIL_LIBRARY_DESC libraryDesc{
 			.DXILLibrary = CD3DX12_SHADER_BYTECODE(m_raytracingShader->GetRaytracingShadeModule().Get()),
-			.NumExports = 3,
+			.NumExports = static_cast<uint32_t>(m_raytracingShader.Get()->GetLocalInputMaps().size()),
 			.pExports = exportDescs
 		};
 

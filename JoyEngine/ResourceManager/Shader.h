@@ -27,7 +27,7 @@ namespace JoyEngine
 
 		[[nodiscard]] ShaderTypeFlags GetShaderType() const noexcept { return m_shaderType; }
 		[[nodiscard]] const ShaderInputMap& GetInputMap() { return m_globalInputMap; }
-		[[nodiscard]] const std::map<std::string, ShaderInputMap>& GetLocalInputMaps()
+		[[nodiscard]] const std::map<std::wstring, ShaderInputMap>& GetLocalInputMaps()
 		{
 			ASSERT((m_shaderType & JoyShaderTypeRaytracing) != 0);
 			return m_localInputMaps;
@@ -51,7 +51,7 @@ namespace JoyEngine
 		ComPtr<ID3DBlob> m_raytracingModule;
 
 		ShaderInputMap m_globalInputMap;
-		std::map<std::string, ShaderInputMap> m_localInputMaps;
+		std::map<std::wstring, ShaderInputMap> m_localInputMaps;
 	};
 }
 

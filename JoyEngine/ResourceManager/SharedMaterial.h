@@ -50,7 +50,7 @@ namespace JoyEngine
 	{
 	public :
 		ShaderInputContainer() = default;
-		void InitContainer(const ShaderInputMap& inputMap);
+		void InitContainer(const ShaderInputMap& inputMap, D3D12_ROOT_SIGNATURE_FLAGS flags);
 
 		[[nodiscard]] ComPtr<ID3D12RootSignature> GetRootSignature() const noexcept { return m_rootSignature; }
 		[[nodiscard]] uint32_t GetBindingIndexByName(const std::string&) const;
@@ -61,7 +61,7 @@ namespace JoyEngine
 		ComPtr<ID3D12RootSignature> m_rootSignature;
 		std::map<uint32_t, uint32_t> m_rootIndices;
 		std::map<uint32_t, EngineBindingType> m_engineBindings;
-		void CreateRootSignature(const CD3DX12_ROOT_PARAMETER1* params, uint32_t paramsCount);
+		void CreateRootSignature(const CD3DX12_ROOT_PARAMETER1* params, uint32_t paramsCount, D3D12_ROOT_SIGNATURE_FLAGS flags);
 	};
 
 
@@ -87,7 +87,7 @@ namespace JoyEngine
 	{
 	public:
 		AbstractPipelineObject() = delete;
-		explicit AbstractPipelineObject(GUID shaderGuid, ShaderTypeFlags shaderTypes);
+		explicit AbstractPipelineObject(GUID shaderGuid, ShaderTypeFlags shaderTypes, D3D12_ROOT_SIGNATURE_FLAGS flags);
 
 		[[nodiscard]] ComPtr<ID3D12PipelineState> GetPipelineObject() const noexcept { return m_pipelineState; }
 		[[nodiscard]] ShaderInput const* GetShaderInputByName(const std::string&) const;

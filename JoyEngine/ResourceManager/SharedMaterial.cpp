@@ -134,7 +134,9 @@ namespace JoyEngine
 		return m_engineBindings;
 	}
 
-	void ShaderInputContainer::InitContainer(const ShaderInputMap& inputMap)
+	void ShaderInputContainer::InitContainer(
+		const ShaderInputMap& inputMap,
+		D3D12_ROOT_SIGNATURE_FLAGS flags)
 	{
 		CD3DX12_DESCRIPTOR_RANGE1 ranges[DESCRIPTOR_ARRAY_SIZE];
 		uint32_t rangesIndex = 0;
@@ -219,10 +221,14 @@ namespace JoyEngine
 			}
 		}
 
-		CreateRootSignature(params, paramsIndex);
+		CreateRootSignature(params, paramsIndex, flags);
 	}
 
-	void ShaderInputContainer::CreateRootSignature(const CD3DX12_ROOT_PARAMETER1* params, uint32_t paramsCount)
+	void ShaderInputContainer::CreateRootSignature(
+		const CD3DX12_ROOT_PARAMETER1* params,
+		uint32_t paramsCount,
+		D3D12_ROOT_SIGNATURE_FLAGS flags
+	)
 	{
 		// TODO should I make compatibility with 1.0?
 		ASSERT(GraphicsManager::Get()->GetHighestRootSignatureVersion() == D3D_ROOT_SIGNATURE_VERSION_1_1);
@@ -232,7 +238,7 @@ namespace JoyEngine
 			params,
 			0,
 			nullptr,
-			D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+			flags);
 
 		ComPtr<ID3DBlob> signature;
 		ID3D10Blob** errorPtr = nullptr;
@@ -260,10 +266,13 @@ namespace JoyEngine
 
 	// =============================== ABSTRACT PIPELINE =================================
 
-	AbstractPipelineObject::AbstractPipelineObject(GUID shaderGuid, ShaderTypeFlags shaderTypes)
+	AbstractPipelineObject::AbstractPipelineObject(
+		GUID shaderGuid,
+		ShaderTypeFlags shaderTypes,
+		D3D12_ROOT_SIGNATURE_FLAGS flags)
 	{
 		m_shader = ResourceManager::Get()->LoadResource<Shader>(shaderGuid, shaderTypes);
-		m_inputContainer.InitContainer(m_shader.Get()->GetInputMap());
+		m_inputContainer.InitContainer(m_shader.Get()->GetInputMap(), flags);
 	}
 
 	ShaderInput const* AbstractPipelineObject::GetShaderInputByName(const std::string& name) const
@@ -278,7 +287,10 @@ namespace JoyEngine
 	// =============================== COMPUTE PIPELINE =================================
 
 	ComputePipeline::ComputePipeline(const ComputePipelineArgs& args):
-		AbstractPipelineObject(args.computeShaderGuid, JoyShaderTypeCompute)
+		AbstractPipelineObject(
+			args.computeShaderGuid,
+			JoyShaderTypeCompute,
+			D3D12_ROOT_SIGNATURE_FLAG_NONE)
 	{
 		const D3D12_COMPUTE_PIPELINE_STATE_DESC computePipelineStateDesc = {
 			m_inputContainer.GetRootSignature().Get(),
@@ -465,7 +477,10 @@ namespace JoyEngine
 	};
 
 	GraphicsPipeline::GraphicsPipeline(const GraphicsPipelineArgs& args) :
-		AbstractPipelineObject(args.shader, args.shaderTypes),
+		AbstractPipelineObject(
+			args.shader,
+			args.shaderTypes,
+			args.hasVertexInput ? D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT : D3D12_ROOT_SIGNATURE_FLAG_NONE),
 		m_topology(args.topology),
 		m_hasVertexInput(args.hasVertexInput),
 		m_depthTest(args.depthTest),

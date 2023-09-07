@@ -50,6 +50,12 @@ namespace JoyEngine
 	{
 	public :
 		ShaderInputContainer() = default;
+
+		ShaderInputContainer(const ShaderInputMap& inputMap, D3D12_ROOT_SIGNATURE_FLAGS flags)
+		{
+			InitContainer(inputMap, flags);
+		}
+
 		void InitContainer(const ShaderInputMap& inputMap, D3D12_ROOT_SIGNATURE_FLAGS flags);
 
 		[[nodiscard]] ComPtr<ID3D12RootSignature> GetRootSignature() const noexcept { return m_rootSignature; }

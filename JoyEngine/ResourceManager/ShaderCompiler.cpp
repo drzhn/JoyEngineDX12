@@ -66,7 +66,8 @@ namespace JoyEngine
 		const std::vector<char>& shaderData,
 		ID3DBlob** module,
 		ShaderInputMap& globalInputMap,
-		std::map<std::wstring, ShaderInputMap>& localInputMaps)
+		std::map<std::wstring, ShaderInputMap>& localInputMaps,
+		EnumMap<D3D12_SHADER_VERSION_TYPE, LPCWSTR, 16>& m_typeFunctionMap)
 	{
 		if (dxil_module == nullptr)
 		{
@@ -213,12 +214,9 @@ namespace JoyEngine
 		}
 
 		ASSERT_SUCC(s_dxcReflection->Load(reinterpret_cast<IDxcBlob*>(*module)));
-		uint32_t partCount;
-		ASSERT_SUCC(s_dxcReflection->GetPartCount(&partCount));
 
 		uint32_t shaderId;
 		ASSERT_SUCC(s_dxcReflection->FindFirstPartKind(DXIL_FOURCC('D', 'X', 'I', 'L'), &shaderId));
-
 		auto processShaderInputBindDesc = [&](ShaderInputMap& inputMap, D3D12_SHADER_INPUT_BIND_DESC& inputBindDesc)
 		{
 			const std::string name = inputBindDesc.Name;
@@ -248,7 +246,6 @@ namespace JoyEngine
 
 			ASSERT_SUCC(s_dxcReflection->GetPartReflection(shaderId, __uuidof(ID3D12LibraryReflection), (void**)&libraryReflection));
 			libraryReflection->GetDesc(&libraryDesc);
-
 			for (uint32_t i = 0; i < libraryDesc.FunctionCount; i++)
 			{
 				// D3D12_FUNCTION_DESC.Name is mangled https://github.com/microsoft/DirectXShaderCompiler/blob/main/docs/DXIL.rst#identifiers
@@ -277,8 +274,16 @@ namespace JoyEngine
 				ID3D12FunctionReflection* functionReflection = libraryReflection->GetFunctionByIndex(i);
 				D3D12_FUNCTION_DESC functionDesc;
 				functionReflection->GetDesc(&functionDesc);
+
 				std::wstring unmangledName = GetUnmangledName(functionDesc.Name);
 				localInputMaps.insert({unmangledName, {}});
+
+				// https://github.com/microsoft/DirectXShaderCompiler/blob/bae2325380a69d16ca244dc01dbe284946778b27/include/dxc/DxilContainer/DxilContainer.h#L562
+				// https://learn.microsoft.com/en-us/windows/win32/api/d3d12shader/ne-d3d12shader-d3d12_shader_version_type
+				auto kind = static_cast<D3D12_SHADER_VERSION_TYPE>(D3D12_SHVER_GET_TYPE(functionDesc.Version));
+
+				// use find bc of lifetime of unmangledName.c_str()
+				m_typeFunctionMap[kind] = localInputMaps.find(unmangledName)->first.c_str();
 
 				for (uint32_t j = 0; j < functionDesc.BoundResources; j++)
 				{
@@ -288,11 +293,11 @@ namespace JoyEngine
 					if (strcmp(inputBindDesc.Name, "g_SceneAccelerationStructure") == 0 ||
 						strcmp(inputBindDesc.Name, "g_OutputRenderTarget") == 0)
 					{
-						processShaderInputBindDesc(localInputMaps.at(unmangledName), inputBindDesc);
+						processShaderInputBindDesc(globalInputMap, inputBindDesc);
 					}
 					else
 					{
-						processShaderInputBindDesc(globalInputMap, inputBindDesc);
+						processShaderInputBindDesc(localInputMaps.at(unmangledName), inputBindDesc);
 					}
 				}
 			}

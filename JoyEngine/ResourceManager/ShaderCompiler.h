@@ -1,6 +1,7 @@
 ﻿#ifndef SHADER_COMPILER_H
 #define SHADER_COMPILER_H
 #include <d3d12.h>
+#include <d3d12shader.h>
 #include <d3dcommon.h>
 #include <dxc/dxcapi.h>
 #include <map>
@@ -14,6 +15,18 @@ using Microsoft::WRL::ComPtr;
 
 namespace JoyEngine
 {
+	template <typename TKey, typename TValue, uint32_t Count> requires std::is_enum_v<TKey>
+	class EnumMap
+	{
+	public:
+		TValue& operator[](TKey key)
+		{
+			return m_data[key];
+		}
+
+	private:
+		TValue m_data[Count];
+	};
 
 	struct EngineStructsInclude final : ID3DInclude, IDxcIncludeHandler
 	{
@@ -83,7 +96,9 @@ namespace JoyEngine
 			const char* shaderPath,
 			const std::vector<char>& shaderData,
 			ID3DBlob** module,
-			std::map<std::string, ShaderInput>& globalInputMap, std::map<std::wstring, ShaderInputMap>& localInputMaps
+			std::map<std::string, ShaderInput>& globalInputMap,
+			std::map<std::wstring, ShaderInputMap>& localInputMaps,
+			EnumMap<D3D12_SHADER_VERSION_TYPE, LPCWSTR, 16>& m_typeFunctionMap
 		);
 
 

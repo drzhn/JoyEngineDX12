@@ -15,7 +15,7 @@ namespace JoyEngine
 	{
 	public:
 		CommandQueue() = delete;
-		CommandQueue(D3D12_COMMAND_LIST_TYPE type, const ComPtr<ID3D12Device2>& device, uint32_t frameCount = 1);
+		CommandQueue(D3D12_COMMAND_LIST_TYPE type, const ComPtr<ID3D12Device5>& device, uint32_t frameCount = 1);
 		~CommandQueue();
 
 		void WaitQueueIdle();
@@ -24,12 +24,12 @@ namespace JoyEngine
 		void WaitForFence(uint32_t frameIndex = 0);
 
 		[[nodiscard]] ID3D12CommandQueue* GetQueue() const noexcept;
-		[[nodiscard]] ID3D12GraphicsCommandList* GetCommandList(uint32_t frameIndex) const noexcept;
+		[[nodiscard]] ID3D12GraphicsCommandList4* GetCommandList(uint32_t frameIndex) const noexcept;
 	private:
 		struct QueueAllocatorEntry
 		{
 			ComPtr<ID3D12CommandAllocator> allocator = nullptr;
-			ComPtr<ID3D12GraphicsCommandList> commandList;
+			ComPtr<ID3D12GraphicsCommandList4> commandList;
 			uint64_t fenceValue = 0;
 		};
 

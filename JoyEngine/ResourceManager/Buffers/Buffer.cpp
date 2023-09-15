@@ -35,6 +35,7 @@ namespace JoyEngine
 		m_currentResourceState(usage),
 		m_properties(properties)
 	{
+		ASSERT(m_sizeInBytes != 0);
 		const CD3DX12_RESOURCE_DESC bufferResourceDesc = CD3DX12_RESOURCE_DESC::Buffer(m_sizeInBytes, flags);
 
 		m_buffer = MemoryManager::Get()->CreateResource(
@@ -43,11 +44,18 @@ namespace JoyEngine
 			m_currentResourceState);
 	}
 
+	void Buffer::SetCPUData(const void* dataPtr, uint64_t offset, uint64_t size) const
+	{
+		const auto ptr = GetMappedPtr(offset, size);
+		memcpy(ptr->GetMappedPtr(), dataPtr, size);
+	}
+
 	std::unique_ptr<BufferMappedPtr> Buffer::GetMappedPtr(uint64_t offset, uint64_t size) const
 	{
 		ASSERT(m_properties.IsCPUAccessible());
-		ASSERT(size <= m_sizeInBytes);
+		ASSERT(offset + size <= m_sizeInBytes);
 
+		// TODO remove std::unique_ptr usage, pass this variables through stack 
 		std::unique_ptr<BufferMappedPtr> ptr = std::make_unique<BufferMappedPtr>(m_buffer, offset, size);
 		return std::move(ptr);
 	}

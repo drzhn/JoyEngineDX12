@@ -67,7 +67,6 @@ namespace JoyEngine
 		ComPtr<ID3D12RootSignature> m_rootSignature;
 		std::map<uint32_t, uint32_t> m_rootIndices;
 		std::map<uint32_t, EngineBindingType> m_engineBindings;
-		void CreateRootSignature(const CD3DX12_ROOT_PARAMETER1* params, uint32_t paramsCount, D3D12_ROOT_SIGNATURE_FLAGS flags);
 	};
 
 
@@ -83,10 +82,6 @@ namespace JoyEngine
 
 		ShaderInputContainer m_globalInputContainer;
 		std::map<std::wstring, ShaderInputContainer> m_localInputContainers;
-
-		//// Root signatures
-		//ComPtr<ID3D12RootSignature> m_raytracingGlobalRootSignature;
-		//ComPtr<ID3D12RootSignature> m_raytracingLocalRootSignature;
 	};
 
 	class AbstractPipelineObject

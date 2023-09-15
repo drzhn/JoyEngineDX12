@@ -4,7 +4,7 @@
 
 namespace JoyEngine
 {
-	CommandQueue::CommandQueue(D3D12_COMMAND_LIST_TYPE type, const ComPtr<ID3D12Device2>& device, uint32_t frameCount)
+	CommandQueue::CommandQueue(D3D12_COMMAND_LIST_TYPE type, const ComPtr<ID3D12Device5>& device, uint32_t frameCount)
 	{
 		// Describe and create the command queue.
 		D3D12_COMMAND_QUEUE_DESC queueDesc = {
@@ -114,7 +114,7 @@ namespace JoyEngine
 		m_queueEntries[frameIndex].fenceValue = m_currentFenceValue;
 	}
 
-	ID3D12GraphicsCommandList* CommandQueue::GetCommandList(uint32_t frameIndex) const noexcept
+	ID3D12GraphicsCommandList4* CommandQueue::GetCommandList(uint32_t frameIndex) const noexcept
 	{
 		return m_queueEntries[frameIndex].commandList.Get();
 	}

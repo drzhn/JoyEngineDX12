@@ -2,7 +2,10 @@
 #define HARDWARE_RAYTRACED_DDGI_H
 #include <memory>
 
+#include "RenderManager/ComputeDispatcher.h"
 #include "ResourceManager/SharedMaterial.h"
+#include "ResourceManager/Buffers/Buffer.h"
+#include "ResourceManager/Buffers/UAVGpuBuffer.h"
 
 
 namespace JoyEngine
@@ -13,6 +16,15 @@ namespace JoyEngine
 		HardwareRaytracedDDGI();
 	private:
 		std::unique_ptr<RaytracingPipeline> m_raytracingPipeline;
+
+		std::unique_ptr<ComputeDispatcher> m_dispatcher;
+
+
+		std::unique_ptr<Buffer> m_testIndexBuffer;
+		std::unique_ptr<Buffer> m_testVertexBuffer;
+
+		std::unique_ptr<UAVGpuBuffer> m_accelerationTop;
+		std::unique_ptr<UAVGpuBuffer> m_accelerationBottom;
 	};
 }
 

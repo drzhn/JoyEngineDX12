@@ -8,7 +8,11 @@ namespace JoyEngine
 	class UAVGpuBuffer
 	{
 	public:
-		UAVGpuBuffer(uint32_t numElements, size_t stride);
+		explicit UAVGpuBuffer(
+			uint32_t numElements, 
+			size_t stride, 
+			D3D12_RESOURCE_STATES resourceStates = D3D12_RESOURCE_STATE_GENERIC_READ
+		);
 
 		[[nodiscard]] ResourceView* GetUAV() const
 		{

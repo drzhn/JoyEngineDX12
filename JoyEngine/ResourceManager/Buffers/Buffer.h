@@ -39,6 +39,8 @@ namespace JoyEngine
 
 		~Buffer() override = default;
 
+		void SetCPUData(const void* dataPtr, uint64_t offset, uint64_t size) const;
+
 		[[nodiscard]] uint64_t GetSizeInBytes() const noexcept { return m_sizeInBytes; }
 
 		[[nodiscard]] std::unique_ptr<BufferMappedPtr> GetMappedPtr(uint64_t offset, uint64_t size) const;

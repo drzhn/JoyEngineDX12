@@ -2,13 +2,16 @@
 
 namespace JoyEngine
 {
-	UAVGpuBuffer::UAVGpuBuffer(uint32_t numElements, size_t stride):
+	UAVGpuBuffer::UAVGpuBuffer(
+		uint32_t numElements,
+		size_t stride,
+		D3D12_RESOURCE_STATES resourceStates):
 		m_numElements(numElements),
 		m_stride(stride)
 	{
 		m_gpuBuffer = std::make_unique<Buffer>(
 			m_numElements * m_stride,
-			D3D12_RESOURCE_STATE_GENERIC_READ,
+			resourceStates,
 			D3D12_HEAP_TYPE_DEFAULT,
 			D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
 

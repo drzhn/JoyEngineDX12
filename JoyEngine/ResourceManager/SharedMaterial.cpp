@@ -258,15 +258,17 @@ namespace JoyEngine
 				D3D12_DESCRIPTOR_RANGE_TYPE type;
 				switch (input.Type)
 				{
-				case D3D_SIT_CBUFFER: type = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+				case D3D_SIT_CBUFFER: 
+					type = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
 					break;
 
-				case D3D_SIT_STRUCTURED: // i dunno, don't ask me
+				case D3D_SIT_STRUCTURED:
 				case D3D_SIT_TEXTURE:
 				case D3D_SIT_RTACCELERATIONSTRUCTURE:
 					type = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 					break;
-				case D3D_SIT_SAMPLER: type = D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
+				case D3D_SIT_SAMPLER: 
+					type = D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
 					break;
 
 				case D3D_SIT_UAV_RWTYPED:
@@ -293,20 +295,11 @@ namespace JoyEngine
 			}
 		}
 
-		CreateRootSignature(params, paramsIndex, flags);
-	}
-
-	void ShaderInputContainer::CreateRootSignature(
-		const CD3DX12_ROOT_PARAMETER1* params,
-		uint32_t paramsCount,
-		D3D12_ROOT_SIGNATURE_FLAGS flags
-	)
-	{
 		// TODO should I make compatibility with 1.0?
 		ASSERT(GraphicsManager::Get()->GetHighestRootSignatureVersion() == D3D_ROOT_SIGNATURE_VERSION_1_1);
 		CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
 		rootSignatureDesc.Init_1_1(
-			paramsCount,
+			paramsIndex,
 			params,
 			0,
 			nullptr,

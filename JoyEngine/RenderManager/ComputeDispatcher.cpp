@@ -10,7 +10,7 @@ namespace JoyEngine
 		m_queue = std::make_unique<CommandQueue>(D3D12_COMMAND_LIST_TYPE_COMPUTE, GraphicsManager::Get()->GetDevice());
 	}
 
-	ID3D12GraphicsCommandList* ComputeDispatcher::GetCommandList() noexcept
+	ID3D12GraphicsCommandList4* ComputeDispatcher::GetCommandList() noexcept
 	{
 		m_queue->ResetForFrame();
 

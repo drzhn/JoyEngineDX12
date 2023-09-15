@@ -3,6 +3,7 @@
 #include "CommonEngineStructs.h"
 #include "GraphicsManager/GraphicsManager.h"
 #include "ResourceManager/ResourceManager.h"
+#include "Utils/GraphicsUtils.h"
 
 namespace JoyEngine
 {
@@ -154,6 +155,12 @@ namespace JoyEngine
 			.ScratchAccelerationStructureData = accelerationScratch->GetBuffer()->GetBufferResource()->GetGPUVirtualAddress()
 		};
 
-		//m_dispatcher->GetCommandList()->BuildRaytracingAccelerationStructure(&bottomLevelBuildDesc, 0, nullptr);
+		auto commandList = m_dispatcher->GetCommandList();
+
+		commandList->BuildRaytracingAccelerationStructure(&bottomLevelBuildDesc, 0, nullptr);
+		GraphicsUtils::UAVBarrier(commandList, m_accelerationBottom->GetBuffer()->GetBufferResource().Get());
+		commandList->BuildRaytracingAccelerationStructure(&topLevelBuildDesc, 0, nullptr);
+
+		m_dispatcher->ExecuteAndWait();
 	}
 }

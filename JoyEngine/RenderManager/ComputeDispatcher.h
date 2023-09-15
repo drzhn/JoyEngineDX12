@@ -10,11 +10,11 @@ namespace JoyEngine
 	{
 	public:
 		ComputeDispatcher();
-		[[nodiscard]] ID3D12GraphicsCommandList* GetCommandList() noexcept;
+		[[nodiscard]] ID3D12GraphicsCommandList4* GetCommandList() noexcept;
 		void ExecuteAndWait() const;
 	private:
 		std::unique_ptr<CommandQueue> m_queue;
-		ID3D12GraphicsCommandList* m_currentCommandList;
+		ID3D12GraphicsCommandList4* m_currentCommandList;
 	};
 }
 #endif // COMPUTE_DISPATCHER_H

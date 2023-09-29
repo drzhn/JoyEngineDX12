@@ -161,5 +161,19 @@ namespace JoyEngine
 		};
 
 		ASSERT_SUCC(GraphicsManager::Get()->GetDevice()->CreateStateObject(&stateObjectDesc, IID_PPV_ARGS(&m_stateObject)));
+
+		// ================ Shader tables ================
+
+		ComPtr<ID3D12StateObjectProperties> stateObjectProperties;
+		ASSERT_SUCC(m_stateObject.As(&stateObjectProperties));
+		void* rayGenShaderIdentifier = stateObjectProperties->GetShaderIdentifier(m_raytracingShader->GetFunctionNameByType(D3D12_SHVER_RAY_GENERATION_SHADER));
+		void* missShaderIdentifier = stateObjectProperties->GetShaderIdentifier(m_raytracingShader->GetFunctionNameByType(D3D12_SHVER_MISS_SHADER));
+		void* hitGroupShaderIdentifier = stateObjectProperties->GetShaderIdentifier(g_hitGroupName);
+
+		UINT shaderIdentifierSize = D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES;
+
+		uint32_t recordSize = 0;
+
+
 	}
 }

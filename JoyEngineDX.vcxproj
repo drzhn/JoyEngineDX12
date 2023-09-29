@@ -251,6 +251,9 @@
     <ClCompile Include="JoyEngine\ResourceManager\Buffers\ConstantCpuBuffer.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\Buffers\DynamicCpuBuffer.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\MtlBinaryParser.cpp" />
+    <ClCompile Include="JoyEngine\ResourceManager\Pipelines\AbstractPipelineObject.cpp" />
+    <ClCompile Include="JoyEngine\ResourceManager\Pipelines\ComputePipeline.cpp" />
+    <ClCompile Include="JoyEngine\ResourceManager\Pipelines\GraphicsPipeline.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\ResourceView.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\Material.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\Mesh.cpp" />
@@ -268,6 +271,8 @@
     <ClCompile Include="JoyEngine\Utils\GraphicsUtils.cpp" />
     <ClCompile Include="JoyEngine\Utils\Log.cpp" />
     <ClCompile Include="JoyEngine\main.cpp" />
+    <ClCompile Include="JoyEngine\ResourceManager\Pipelines\RaytracingPipeline.cpp" />
+    <ClCompile Include="JoyEngine\ResourceManager\Pipelines\ShaderInputContainer.cpp" />
     <ClCompile Include="ThirdParty\imgui\backends\imgui_impl_dx12.cpp" />
     <ClCompile Include="ThirdParty\imgui\backends\imgui_impl_win32.cpp" />
     <ClCompile Include="ThirdParty\imgui\imgui.cpp" />
@@ -325,6 +330,9 @@
     <ClInclude Include="JoyEngine\ResourceManager\Buffers\DynamicCpuBuffer.h" />
     <ClInclude Include="JoyEngine\ResourceManager\DDS.h" />
     <ClInclude Include="JoyEngine\ResourceManager\MtlBinaryParser.h" />
+    <ClInclude Include="JoyEngine\ResourceManager\Pipelines\AbstractPipelineObject.h" />
+    <ClInclude Include="JoyEngine\ResourceManager\Pipelines\ComputePipeline.h" />
+    <ClInclude Include="JoyEngine\ResourceManager\Pipelines\GraphicsPipeline.h" />
     <ClInclude Include="JoyEngine\ResourceManager\ResourceView.h" />
     <ClInclude Include="JoyEngine\ResourceManager\Material.h" />
     <ClInclude Include="JoyEngine\ResourceManager\Mesh.h" />
@@ -347,6 +355,8 @@
     <ClInclude Include="JoyEngine\Utils\Log.h" />
     <ClInclude Include="JoyEngine\ResourceManager\Buffers\DynamicBufferPool.h" />
     <ClInclude Include="JoyEngine\Utils\TimeCounter.h" />
+    <ClInclude Include="JoyEngine\ResourceManager\Pipelines\RaytracingPipeline.h" />
+    <ClInclude Include="JoyEngine\ResourceManager\Pipelines\ShaderInputContainer.h" />
     <ClInclude Include="ThirdParty\imgui\backends\imgui_impl_dx12.h" />
     <ClInclude Include="ThirdParty\imgui\backends\imgui_impl_win32.h" />
     <ClInclude Include="ThirdParty\imgui\imconfig.h" />

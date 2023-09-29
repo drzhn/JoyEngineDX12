@@ -3,8 +3,8 @@
 
 #include "CommonEngineStructs.h"
 #include "RenderManager/Raytracing/DataBuffer.h"
-#include "ResourceManager/SharedMaterial.h"
 #include "ResourceManager/Buffers/ConstantCpuBuffer.h"
+#include "ResourceManager/Pipelines/ComputePipeline.h"
 
 namespace JoyEngine
 {

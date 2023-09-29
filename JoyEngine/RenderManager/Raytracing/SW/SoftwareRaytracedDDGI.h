@@ -4,6 +4,7 @@
 #include <d3d12.h>
 
 #include <memory>
+#include <set>
 
 #include "CommonEngineStructs.h"
 #include "BufferSorter.h"
@@ -12,6 +13,7 @@
 #include "RenderManager/GBuffer.h"
 #include "ResourceManager/Mesh.h"
 #include "ResourceManager/ResourceHandle.h"
+#include "ResourceManager/SharedMaterial.h"
 #include "ResourceManager/Buffers/DynamicCpuBuffer.h"
 
 namespace JoyEngine

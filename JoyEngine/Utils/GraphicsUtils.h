@@ -5,7 +5,8 @@
 #include <d3d12.h>
 
 #include "CommonEngineStructs.h"
-#include "ResourceManager/SharedMaterial.h"
+#include "ResourceManager/Pipelines/ComputePipeline.h"
+#include "ResourceManager/Pipelines/GraphicsPipeline.h"
 
 namespace JoyEngine
 {

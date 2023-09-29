@@ -195,6 +195,21 @@
     <ClCompile Include="JoyEngine\RenderManager\Raytracing\HW\HardwareRaytracedDDGI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="JoyEngine\ResourceManager\Pipelines\RaytracingPipeline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JoyEngine\ResourceManager\Pipelines\ShaderInputContainer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JoyEngine\ResourceManager\Pipelines\AbstractPipelineObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JoyEngine\ResourceManager\Pipelines\ComputePipeline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JoyEngine\ResourceManager\Pipelines\GraphicsPipeline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="JoyEngine\JoyEngine.h">
@@ -429,6 +444,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JoyEngine\RenderManager\Raytracing\HW\HardwareRaytracedDDGI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JoyEngine\ResourceManager\Pipelines\RaytracingPipeline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JoyEngine\ResourceManager\Pipelines\ShaderInputContainer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JoyEngine\ResourceManager\Pipelines\AbstractPipelineObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JoyEngine\ResourceManager\Pipelines\ComputePipeline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JoyEngine\ResourceManager\Pipelines\GraphicsPipeline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

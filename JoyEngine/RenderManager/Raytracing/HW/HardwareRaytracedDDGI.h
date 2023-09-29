@@ -3,9 +3,9 @@
 #include <memory>
 
 #include "RenderManager/ComputeDispatcher.h"
-#include "ResourceManager/SharedMaterial.h"
 #include "ResourceManager/Buffers/Buffer.h"
 #include "ResourceManager/Buffers/UAVGpuBuffer.h"
+#include "ResourceManager/Pipelines/RaytracingPipeline.h"
 
 
 namespace JoyEngine
@@ -14,6 +14,7 @@ namespace JoyEngine
 	{
 	public:
 		HardwareRaytracedDDGI();
+
 	private:
 		std::unique_ptr<RaytracingPipeline> m_raytracingPipeline;
 

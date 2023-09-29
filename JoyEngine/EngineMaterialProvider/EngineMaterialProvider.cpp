@@ -8,7 +8,6 @@
 #include "RenderManager/RenderManager.h"
 #include "Utils/TimeCounter.h"
 #include "ResourceManager/ResourceManager.h"
-#include "ResourceManager/SharedMaterial.h"
 
 namespace JoyEngine
 {

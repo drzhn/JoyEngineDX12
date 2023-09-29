@@ -4,8 +4,8 @@
 #include "Common/HashDefs.h"
 #include "EngineMaterialProvider/EngineMaterialProvider.h"
 #include "ResourceManager/ResourceManager.h"
-#include "ResourceManager/SharedMaterial.h"
 #include "ResourceManager/Texture.h"
+#include "ResourceManager/Pipelines/ComputePipeline.h"
 #include "Utils/GraphicsUtils.h"
 
 #include "Utils/GUID.h"

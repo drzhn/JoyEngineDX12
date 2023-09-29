@@ -3,9 +3,9 @@
 
 #include "ResourceManager/Mesh.h"
 #include "ResourceManager/ResourceHandle.h"
-#include "ResourceManager/SharedMaterial.h"
 #include "ResourceManager/Texture.h"
 #include "ResourceManager/Buffers/ConstantCpuBuffer.h"
+#include "ResourceManager/Pipelines/GraphicsPipeline.h"
 
 namespace JoyEngine
 {

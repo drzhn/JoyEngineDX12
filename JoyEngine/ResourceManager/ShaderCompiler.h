@@ -87,6 +87,12 @@ namespace JoyEngine
 	typedef uint32_t ShaderTypeFlags;
 	typedef std::map<std::string, ShaderInput> ShaderInputMap;
 
+	struct ShaderFunctionInput
+	{
+		std::wstring functionName;
+		ShaderInputMap inputMap;
+	};
+
 
 	class ShaderCompiler
 	{
@@ -97,8 +103,7 @@ namespace JoyEngine
 			const std::vector<char>& shaderData,
 			ID3DBlob** module,
 			std::map<std::string, ShaderInput>& globalInputMap,
-			std::map<std::wstring, ShaderInputMap>& localInputMaps,
-			EnumMap<D3D12_SHADER_VERSION_TYPE, LPCWSTR, 16>& m_typeFunctionMap
+			std::map<D3D12_SHADER_VERSION_TYPE, ShaderFunctionInput>& localInputMaps
 		);
 
 

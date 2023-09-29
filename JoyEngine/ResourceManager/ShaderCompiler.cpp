@@ -66,8 +66,7 @@ namespace JoyEngine
 		const std::vector<char>& shaderData,
 		ID3DBlob** module,
 		ShaderInputMap& globalInputMap,
-		std::map<std::wstring, ShaderInputMap>& localInputMaps,
-		EnumMap<D3D12_SHADER_VERSION_TYPE, LPCWSTR, 16>& m_typeFunctionMap)
+		std::map<D3D12_SHADER_VERSION_TYPE, ShaderFunctionInput>& localInputMaps)
 	{
 		if (dxil_module == nullptr)
 		{
@@ -276,14 +275,17 @@ namespace JoyEngine
 				functionReflection->GetDesc(&functionDesc);
 
 				std::wstring unmangledName = GetUnmangledName(functionDesc.Name);
-				localInputMaps.insert({unmangledName, {}});
 
 				// https://github.com/microsoft/DirectXShaderCompiler/blob/bae2325380a69d16ca244dc01dbe284946778b27/include/dxc/DxilContainer/DxilContainer.h#L562
 				// https://learn.microsoft.com/en-us/windows/win32/api/d3d12shader/ne-d3d12shader-d3d12_shader_version_type
 				auto kind = static_cast<D3D12_SHADER_VERSION_TYPE>(D3D12_SHVER_GET_TYPE(functionDesc.Version));
-
-				// use find bc of lifetime of unmangledName.c_str()
-				m_typeFunctionMap[kind] = localInputMaps.find(unmangledName)->first.c_str();
+				localInputMaps.insert({
+					kind,
+					{
+						.functionName = unmangledName,
+						.inputMap = {}
+					}
+				});
 
 				for (uint32_t j = 0; j < functionDesc.BoundResources; j++)
 				{
@@ -297,7 +299,7 @@ namespace JoyEngine
 					}
 					else
 					{
-						processShaderInputBindDesc(localInputMaps.at(unmangledName), inputBindDesc);
+						processShaderInputBindDesc(localInputMaps.at(kind).inputMap, inputBindDesc);
 					}
 				}
 			}

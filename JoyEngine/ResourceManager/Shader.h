@@ -12,7 +12,6 @@ using Microsoft::WRL::ComPtr;
 
 namespace JoyEngine
 {
-
 	class Shader final : public Resource
 	{
 	public :
@@ -25,7 +24,7 @@ namespace JoyEngine
 		[[nodiscard]] ShaderTypeFlags GetShaderType() const noexcept { return m_shaderType; }
 		[[nodiscard]] const ShaderInputMap& GetInputMap() { return m_globalInputMap; }
 
-		[[nodiscard]] const std::map<std::wstring, ShaderInputMap>& GetLocalInputMaps()
+		[[nodiscard]] const std::map<D3D12_SHADER_VERSION_TYPE, ShaderFunctionInput>& GetLocalInputMaps()
 		{
 			ASSERT((m_shaderType & JoyShaderTypeRaytracing) != 0);
 			return m_localInputMaps;
@@ -39,11 +38,15 @@ namespace JoyEngine
 		// TODO other types
 		[[nodiscard]] bool IsLoaded() const noexcept override { return true; }
 
-		[[nodiscard]] LPCWSTR GetFunctionNameByType(D3D12_SHADER_VERSION_TYPE type)
+		[[nodiscard]] LPCWSTR GetFunctionNameByType(D3D12_SHADER_VERSION_TYPE type) const
 		{
 			// other shaders doesn't support libraries yet
 			ASSERT((m_shaderType & JoyShaderTypeRaytracing) != 0);
-			return m_typeFunctionMap[type];
+			if (!m_localInputMaps.contains(type))
+			{
+				return nullptr;
+			}
+			return m_localInputMaps.at(type).functionName.c_str();
 		}
 
 	private :
@@ -56,8 +59,8 @@ namespace JoyEngine
 		ComPtr<ID3DBlob> m_raytracingModule;
 
 		ShaderInputMap m_globalInputMap;
-		std::map<std::wstring, ShaderInputMap> m_localInputMaps;
-		EnumMap<D3D12_SHADER_VERSION_TYPE, LPCWSTR, 16> m_typeFunctionMap;
+
+		std::map<D3D12_SHADER_VERSION_TYPE, ShaderFunctionInput> m_localInputMaps;
 
 	private:
 		void CompileShader(ShaderType type, const char* shaderPath, const std::vector<char>& shaderData, ComPtr<ID3DBlob>& module);

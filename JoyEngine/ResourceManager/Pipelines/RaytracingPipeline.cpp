@@ -44,17 +44,19 @@ namespace JoyEngine
 		int exportIndex = 0;
 		for (const auto& inputMap : m_raytracingShader.Get()->GetLocalInputMaps())
 		{
+			const LPCWSTR functionName = m_raytracingShader.Get()->GetFunctionNameByType(inputMap.first);
+
 			// export desc
 			{
 				exportDescs[exportIndex] = D3D12_EXPORT_DESC
 				{
-					.Name = inputMap.first.c_str(),
+					.Name = functionName,
 					.ExportToRename = nullptr,
 					.Flags = D3D12_EXPORT_FLAG_NONE
 				};
 				m_localInputContainers.insert({
 					inputMap.first,
-					ShaderInputContainer(inputMap.second, D3D12_ROOT_SIGNATURE_FLAG_LOCAL_ROOT_SIGNATURE)
+					ShaderInputContainer(inputMap.second.inputMap, D3D12_ROOT_SIGNATURE_FLAG_LOCAL_ROOT_SIGNATURE)
 				});
 			}
 
@@ -75,7 +77,7 @@ namespace JoyEngine
 
 			// local root signature association
 			{
-				exports[exportIndex] = inputMap.first.c_str();
+				exports[exportIndex] = functionName;
 				subobjectToExportsAssociationDescs[exportIndex] = {
 					.pSubobjectToAssociate = &stateSubobjects[subobjectIndex - 1],
 					.NumExports = 1,
@@ -170,10 +172,12 @@ namespace JoyEngine
 		void* missShaderIdentifier = stateObjectProperties->GetShaderIdentifier(m_raytracingShader->GetFunctionNameByType(D3D12_SHVER_MISS_SHADER));
 		void* hitGroupShaderIdentifier = stateObjectProperties->GetShaderIdentifier(g_hitGroupName);
 
-		UINT shaderIdentifierSize = D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES;
+		uint32_t recordSize = D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES;
 
-		uint32_t recordSize = 0;
-
-
+		for (const auto & pair : m_raytracingShader.Get()->GetLocalInputMaps().at(D3D12_SHVER_RAY_GENERATION_SHADER).inputMap)
+		{
+			const ShaderInput& input = pair.second;
+			recordSize += sizeof(D3D12_GPU_DESCRIPTOR_HANDLE); // we don't use pushconstants yet in shader tables. 
+		}
 	}
 }

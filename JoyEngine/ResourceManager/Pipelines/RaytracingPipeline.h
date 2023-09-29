@@ -24,7 +24,7 @@ namespace JoyEngine
 		ComPtr<ID3D12StateObject> m_stateObject;
 
 		ShaderInputContainer m_globalInputContainer;
-		std::map<std::wstring, ShaderInputContainer> m_localInputContainers;
+		std::map<D3D12_SHADER_VERSION_TYPE, ShaderInputContainer> m_localInputContainers;
 	};
 }
 #endif // RAYTRACING_PIPELINE_H

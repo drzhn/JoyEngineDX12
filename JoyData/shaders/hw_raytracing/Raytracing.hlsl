@@ -12,19 +12,7 @@
 #ifndef RAYTRACING_HLSL
 #define RAYTRACING_HLSL
 
-struct Viewport
-{
-	float left;
-	float top;
-	float right;
-	float bottom;
-};
-
-struct RayGenConstantBuffer
-{
-	Viewport viewport;
-	Viewport stencil;
-};
+#include "CommonEngineStructs.h"
 
 // global
 RaytracingAccelerationStructure g_SceneAccelerationStructure : register(t0, space0);

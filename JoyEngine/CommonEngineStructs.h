@@ -97,6 +97,20 @@ enum LightType
 
 // ========= COMMON STRUCTS =========
 
+struct Viewport
+{
+	float left;
+	float top;
+	float right;
+	float bottom;
+};
+
+struct RayGenConstantBuffer
+{
+	Viewport viewport;
+	Viewport stencil;
+};
+
 struct Vertex
 {
 	VEC3 pos;

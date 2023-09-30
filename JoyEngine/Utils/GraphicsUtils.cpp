@@ -96,6 +96,14 @@ namespace JoyEngine
 		commandList->SetComputeRootDescriptorTable(rootParamIndex, view->GetGPUHandle());
 	}
 
+	void GraphicsUtils::AttachView(ID3D12GraphicsCommandList* commandList, const RaytracingPipeline* pipeline, const char* paramName, const ResourceView* view)
+	{
+		const uint32_t rootParamIndex = pipeline->GetGlobalInputContainer()->GetBindingIndexByHash(strHash(paramName));
+		if (rootParamIndex == -1) return;
+
+		commandList->SetComputeRootDescriptorTable(rootParamIndex, view->GetGPUHandle());
+	}
+
 	void GraphicsUtils::SetViewportAndScissor(
 		ID3D12GraphicsCommandList* commandList,
 		uint32_t width,

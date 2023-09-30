@@ -80,6 +80,12 @@ namespace JoyEngine
 				rangesIndex++;
 				paramsIndex++;
 			}
+			else if (name == "g_SceneAccelerationStructure")
+			{
+				params[paramsIndex].InitAsShaderResourceView(input.BindPoint, input.Space);
+				m_rootIndices.insert({ strHash(name.c_str()), paramsIndex });
+				paramsIndex++;
+			}
 			else
 			{
 				D3D12_DESCRIPTOR_RANGE_TYPE type;
@@ -91,7 +97,6 @@ namespace JoyEngine
 
 				case D3D_SIT_STRUCTURED:
 				case D3D_SIT_TEXTURE:
-				case D3D_SIT_RTACCELERATIONSTRUCTURE:
 					type = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 					break;
 				case D3D_SIT_SAMPLER:
@@ -110,6 +115,7 @@ namespace JoyEngine
 
 				case D3D_SIT_TBUFFER:
 				case D3D_SIT_BYTEADDRESS:
+				case D3D_SIT_RTACCELERATIONSTRUCTURE:
 				default:
 					ASSERT(false);
 				}

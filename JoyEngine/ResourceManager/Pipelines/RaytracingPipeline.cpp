@@ -3,6 +3,7 @@
 #include "d3dx12.h"
 #include "GraphicsManager/GraphicsManager.h"
 #include "ResourceManager/ResourceManager.h"
+#include "ResourceManager/Buffers/DynamicCpuBuffer.h"
 
 #define MAX_SHADER_LIB_EXPORTS 8
 #define MAX_STATE_SUBOBJECTS 16
@@ -10,6 +11,24 @@
 namespace JoyEngine
 {
 	const wchar_t* g_hitGroupName = L"HitGroup";
+
+	ShaderTable::ShaderTable(uint64_t size, const void* shaderIdentifier):
+		m_size(Align(D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES + size, D3D12_RAYTRACING_SHADER_RECORD_BYTE_ALIGNMENT))
+	{
+		m_dataBuffer = std::make_unique<Buffer>(
+			m_size,
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			D3D12_HEAP_TYPE_UPLOAD);
+		m_dataBuffer->SetCPUData(shaderIdentifier, 0, D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES);
+	}
+
+	void ShaderTable::SetRootParam(uint32_t paramIndex, const D3D12_GPU_DESCRIPTOR_HANDLE descriptorHandle) const
+	{
+		m_dataBuffer->SetCPUData(
+			&descriptorHandle,
+			D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES + paramIndex * sizeof(D3D12_GPU_DESCRIPTOR_HANDLE),
+			D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES);
+	}
 
 	RaytracingPipeline::RaytracingPipeline(const RaytracingPipelineArgs& args)
 	{
@@ -172,12 +191,21 @@ namespace JoyEngine
 		void* missShaderIdentifier = stateObjectProperties->GetShaderIdentifier(m_raytracingShader->GetFunctionNameByType(D3D12_SHVER_MISS_SHADER));
 		void* hitGroupShaderIdentifier = stateObjectProperties->GetShaderIdentifier(g_hitGroupName);
 
-		uint32_t recordSize = D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES;
-
-		for (const auto & pair : m_raytracingShader.Get()->GetLocalInputMaps().at(D3D12_SHVER_RAY_GENERATION_SHADER).inputMap)
+		auto CreateShaderTable = [this](D3D12_SHADER_VERSION_TYPE type, void* shaderIdentifier)
 		{
-			const ShaderInput& input = pair.second;
-			recordSize += sizeof(D3D12_GPU_DESCRIPTOR_HANDLE); // we don't use pushconstants yet in shader tables. 
-		}
+			uint32_t recordSize = 0;
+
+			for (const auto& pair : m_raytracingShader.Get()->GetLocalInputMaps().at(type).inputMap)
+			{
+				const ShaderInput& input = pair.second;
+				recordSize += sizeof(D3D12_GPU_DESCRIPTOR_HANDLE); // we don't use pushconstants yet in shader tables. 
+			}
+
+			return std::make_unique<ShaderTable>(recordSize, shaderIdentifier);
+		};
+		m_raygenShaderTable = CreateShaderTable(D3D12_SHVER_RAY_GENERATION_SHADER, rayGenShaderIdentifier);
+		m_missShaderTable = CreateShaderTable(D3D12_SHVER_MISS_SHADER, missShaderIdentifier);
+		// TODO figure out whats going on in ht group shader tables (with different signatures for every function)
+		m_hitGroupShaderTable = std::make_unique<ShaderTable>(0, hitGroupShaderIdentifier);
 	}
 }

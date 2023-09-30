@@ -42,11 +42,11 @@ namespace JoyEngine
 		ASSERT(m_width != 0 && m_height != 0);
 
 		m_queue = std::make_unique<CommandQueue>(D3D12_COMMAND_LIST_TYPE_DIRECT, GraphicsManager::Get()->GetDevice(),
-		                                         frameCount);
+		                                         FRAME_COUNT);
 
 		// Describe and create the swap chain.
 		DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
-		swapChainDesc.BufferCount = frameCount;
+		swapChainDesc.BufferCount = FRAME_COUNT;
 		swapChainDesc.Width = m_width;
 		swapChainDesc.Height = m_height;
 		swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -73,7 +73,7 @@ namespace JoyEngine
 
 		//m_currentFrameIndex = m_swapChain->GetCurrentBackBufferIndex();
 
-		for (UINT n = 0; n < frameCount; n++)
+		for (UINT n = 0; n < FRAME_COUNT; n++)
 		{
 			ComPtr<ID3D12Resource> swapchainResource;
 			ASSERT_SUCC(m_swapChain->GetBuffer(n, IID_PPV_ARGS(&swapchainResource)));
@@ -111,14 +111,14 @@ namespace JoyEngine
 			GetGBufferFormat(),
 			GetSwapchainFormat(),
 			GetDepthFormat(),
-			frameCount,
+			FRAME_COUNT,
 			m_width,
 			m_height);
 
-		//m_testHWRaytracing = std::make_unique<HardwareRaytracedDDGI>();
+		m_testHWRaytracing = std::make_unique<HardwareRaytracedDDGI>();
 
-		m_transformProvider = std::make_unique<TransformProvider>(frameCount);
-		m_lightSystem = std::make_unique<ClusteredLightSystem>(frameCount);
+		m_transformProvider = std::make_unique<TransformProvider>(FRAME_COUNT);
+		m_lightSystem = std::make_unique<ClusteredLightSystem>(FRAME_COUNT);
 
 		// IMGUI initialization
 		{
@@ -132,7 +132,7 @@ namespace JoyEngine
 				imguiGpuHandle);
 
 			ImGui_ImplDX12_Init(
-				GraphicsManager::Get()->GetDevice(), frameCount,
+				GraphicsManager::Get()->GetDevice(), FRAME_COUNT,
 				swapchainFormat,
 				DescriptorManager::Get()->GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV),
 				imguiCpuHandle,
@@ -322,6 +322,8 @@ namespace JoyEngine
 		}
 
 		GraphicsUtils::SetViewportAndScissor(commandList, m_width, m_height);
+
+		m_testHWRaytracing->ProcessRaytracing(commandList, m_currentFrameIndex);
 
 		// Deferred shading 
 		{

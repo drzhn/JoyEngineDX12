@@ -72,7 +72,7 @@ namespace JoyEngine
 		[[nodiscard]] uint32_t GetWidth() const noexcept override;
 		[[nodiscard]] uint32_t GetHeight() const noexcept override;
 
-		[[nodiscard]] uint32_t GetFrameCount() const noexcept override { return frameCount; }
+		[[nodiscard]] uint32_t GetFrameCount() const noexcept override { return FRAME_COUNT; }
 
 		[[nodiscard]] TransformProvider* GetTransformProvider() const noexcept override { return m_transformProvider.get(); }
 		[[nodiscard]] ILightSystem& GetLightSystem() const noexcept override { return *m_lightSystem; }
@@ -106,7 +106,7 @@ namespace JoyEngine
 		                            ID3D12Resource* copyResource);
 
 	private:
-		static constexpr uint32_t frameCount = 3;
+		static constexpr uint32_t FRAME_COUNT = 3;
 
 
 		static constexpr DXGI_FORMAT hdrRTVFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
@@ -119,7 +119,7 @@ namespace JoyEngine
 
 		ComPtr<IDXGISwapChain3> m_swapChain;
 
-		std::array<std::unique_ptr<RenderTexture>, frameCount> m_swapchainRenderTargets;
+		std::array<std::unique_ptr<RenderTexture>, FRAME_COUNT> m_swapchainRenderTargets;
 
 		std::unique_ptr<RTVGbuffer> m_gbuffer;
 		std::unique_ptr<Skybox> m_skybox;

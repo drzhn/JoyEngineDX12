@@ -32,8 +32,8 @@ namespace JoyEngine
 
 	private:
 		ComPtr<ID3D12RootSignature> m_rootSignature;
-		std::map<uint32_t, uint32_t> m_rootIndices;
-		std::map<uint32_t, EngineBindingType> m_engineBindings;
+		std::map<uint32_t, uint32_t> m_rootIndices; // hash(paramName) -> rootIndex
+		std::map<uint32_t, EngineBindingType> m_engineBindings; // hash(paramName) -> engine binding type
 	};
 }
 #endif // SHADER_INPUT_CONTAINER_H

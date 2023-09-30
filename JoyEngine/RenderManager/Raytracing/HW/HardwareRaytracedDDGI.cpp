@@ -1,6 +1,7 @@
 #include "HardwareRaytracedDDGI.h"
 
 #include "CommonEngineStructs.h"
+#include "Common/HashDefs.h"
 #include "GraphicsManager/GraphicsManager.h"
 #include "ResourceManager/ResourceManager.h"
 #include "Utils/GraphicsUtils.h"
@@ -10,6 +11,22 @@ namespace JoyEngine
 	HardwareRaytracedDDGI::HardwareRaytracedDDGI()
 	{
 		m_dispatcher = std::make_unique<ComputeDispatcher>();
+		m_testTexture = std::make_unique<UAVTexture>(
+			1024,
+			1024,
+			DXGI_FORMAT_R16G16B16A16_FLOAT,
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			D3D12_HEAP_TYPE_DEFAULT);
+
+		float border = 0.1f;
+
+		m_screenParamsBuffer.SetData({
+			.viewport = {-1.0f, -1.0f, 1.0f, 1.0f},
+			.stencil = {
+				-1 + border, -1 + border,
+				1.0f - border, 1 - border
+			}
+		});
 
 		m_raytracingPipeline = std::make_unique<RaytracingPipeline>(RaytracingPipelineArgs{
 			GUID::StringToGuid("b2597599-94ef-43ed-abd8-46d3adbb75d4")
@@ -162,5 +179,47 @@ namespace JoyEngine
 		commandList->BuildRaytracingAccelerationStructure(&topLevelBuildDesc, 0, nullptr);
 
 		m_dispatcher->ExecuteAndWait();
+	}
+
+	void HardwareRaytracedDDGI::ProcessRaytracing(ID3D12GraphicsCommandList4* commandList, uint32_t frameIndex) const
+	{
+		commandList->SetComputeRootSignature(m_raytracingPipeline->GetGlobalInputContainer()->GetRootSignature().Get());
+
+		commandList->SetComputeRootShaderResourceView(
+			m_raytracingPipeline->GetGlobalInputContainer()->GetBindingIndexByHash(strHash("g_SceneAccelerationStructure")),
+			m_accelerationTop->GetBuffer()->GetBufferResource()->GetGPUVirtualAddress());
+
+		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "g_OutputRenderTarget", m_testTexture->GetUAV());
+
+		m_raytracingPipeline->GetRaygenShaderTable()->SetRootParam(
+			m_raytracingPipeline->GetLocalInputContainer(D3D12_SHVER_RAY_GENERATION_SHADER)->GetBindingIndexByName("screenParams"),
+			m_screenParamsBuffer.GetView()->GetGPUHandle()
+		);
+
+		const D3D12_DISPATCH_RAYS_DESC dispatchDesc = {
+			.RayGenerationShaderRecord = {
+				.StartAddress = m_raytracingPipeline->GetRaygenShaderTable()->GetAddress(),
+				.SizeInBytes = m_raytracingPipeline->GetRaygenShaderTable()->GetSize(),
+			},
+			.MissShaderTable = {
+				.StartAddress = m_raytracingPipeline->GetMissShaderTable()->GetAddress(),
+				.SizeInBytes = m_raytracingPipeline->GetMissShaderTable()->GetSize(),
+				.StrideInBytes = m_raytracingPipeline->GetMissShaderTable()->GetSize()
+			},
+			.HitGroupTable = {
+				.StartAddress = m_raytracingPipeline->GetHitGroupShaderTable()->GetAddress(),
+				.SizeInBytes = m_raytracingPipeline->GetHitGroupShaderTable()->GetSize(),
+				.StrideInBytes = m_raytracingPipeline->GetMissShaderTable()->GetSize()
+			},
+			.CallableShaderTable = {},
+			.Width = 1024,
+			.Height = 1024,
+			.Depth = 1
+		};
+
+		commandList->SetPipelineState1(m_raytracingPipeline->GetPipelineState());
+		commandList->DispatchRays(&dispatchDesc);
+
+		GraphicsUtils::UAVBarrier(commandList, m_testTexture->GetImageResource().Get());
 	}
 }

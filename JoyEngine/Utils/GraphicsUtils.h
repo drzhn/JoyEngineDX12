@@ -7,6 +7,7 @@
 #include "CommonEngineStructs.h"
 #include "ResourceManager/Pipelines/ComputePipeline.h"
 #include "ResourceManager/Pipelines/GraphicsPipeline.h"
+#include "ResourceManager/Pipelines/RaytracingPipeline.h"
 
 namespace JoyEngine
 {
@@ -21,6 +22,8 @@ namespace JoyEngine
 		static void AttachView(ID3D12GraphicsCommandList* commandList, const ComputePipeline* pipeline, const char* paramName, D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle);
 		static void AttachView(ID3D12GraphicsCommandList* commandList, const ComputePipeline* pipeline, const char* paramName, const ResourceView* view);
 		static void AttachView(ID3D12GraphicsCommandList* commandList, const ComputePipeline* pipeline, uint32_t rootParamIndex, const ResourceView* view);
+
+		static void AttachView(ID3D12GraphicsCommandList* commandList, const RaytracingPipeline* pipeline, const char* paramName, const ResourceView* view);
 
 		static void Barrier(ID3D12GraphicsCommandList* commandList, ID3D12Resource* pResource, D3D12_RESOURCE_STATES stateBefore, D3D12_RESOURCE_STATES stateAfter);
 		static void UAVBarrier(ID3D12GraphicsCommandList* commandList, ID3D12Resource* pResource);

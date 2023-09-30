@@ -293,7 +293,8 @@ namespace JoyEngine
 					functionReflection->GetResourceBindingDesc(j, &inputBindDesc);
 
 					if (strcmp(inputBindDesc.Name, "g_SceneAccelerationStructure") == 0 ||
-						strcmp(inputBindDesc.Name, "g_OutputRenderTarget") == 0)
+						strcmp(inputBindDesc.Name, "g_OutputRenderTarget") == 0 ||
+						strcmp(inputBindDesc.Name, "screenParams") == 0)
 					{
 						processShaderInputBindDesc(globalInputMap, inputBindDesc);
 					}

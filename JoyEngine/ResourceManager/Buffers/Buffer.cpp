@@ -46,8 +46,8 @@ namespace JoyEngine
 
 	void Buffer::SetCPUData(const void* dataPtr, uint64_t offset, uint64_t size) const
 	{
-		const auto ptr = GetMappedPtr(offset, size);
-		memcpy(ptr->GetMappedPtr(), dataPtr, size);
+		const auto ptr = GetMappedPtr(0, m_sizeInBytes);
+		memcpy((void*)((size_t)ptr->GetMappedPtr() + offset), dataPtr, size);
 	}
 
 	std::unique_ptr<BufferMappedPtr> Buffer::GetMappedPtr(uint64_t offset, uint64_t size) const

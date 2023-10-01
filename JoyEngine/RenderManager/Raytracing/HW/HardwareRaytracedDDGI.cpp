@@ -190,12 +190,11 @@ namespace JoyEngine
 			m_accelerationTop->GetBuffer()->GetBufferResource()->GetGPUVirtualAddress());
 
 		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "g_OutputRenderTarget", m_testTexture->GetUAV());
-		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "screenParams", m_screenParamsBuffer.GetView());
 
-		//m_raytracingPipeline->GetRaygenShaderTable()->SetRootParam(
-		//	m_raytracingPipeline->GetLocalInputContainer(D3D12_SHVER_RAY_GENERATION_SHADER)->GetBindingIndexByName("screenParams"),
-		//	m_screenParamsBuffer.GetView()->GetGPUHandle()
-		//);
+		m_raytracingPipeline->GetRaygenShaderTable()->SetRootParam(
+			m_raytracingPipeline->GetLocalInputContainer(D3D12_SHVER_RAY_GENERATION_SHADER)->GetBindingIndexByName("screenParams"),
+			m_screenParamsBuffer.GetView()->GetGPUHandle()
+		);
 
 		const D3D12_DISPATCH_RAYS_DESC dispatchDesc = {
 			.RayGenerationShaderRecord = {

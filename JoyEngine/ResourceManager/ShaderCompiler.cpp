@@ -15,6 +15,43 @@
 
 namespace JoyEngine
 {
+	ShaderTableType ShaderKindToShaderTableType(D3D12_SHADER_VERSION_TYPE kind)
+	{
+		ShaderTableType tableType;
+		switch (kind)
+		{
+		case D3D12_SHVER_RAY_GENERATION_SHADER:
+			tableType = ShaderTableRaygen;
+			break;
+		case D3D12_SHVER_INTERSECTION_SHADER:
+		case D3D12_SHVER_ANY_HIT_SHADER:
+		case D3D12_SHVER_CLOSEST_HIT_SHADER:
+			tableType = ShaderTableHitGroup;
+			break;
+		case D3D12_SHVER_MISS_SHADER:
+			tableType = ShaderTableMiss;
+			break;
+		case D3D12_SHVER_CALLABLE_SHADER:
+			tableType = ShaderTableCallable;
+			break;
+		case D3D12_SHVER_MESH_SHADER:
+		case D3D12_SHVER_AMPLIFICATION_SHADER:
+		case D3D12_SHVER_RESERVED0:
+		case D3D12_SHVER_PIXEL_SHADER:
+		case D3D12_SHVER_VERTEX_SHADER:
+		case D3D12_SHVER_GEOMETRY_SHADER:
+		case D3D12_SHVER_HULL_SHADER:
+		case D3D12_SHVER_DOMAIN_SHADER:
+		case D3D12_SHVER_COMPUTE_SHADER:
+		case D3D12_SHVER_LIBRARY:
+		default:
+			ASSERT(false);
+			throw;
+		}
+
+		return tableType;
+	}
+
 	EngineStructsInclude::EngineStructsInclude(IDxcLibrary* library) :
 		m_commonEngineStructsPath(std::filesystem::absolute(R"(JoyEngine/CommonEngineStructs.h)").generic_string()),
 		m_dxcLibrary(library)
@@ -60,13 +97,15 @@ namespace JoyEngine
 	HMODULE dxc_module = nullptr;
 	DxcCreateInstanceProc dxc_create_func = nullptr;
 
+
 	void ShaderCompiler::Compile(
 		ShaderType type,
 		const char* shaderPath,
 		const std::vector<char>& shaderData,
 		ID3DBlob** module,
 		ShaderInputMap& globalInputMap,
-		std::map<D3D12_SHADER_VERSION_TYPE, ShaderFunctionInput>& localInputMaps)
+		std::map<ShaderTableType, ShaderInputMap>& localInputMaps,
+		std::map<D3D12_SHADER_VERSION_TYPE, std::wstring>& typeFunctionNameMap)
 	{
 		if (dxil_module == nullptr)
 		{
@@ -279,13 +318,14 @@ namespace JoyEngine
 				// https://github.com/microsoft/DirectXShaderCompiler/blob/bae2325380a69d16ca244dc01dbe284946778b27/include/dxc/DxilContainer/DxilContainer.h#L562
 				// https://learn.microsoft.com/en-us/windows/win32/api/d3d12shader/ne-d3d12shader-d3d12_shader_version_type
 				auto kind = static_cast<D3D12_SHADER_VERSION_TYPE>(D3D12_SHVER_GET_TYPE(functionDesc.Version));
-				localInputMaps.insert({
-					kind,
-					{
-						.functionName = unmangledName,
-						.inputMap = {}
-					}
-				});
+				typeFunctionNameMap.insert({kind, unmangledName});
+
+				ShaderTableType tableType = ShaderKindToShaderTableType(kind);
+
+				if (!localInputMaps.contains(tableType))
+				{
+					localInputMaps.insert({tableType, {}});
+				}
 
 				for (uint32_t j = 0; j < functionDesc.BoundResources; j++)
 				{
@@ -299,7 +339,7 @@ namespace JoyEngine
 					}
 					else
 					{
-						processShaderInputBindDesc(localInputMaps.at(kind).inputMap, inputBindDesc);
+						processShaderInputBindDesc(localInputMaps.at(tableType), inputBindDesc);
 					}
 				}
 			}

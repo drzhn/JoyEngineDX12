@@ -10,6 +10,8 @@
 #include <xstring>
 #include <wrl/client.h>
 
+#include "Utils/Assert.h"
+
 using Microsoft::WRL::ComPtr;
 
 
@@ -60,8 +62,6 @@ namespace JoyEngine
 		IDxcLibrary* m_dxcLibrary;
 	};
 
-
-	typedef
 	enum ShaderType
 	{
 		JoyShaderTypeVertex = 1 << 0,
@@ -73,7 +73,15 @@ namespace JoyEngine
 		JoyShaderTypeMesh = 1 << 6,
 		JoyShaderTypeCompute = 1 << 7,
 		JoyShaderTypeRaytracing = 1 << 8
-	} ShaderType;
+	};
+
+	enum ShaderTableType
+	{
+		ShaderTableRaygen = 0,
+		ShaderTableMiss,
+		ShaderTableHitGroup,
+		ShaderTableCallable,
+	};
 
 	struct ShaderInput
 	{
@@ -87,12 +95,7 @@ namespace JoyEngine
 	typedef uint32_t ShaderTypeFlags;
 	typedef std::map<std::string, ShaderInput> ShaderInputMap;
 
-	struct ShaderFunctionInput
-	{
-		std::wstring functionName;
-		ShaderInputMap inputMap;
-	};
-
+	ShaderTableType ShaderKindToShaderTableType(D3D12_SHADER_VERSION_TYPE kind);
 
 	class ShaderCompiler
 	{
@@ -102,8 +105,9 @@ namespace JoyEngine
 			const char* shaderPath,
 			const std::vector<char>& shaderData,
 			ID3DBlob** module,
-			std::map<std::string, ShaderInput>& globalInputMap,
-			std::map<D3D12_SHADER_VERSION_TYPE, ShaderFunctionInput>& localInputMaps
+			ShaderInputMap& globalInputMap,
+			std::map<ShaderTableType, ShaderInputMap>& localInputMaps,
+			std::map<D3D12_SHADER_VERSION_TYPE, std::wstring>& typeFunctionNameMap
 		);
 
 

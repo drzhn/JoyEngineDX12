@@ -111,6 +111,11 @@ struct RayGenConstantBuffer
 	Viewport stencil;
 };
 
+struct Color
+{
+	VEC4 data;
+};
+
 struct Vertex
 {
 	VEC3 pos;

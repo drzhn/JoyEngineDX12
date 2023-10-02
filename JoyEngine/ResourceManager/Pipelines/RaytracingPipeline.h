@@ -35,7 +35,7 @@ namespace JoyEngine
 		RaytracingPipeline() = delete;
 		explicit RaytracingPipeline(const RaytracingPipelineArgs&);
 		[[nodiscard]] const ShaderInputContainer* GetGlobalInputContainer() const { return &m_globalInputContainer; }
-		[[nodiscard]] const ShaderInputContainer* GetLocalInputContainer(D3D12_SHADER_VERSION_TYPE type) const
+		[[nodiscard]] const ShaderInputContainer* GetLocalInputContainer(const ShaderTableType type) const
 		{
 			return &m_localInputContainers.at(type);
 		}
@@ -48,7 +48,7 @@ namespace JoyEngine
 		ComPtr<ID3D12StateObject> m_stateObject;
 
 		ShaderInputContainer m_globalInputContainer;
-		std::map<D3D12_SHADER_VERSION_TYPE, ShaderInputContainer> m_localInputContainers;
+		std::map<ShaderTableType, ShaderInputContainer> m_localInputContainers;
 
 		std::unique_ptr<ShaderTable> m_raygenShaderTable;
 		std::unique_ptr<ShaderTable> m_missShaderTable;

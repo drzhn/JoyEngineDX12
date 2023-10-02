@@ -27,6 +27,7 @@ namespace JoyEngine
 				1.0f - border, 1 - border
 			}
 		});
+		m_testColorBuffer.SetData({{1, 0, 0, 1}});
 
 		m_raytracingPipeline = std::make_unique<RaytracingPipeline>(RaytracingPipelineArgs{
 			GUID::StringToGuid("b2597599-94ef-43ed-abd8-46d3adbb75d4")
@@ -191,9 +192,15 @@ namespace JoyEngine
 
 		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "g_OutputRenderTarget", m_testTexture->GetUAV());
 
+		// TODO more clean and simple way to bind resource to shader tables
 		m_raytracingPipeline->GetRaygenShaderTable()->SetRootParam(
-			m_raytracingPipeline->GetLocalInputContainer(D3D12_SHVER_RAY_GENERATION_SHADER)->GetBindingIndexByName("screenParams"),
+			m_raytracingPipeline->GetLocalInputContainer(ShaderTableRaygen)->GetBindingIndexByName("screenParams"),
 			m_screenParamsBuffer.GetView()->GetGPUHandle()
+		);
+
+		m_raytracingPipeline->GetHitGroupShaderTable()->SetRootParam(
+			m_raytracingPipeline->GetLocalInputContainer(ShaderTableHitGroup)->GetBindingIndexByName("hitColor"),
+			m_testColorBuffer.GetView()->GetGPUHandle()
 		);
 
 		const D3D12_DISPATCH_RAYS_DESC dispatchDesc = {

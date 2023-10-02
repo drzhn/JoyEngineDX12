@@ -24,10 +24,16 @@ namespace JoyEngine
 		[[nodiscard]] ShaderTypeFlags GetShaderType() const noexcept { return m_shaderType; }
 		[[nodiscard]] const ShaderInputMap& GetInputMap() { return m_globalInputMap; }
 
-		[[nodiscard]] const std::map<D3D12_SHADER_VERSION_TYPE, ShaderFunctionInput>& GetLocalInputMaps()
+		[[nodiscard]] const std::map<ShaderTableType, ShaderInputMap>& GetLocalInputMaps() const
 		{
 			ASSERT((m_shaderType & JoyShaderTypeRaytracing) != 0);
 			return m_localInputMaps;
+		}
+
+		[[nodiscard]] const std::map<D3D12_SHADER_VERSION_TYPE, std::wstring>& GetTypeFunctionMap() const
+		{
+			ASSERT((m_shaderType & JoyShaderTypeRaytracing) != 0);
+			return m_typeFunctionNameMap;
 		}
 
 		[[nodiscard]] ComPtr<ID3DBlob> GetVertexShadeModule() const noexcept { return m_vertexModule; }
@@ -42,11 +48,11 @@ namespace JoyEngine
 		{
 			// other shaders doesn't support libraries yet
 			ASSERT((m_shaderType & JoyShaderTypeRaytracing) != 0);
-			if (!m_localInputMaps.contains(type))
+			if (!m_typeFunctionNameMap.contains(type))
 			{
 				return nullptr;
 			}
-			return m_localInputMaps.at(type).functionName.c_str();
+			return m_typeFunctionNameMap.at(type).c_str();
 		}
 
 	private :
@@ -60,7 +66,9 @@ namespace JoyEngine
 
 		ShaderInputMap m_globalInputMap;
 
-		std::map<D3D12_SHADER_VERSION_TYPE, ShaderFunctionInput> m_localInputMaps;
+
+		std::map<ShaderTableType, ShaderInputMap> m_localInputMaps;
+		std::map<D3D12_SHADER_VERSION_TYPE, std::wstring> m_typeFunctionNameMap;
 
 	private:
 		void CompileShader(ShaderType type, const char* shaderPath, const std::vector<char>& shaderData, ComPtr<ID3DBlob>& module);

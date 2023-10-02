@@ -70,6 +70,7 @@ namespace JoyEngine
 			shaderData,
 			&module,
 			m_globalInputMap,
-			m_localInputMaps);
+			m_localInputMaps,
+			m_typeFunctionNameMap);
 	}
 }

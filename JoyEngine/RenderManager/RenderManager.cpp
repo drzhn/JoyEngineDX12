@@ -446,20 +446,23 @@ namespace JoyEngine
 				1,
 				0, 0);
 		}
-
-		ImGui::SetNextWindowPos({0, 0});
-		ImGui::SetNextWindowSize({300, 75});
+		float windowPosY = 0;
+		float windowHeight = 100;
+		ImGui::SetNextWindowPos({0, windowPosY});
+		ImGui::SetNextWindowSize({300, windowHeight});
 		{
 			ImGui::Begin("Stats:");
 			//ImGui::Text("Screen: %dx%d", m_width, m_height);
 			ImGui::Text("Num triangles %d", m_trianglesCount);
 			const glm::vec3 camPos = m_currentCamera->GetGameObject().GetTransform()->GetPosition();
 			ImGui::Text("Camera: %.3f %.3f %.3f", camPos.x, camPos.y, camPos.z);
-			//ImGui::Checkbox("Draw raytraced image", &g_drawRaytracedImage);
+			ImGui::Checkbox("Draw raytraced image", &g_drawRaytracedImage);
 			ImGui::End();
 		}
-		ImGui::SetNextWindowPos({0, 75});
-		ImGui::SetNextWindowSize({300, 75});
+		windowPosY += windowHeight;
+		windowHeight = 75;
+		ImGui::SetNextWindowPos({0, windowPosY});
+		ImGui::SetNextWindowSize({300, windowHeight});
 		{
 			bool useDDGI = m_raytracing->GetRaytracedProbesDataPtr()->useDDGI == 1;
 			ImGui::Begin("DDGI:");
@@ -468,8 +471,10 @@ namespace JoyEngine
 			ImGui::End();
 			m_raytracing->GetRaytracedProbesDataPtr()->useDDGI = useDDGI ? 1 : 0;
 		}
-		ImGui::SetNextWindowSize({300, 150});
-		ImGui::SetNextWindowPos({0, 150});
+		windowPosY += windowHeight;
+		windowHeight = 75;
+		ImGui::SetNextWindowPos({0, windowPosY});
+		ImGui::SetNextWindowSize({300, windowHeight});
 		{
 			HDRDownScaleConstants* constants = m_tonemapping->GetConstantsPtr();
 			ImGui::Begin("Tonemapping:");

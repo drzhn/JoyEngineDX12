@@ -33,6 +33,7 @@ namespace JoyEngine
 
 		std::unique_ptr<UAVTexture> m_testTexture;
 		ConstantCpuBuffer<RayGenConstantBuffer> m_screenParamsBuffer;
+		ConstantCpuBuffer<Color> m_testColorBuffer;
 	};
 }
 

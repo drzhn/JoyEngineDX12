@@ -61,9 +61,11 @@ namespace JoyEngine
 		D3D12_SUBOBJECT_TO_EXPORTS_ASSOCIATION subobjectToExportsAssociationDescs[MAX_SHADER_LIB_EXPORTS];
 		LPCWSTR exports[MAX_SHADER_LIB_EXPORTS];
 		int exportIndex = 0;
-		for (const auto& inputMap : m_raytracingShader.Get()->GetLocalInputMaps())
+		for (const auto& inputMap : m_raytracingShader->GetTypeFunctionMap())
 		{
-			const LPCWSTR functionName = m_raytracingShader.Get()->GetFunctionNameByType(inputMap.first);
+			const D3D12_SHADER_VERSION_TYPE shaderKind = inputMap.first;
+			const LPCWSTR functionName = inputMap.second.c_str();
+			const ShaderTableType tableType = ShaderKindToShaderTableType(shaderKind);
 
 			// export desc
 			{
@@ -73,16 +75,22 @@ namespace JoyEngine
 					.ExportToRename = nullptr,
 					.Flags = D3D12_EXPORT_FLAG_NONE
 				};
-				m_localInputContainers.insert({
-					inputMap.first,
-					ShaderInputContainer(inputMap.second.inputMap, D3D12_ROOT_SIGNATURE_FLAG_LOCAL_ROOT_SIGNATURE)
-				});
+
+
+				if (!m_localInputContainers.contains(tableType))
+				{
+					m_localInputContainers.insert({
+						tableType,
+						ShaderInputContainer(m_raytracingShader->GetLocalInputMaps().at(tableType),
+						                     D3D12_ROOT_SIGNATURE_FLAG_LOCAL_ROOT_SIGNATURE)
+					});
+				}
 			}
 
 			// local root signature subobject
 			{
 				localRootSignatureDescs[exportIndex] = {
-					.pLocalRootSignature = m_localInputContainers[inputMap.first].GetRootSignature().Get()
+					.pLocalRootSignature = m_localInputContainers.at(tableType).GetRootSignature().Get()
 				};
 
 				auto& localRootSignatureSubobject = stateSubobjects[subobjectIndex];
@@ -191,11 +199,11 @@ namespace JoyEngine
 		void* missShaderIdentifier = stateObjectProperties->GetShaderIdentifier(m_raytracingShader->GetFunctionNameByType(D3D12_SHVER_MISS_SHADER));
 		void* hitGroupShaderIdentifier = stateObjectProperties->GetShaderIdentifier(g_hitGroupName);
 
-		auto CreateShaderTable = [this](D3D12_SHADER_VERSION_TYPE type, void* shaderIdentifier)
+		auto CreateShaderTable = [this](ShaderTableType type, void* shaderIdentifier)
 		{
 			uint32_t recordSize = 0;
 
-			for (const auto& pair : m_raytracingShader.Get()->GetLocalInputMaps().at(type).inputMap)
+			for (const auto& pair : m_raytracingShader.Get()->GetLocalInputMaps().at(type))
 			{
 				const ShaderInput& input = pair.second;
 				recordSize += sizeof(D3D12_GPU_DESCRIPTOR_HANDLE); // we don't use pushconstants yet in shader tables. 
@@ -203,9 +211,8 @@ namespace JoyEngine
 
 			return std::make_unique<ShaderTable>(recordSize, shaderIdentifier);
 		};
-		m_raygenShaderTable = CreateShaderTable(D3D12_SHVER_RAY_GENERATION_SHADER, rayGenShaderIdentifier);
-		m_missShaderTable = CreateShaderTable(D3D12_SHVER_MISS_SHADER, missShaderIdentifier);
-		// TODO figure out whats going on in ht group shader tables (with different signatures for every function)
-		m_hitGroupShaderTable = std::make_unique<ShaderTable>(0, hitGroupShaderIdentifier);
+		m_raygenShaderTable = CreateShaderTable(ShaderTableRaygen, rayGenShaderIdentifier);
+		m_missShaderTable = CreateShaderTable(ShaderTableMiss, missShaderIdentifier);
+		m_hitGroupShaderTable = CreateShaderTable(ShaderTableHitGroup, hitGroupShaderIdentifier);
 	}
 }

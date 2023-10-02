@@ -486,11 +486,7 @@ namespace JoyEngine
 
 	void EngineMaterialProvider::SetMaterialData(uint32_t index, uint32_t diffuseTextureIndex) const
 	{
-		m_materials->Map();
-
 		StandardMaterialData* dataPtr = m_materials->GetPtr();
 		dataPtr->data[index].diffuseTextureIndex = diffuseTextureIndex;
-
-		m_materials->Unmap();
 	}
 }

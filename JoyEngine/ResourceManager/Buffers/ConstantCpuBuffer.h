@@ -28,15 +28,17 @@ namespace JoyEngine
 			};
 			m_resourceView = std::make_unique<ResourceView>(desc);
 
-			const auto mappedPtr = m_buffer->GetMappedPtr();
-			const auto ptr = static_cast<T*>(mappedPtr->GetMappedPtr());
+			const auto mappedPtr = m_buffer->Map();
+			const auto ptr = static_cast<T*>(mappedPtr.GetPtr());
 			memset(ptr, 0, sizeof(T));
+
+			m_currentLockedArea = m_buffer->Map();
 		}
 
 		explicit ConstantCpuBuffer(const T* data) : ConstantCpuBuffer()
 		{
-			const auto mappedPtr = m_buffer->GetMappedPtr();
-			const auto ptr = static_cast<T*>(mappedPtr->GetMappedPtr());
+			const auto mappedPtr = m_buffer->Map();
+			const auto ptr = static_cast<T*>(mappedPtr.GetPtr());
 			memcpy(ptr, data, sizeof(T));
 		}
 
@@ -45,35 +47,22 @@ namespace JoyEngine
 			return m_resourceView.get();
 		}
 
-		void Map()
-		{
-			m_currentLockedArea = std::move(m_buffer->GetMappedPtr(0, m_size));
-		}
-
 		[[nodiscard]] T* GetPtr() 
 		{
-			ASSERT(m_currentLockedArea != nullptr);
-			return static_cast<T*>(m_currentLockedArea->GetMappedPtr());
+			return static_cast<T*>(m_currentLockedArea.GetPtr());
 		}
 
-		void Unmap()
-		{
-			m_currentLockedArea = nullptr;
-		}
 
 		void SetData(T data)
 		{
-			Map();
 			memcpy(GetPtr(), &data, sizeof(T));
-			Unmap();
 		}
 
 		~ConstantCpuBuffer() = default;
 	private:
-		std::unique_ptr<BufferMappedPtr> m_currentLockedArea;
-
-		std::unique_ptr<ResourceView> m_resourceView;
 		std::unique_ptr<Buffer> m_buffer;
+		std::unique_ptr<ResourceView> m_resourceView;
+		MappedAreaHandle m_currentLockedArea;
 		uint32_t m_size;
 	};
 }

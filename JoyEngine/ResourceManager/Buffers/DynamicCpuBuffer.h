@@ -39,7 +39,7 @@ namespace JoyEngine
 			}
 
 			// keep it always mapped
-			m_mappedArea = m_buffer->GetMappedPtr(0, m_alignedStride * m_count);
+			m_mappedArea = m_buffer->Map();
 		}
 
 		[[nodiscard]] ResourceView* GetView(uint32_t index) const
@@ -49,8 +49,8 @@ namespace JoyEngine
 
 		[[nodiscard]] T* GetPtr(uint32_t index) const
 		{
-			ASSERT(m_mappedArea != nullptr);
-			return reinterpret_cast<T*>(reinterpret_cast<uint64_t>(m_mappedArea->GetMappedPtr()) + m_alignedStride * index);
+			ASSERT(m_mappedArea.GetPtr() != nullptr);
+			return reinterpret_cast<T*>(reinterpret_cast<uint64_t>(m_mappedArea.GetPtr()) + m_alignedStride * index);
 		}
 
 		void SetData(const T* dataPtr, uint32_t index)
@@ -61,12 +61,11 @@ namespace JoyEngine
 		~DynamicCpuBuffer() = default;
 
 	private:
-		std::unique_ptr<BufferMappedPtr> m_mappedArea;
-
 		std::vector<std::unique_ptr<ResourceView>> m_resourceViews;
 		std::unique_ptr<Buffer> m_buffer;
 		uint32_t m_count;
 		uint32_t m_alignedStride;
+		MappedAreaHandle m_mappedArea;
 	};
 }
 #endif // CPU_BUFFER_H

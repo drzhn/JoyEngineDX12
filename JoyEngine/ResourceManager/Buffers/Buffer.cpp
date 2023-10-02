@@ -8,23 +8,51 @@
 
 namespace JoyEngine
 {
-	// BufferMappedPtr
+	// MappedAreaHandle
 
-	BufferMappedPtr::BufferMappedPtr(ComPtr<ID3D12Resource> bufferMemory, uint64_t offset, uint64_t size) :
-		m_bufferMemory(std::move(bufferMemory))
+	MappedAreaHandle::MappedAreaHandle(const Buffer* buffer) :
+		m_buffer(buffer)
 	{
-		CD3DX12_RANGE readRange(offset, offset + size);
-		ASSERT_SUCC(m_bufferMemory->Map(0, &readRange, &m_bufferPtr))
+		const D3D12_RANGE readRange{
+			.Begin = 0,
+			.End = m_buffer->GetSizeInBytes()
+		};
+		ASSERT_SUCC(m_buffer->GetBufferResource()->Map(0, &readRange, &m_bufferPtr))
 	}
 
-	BufferMappedPtr::~BufferMappedPtr()
+	MappedAreaHandle::~MappedAreaHandle()
 	{
-		m_bufferMemory->Unmap(0, nullptr);
+		if (m_buffer == nullptr) return;
+		m_buffer->GetBufferResource()->Unmap(0, nullptr);
+
+		m_bufferPtr = nullptr;
+		m_buffer = nullptr;
 	}
 
-	void* BufferMappedPtr::GetMappedPtr() const noexcept
+	MappedAreaHandle::MappedAreaHandle(MappedAreaHandle&& other) noexcept
 	{
+		Move(std::forward<MappedAreaHandle>(other));
+	}
+
+	MappedAreaHandle& MappedAreaHandle::operator=(MappedAreaHandle&& other) noexcept
+	{
+		Move(std::forward<MappedAreaHandle>(other));
+		return *this;
+	}
+
+	void* MappedAreaHandle::GetPtr() const noexcept
+	{
+		ASSERT(m_bufferPtr != nullptr);
 		return m_bufferPtr;
+	}
+
+	void MappedAreaHandle::Move(MappedAreaHandle&& other)
+	{
+		m_buffer = other.m_buffer;
+		m_bufferPtr = other.m_bufferPtr;
+
+		other.m_buffer = nullptr;
+		other.m_bufferPtr = nullptr;
 	}
 
 	// Buffer
@@ -46,23 +74,16 @@ namespace JoyEngine
 
 	void Buffer::SetCPUData(const void* dataPtr, uint64_t offset, uint64_t size) const
 	{
-		const auto ptr = GetMappedPtr(0, m_sizeInBytes);
-		memcpy((void*)((size_t)ptr->GetMappedPtr() + offset), dataPtr, size);
+		const auto ptr = Map();
+		memcpy((void*)((size_t)ptr.GetPtr() + offset), dataPtr, size);
 	}
 
-	std::unique_ptr<BufferMappedPtr> Buffer::GetMappedPtr(uint64_t offset, uint64_t size) const
+	MappedAreaHandle Buffer::Map() const
 	{
 		ASSERT(m_properties.IsCPUAccessible());
-		ASSERT(offset + size <= m_sizeInBytes);
 
-		// TODO remove std::unique_ptr usage, pass this variables through stack 
-		std::unique_ptr<BufferMappedPtr> ptr = std::make_unique<BufferMappedPtr>(m_buffer, offset, size);
-		return std::move(ptr);
-	}
-
-	std::unique_ptr<BufferMappedPtr> Buffer::GetMappedPtr() const
-	{
-		return GetMappedPtr(0, m_sizeInBytes);
+		MappedAreaHandle handle = MappedAreaHandle(this);
+		return handle;
 	}
 
 	ComPtr<ID3D12Resource> Buffer::GetBufferResource() const noexcept

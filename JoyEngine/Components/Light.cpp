@@ -97,8 +97,8 @@ namespace JoyEngine
 
 	//void Light::Update()
 	//{
-	//	const auto ptr = m_lightDataBuffer->GetMappedPtr();
-	//	const auto data = static_cast<LightData*>(ptr->GetMappedPtr());
+	//	const auto ptr = m_lightDataBuffer->GetPtr();
+	//	const auto data = static_cast<LightData*>(ptr->GetPtr());
 
 	//	// shut up :)
 	//	data->intensity = m_intensity;

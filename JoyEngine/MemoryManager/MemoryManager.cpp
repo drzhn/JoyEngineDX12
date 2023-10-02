@@ -144,7 +144,7 @@ namespace JoyEngine
 			ASSERT(false); // TODO later maybe never
 		}
 
-		std::unique_ptr<BufferMappedPtr> ptr = m_uploadStagingBuffer->GetMappedPtr(0, resourceSize);
+		const MappedAreaHandle ptr = m_uploadStagingBuffer->Map();
 		stream.clear();
 
 		stream.seekg(offset);
@@ -156,7 +156,7 @@ namespace JoyEngine
 			for (uint32_t y = 0; y < g_subresourceFootprints[i].Footprint.Height / 4; y++)
 			{
 				uint32_t rowSize = g_subresourceFootprints[i].Footprint.Width / 4 * bytesPer4x4Block;
-				stream.read(static_cast<char*>(ptr->GetMappedPtr()) + mipDataOffset, rowSize);
+				stream.read(static_cast<char*>(ptr.GetPtr()) + mipDataOffset, rowSize);
 				mipDataOffset += std::max(rowSize, g_subresourceFootprints[i].Footprint.RowPitch);
 			}
 		}
@@ -236,9 +236,9 @@ namespace JoyEngine
 
 		m_queue->WaitQueueIdle();
 
-		const std::unique_ptr<BufferMappedPtr> bufferMappedPtr = m_readbackStagingBuffer->GetMappedPtr(0, bufferSize);
+		const MappedAreaHandle bufferMappedPtr = m_readbackStagingBuffer->Map();
 
-		memcpy(ptr, bufferMappedPtr->GetMappedPtr(), bufferSize);
+		memcpy(ptr, bufferMappedPtr.GetPtr(), bufferSize);
 	}
 
 	ComPtr<ID3D12Resource> MemoryManager::CreateResource(
@@ -306,10 +306,10 @@ namespace JoyEngine
 		uint64_t bufferSize,
 		const Buffer* gpuBuffer) const
 	{
-		const std::unique_ptr<BufferMappedPtr> bufferMappedPtr = m_uploadStagingBuffer->GetMappedPtr(0, bufferSize);
+		const MappedAreaHandle bufferMappedPtr = m_uploadStagingBuffer->Map();
 		stream.clear();
 		stream.seekg(offset);
-		stream.read(static_cast<char*>(bufferMappedPtr->GetMappedPtr()), bufferSize);
+		stream.read(static_cast<char*>(bufferMappedPtr.GetPtr()), bufferSize);
 
 		LoadDataToBufferInternal(bufferSize, gpuBuffer);
 	}
@@ -319,9 +319,9 @@ namespace JoyEngine
 		uint64_t bufferSize,
 		const Buffer* gpuBuffer) const
 	{
-		const std::unique_ptr<BufferMappedPtr> bufferMappedPtr = m_uploadStagingBuffer->GetMappedPtr(0, bufferSize);
+		const MappedAreaHandle bufferMappedPtr = m_uploadStagingBuffer->Map();
 
-		memcpy(bufferMappedPtr->GetMappedPtr(), ptr, bufferSize);
+		memcpy(bufferMappedPtr.GetPtr(), ptr, bufferSize);
 
 		LoadDataToBufferInternal(bufferSize, gpuBuffer);
 	}

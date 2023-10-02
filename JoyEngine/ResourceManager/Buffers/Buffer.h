@@ -10,17 +10,28 @@ using Microsoft::WRL::ComPtr;
 
 namespace JoyEngine
 {
-	class BufferMappedPtr
+	class Buffer;
+
+	class MappedAreaHandle
 	{
 	public:
-		BufferMappedPtr() = delete;
-		BufferMappedPtr(ComPtr<ID3D12Resource> bufferMemory, uint64_t offset, uint64_t size);
-		~BufferMappedPtr();
-		[[nodiscard]] void* GetMappedPtr() const noexcept;
+		MappedAreaHandle() = default;
+		explicit MappedAreaHandle(const Buffer*);
+		~MappedAreaHandle();
+
+		MappedAreaHandle(const MappedAreaHandle& other) noexcept = delete;
+		MappedAreaHandle(MappedAreaHandle&& other) noexcept;
+
+		MappedAreaHandle& operator=(MappedAreaHandle&&) noexcept;
+		MappedAreaHandle& operator=(MappedAreaHandle&) noexcept = delete;
+
+		[[nodiscard]] void* GetPtr() const noexcept;
 
 	private:
 		void* m_bufferPtr = nullptr;
-		ComPtr<ID3D12Resource> m_bufferMemory;
+		const Buffer* m_buffer = nullptr;
+
+		void Move(MappedAreaHandle&&);
 	};
 
 	class Buffer final : public Resource
@@ -43,8 +54,7 @@ namespace JoyEngine
 
 		[[nodiscard]] uint64_t GetSizeInBytes() const noexcept { return m_sizeInBytes; }
 
-		[[nodiscard]] std::unique_ptr<BufferMappedPtr> GetMappedPtr(uint64_t offset, uint64_t size) const;
-		[[nodiscard]] std::unique_ptr<BufferMappedPtr> GetMappedPtr() const; // whole buffer
+		[[nodiscard]] MappedAreaHandle Map() const;
 
 		[[nodiscard]] ComPtr<ID3D12Resource> GetBufferResource() const noexcept;
 		[[nodiscard]] bool IsLoaded() const noexcept override { return true; }

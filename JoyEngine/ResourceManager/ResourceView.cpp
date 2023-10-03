@@ -70,12 +70,12 @@ namespace JoyEngine
 			m_cpuHandle);
 	}
 
-	ResourceView::ResourceView(const D3D12_SHADER_RESOURCE_VIEW_DESC& desc, ID3D12Resource* resource, bool nonReadonlyTexture) :
+	ResourceView::ResourceView(const D3D12_SHADER_RESOURCE_VIEW_DESC& desc, ID3D12Resource* resource, bool readonly) :
 		m_type(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
 	{
 		m_description.srvDesc = desc;
 
-		const auto descriptorType = nonReadonlyTexture ? DescriptorHeapType::SRV_CBV_UAV : DescriptorHeapType::READONLY_TEXTURES;
+		const auto descriptorType = readonly ? DescriptorHeapType::READONLY_TEXTURES : DescriptorHeapType::SRV_CBV_UAV;
 
 		DescriptorManager::Get()->AllocateDescriptor(descriptorType, m_descriptorIndex, m_cpuHandle, m_gpuHandle);
 

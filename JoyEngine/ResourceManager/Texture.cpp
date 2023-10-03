@@ -132,7 +132,7 @@ namespace JoyEngine
 	{
 	public:
 		static std::unique_ptr<ResourceView> CreateSRV(DXGI_FORMAT format, uint32_t mipLevels, ID3D12Resource* resource,
-		                                               bool nonReadonly = true)
+		                                               bool readonly = false)
 		{
 			D3D12_SHADER_RESOURCE_VIEW_DESC desc;
 			desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
@@ -144,7 +144,7 @@ namespace JoyEngine
 				0,
 				0
 			};
-			return std::move(std::make_unique<ResourceView>(desc, resource, nonReadonly));
+			return std::move(std::make_unique<ResourceView>(desc, resource, readonly));
 		}
 
 		static std::unique_ptr<ResourceView> CreateRTV(DXGI_FORMAT format, ID3D12Resource* resource)
@@ -349,7 +349,7 @@ namespace JoyEngine
 
 	void Texture::CreateImageViews()
 	{
-		m_resourceView = TextureUtils::CreateSRV(m_format, m_mipLevels, m_texture.Get(), false);
+		m_resourceView = TextureUtils::CreateSRV(m_format, m_mipLevels, m_texture.Get(), true);
 	}
 
 	//void Texture::CreateImageViews(bool allowRenderTarget, bool isDepthTarget, bool allowUnorderedAccess, uint32_t arraySize)
@@ -475,7 +475,7 @@ namespace JoyEngine
 
 	void RenderTexture::CreateImageViews()
 	{
-		m_resourceView = TextureUtils::CreateSRV(m_format, 1, m_texture.Get());
+		m_resourceView = TextureUtils::CreateSRV(m_format, 1, m_texture.Get(), false);
 		m_renderTargetView = TextureUtils::CreateRTV(m_format, m_texture.Get());
 	}
 
@@ -495,7 +495,7 @@ namespace JoyEngine
 
 	void UAVTexture::CreateImageViews()
 	{
-		m_resourceView = TextureUtils::CreateSRV(m_format, 1, m_texture.Get());
+		m_resourceView = TextureUtils::CreateSRV(m_format, 1, m_texture.Get(), false);
 		m_unorderedAccessView = TextureUtils::CreateUAV(m_format, m_texture.Get());
 	}
 
@@ -514,7 +514,7 @@ namespace JoyEngine
 
 	void UAVRenderTexture::CreateImageViews()
 	{
-		m_resourceView = TextureUtils::CreateSRV(m_format, 1, m_texture.Get());
+		m_resourceView = TextureUtils::CreateSRV(m_format, 1, m_texture.Get(), false);
 		m_renderTargetView = TextureUtils::CreateRTV(m_format, m_texture.Get());
 		m_unorderedAccessView = TextureUtils::CreateUAV(m_format, m_texture.Get());
 	}
@@ -541,7 +541,7 @@ namespace JoyEngine
 
 	void DepthTexture::CreateImageViews()
 	{
-		m_resourceView = TextureUtils::CreateSRV(DXGI_FORMAT_R32_FLOAT, 1, m_texture.Get());
+		m_resourceView = TextureUtils::CreateSRV(DXGI_FORMAT_R32_FLOAT, 1, m_texture.Get(), false);
 		m_depthStencilView = TextureUtils::CreateDSV(DXGI_FORMAT_D32_FLOAT, m_arraySize, m_texture.Get());
 	}
 }

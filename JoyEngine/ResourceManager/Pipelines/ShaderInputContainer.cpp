@@ -6,6 +6,7 @@
 #include "DescriptorManager/DescriptorManager.h"
 #include "GraphicsManager/GraphicsManager.h"
 #include "Utils/Assert.h"
+#include "Utils/Log.h"
 
 #define DESCRIPTOR_ARRAY_SIZE 32
 

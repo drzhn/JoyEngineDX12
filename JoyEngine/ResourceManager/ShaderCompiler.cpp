@@ -52,44 +52,47 @@ namespace JoyEngine
 		return tableType;
 	}
 
-	EngineStructsInclude::EngineStructsInclude(IDxcLibrary* library) :
-		m_commonEngineStructsPath(std::filesystem::absolute(R"(JoyEngine/CommonEngineStructs.h)").generic_string()),
-		m_dxcLibrary(library)
+	ShaderSystemIncludeHandler::ShaderSystemIncludeHandler() :
+		m_shadersFolderPath(std::filesystem::absolute(R"(JoyData/shaders)").generic_string())
 	{
-		m_commonEngineStructsData = ReadFile(m_commonEngineStructsPath, 0);
+		const std::vector<char> commonEngineStructsData = ReadFile(
+			std::filesystem::absolute(R"(JoyEngine/CommonEngineStructs.h)").generic_string(),
+			0);
+		ASSERT_SUCC(ShaderCompiler::s_dxcUtils->CreateBlob(
+			commonEngineStructsData.data(),
+			commonEngineStructsData.size(),
+			0,
+			&m_commonEngineStructsDataBlob));
 	}
 
-	HRESULT EngineStructsInclude::Open(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID* ppData, UINT* pBytes)
+	// CommonEngineStructs.h is the header for the shader system and for the engine code.
+	// The meaning of this is to use same structs in both places to reduce number of errors
+	// This header is in the engine folder and we load it separately and cache.
+	// Other shaders use JoyData/shaders as the include folder
+	HRESULT ShaderSystemIncludeHandler::LoadSource(LPCWSTR pFilename, IDxcBlob** ppIncludeSource)
 	{
-		*ppData = m_commonEngineStructsData.data();
-		*pBytes = static_cast<UINT>(m_commonEngineStructsData.size());
+		if (wcscmp(L"./CommonEngineStructs.h", pFilename) == 0)
+		{
+			m_commonEngineStructsDataBlob->AddRef();
+			*ppIncludeSource = m_commonEngineStructsDataBlob.Get();
+		}
+		else
+		{
+			ComPtr<IDxcBlobEncoding> includeBlob;
+			const std::vector<char> includeData = ReadFile(
+				(std::filesystem::absolute(m_shadersFolderPath) /
+					std::filesystem::path(pFilename)).generic_string(),
+				0);
+			ASSERT_SUCC(ShaderCompiler::s_dxcUtils->CreateBlob(
+				includeData.data(),
+				includeData.size(),
+				0,
+				&includeBlob));
+			includeBlob->AddRef();
+			*ppIncludeSource = includeBlob.Get();
+		}
 		return S_OK;
 	}
-
-	HRESULT EngineStructsInclude::Close(LPCVOID pData)
-	{
-		return S_OK;
-	}
-
-	HRESULT EngineStructsInclude::LoadSource(LPCWSTR pFilename, IDxcBlob** ppIncludeSource)
-	{
-		ComPtr<IDxcBlobEncoding> m_dataBlob;
-		ASSERT_SUCC(m_dxcLibrary->CreateBlobWithEncodingFromPinned(m_commonEngineStructsData.data(), m_commonEngineStructsData.size(), 0, &m_dataBlob));
-		*ppIncludeSource = m_dataBlob.Get();
-		m_dataBlob.Detach();
-		return S_OK;
-	}
-
-	HRESULT EngineStructsInclude::QueryInterface(const IID& riid, void** ppvObject)
-	{
-		return S_OK;
-	}
-
-	ComPtr<IDxcLibrary> ShaderCompiler::s_dxcLibrary = nullptr;
-	ComPtr<IDxcCompiler> ShaderCompiler::s_dxcCompiler = nullptr;
-	ComPtr<IDxcContainerReflection> ShaderCompiler::s_dxcReflection = nullptr;
-	ComPtr<IDxcValidator> ShaderCompiler::s_validator = nullptr;
-	std::unique_ptr<EngineStructsInclude> ShaderCompiler::m_commonEngineStructsInclude = nullptr;
 
 	HMODULE dxil_module = nullptr;
 	DxcCreateInstanceProc dxil_create_func = nullptr;
@@ -100,7 +103,6 @@ namespace JoyEngine
 
 	void ShaderCompiler::Compile(
 		ShaderType type,
-		const char* shaderPath,
 		const std::vector<char>& shaderData,
 		ID3DBlob** module,
 		ShaderInputMap& globalInputMap,
@@ -123,9 +125,9 @@ namespace JoyEngine
 			ASSERT(dxc_create_func != nullptr);
 		}
 
-		if (s_dxcLibrary == nullptr)
+		if (s_dxcUtils == nullptr)
 		{
-			(dxc_create_func(CLSID_DxcLibrary, IID_PPV_ARGS(&s_dxcLibrary)));
+			(dxc_create_func(CLSID_DxcUtils, IID_PPV_ARGS(&s_dxcUtils)));
 		}
 
 		if (s_dxcCompiler == nullptr)
@@ -144,9 +146,9 @@ namespace JoyEngine
 		}
 
 
-		if (m_commonEngineStructsInclude == nullptr)
+		if (m_includeHandler == nullptr)
 		{
-			m_commonEngineStructsInclude = std::make_unique<EngineStructsInclude>(s_dxcLibrary.Get());
+			m_includeHandler = std::make_unique<ShaderSystemIncludeHandler>();
 		}
 
 
@@ -187,12 +189,12 @@ namespace JoyEngine
 
 
 		DxcDefine Shader_Macros[] = {{L"SHADER", L"1"}, nullptr, nullptr};
-		IDxcIncludeHandler* includeHandler = m_commonEngineStructsInclude.get();
+		IDxcIncludeHandler* includeHandler = m_includeHandler.get();
 
 		ComPtr<IDxcBlobEncoding> sourceBlob;
 		ComPtr<IDxcOperationResult> dxcOperationResult;
 
-		ASSERT_SUCC(s_dxcLibrary->CreateBlobWithEncodingFromPinned(
+		ASSERT_SUCC(s_dxcUtils->CreateBlobFromPinned(
 			shaderData.data(),
 			shaderData.size(),
 			0,

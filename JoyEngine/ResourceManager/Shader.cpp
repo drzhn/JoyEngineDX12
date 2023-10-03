@@ -5,17 +5,16 @@
 
 namespace JoyEngine
 {
-	Shader::Shader(GUID guid, ShaderTypeFlags shaderType) : Resource(guid), m_shaderType(shaderType)
+	Shader::Shader(GUID guid, ShaderTypeFlags shaderType):
+		Resource(guid),
+		m_shaderType(shaderType)
 	{
-		const std::string shaderPath = DataManager::Get()->GetAbsolutePath(m_guid).string();
-
 		const std::vector<char> shaderData = DataManager::Get()->GetData(m_guid);
 
 		if (m_shaderType & JoyShaderTypeCompute)
 		{
 			CompileShader(
 				JoyShaderTypeCompute,
-				shaderPath.c_str(),
 				shaderData,
 				m_computeModule
 			);
@@ -25,7 +24,6 @@ namespace JoyEngine
 		{
 			CompileShader(
 				JoyShaderTypeVertex,
-				shaderPath.c_str(),
 				shaderData,
 				m_vertexModule
 			);
@@ -35,7 +33,6 @@ namespace JoyEngine
 		{
 			CompileShader(
 				JoyShaderTypeGeometry,
-				shaderPath.c_str(),
 				shaderData,
 				m_geometryModule
 			);
@@ -45,7 +42,6 @@ namespace JoyEngine
 		{
 			CompileShader(
 				JoyShaderTypePixel,
-				shaderPath.c_str(),
 				shaderData,
 				m_fragmentModule
 			);
@@ -55,18 +51,16 @@ namespace JoyEngine
 		{
 			CompileShader(
 				JoyShaderTypeRaytracing,
-				shaderPath.c_str(),
 				shaderData,
 				m_raytracingModule
 			);
 		}
 	}
 
-	void Shader::CompileShader(ShaderType type, const char* shaderPath, const std::vector<char>& shaderData, ComPtr<ID3DBlob>& module)
+	void Shader::CompileShader(ShaderType type, const std::vector<char>& shaderData, ComPtr<ID3DBlob>& module)
 	{
 		ShaderCompiler::Compile(
 			type,
-			shaderPath,
 			shaderData,
 			&module,
 			m_globalInputMap,

@@ -4,11 +4,10 @@
 #include <d3d12.h>
 #include <map>
 
+#include "Common/Resource.h"
 #include "ShaderCompiler.h"
 
 using Microsoft::WRL::ComPtr;
-
-#include "Common/Resource.h"
 
 namespace JoyEngine
 {
@@ -71,7 +70,7 @@ namespace JoyEngine
 		std::map<D3D12_SHADER_VERSION_TYPE, std::wstring> m_typeFunctionNameMap;
 
 	private:
-		void CompileShader(ShaderType type, const char* shaderPath, const std::vector<char>& shaderData, ComPtr<ID3DBlob>& module);
+		void CompileShader(ShaderType type, const std::vector<char>& shaderData, ComPtr<ID3DBlob>& module);
 	};
 }
 

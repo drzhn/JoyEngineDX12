@@ -13,6 +13,7 @@
 #define RAYTRACING_HLSL
 
 #include "CommonEngineStructs.h"
+#include "RaytracingInclude.hlsl"
 
 // global
 RaytracingAccelerationStructure g_SceneAccelerationStructure : register(t0, space0);
@@ -41,7 +42,7 @@ void MyRaygenShader()
 	float2 lerpValues = (float2)DispatchRaysIndex() / (float2)DispatchRaysDimensions();
 
 	// Orthographic projection since we're raytracing in screen space.
-	float3 rayDir = float3(0, 0, 1);
+    float3 rayDir = SomeTestFunction().xyz * float3(0, 0, 1);
 	float3 origin = float3(
 		lerp(screenParams.viewport.left, screenParams.viewport.right, lerpValues.x),
 		lerp(screenParams.viewport.top, screenParams.viewport.bottom, lerpValues.y),

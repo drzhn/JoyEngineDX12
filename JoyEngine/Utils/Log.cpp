@@ -4,7 +4,7 @@
 
 #include "Windows.h"
 
-#define MAX_LOG_SIZE 1000
+#define MAX_LOG_SIZE 2048
 
 char g_logData[MAX_LOG_SIZE];
 

@@ -10,56 +10,25 @@
 #include <xstring>
 #include <wrl/client.h>
 
-#include "Utils/Assert.h"
-
 using Microsoft::WRL::ComPtr;
-
 
 namespace JoyEngine
 {
-	template <typename TKey, typename TValue, uint32_t Count> requires std::is_enum_v<TKey>
-	class EnumMap
+	struct ShaderSystemIncludeHandler final : IDxcIncludeHandler
 	{
-	public:
-		TValue& operator[](TKey key)
-		{
-			return m_data[key];
-		}
+		ShaderSystemIncludeHandler();
 
-	private:
-		TValue m_data[Count];
-	};
-
-	struct EngineStructsInclude final : ID3DInclude, IDxcIncludeHandler
-	{
-		EngineStructsInclude() = delete;
-
-		EngineStructsInclude(IDxcLibrary* library);
-
-		~EngineStructsInclude() = default;
-
-		HRESULT __stdcall Open(
-			D3D_INCLUDE_TYPE IncludeType,
-			LPCSTR pFileName,
-			LPCVOID pParentData,
-			LPCVOID* ppData,
-			UINT* pBytes) override;
-
-		HRESULT __stdcall Close(LPCVOID pData) override;
+		~ShaderSystemIncludeHandler() = default;
 
 		HRESULT LoadSource(LPCWSTR pFilename, IDxcBlob** ppIncludeSource) override;
 
-		HRESULT QueryInterface(const IID& riid, void** ppvObject) override;
+		HRESULT QueryInterface(const IID& riid, void** ppvObject) override { return S_OK; };
 		ULONG AddRef() override { return 0; }
 		ULONG Release() override { return 0; }
 
 	private:
-		const std::string m_commonEngineStructsPath;
-		std::vector<char> m_commonEngineStructsData;
-
 		const std::string m_shadersFolderPath;
-		//ComPtr<IDxcBlobEncoding> m_dataBlob;
-		IDxcLibrary* m_dxcLibrary;
+		ComPtr<IDxcBlobEncoding> m_commonEngineStructsDataBlob;
 	};
 
 	enum ShaderType
@@ -102,7 +71,6 @@ namespace JoyEngine
 	public:
 		static void Compile(
 			ShaderType type,
-			const char* shaderPath,
 			const std::vector<char>& shaderData,
 			ID3DBlob** module,
 			ShaderInputMap& globalInputMap,
@@ -111,11 +79,11 @@ namespace JoyEngine
 		);
 
 
-		static ComPtr<IDxcLibrary> s_dxcLibrary;
-		static ComPtr<IDxcCompiler> s_dxcCompiler;
-		static ComPtr<IDxcContainerReflection> s_dxcReflection;
-		static ComPtr<IDxcValidator> s_validator;
-		static std::unique_ptr<EngineStructsInclude> m_commonEngineStructsInclude;
+		inline static ComPtr<IDxcUtils> s_dxcUtils;
+		inline static ComPtr<IDxcCompiler> s_dxcCompiler;
+		inline static ComPtr<IDxcContainerReflection> s_dxcReflection;
+		inline static ComPtr<IDxcValidator> s_validator;
+		inline static std::unique_ptr<ShaderSystemIncludeHandler> m_includeHandler;
 	};
 }
 #endif // SHADER_COMPILER_H

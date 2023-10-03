@@ -10,8 +10,7 @@ namespace JoyEngine
 	ResourceView::ResourceView(const D3D12_DEPTH_STENCIL_VIEW_DESC& desc, ID3D12Resource* resource) :
 		m_type(D3D12_DESCRIPTOR_HEAP_TYPE_DSV)
 	{
-		m_description.dsvDesc = desc;
-		DescriptorManager::Get()->AllocateDescriptor(DescriptorHeapType::DSV, m_descriptorIndex, m_cpuHandle, m_gpuHandle);
+		DescriptorManager::Get()->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, m_descriptorIndex, m_cpuHandle, m_gpuHandle);
 
 		GraphicsManager::Get()->GetDevice()->CreateDepthStencilView(
 			resource,
@@ -22,9 +21,7 @@ namespace JoyEngine
 	ResourceView::ResourceView(const D3D12_SAMPLER_DESC& desc) :
 		m_type(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER)
 	{
-		m_description.samplerDesc = desc;
-
-		DescriptorManager::Get()->AllocateDescriptor(DescriptorHeapType::SAMPLER, m_descriptorIndex, m_cpuHandle, m_gpuHandle);
+		DescriptorManager::Get()->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, m_descriptorIndex, m_cpuHandle, m_gpuHandle);
 
 		GraphicsManager::Get()->GetDevice()->CreateSampler(
 			&desc,
@@ -34,9 +31,7 @@ namespace JoyEngine
 	ResourceView::ResourceView(const D3D12_CONSTANT_BUFFER_VIEW_DESC desc) :
 		m_type(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
 	{
-		m_description.constantBufferDesc = desc;
-
-		DescriptorManager::Get()->AllocateDescriptor(DescriptorHeapType::SRV_CBV_UAV, m_descriptorIndex, m_cpuHandle, m_gpuHandle);
+		DescriptorManager::Get()->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, m_descriptorIndex, m_cpuHandle, m_gpuHandle);
 
 		GraphicsManager::Get()->GetDevice()->CreateConstantBufferView(
 			&desc,
@@ -46,9 +41,7 @@ namespace JoyEngine
 	ResourceView::ResourceView(const D3D12_UNORDERED_ACCESS_VIEW_DESC& desc, ID3D12Resource* resource) :
 		m_type(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
 	{
-		m_description.uavDesc = desc;
-
-		DescriptorManager::Get()->AllocateDescriptor(DescriptorHeapType::SRV_CBV_UAV, m_descriptorIndex, m_cpuHandle, m_gpuHandle);
+		DescriptorManager::Get()->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, m_descriptorIndex, m_cpuHandle, m_gpuHandle);
 
 		GraphicsManager::Get()->GetDevice()->CreateUnorderedAccessView(
 			resource,
@@ -60,9 +53,7 @@ namespace JoyEngine
 	ResourceView::ResourceView(const D3D12_RENDER_TARGET_VIEW_DESC& desc, ID3D12Resource* resource) :
 		m_type(D3D12_DESCRIPTOR_HEAP_TYPE_RTV)
 	{
-		m_description.rtvDesc = desc;
-
-		DescriptorManager::Get()->AllocateDescriptor(DescriptorHeapType::RTV, m_descriptorIndex, m_cpuHandle, m_gpuHandle);
+		DescriptorManager::Get()->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, m_descriptorIndex, m_cpuHandle, m_gpuHandle);
 
 		GraphicsManager::Get()->GetDevice()->CreateRenderTargetView(
 			resource,
@@ -73,11 +64,7 @@ namespace JoyEngine
 	ResourceView::ResourceView(const D3D12_SHADER_RESOURCE_VIEW_DESC& desc, ID3D12Resource* resource, bool readonly) :
 		m_type(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
 	{
-		m_description.srvDesc = desc;
-
-		const auto descriptorType = readonly ? DescriptorHeapType::READONLY_TEXTURES : DescriptorHeapType::SRV_CBV_UAV;
-
-		DescriptorManager::Get()->AllocateDescriptor(descriptorType, m_descriptorIndex, m_cpuHandle, m_gpuHandle);
+		DescriptorManager::Get()->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, m_descriptorIndex, m_cpuHandle, m_gpuHandle);
 
 		GraphicsManager::Get()->GetDevice()->CreateShaderResourceView(
 			resource,

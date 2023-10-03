@@ -118,13 +118,14 @@ namespace JoyEngine
 				case D3D_SIT_RTACCELERATIONSTRUCTURE:
 				default:
 					ASSERT(false);
+					throw;
 				}
 				ranges[rangesIndex].Init(
 					type,
 					input.BindCount == 0 ? UINT_MAX : input.BindCount,
 					input.BindPoint,
 					input.Space,
-					D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
+					input.BindCount == 0 ? D3D12_DESCRIPTOR_RANGE_FLAG_DESCRIPTORS_VOLATILE : D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
 				params[paramsIndex].InitAsDescriptorTable(1, &ranges[rangesIndex], input.Visibility);
 				m_rootIndices.insert({strHash(name.c_str()), paramsIndex});
 				rangesIndex++;

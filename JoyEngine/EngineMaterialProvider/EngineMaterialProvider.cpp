@@ -82,11 +82,11 @@ namespace JoyEngine
 			m_nullTextureView = std::make_unique<ResourceView>(desc, nullptr);
 			ASSERT(m_nullTextureView->GetDescriptorIndex() == 0)
 
-			for (uint32_t i = 1; i < READONLY_TEXTURES_COUNT; i++)
+			for (uint32_t i = 1; i < DESCRIPTORS_COUNT; i++)
 			{
 				D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle;
 				D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle;
-				DescriptorManager::Get()->GetDescriptorHandleAtIndex(DescriptorHeapType::READONLY_TEXTURES, i, cpuHandle, gpuHandle);
+				DescriptorManager::Get()->GetDescriptorHandleAtIndex(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, i, cpuHandle, gpuHandle);
 
 				GraphicsManager::Get()->GetDevice()->CreateShaderResourceView(
 					nullptr,

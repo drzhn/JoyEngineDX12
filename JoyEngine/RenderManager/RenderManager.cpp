@@ -126,7 +126,7 @@ namespace JoyEngine
 			D3D12_GPU_DESCRIPTOR_HANDLE imguiGpuHandle;
 
 			DescriptorManager::Get()->AllocateDescriptor(
-				DescriptorHeapType::SRV_CBV_UAV,
+				D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
 				m_imguiDescriptorIndex,
 				imguiCpuHandle,
 				imguiGpuHandle);

@@ -13,37 +13,27 @@
 using Microsoft::WRL::ComPtr;
 
 #define DESCRIPTORS_COUNT 512
-#define READONLY_TEXTURES_COUNT 256
+//#define READONLY_TEXTURES_COUNT 256
 
 namespace JoyEngine
 {
-	enum class DescriptorHeapType: uint32_t
-	{
-		READONLY_TEXTURES = 0,
-		SRV_CBV_UAV = READONLY_TEXTURES + 1,
-		SAMPLER = SRV_CBV_UAV + 1,
-		RTV = SAMPLER + 1,
-		DSV = RTV + 1,
-		NUM_TYPES = DSV + 1
-	};
-
 	class DescriptorManager : public Singleton<DescriptorManager>
 	{
 	public:
 		DescriptorManager() = default;
 		void Init();
 		void AllocateDescriptor(
-			DescriptorHeapType type,
+			D3D12_DESCRIPTOR_HEAP_TYPE type,
 			uint32_t& index,
 			D3D12_CPU_DESCRIPTOR_HANDLE& cpuHandle,
 			D3D12_GPU_DESCRIPTOR_HANDLE& gpuHandle);
 		void GetDescriptorHandleAtIndex(
-			const DescriptorHeapType type, 
+			const D3D12_DESCRIPTOR_HEAP_TYPE type,
 			const uint32_t index, 
 			D3D12_CPU_DESCRIPTOR_HANDLE& cpuHandle, 
 			D3D12_GPU_DESCRIPTOR_HANDLE& gpuHandle);
 		void FreeDescriptor(
-			DescriptorHeapType type,
+			D3D12_DESCRIPTOR_HEAP_TYPE type,
 			uint32_t index);
 
 		[[nodiscard]] ID3D12DescriptorHeap* GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE) const;
@@ -71,7 +61,7 @@ namespace JoyEngine
 		};
 
 		std::array<ComPtr<ID3D12DescriptorHeap>, D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES> m_heaps;
-		std::map<DescriptorHeapType, std::unique_ptr<HeapEntry>> m_descriptorStorage;
+		std::map<D3D12_DESCRIPTOR_HEAP_TYPE, std::unique_ptr<HeapEntry>> m_descriptorStorage;
 	};
 }
 

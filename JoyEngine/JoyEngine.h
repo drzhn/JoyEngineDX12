@@ -56,7 +56,7 @@ namespace JoyEngine
 
 		void Update() const noexcept;
 
-		void Stop() noexcept;
+		void Stop() const noexcept;
 
 		~JoyEngine();
 

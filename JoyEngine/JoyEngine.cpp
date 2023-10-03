@@ -6,7 +6,6 @@
 #include "backends/imgui_impl_win32.h"
 
 #include "SceneManager/SceneManager.h"
-#include "RenderManager/IRenderManager.h"
 #include "RenderManager/RenderManager.h"
 #include "EngineMaterialProvider/EngineMaterialProvider.h"
 #include "MemoryManager/MemoryManager.h"
@@ -19,12 +18,14 @@
 #include "Utils/Assert.h"
 #include "Utils/TimeCounter.h"
 
+#include "dxgidebug.h"
+
 // Forward declare message handler from imgui_impl_win32.cpp
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 namespace JoyEngine
 {
-	static auto startTime = std::chrono::high_resolution_clock::now();
+	auto g_startTime = std::chrono::high_resolution_clock::now();
 
 	JoyEngine::JoyEngine(HINSTANCE instance, HWND windowHandle, uint32_t width, uint32_t height) :
 		m_windowHandle(windowHandle),
@@ -78,7 +79,7 @@ namespace JoyEngine
 		m_sceneManager->Init();
 
 		const auto currentTime = std::chrono::high_resolution_clock::now();
-		const float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+		const float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - g_startTime).count();
 		Logger::LogFormat("=========== Context initialized in %.3f seconds ===========\n", time);
 
 		m_memoryManager->PrintStats();
@@ -101,7 +102,7 @@ namespace JoyEngine
 		m_renderManager->Update();
 	}
 
-	void JoyEngine::Stop() noexcept
+	void JoyEngine::Stop() const noexcept
 	{
 		m_renderManager->Stop();
 	}

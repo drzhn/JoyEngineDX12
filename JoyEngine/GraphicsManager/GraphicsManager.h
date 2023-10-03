@@ -1,7 +1,6 @@
 #ifndef GRAPHICS_MANAGER_H
 #define GRAPHICS_MANAGER_H
 
-#include <vector>
 #include <memory>
 
 #define WIN32_LEAN_AND_MEAN
@@ -10,7 +9,6 @@
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <wrl.h>
-#include <dxgidebug.h>
 
 #include "Common/Singleton.h"
 using Microsoft::WRL::ComPtr;

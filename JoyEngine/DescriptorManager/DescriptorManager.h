@@ -8,7 +8,6 @@
 
 
 #include <d3d12.h>
-#include <dxgi1_6.h>
 #include <memory>
 #include <wrl.h>
 using Microsoft::WRL::ComPtr;

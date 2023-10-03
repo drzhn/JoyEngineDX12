@@ -83,7 +83,7 @@ namespace JoyEngine
 			else if (name == "g_SceneAccelerationStructure")
 			{
 				params[paramsIndex].InitAsShaderResourceView(input.BindPoint, input.Space);
-				m_rootIndices.insert({ strHash(name.c_str()), paramsIndex });
+				m_rootIndices.insert({strHash(name.c_str()), paramsIndex});
 				paramsIndex++;
 			}
 			else
@@ -119,8 +119,12 @@ namespace JoyEngine
 				default:
 					ASSERT(false);
 				}
-				ranges[rangesIndex].Init(type, input.BindCount == 0 ? READONLY_TEXTURES_COUNT : input.BindCount,
-				                         input.BindPoint, input.Space, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
+				ranges[rangesIndex].Init(
+					type,
+					input.BindCount == 0 ? UINT_MAX : input.BindCount,
+					input.BindPoint,
+					input.Space,
+					D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
 				params[paramsIndex].InitAsDescriptorTable(1, &ranges[rangesIndex], input.Visibility);
 				m_rootIndices.insert({strHash(name.c_str()), paramsIndex});
 				rangesIndex++;

@@ -40,6 +40,6 @@ namespace JoyEngine
 				D3D12_BUFFER_SRV_FLAG_NONE
 			}
 		};
-		m_bufferViewSRV = std::make_unique<ResourceView>(shaderResourceViewDesc, m_gpuBuffer->GetBufferResource().Get(), true);
+		m_bufferViewSRV = std::make_unique<ResourceView>(shaderResourceViewDesc, m_gpuBuffer->GetBufferResource().Get());
 	}
 }

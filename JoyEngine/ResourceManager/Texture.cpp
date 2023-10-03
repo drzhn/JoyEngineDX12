@@ -144,7 +144,7 @@ namespace JoyEngine
 				0,
 				0
 			};
-			return std::move(std::make_unique<ResourceView>(desc, resource, readonly));
+			return std::move(std::make_unique<ResourceView>(desc, resource));
 		}
 
 		static std::unique_ptr<ResourceView> CreateRTV(DXGI_FORMAT format, ID3D12Resource* resource)

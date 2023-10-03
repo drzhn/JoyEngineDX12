@@ -15,10 +15,10 @@ namespace JoyEngine
 
 		explicit ResourceView(const D3D12_DEPTH_STENCIL_VIEW_DESC& desc, ID3D12Resource* resource);
 		explicit ResourceView(const D3D12_SAMPLER_DESC&);
-		explicit ResourceView(D3D12_CONSTANT_BUFFER_VIEW_DESC desc);
+		explicit ResourceView(const D3D12_CONSTANT_BUFFER_VIEW_DESC& desc);
 		explicit ResourceView(const D3D12_UNORDERED_ACCESS_VIEW_DESC& desc, ID3D12Resource* resource);
 		explicit ResourceView(const D3D12_RENDER_TARGET_VIEW_DESC& desc, ID3D12Resource* resource);
-		explicit ResourceView(const D3D12_SHADER_RESOURCE_VIEW_DESC& desc, ID3D12Resource* resource, bool readonly = true);
+		explicit ResourceView(const D3D12_SHADER_RESOURCE_VIEW_DESC& desc, ID3D12Resource* resource);
 
 		[[nodiscard]] D3D12_DESCRIPTOR_HEAP_TYPE GetType() const noexcept { return m_type; }
 		[[nodiscard]] D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle() const noexcept { return m_cpuHandle; }

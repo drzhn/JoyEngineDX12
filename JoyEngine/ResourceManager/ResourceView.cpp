@@ -28,7 +28,7 @@ namespace JoyEngine
 			m_cpuHandle);
 	}
 
-	ResourceView::ResourceView(const D3D12_CONSTANT_BUFFER_VIEW_DESC desc) :
+	ResourceView::ResourceView(const D3D12_CONSTANT_BUFFER_VIEW_DESC& desc) :
 		m_type(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
 	{
 		DescriptorManager::Get()->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, m_descriptorIndex, m_cpuHandle, m_gpuHandle);
@@ -61,7 +61,7 @@ namespace JoyEngine
 			m_cpuHandle);
 	}
 
-	ResourceView::ResourceView(const D3D12_SHADER_RESOURCE_VIEW_DESC& desc, ID3D12Resource* resource, bool readonly) :
+	ResourceView::ResourceView(const D3D12_SHADER_RESOURCE_VIEW_DESC& desc, ID3D12Resource* resource) :
 		m_type(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
 	{
 		DescriptorManager::Get()->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, m_descriptorIndex, m_cpuHandle, m_gpuHandle);

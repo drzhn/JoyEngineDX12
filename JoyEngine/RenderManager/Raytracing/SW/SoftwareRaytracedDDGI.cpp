@@ -104,7 +104,7 @@ namespace JoyEngine
 		m_sceneSharedMaterials(sceneSharedMaterials),
 		m_raytracedProbesData(frameCount)
 	{
-		static_assert(sizeof(Triangle) == 128);
+		static_assert(sizeof(Triangle) == 16);
 		static_assert(sizeof(AABB) == 32);
 
 		m_keysBuffer = std::make_unique<DataBuffer<uint32_t>>(DATA_ARRAY_COUNT, MAX_UINT);
@@ -187,7 +187,6 @@ namespace JoyEngine
 		// Draw raytraced texture 
 		{
 			const GUID debugImageComposerShaderGuid = GUID::StringToGuid("cc8de13c-0510-4842-99f5-de2327aa95d4"); // shaders/raytracing/debugImageCompose.hlsl
-			const GUID debugImageComposerSharedMaterialGuid = GUID::Random();
 
 			m_debugRaytracingTextureDrawGraphicsPipeline = std::make_unique<GraphicsPipeline>(GraphicsPipelineArgs
 				{
@@ -239,7 +238,6 @@ namespace JoyEngine
 		// Debug draw probes
 		{
 			const GUID drawProbesShaderGuid = GUID::StringToGuid("8757d834-8dd7-4858-836b-bb6a4eb6fea0"); //shaders/raytracing/debugDrawProbes.hlsl
-			const GUID drawProbesSharedMaterialGuid = GUID::Random();
 
 			m_debugDrawProbesGraphicsPipeline = std::make_unique<GraphicsPipeline>(GraphicsPipelineArgs
 				{
@@ -292,17 +290,10 @@ namespace JoyEngine
 					m_triangleIndexBuffer->GetLocalData()[m_trianglesLength] = m_trianglesLength;
 					m_triangleDataBuffer->GetLocalData()[m_trianglesLength] = Triangle
 					{
-						.a = a,
-						.b = b,
-						.c = c,
-						.a_uv = vertices[indices[i * 3 + 0]].texCoord,
-						.b_uv = vertices[indices[i * 3 + 1]].texCoord,
-						.c_uv = vertices[indices[i * 3 + 2]].texCoord,
 						.materialIndex = mr->GetMaterial()->GetMaterialIndex(),
-						.objectIndex = mr->GetGameObject().GetTransformIndex(),
-						.a_normal = vertices[indices[i * 3 + 0]].normal,
-						.b_normal = vertices[indices[i * 3 + 1]].normal,
-						.c_normal = vertices[indices[i * 3 + 2]].normal,
+						.verticesIndex = mr->GetMesh()->GetVertexSRV()->GetDescriptorIndex(),
+						.indicesIndex = mr->GetMesh()->GetIndexSRV()->GetDescriptorIndex(),
+						.triangleIndex = i
 					};
 					m_triangleAABBBuffer->GetLocalData()[m_trianglesLength] = aabb;
 				}
@@ -374,6 +365,8 @@ namespace JoyEngine
 			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "bvhData", m_bvhDataBuffer->GetSRV());
 			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "triangleData", m_triangleDataBuffer->GetSRV());
 			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "linearClampSampler", EngineSamplersProvider::GetLinearWrapSampler());
+			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "objectVertices", DescriptorManager::Get()->GetSRVHeapStartDescriptorHandle());
+			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "objectIndices", DescriptorManager::Get()->GetSRVHeapStartDescriptorHandle());
 #if !defined(CAMERA_TRACE)
 			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "raytracedProbesData", m_raytracedProbesData.GetView(frameIndex));
 #endif
@@ -383,7 +376,7 @@ namespace JoyEngine
 				commandList,
 				m_raytracingPipeline.get(),
 				frameIndex,
-				nullptr, 
+				nullptr,
 				data);
 		}
 #if defined(CAMERA_TRACE)

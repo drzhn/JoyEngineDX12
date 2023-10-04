@@ -92,6 +92,7 @@ enum LightType
 #elif SHADER
 
 #define PI 3.14159265359
+#define BINDLESS 0
 
 #endif
 
@@ -299,28 +300,10 @@ struct AABB
 
 struct Triangle
 {
-	VEC3 a;
-	float _dummy0;
-
-	VEC3 b;
-	float _dummy1;
-
-	VEC3 c;
-	float _dummy2;
-
-	VEC2 a_uv;
-	VEC2 b_uv;
-
-	VEC2 c_uv;
 	UINT1 materialIndex;
-	UINT1 objectIndex;
-
-	VEC3 a_normal;
-	float _dummy4;
-	VEC3 b_normal;
-	float _dummy5;
-	VEC3 c_normal;
-	float _dummy6;
+	UINT1 verticesIndex;
+	UINT1 indicesIndex;
+	UINT1 triangleIndex;
 };
 
 struct InternalNode

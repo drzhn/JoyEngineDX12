@@ -5,7 +5,7 @@
 #include <wrl/client.h>
 
 #include "CommonEngineStructs.h"
-#include "Buffers/Buffer.h"
+#include "Buffers/UAVGpuBuffer.h"
 
 #include "Common/Resource.h"
 #include "Utils/GUID.h"
@@ -30,13 +30,13 @@ namespace JoyEngine
 
 		[[nodiscard]] uint32_t* GetIndices() const noexcept { return m_indicesData; }
 
-		[[nodiscard]] ComPtr<ID3D12Resource> GetVertexBuffer() const noexcept { return m_vertexBuffer->GetBufferResource(); }
-
-		[[nodiscard]] ComPtr<ID3D12Resource> GetIndexBuffer() const noexcept { return m_indexBuffer->GetBufferResource(); }
-
 		[[nodiscard]] D3D12_VERTEX_BUFFER_VIEW* GetVertexBufferView() noexcept { return &m_vertexBufferView; }
 
 		[[nodiscard]] D3D12_INDEX_BUFFER_VIEW* GetIndexBufferView() noexcept { return &m_indexBufferView; }
+
+		[[nodiscard]] ResourceView* GetVertexSRV() const noexcept { return m_vertexBuffer->GetSRV(); }
+
+		[[nodiscard]] ResourceView* GetIndexSRV() const noexcept { return m_indexBuffer->GetSRV(); }
 
 		[[nodiscard]] bool IsLoaded() const noexcept override { return true; }
 
@@ -47,8 +47,8 @@ namespace JoyEngine
 		uint32_t m_indexCount = 0;
 		uint32_t m_vertexCount = 0;
 
-		std::unique_ptr<Buffer> m_vertexBuffer;
-		std::unique_ptr<Buffer> m_indexBuffer;
+		std::unique_ptr<UAVGpuBuffer> m_vertexBuffer;
+		std::unique_ptr<UAVGpuBuffer> m_indexBuffer;
 
 		D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView = {};
 		D3D12_INDEX_BUFFER_VIEW m_indexBufferView = {};

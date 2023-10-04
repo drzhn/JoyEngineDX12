@@ -12,7 +12,8 @@
 #include <wrl.h>
 using Microsoft::WRL::ComPtr;
 
-#define DESCRIPTORS_COUNT 512
+#define DESCRIPTORS_COUNT 2048
+
 //#define READONLY_TEXTURES_COUNT 256
 
 namespace JoyEngine

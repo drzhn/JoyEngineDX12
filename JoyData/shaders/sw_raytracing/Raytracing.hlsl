@@ -12,8 +12,11 @@ StructuredBuffer<LeafNode> leafNodes; // size = THREADS_PER_BLOCK * BLOCK_SIZE
 StructuredBuffer<AABB> bvhData; // size = THREADS_PER_BLOCK * BLOCK_SIZE - 1
 StructuredBuffer<Triangle> triangleData; // size = THREADS_PER_BLOCK * BLOCK_SIZE
 
+StructuredBuffer<Vertex> objectVertices[] : register(t0, space1);
+StructuredBuffer<UINT1> objectIndices[] : register(t0, space2);
+
 ConstantBuffer<StandardMaterialData> materials;
-Texture2D textures[];
+Texture2D textures[] : register(t0, space3);
 SamplerState linearClampSampler;
 ConstantBuffer<TextureIndexData> skyboxTextureIndex;
 
@@ -88,8 +91,13 @@ RaycastResult CheckTriangle(uint triangleIndex, Ray ray, RaycastResult result)
 {
 	if (RayBoxIntersection(triangleAABB[triangleIndex], ray))
 	{
-		const Triangle t = triangleData[triangleIndex];
-		RaycastResult newResult = RayTriangleIntersection(ray.origin, ray.dir, t.a, t.b, t.c);
+		const Triangle tri = triangleData[triangleIndex];
+
+        const Vertex v0 = objectVertices[tri.verticesIndex][objectIndices[tri.indicesIndex][tri.triangleIndex * 3 + 0]];
+        const Vertex v1 = objectVertices[tri.verticesIndex][objectIndices[tri.indicesIndex][tri.triangleIndex * 3 + 1]];
+        const Vertex v2 = objectVertices[tri.verticesIndex][objectIndices[tri.indicesIndex][tri.triangleIndex * 3 + 2]];
+
+		RaycastResult newResult = RayTriangleIntersection(ray.origin, ray.dir, v0.pos, v1.pos, v2.pos);
 		if (newResult.distance < result.distance)
 		{
 			newResult.triangleIndex = triangleIndex;
@@ -244,10 +252,14 @@ void CSMain(uint3 groupId : SV_GroupID, uint3 groupThreadId : SV_GroupThreadID)
 
 	RaycastResult result = TraceRay(ray);
 
-	const Triangle t = triangleData[result.triangleIndex];
-	const float2 uv = (1 - result.uv.x - result.uv.y) * t.a_uv + result.uv.x * t.b_uv + result.uv.y * t.c_uv;
-	const float3 normal = (1 - result.uv.x - result.uv.y) * t.a_normal + result.uv.x * t.b_normal + result.uv.y * t.c_normal;
-	const uint materialIndex = t.materialIndex;
+	const Triangle tri = triangleData[result.triangleIndex];
+	const Vertex v0 = objectVertices[tri.verticesIndex][objectIndices[tri.indicesIndex][tri.triangleIndex * 3 + 0]];
+	const Vertex v1 = objectVertices[tri.verticesIndex][objectIndices[tri.indicesIndex][tri.triangleIndex * 3 + 1]];
+    const Vertex v2 = objectVertices[tri.verticesIndex][objectIndices[tri.indicesIndex][tri.triangleIndex * 3 + 2]];
+
+	const float2 uv = (1 - result.uv.x - result.uv.y) * v0.texCoord + result.uv.x * v1.texCoord + result.uv.y * v2.texCoord;
+	const float3 normal = (1 - result.uv.x - result.uv.y) * v0.normal + result.uv.x * v1.normal + result.uv.y * v2.normal;
+	const uint materialIndex = tri.materialIndex;
 
 	const float hasResult = result.distance != MAX_FLOAT;
 

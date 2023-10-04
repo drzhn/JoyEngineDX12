@@ -25,10 +25,16 @@ ConstantBuffer<Color> hitColor : register(b1);
 
 typedef BuiltInTriangleIntersectionAttributes MyAttributes;
 
-struct [raypayload] RayPayload
+struct RayPayload
 {
-    float4 color : read(caller) : write(caller, closesthit, miss);
+    float4 color;
 };
+
+// TODO Should be in lib_6_8 and hlsl 2021
+//struct [raypayload] RayPayload
+//{
+//    float4 color : read(caller) : write(caller, closesthit, miss);
+//};
 
 bool IsInsideViewport(float2 p, Viewport viewport)
 {

@@ -25,17 +25,17 @@ namespace JoyEngine
 	}
 
 	Mesh::Mesh(GUID guid,
-		uint32_t vertexDataSize,
-		uint32_t indexDataSize,
-		std::ifstream& modelStream,
-		uint32_t vertexDataStreamOffset,
-		uint32_t indexDataStreamOffset) : Resource(guid)
+	           uint32_t vertexDataSize,
+	           uint32_t indexDataSize,
+	           std::ifstream& modelStream,
+	           uint32_t vertexDataStreamOffset,
+	           uint32_t indexDataStreamOffset) : Resource(guid)
 	{
 		InitMesh(vertexDataSize,
-			indexDataSize,
-			modelStream,
-			vertexDataStreamOffset,
-			indexDataStreamOffset);
+		         indexDataSize,
+		         modelStream,
+		         vertexDataStreamOffset,
+		         indexDataStreamOffset);
 	}
 
 	void Mesh::InitMesh(
@@ -59,27 +59,27 @@ namespace JoyEngine
 		m_vertexCount = vertexDataSize / sizeof(Vertex);
 		m_indexCount = indexDataSize / sizeof(uint32_t);
 
-		m_vertexBuffer = std::make_unique<Buffer>(
-			vertexDataSize,
-			D3D12_RESOURCE_STATE_GENERIC_READ, // TODO change this to more particular mask later
-			D3D12_HEAP_TYPE_DEFAULT);
+		m_vertexBuffer = std::make_unique<UAVGpuBuffer>(
+			m_vertexCount,
+			sizeof(Vertex),
+			D3D12_RESOURCE_STATE_GENERIC_READ); // for using in raytracing
 
-		m_indexBuffer = std::make_unique<Buffer>(
-			indexDataSize,
-			D3D12_RESOURCE_STATE_GENERIC_READ,
-			D3D12_HEAP_TYPE_DEFAULT);
+		m_indexBuffer = std::make_unique<UAVGpuBuffer>(
+			m_indexCount,
+			sizeof(uint32_t),
+			D3D12_RESOURCE_STATE_GENERIC_READ);
 
-		MemoryManager::Get()->LoadDataToBuffer((void*)m_verticesData, vertexDataSize, m_vertexBuffer.get());
-		MemoryManager::Get()->LoadDataToBuffer((void*)m_indicesData, indexDataSize, m_indexBuffer.get());
+		MemoryManager::Get()->LoadDataToBuffer(m_verticesData, vertexDataSize, m_vertexBuffer->GetBuffer());
+		MemoryManager::Get()->LoadDataToBuffer(m_indicesData, indexDataSize, m_indexBuffer->GetBuffer());
 
 		m_vertexBufferView = {
-			m_vertexBuffer->GetBufferResource()->GetGPUVirtualAddress(),
+			m_vertexBuffer->GetBuffer()->GetBufferResource()->GetGPUVirtualAddress(),
 			vertexDataSize,
 			sizeof(Vertex)
 		};
 
 		m_indexBufferView = {
-			m_indexBuffer->GetBufferResource()->GetGPUVirtualAddress(),
+			m_indexBuffer->GetBuffer()->GetBufferResource()->GetGPUVirtualAddress(),
 			indexDataSize,
 			DXGI_FORMAT_R32_UINT,
 		};

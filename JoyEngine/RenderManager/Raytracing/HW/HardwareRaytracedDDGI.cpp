@@ -41,14 +41,14 @@ namespace JoyEngine
 		float depthValue = 1.0;
 		float offset = 0.7f;
 
-		VEC3 vertices[] =
+		Vertex vertices[] =
 		{
 			// The sample raytraces in screen space coordinates.
 			// Since DirectX screen space coordinates are right handed (i.e. Y axis points down).
 			// Define the vertices in counter clockwise order ~ clockwise in left handed.
-			{0, -offset, depthValue},
-			{-offset, offset, depthValue},
-			{offset, offset, depthValue}
+			{{0, -offset, depthValue}},
+			{{-offset, offset, depthValue}},
+			{{offset, offset, depthValue}}
 		};
 
 		m_testIndexBuffer = std::make_unique<Buffer>(
@@ -79,12 +79,12 @@ namespace JoyEngine
 				.IndexFormat = DXGI_FORMAT_R16_UINT,
 				.VertexFormat = DXGI_FORMAT_R32G32B32_FLOAT,
 				.IndexCount = sizeof(indices) / sizeof(uint16_t),
-				.VertexCount = sizeof(vertices) / sizeof(VEC3),
+				.VertexCount = sizeof(vertices) / sizeof(Vertex),
 				.IndexBuffer = m_testIndexBuffer->GetBufferResource()->GetGPUVirtualAddress(),
 				.VertexBuffer =
 				{
 					.StartAddress = m_testVertexBuffer->GetBufferResource()->GetGPUVirtualAddress(),
-					.StrideInBytes = sizeof(VEC3)
+					.StrideInBytes = sizeof(Vertex)
 				}
 			}
 		};

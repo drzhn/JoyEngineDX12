@@ -18,7 +18,7 @@ namespace JoyEngine
 	public:
 		HardwareRaytracedDDGI();
 		void ProcessRaytracing(ID3D12GraphicsCommandList4* commandList, uint32_t frameIndex) const;
-
+		
 	private:
 		std::unique_ptr<RaytracingPipeline> m_raytracingPipeline;
 

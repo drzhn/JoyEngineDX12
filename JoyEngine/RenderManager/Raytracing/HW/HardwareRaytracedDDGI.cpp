@@ -191,32 +191,23 @@ namespace JoyEngine
 			m_accelerationTop->GetBuffer()->GetBufferResource()->GetGPUVirtualAddress());
 
 		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "g_OutputRenderTarget", m_testTexture->GetUAV());
-
-		// TODO more clean and simple way to bind resource to shader tables
-		m_raytracingPipeline->GetRaygenShaderTable()->SetRootParam(
-			m_raytracingPipeline->GetLocalInputContainer(ShaderTableRaygen)->GetBindingIndexByName("screenParams"),
-			m_screenParamsBuffer.GetView()->GetGPUHandle()
-		);
-
-		m_raytracingPipeline->GetHitGroupShaderTable()->SetRootParam(
-			m_raytracingPipeline->GetLocalInputContainer(ShaderTableHitGroup)->GetBindingIndexByName("hitColor"),
-			m_testColorBuffer.GetView()->GetGPUHandle()
-		);
+		GraphicsUtils::AttachView(m_raytracingPipeline.get(), ShaderTableRaygen, "screenParams", m_screenParamsBuffer.GetView());
+		GraphicsUtils::AttachView(m_raytracingPipeline.get(), ShaderTableHitGroup, "hitColor", m_testColorBuffer.GetView());
 
 		const D3D12_DISPATCH_RAYS_DESC dispatchDesc = {
 			.RayGenerationShaderRecord = {
-				.StartAddress = m_raytracingPipeline->GetRaygenShaderTable()->GetAddress(),
-				.SizeInBytes = m_raytracingPipeline->GetRaygenShaderTable()->GetSize(),
+				.StartAddress = m_raytracingPipeline->GetShaderTableByType(ShaderTableRaygen)->GetAddress(),
+				.SizeInBytes = m_raytracingPipeline->GetShaderTableByType(ShaderTableRaygen)->GetSize(),
 			},
 			.MissShaderTable = {
-				.StartAddress = m_raytracingPipeline->GetMissShaderTable()->GetAddress(),
-				.SizeInBytes = m_raytracingPipeline->GetMissShaderTable()->GetSize(),
-				.StrideInBytes = m_raytracingPipeline->GetMissShaderTable()->GetSize()
+				.StartAddress = m_raytracingPipeline->GetShaderTableByType(ShaderTableMiss)->GetAddress(),
+				.SizeInBytes = m_raytracingPipeline->GetShaderTableByType(ShaderTableMiss)->GetSize(),
+				.StrideInBytes = m_raytracingPipeline->GetShaderTableByType(ShaderTableMiss)->GetSize()
 			},
 			.HitGroupTable = {
-				.StartAddress = m_raytracingPipeline->GetHitGroupShaderTable()->GetAddress(),
-				.SizeInBytes = m_raytracingPipeline->GetHitGroupShaderTable()->GetSize(),
-				.StrideInBytes = m_raytracingPipeline->GetHitGroupShaderTable()->GetSize()
+				.StartAddress = m_raytracingPipeline->GetShaderTableByType(ShaderTableHitGroup)->GetAddress(),
+				.SizeInBytes = m_raytracingPipeline->GetShaderTableByType(ShaderTableHitGroup)->GetSize(),
+				.StrideInBytes = m_raytracingPipeline->GetShaderTableByType(ShaderTableHitGroup)->GetSize()
 			},
 			.CallableShaderTable = {},
 			.Width = 1024,

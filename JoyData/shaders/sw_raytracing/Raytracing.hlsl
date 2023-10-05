@@ -12,7 +12,8 @@ StructuredBuffer<LeafNode> leafNodes; // size = THREADS_PER_BLOCK * BLOCK_SIZE
 StructuredBuffer<AABB> bvhData; // size = THREADS_PER_BLOCK * BLOCK_SIZE - 1
 StructuredBuffer<Triangle> triangleData; // size = THREADS_PER_BLOCK * BLOCK_SIZE
 
-StructuredBuffer<Vertex> objectVertices[] : register(t0, space1);
+// using of multiple spaces is the hack to bind bindless srv of different types
+StructuredBuffer<Vertex> objectVertices[] : register(t0, space1); 
 StructuredBuffer<UINT1> objectIndices[] : register(t0, space2);
 
 ConstantBuffer<StandardMaterialData> materials;

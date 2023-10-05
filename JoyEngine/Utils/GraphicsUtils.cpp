@@ -104,6 +104,14 @@ namespace JoyEngine
 		commandList->SetComputeRootDescriptorTable(rootParamIndex, view->GetGPUHandle());
 	}
 
+	void GraphicsUtils::AttachView(const RaytracingPipeline* pipeline, ShaderTableType shaderTableType, const char* paramName, const ResourceView* view)
+	{
+		pipeline->GetShaderTableByType(shaderTableType)->SetRootParam(
+			pipeline->GetLocalInputContainer(shaderTableType)->GetBindingIndexByName(paramName),
+			view->GetGPUHandle()
+		);
+	}
+
 	void GraphicsUtils::SetViewportAndScissor(
 		ID3D12GraphicsCommandList* commandList,
 		uint32_t width,
@@ -233,5 +241,18 @@ namespace JoyEngine
 				ASSERT(false);
 			}
 		}
+	}
+
+	void GraphicsUtils::BeginDebugEvent(ID3D12GraphicsCommandList* commandList, UINT64 color, char const* formatString, ...)
+	{
+		va_list args;
+		va_start(args, formatString);
+		PIXBeginEvent(commandList, color, formatString, args);
+		va_end(args);
+	}
+
+	void GraphicsUtils::EndDebugEvent(ID3D12GraphicsCommandList* commandList)
+	{
+		PIXEndEvent(commandList);
 	}
 }

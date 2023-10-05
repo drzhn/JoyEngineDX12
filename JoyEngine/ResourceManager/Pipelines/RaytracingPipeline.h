@@ -39,9 +39,25 @@ namespace JoyEngine
 		{
 			return &m_localInputContainers.at(type);
 		}
-		[[nodiscard]] ShaderTable* GetRaygenShaderTable() const { return m_raygenShaderTable.get(); }
-		[[nodiscard]] ShaderTable* GetMissShaderTable() const { return m_missShaderTable.get(); }
-		[[nodiscard]] ShaderTable* GetHitGroupShaderTable() const { return m_hitGroupShaderTable.get(); }
+
+		[[nodiscard]] ShaderTable* GetShaderTableByType(ShaderTableType type) const
+		{
+			switch (type)
+			{
+			case ShaderTableRaygen:
+				return m_raygenShaderTable.get();
+			case ShaderTableMiss:
+				return m_missShaderTable.get();
+				break;
+			case ShaderTableHitGroup:
+				return m_hitGroupShaderTable.get();
+				break;
+			case ShaderTableCallable:
+			default:
+				throw;
+			}
+		}
+
 		[[nodiscard]] ID3D12StateObject* GetPipelineState() const { return m_stateObject.Get(); }
 	private:
 		ResourceHandle<Shader> m_raytracingShader;

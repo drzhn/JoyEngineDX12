@@ -9,6 +9,9 @@
 #include "ResourceManager/Pipelines/GraphicsPipeline.h"
 #include "ResourceManager/Pipelines/RaytracingPipeline.h"
 
+#include "WinPixEventRuntime/pix3.h"
+#define GFX_DEBUG_COLOR_RED PIX_COLOR(255,0,0)
+
 namespace JoyEngine
 {
 	class ResourceView;
@@ -24,6 +27,7 @@ namespace JoyEngine
 		static void AttachView(ID3D12GraphicsCommandList* commandList, const ComputePipeline* pipeline, uint32_t rootParamIndex, const ResourceView* view);
 
 		static void AttachView(ID3D12GraphicsCommandList* commandList, const RaytracingPipeline* pipeline, const char* paramName, const ResourceView* view);
+		static void AttachView(const RaytracingPipeline* pipeline, ShaderTableType shaderTableType, const char* paramName, const ResourceView* view);
 
 		static void Barrier(ID3D12GraphicsCommandList* commandList, ID3D12Resource* pResource, D3D12_RESOURCE_STATES stateBefore, D3D12_RESOURCE_STATES stateAfter);
 		static void UAVBarrier(ID3D12GraphicsCommandList* commandList, ID3D12Resource* pResource);
@@ -42,6 +46,9 @@ namespace JoyEngine
 			uint32_t frameIndex,
 			const uint32_t* modelIndex,
 			const ViewProjectionMatrixData* viewProjectionMatrix);
+
+		static void BeginDebugEvent(ID3D12GraphicsCommandList* commandList, UINT64 color, char const* formatString, ...);
+		static void EndDebugEvent(ID3D12GraphicsCommandList* commandList);
 	};
 }
 #endif // GRAPHICS_UTILS_H

@@ -4,17 +4,12 @@
 #include <d3d12.h>
 
 #include <memory>
-#include <set>
-
 #include "CommonEngineStructs.h"
 #include "BufferSorter.h"
 #include "BVHConstructor.h"
-#include "RenderManager/ComputeDispatcher.h"
 #include "RenderManager/GBuffer.h"
-#include "ResourceManager/Mesh.h"
-#include "ResourceManager/ResourceHandle.h"
+#include "RenderManager/Raytracing/RaytracedDDGIDataContainer.h"
 #include "ResourceManager/SharedMaterial.h"
-#include "ResourceManager/Buffers/DynamicCpuBuffer.h"
 
 namespace JoyEngine
 {
@@ -25,18 +20,15 @@ namespace JoyEngine
 	public:
 		SoftwareRaytracedDDGI() = delete;
 		explicit SoftwareRaytracedDDGI(
-			std::set<SharedMaterial*>& sceneSharedMaterials,
+			const RaytracedDDGIDataContainer& dataContainer,
 			DXGI_FORMAT mainColorFormat,
-			DXGI_FORMAT gBufferPositionsFormat,
-			DXGI_FORMAT gBufferNormalsFormat,
 			DXGI_FORMAT swapchainFormat,
-			DXGI_FORMAT depthFormat,
-			uint32_t frameCount,
 			uint32_t width,
 			uint32_t height);
+
 		void UploadSceneData();
 		void PrepareBVH() const;
-		void ProcessRaytracing(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, const ViewProjectionMatrixData* data, const ResourceView* skyboxTextureIndexDataView);
+		void ProcessRaytracing(ID3D12GraphicsCommandList* commandList, const uint32_t frameIndex, const ViewProjectionMatrixData* data);
 		void GenerateProbeIrradiance(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex) const;
 		void DebugDrawRaytracedImage(ID3D12GraphicsCommandList* commandList) const;
 		void DebugDrawAABBGizmo(ID3D12GraphicsCommandList* commandList, const ViewProjectionMatrixData* viewProjectionMatrixData) const;
@@ -48,14 +40,11 @@ namespace JoyEngine
 		[[nodiscard]] UAVTexture* GetProbeDepthTexture() const { return m_probeDepthTexture.get(); }
 		[[nodiscard]] uint32_t GetRaytracedTextureWidth() const noexcept { return m_raytracedTextureWidth; }
 		[[nodiscard]] uint32_t GetRaytracedTextureHeight() const noexcept { return m_raytracedTextureHeight; }
-		[[nodiscard]] ResourceView* GetRaytracedProbesDataView(uint32_t frameIndex) const noexcept { return m_raytracedProbesData.GetView(frameIndex); }
 		[[nodiscard]] RaytracedProbesData* GetRaytracedProbesDataPtr() noexcept;
 
 	private:
-		DXGI_FORMAT m_mainColorFormat;
-		DXGI_FORMAT m_gBufferPositionsFormat;
-		DXGI_FORMAT m_gBufferNormalsFormat;
-		DXGI_FORMAT m_swapchainFormat;
+		const RaytracedDDGIDataContainer& m_dataContainer;
+
 		uint32_t m_raytracedTextureWidth;
 		uint32_t m_raytracedTextureHeight;
 
@@ -66,11 +55,9 @@ namespace JoyEngine
 		std::unique_ptr<UAVTexture> m_probeIrradianceTexture; // octohedral irradince per-probe storage
 		std::unique_ptr<UAVTexture> m_probeDepthTexture; // octohedral depth per-probe storage
 
-		std::set<SharedMaterial*>& m_sceneSharedMaterials;
 
 		std::unique_ptr<DataBuffer<uint32_t>> m_keysBuffer;
 		std::unique_ptr<DataBuffer<uint32_t>> m_triangleIndexBuffer;
-		std::unique_ptr<DataBuffer<Triangle>> m_triangleDataBuffer;
 		std::unique_ptr<DataBuffer<AABB>> m_triangleAABBBuffer;
 
 		std::unique_ptr<DataBuffer<AABB>> m_bvhDataBuffer;
@@ -79,19 +66,13 @@ namespace JoyEngine
 
 		ConstantCpuBuffer<BVHConstructorData> m_bvhConstructionData;
 
-		DynamicCpuBuffer<RaytracedProbesData> m_raytracedProbesData;
-
 		std::unique_ptr<BufferSorter> m_bufferSorter;
 		std::unique_ptr<BVHConstructor> m_bvhConstructor;
-		std::unique_ptr<ComputeDispatcher> m_dispatcher;
 
 		std::unique_ptr<ComputePipeline> m_raytracingPipeline;
 		std::unique_ptr<ComputePipeline> m_probeIrradiancePipeline;
 
-		ResourceHandle<Mesh> m_debugSphereProbeMesh;
-		std::unique_ptr<GraphicsPipeline> m_debugDrawProbesGraphicsPipeline;
 		std::unique_ptr<GraphicsPipeline> m_debugGizmoAABBDrawerGraphicsPipeline;
-		std::unique_ptr<GraphicsPipeline> m_debugRaytracingTextureDrawGraphicsPipeline;
 	};
 }
 #endif // SOFTWARE_RAYTRACED_DDGI_H

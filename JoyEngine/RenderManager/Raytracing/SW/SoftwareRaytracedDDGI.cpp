@@ -5,28 +5,19 @@
 #include "Components/MeshRenderer.h"
 #include "DescriptorManager/DescriptorManager.h"
 #include "EngineMaterialProvider/EngineMaterialProvider.h"
-#include "ResourceManager/Material.h"
 #include "SceneManager/GameObject.h"
 #include "SceneManager/Transform.h"
 #include "Utils/GraphicsUtils.h"
 #include "Utils/Log.h"
 #include "Utils/TimeCounter.h"
 
+#include "RenderManager/Raytracing/RaytracedDDGIDataContainer.h"
+
 namespace JoyEngine
 {
 	const AABB g_sceneAabb = {
 		.min = glm::vec3(-40.0f, -3.0f, -25.0f),
 		.max = glm::vec3(40.0f, 30.0f, 25.0f),
-	};
-
-	RaytracedProbesData g_raytracedProbesData = {
-		.gridMin = glm::vec3(-27, 1, -12),
-		.cellSize = 4.1f,
-		.gridX = 14,
-		.gridY = 8,
-		.gridZ = 6,
-		.useDDGI = 1,
-		.skyboxTextureIndex = 0,
 	};
 
 	uint32_t ExpandBits(uint32_t v)
@@ -82,48 +73,36 @@ namespace JoyEngine
 	}
 
 	SoftwareRaytracedDDGI::SoftwareRaytracedDDGI(
-		std::set<SharedMaterial*>& sceneSharedMaterials,
+		const RaytracedDDGIDataContainer& dataContainer,
 		DXGI_FORMAT mainColorFormat,
-		DXGI_FORMAT gBufferPositionsFormat,
-		DXGI_FORMAT gBufferNormalsFormat,
 		DXGI_FORMAT swapchainFormat,
-		DXGI_FORMAT depthFormat,
-		uint32_t frameCount,
 		uint32_t width,
-		uint32_t height) :
-		m_mainColorFormat(mainColorFormat),
-		m_gBufferPositionsFormat(gBufferPositionsFormat),
-		m_gBufferNormalsFormat(gBufferNormalsFormat),
-		m_swapchainFormat(swapchainFormat),
+		uint32_t height):
+		m_dataContainer(dataContainer),
 #if defined(CAMERA_TRACE)
 		m_raytracedTextureWidth(width),
-		m_raytracedTextureHeight(height),
+		m_raytracedTextureHeight(height)
 #else
 		m_raytracedTextureWidth(g_raytracedProbesData.gridX * g_raytracedProbesData.gridY * g_raytracedProbesData.gridZ),
-		m_raytracedTextureHeight(DDGI_RAYS_COUNT),
+		m_raytracedTextureHeight(DDGI_RAYS_COUNT)
 #endif
-		m_sceneSharedMaterials(sceneSharedMaterials),
-		m_raytracedProbesData(frameCount)
 	{
 		static_assert(sizeof(Triangle) == 16);
 		static_assert(sizeof(AABB) == 32);
 
 		m_keysBuffer = std::make_unique<DataBuffer<uint32_t>>(DATA_ARRAY_COUNT, MAX_UINT);
 		m_triangleIndexBuffer = std::make_unique<DataBuffer<uint32_t>>(DATA_ARRAY_COUNT, MAX_UINT);
-		m_triangleDataBuffer = std::make_unique<DataBuffer<Triangle>>(DATA_ARRAY_COUNT);
 		m_triangleAABBBuffer = std::make_unique<DataBuffer<AABB>>(DATA_ARRAY_COUNT);
 
 		m_bvhDataBuffer = std::make_unique<DataBuffer<AABB>>(DATA_ARRAY_COUNT);
 		m_bvhLeafNodesBuffer = std::make_unique<DataBuffer<LeafNode>>(DATA_ARRAY_COUNT);
 		m_bvhInternalNodesBuffer = std::make_unique<DataBuffer<InternalNode>>(DATA_ARRAY_COUNT);
 
-		m_dispatcher = std::make_unique<ComputeDispatcher>();
-
 		m_bufferSorter = std::make_unique<BufferSorter>(
 			m_trianglesLength,
 			m_keysBuffer.get(),
 			m_triangleIndexBuffer.get(),
-			m_dispatcher.get());
+			m_dataContainer.GetDispatcher());
 
 		m_bvhConstructor = std::make_unique<BVHConstructor>(
 			m_keysBuffer.get(),
@@ -132,7 +111,7 @@ namespace JoyEngine
 			m_bvhInternalNodesBuffer.get(),
 			m_bvhLeafNodesBuffer.get(),
 			m_bvhDataBuffer.get(),
-			m_dispatcher.get(),
+			m_dataContainer.GetDispatcher(),
 			&m_bvhConstructionData
 		);
 
@@ -141,7 +120,7 @@ namespace JoyEngine
 			m_gbuffer = std::make_unique<UAVGbuffer>(m_raytracedTextureWidth, m_raytracedTextureHeight);
 			m_shadedRenderTexture = std::make_unique<RenderTexture>(
 				m_raytracedTextureWidth, m_raytracedTextureHeight,
-				m_mainColorFormat,
+				mainColorFormat,
 				D3D12_RESOURCE_STATE_GENERIC_READ,
 				D3D12_HEAP_TYPE_DEFAULT);
 
@@ -184,29 +163,6 @@ namespace JoyEngine
 			}
 		}
 
-		// Draw raytraced texture 
-		{
-			const GUID debugImageComposerShaderGuid = GUID::StringToGuid("cc8de13c-0510-4842-99f5-de2327aa95d4"); // shaders/raytracing/debugImageCompose.hlsl
-
-			m_debugRaytracingTextureDrawGraphicsPipeline = std::make_unique<GraphicsPipeline>(GraphicsPipelineArgs
-				{
-					debugImageComposerShaderGuid,
-					JoyShaderTypeVertex | JoyShaderTypePixel,
-					false,
-					false,
-					false,
-					D3D12_CULL_MODE_NONE,
-					D3D12_COMPARISON_FUNC_NEVER,
-					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
-					{
-						mainColorFormat
-					},
-					1,
-					DXGI_FORMAT_UNKNOWN,
-					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
-				});
-		}
-
 		// Gizmo AABB draw 
 		{
 			const GUID gizmoAABBDrawerShaderGuid = GUID::StringToGuid("a231c467-dc15-4753-a3db-8888efc73c1a");
@@ -230,40 +186,14 @@ namespace JoyEngine
 					D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE,
 				});
 		}
-
-		{
-			m_debugSphereProbeMesh = ResourceManager::Get()->LoadResource<Mesh>(GUID::StringToGuid("b7d27f1a-006b-41fa-b10b-01b212ebfebe"));
-		}
-
-		// Debug draw probes
-		{
-			const GUID drawProbesShaderGuid = GUID::StringToGuid("8757d834-8dd7-4858-836b-bb6a4eb6fea0"); //shaders/raytracing/debugDrawProbes.hlsl
-
-			m_debugDrawProbesGraphicsPipeline = std::make_unique<GraphicsPipeline>(GraphicsPipelineArgs
-				{
-					drawProbesShaderGuid,
-					JoyShaderTypeVertex | JoyShaderTypePixel,
-					true,
-					true,
-					true,
-					D3D12_CULL_MODE_BACK,
-					D3D12_COMPARISON_FUNC_LESS_EQUAL,
-					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
-					{
-						mainColorFormat,
-					},
-					1,
-					depthFormat,
-					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
-				});
-		}
 	}
+
 
 	void SoftwareRaytracedDDGI::UploadSceneData()
 	{
 		TIME_PERF("Uploading scene data")
 
-		for (auto const& sm : m_sceneSharedMaterials)
+		for (auto const& sm : m_dataContainer.GetSceneSharedMaterials())
 		{
 			for (const auto& mr : sm->GetMeshRenderers())
 			{
@@ -288,13 +218,6 @@ namespace JoyEngine
 					const uint32_t mortonCode = Morton3D(centroid.x, centroid.y, centroid.z);
 					m_keysBuffer->GetLocalData()[m_trianglesLength] = mortonCode;
 					m_triangleIndexBuffer->GetLocalData()[m_trianglesLength] = m_trianglesLength;
-					m_triangleDataBuffer->GetLocalData()[m_trianglesLength] = Triangle
-					{
-						.materialIndex = mr->GetMaterial()->GetMaterialIndex(),
-						.verticesIndex = mr->GetMesh()->GetVertexSRV()->GetDescriptorIndex(),
-						.indicesIndex = mr->GetMesh()->GetIndexSRV()->GetDescriptorIndex(),
-						.triangleIndex = i
-					};
 					m_triangleAABBBuffer->GetLocalData()[m_trianglesLength] = aabb;
 				}
 			}
@@ -302,7 +225,6 @@ namespace JoyEngine
 
 		m_keysBuffer->UploadCpuData();
 		m_triangleIndexBuffer->UploadCpuData();
-		m_triangleDataBuffer->UploadCpuData();
 		m_triangleAABBBuffer->UploadCpuData();
 		m_bvhConstructionData.SetData({.trianglesCount = m_trianglesLength});
 	}
@@ -342,12 +264,8 @@ namespace JoyEngine
 	void SoftwareRaytracedDDGI::ProcessRaytracing(
 		ID3D12GraphicsCommandList* commandList,
 		const uint32_t frameIndex,
-		const ViewProjectionMatrixData* data,
-		const ResourceView* skyboxTextureIndexDataView)
+		const ViewProjectionMatrixData* data) const
 	{
-		g_raytracedProbesData.skyboxTextureIndex = skyboxTextureIndexDataView->GetDescriptorIndex();
-		m_raytracedProbesData.SetData(&g_raytracedProbesData, frameIndex);
-
 		// Raytracing process
 		{
 			commandList->SetComputeRootSignature(m_raytracingPipeline->GetRootSignature().Get());
@@ -364,12 +282,12 @@ namespace JoyEngine
 			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "internalNodes", m_bvhInternalNodesBuffer->GetSRV());
 			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "leafNodes", m_bvhLeafNodesBuffer->GetSRV());
 			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "bvhData", m_bvhDataBuffer->GetSRV());
-			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "triangleData", m_triangleDataBuffer->GetSRV());
+			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "triangleData", m_dataContainer.GetTrianglesDataView());
 			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "linearClampSampler", EngineSamplersProvider::GetLinearWrapSampler());
 			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "objectVertices", DescriptorManager::Get()->GetSRVHeapStartDescriptorHandle());
 			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "objectIndices", DescriptorManager::Get()->GetSRVHeapStartDescriptorHandle());
 #if !defined(CAMERA_TRACE)
-			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "raytracedProbesData", m_raytracedProbesData.GetView(frameIndex));
+			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "raytracedProbesData", m_dataContainer.GetProbesDataView(frameIndex));
 #endif
 
 			GraphicsUtils::ProcessEngineBindings(
@@ -402,7 +320,7 @@ namespace JoyEngine
 			GraphicsUtils::AttachView(commandList, m_probeIrradiancePipeline.get(), "probeIrradianceTexture", m_probeIrradianceTexture->GetUAV());
 			GraphicsUtils::AttachView(commandList, m_probeIrradiancePipeline.get(), "probeDepthTexture", m_probeDepthTexture->GetUAV());
 
-			GraphicsUtils::AttachView(commandList, m_probeIrradiancePipeline.get(), "raytracedProbesData", m_raytracedProbesData.GetView(frameIndex));
+			GraphicsUtils::AttachView(commandList, m_probeIrradiancePipeline.get(), "raytracedProbesData", m_dataContainer.GetProbesDataView(frameIndex));
 		}
 		commandList->Dispatch(g_raytracedProbesData.gridX, g_raytracedProbesData.gridY, g_raytracedProbesData.gridZ);
 
@@ -412,19 +330,11 @@ namespace JoyEngine
 
 	void SoftwareRaytracedDDGI::DebugDrawRaytracedImage(ID3D12GraphicsCommandList* commandList) const
 	{
-		auto& sm = m_debugRaytracingTextureDrawGraphicsPipeline;
-
-		commandList->SetPipelineState(sm->GetPipelineObject().Get());
-		commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
-		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
 #if defined(CAMERA_TRACE)
-		GraphicsUtils::AttachView(commandList, sm.get(), "shadedColorTexture", m_shadedRenderTexture->GetSRV());
+		m_dataContainer.DebugDrawRaytracedImage(commandList, m_shadedRenderTexture->GetSRV());
 #else
-		GraphicsUtils::AttachView(commandList, sm.get(), "shadedColorTexture", m_probeIrradianceTexture->GetSRV());
+		m_dataContainer.DebugDrawRaytracedImage(commandList, m_probeIrradianceTexture->GetSRV());
 #endif
-
-		commandList->DrawInstanced(3, 1, 0, 0);
 	}
 
 	void SoftwareRaytracedDDGI::DebugDrawAABBGizmo(ID3D12GraphicsCommandList* commandList,
@@ -451,28 +361,7 @@ namespace JoyEngine
 
 	void SoftwareRaytracedDDGI::DebugDrawProbes(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, const ViewProjectionMatrixData* viewProjectionMatrixData) const
 	{
-		auto& sm = m_debugDrawProbesGraphicsPipeline;
-
-		commandList->SetPipelineState(sm->GetPipelineObject().Get());
-		commandList->SetGraphicsRootSignature(sm->GetRootSignature().Get());
-		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-		commandList->IASetVertexBuffers(0, 1, m_debugSphereProbeMesh->GetVertexBufferView());
-		commandList->IASetIndexBuffer(m_debugSphereProbeMesh->GetIndexBufferView());
-
-		GraphicsUtils::ProcessEngineBindings(commandList, sm.get(), frameIndex, nullptr, viewProjectionMatrixData);
-
-		GraphicsUtils::AttachView(commandList, sm.get(), "raytracedProbesData", m_raytracedProbesData.GetView(frameIndex));
-		GraphicsUtils::AttachView(commandList, sm.get(), "irradianceTexture", m_probeIrradianceTexture->GetSRV());
-		GraphicsUtils::AttachView(commandList, sm.get(), "linearClampSampler", EngineSamplersProvider::GetLinearWrapSampler());
-
-		const uint32_t instanceCount = g_raytracedProbesData.gridX * g_raytracedProbesData.gridY * g_raytracedProbesData.gridZ;
-
-		commandList->DrawInstanced(
-			m_debugSphereProbeMesh->GetIndexCount(),
-			instanceCount,
-			0,
-			0);
+		m_dataContainer.DebugDrawProbes(commandList, frameIndex, viewProjectionMatrixData, m_probeIrradianceTexture->GetSRV());
 	}
 
 	RaytracedProbesData* SoftwareRaytracedDDGI::GetRaytracedProbesDataPtr() noexcept

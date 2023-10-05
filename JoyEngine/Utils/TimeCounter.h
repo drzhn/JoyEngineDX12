@@ -4,7 +4,7 @@
 
 #include "Log.h"
 
-#define TIME_PERF(message) TimeCounter counter = TimeCounter(message);
+#define TIME_PERF(message) const TimeCounter counter = TimeCounter(message);
 
 namespace JoyEngine
 {

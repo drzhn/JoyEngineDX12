@@ -32,7 +32,7 @@ namespace JoyEngine
 		void RenderDirectionalShadows(
 			ID3D12GraphicsCommandList* commandList,
 			uint32_t frameIndex,
-			SharedMaterial* gBufferSharedMaterial);
+			SharedMaterial* gBufferSharedMaterial) const;
 
 		DirectionalLightInfo& GetDirectionalLightData() override
 		{

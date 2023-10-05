@@ -9,9 +9,6 @@
 #include "ResourceManager/Pipelines/GraphicsPipeline.h"
 #include "ResourceManager/Pipelines/RaytracingPipeline.h"
 
-#include "WinPixEventRuntime/pix3.h"
-#define GFX_DEBUG_COLOR_RED PIX_COLOR(255,0,0)
-
 namespace JoyEngine
 {
 	class ResourceView;
@@ -47,7 +44,7 @@ namespace JoyEngine
 			const uint32_t* modelIndex,
 			const ViewProjectionMatrixData* viewProjectionMatrix);
 
-		static void BeginDebugEvent(ID3D12GraphicsCommandList* commandList, UINT64 color, char const* formatString, ...);
+		static void BeginDebugEvent(ID3D12GraphicsCommandList* commandList, char const* formatString, ...);
 		static void EndDebugEvent(ID3D12GraphicsCommandList* commandList);
 	};
 }

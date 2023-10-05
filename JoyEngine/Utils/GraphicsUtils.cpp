@@ -6,6 +6,8 @@
 #include "RenderManager/RenderManager.h"
 #include "ResourceManager/ResourceView.h"
 
+#include "WinPixEventRuntime/pix3.h"
+
 namespace JoyEngine
 {
 	inline D3D12_RESOURCE_BARRIER Transition(
@@ -243,11 +245,11 @@ namespace JoyEngine
 		}
 	}
 
-	void GraphicsUtils::BeginDebugEvent(ID3D12GraphicsCommandList* commandList, UINT64 color, char const* formatString, ...)
+	void GraphicsUtils::BeginDebugEvent(ID3D12GraphicsCommandList* commandList, char const* formatString, ...)
 	{
 		va_list args;
 		va_start(args, formatString);
-		PIXBeginEvent(commandList, color, formatString, args);
+		PIXBeginEvent(commandList, PIX_COLOR(255,255,255), formatString, args);
 		va_end(args);
 	}
 

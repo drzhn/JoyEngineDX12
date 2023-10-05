@@ -192,9 +192,9 @@ namespace JoyEngine
 	void ClusteredLightSystem::RenderDirectionalShadows(
 		ID3D12GraphicsCommandList* commandList,
 		uint32_t frameIndex,
-		SharedMaterial* gBufferSharedMaterial)
+		SharedMaterial* gBufferSharedMaterial) const
 	{
-		GraphicsUtils::BeginDebugEvent(commandList, GFX_DEBUG_COLOR_RED, "Directional Light");
+		GraphicsUtils::BeginDebugEvent(commandList, "Directional Light");
 
 		GraphicsUtils::Barrier(commandList, m_directionalShadowmap->GetImageResource().Get(), D3D12_RESOURCE_STATE_GENERIC_READ,
 		                       D3D12_RESOURCE_STATE_DEPTH_WRITE);

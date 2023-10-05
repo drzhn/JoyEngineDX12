@@ -194,8 +194,6 @@ namespace JoyEngine
 		uint32_t frameIndex,
 		SharedMaterial* gBufferSharedMaterial) const
 	{
-		GraphicsUtils::BeginDebugEvent(commandList, "Directional Light");
-
 		GraphicsUtils::Barrier(commandList, m_directionalShadowmap->GetImageResource().Get(), D3D12_RESOURCE_STATE_GENERIC_READ,
 		                       D3D12_RESOURCE_STATE_DEPTH_WRITE);
 
@@ -240,8 +238,6 @@ namespace JoyEngine
 
 		GraphicsUtils::Barrier(commandList, m_directionalShadowmap->GetImageResource().Get(), D3D12_RESOURCE_STATE_DEPTH_WRITE,
 		                       D3D12_RESOURCE_STATE_GENERIC_READ);
-
-		GraphicsUtils::EndDebugEvent(commandList);
 	}
 
 

@@ -249,12 +249,26 @@ namespace JoyEngine
 	{
 		va_list args;
 		va_start(args, formatString);
-		PIXBeginEvent(commandList, PIX_COLOR(255,255,255), formatString, args);
+		PIXBeginEvent(commandList, PIX_COLOR(255, 255, 255), formatString, args);
 		va_end(args);
 	}
 
 	void GraphicsUtils::EndDebugEvent(ID3D12GraphicsCommandList* commandList)
 	{
 		PIXEndEvent(commandList);
+	}
+
+	ScopedGFXEvent::ScopedGFXEvent(ID3D12GraphicsCommandList* commandList, char const* formatString, ...):
+		m_commandList(commandList)
+	{
+		va_list args;
+		va_start(args, formatString);
+		GraphicsUtils::BeginDebugEvent(commandList, formatString, args);
+		va_end(args);
+	}
+
+	ScopedGFXEvent::~ScopedGFXEvent()
+	{
+		GraphicsUtils::EndDebugEvent(m_commandList);
 	}
 }

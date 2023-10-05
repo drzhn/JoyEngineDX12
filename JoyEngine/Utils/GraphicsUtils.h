@@ -47,5 +47,15 @@ namespace JoyEngine
 		static void BeginDebugEvent(ID3D12GraphicsCommandList* commandList, char const* formatString, ...);
 		static void EndDebugEvent(ID3D12GraphicsCommandList* commandList);
 	};
+
+	class ScopedGFXEvent
+	{
+	public:
+		ScopedGFXEvent(ID3D12GraphicsCommandList* commandList, char const* formatString, ...);
+		~ScopedGFXEvent();
+
+	private:
+		ID3D12GraphicsCommandList* m_commandList;
+	};
 }
 #endif // GRAPHICS_UTILS_H

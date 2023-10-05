@@ -208,11 +208,10 @@ namespace JoyEngine
 
 		const auto commandList = m_queue->GetCommandList(m_currentFrameIndex);
 
-		auto swapchainResource = m_swapchainRenderTargets[m_currentFrameIndex]->GetImageResource().Get();
-		auto hdrRTVResource = m_mainColorRenderTarget->GetImageResource().Get();
-
-		auto swapchainRTVHandle = m_swapchainRenderTargets[m_currentFrameIndex]->GetRTV()->GetCPUHandle();
-		auto hdrRTVHandle = m_mainColorRenderTarget->GetRTV()->GetCPUHandle();
+		const auto swapchainResource = m_swapchainRenderTargets[m_currentFrameIndex]->GetImageResource().Get();
+		const auto hdrRTVResource = m_mainColorRenderTarget->GetImageResource().Get();
+		const auto swapchainRTVHandle = m_swapchainRenderTargets[m_currentFrameIndex]->GetRTV()->GetCPUHandle();
+		const auto hdrRTVHandle = m_mainColorRenderTarget->GetRTV()->GetCPUHandle();
 
 		ASSERT(m_currentCamera != nullptr);
 		const glm::mat4 mainCameraViewMatrix = m_currentCamera->GetViewMatrix();
@@ -223,10 +222,8 @@ namespace JoyEngine
 			.proj = mainCameraProjMatrix
 		};
 
-
 		{
-			DynamicCpuBuffer<EngineData>* engineDataBuffer = EngineMaterialProvider::Get()->GetEngineDataBuffer();
-
+			const DynamicCpuBuffer<EngineData>* engineDataBuffer = EngineMaterialProvider::Get()->GetEngineDataBuffer();
 
 			const auto data = static_cast<EngineData*>(engineDataBuffer->GetPtr(m_currentFrameIndex));
 			data->cameraWorldPos = m_currentCamera->GetGameObject().GetTransform()->GetPosition();
@@ -253,6 +250,8 @@ namespace JoyEngine
 
 		// Drawing shadows
 		{
+			auto scopedEvent = ScopedGFXEvent(commandList, "Directional Light");
+
 			m_lightSystem->RenderDirectionalShadows(
 				commandList,
 				m_currentFrameIndex,
@@ -264,14 +263,16 @@ namespace JoyEngine
 
 		//Drawing G-Buffer
 		{
+			auto scopedEvent = ScopedGFXEvent(commandList, "G-BUFFER rendering");
+
 			m_gbuffer->BarrierColorToWrite(commandList);
 
-			D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[3] = {
+			const D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[3] = {
 				m_gbuffer->GetColorRTV()->GetCPUHandle(),
 				m_gbuffer->GetNormalsRTV()->GetCPUHandle(),
 				m_gbuffer->GetPositionRTV()->GetCPUHandle(),
 			};
-			auto dsvHandle = m_gbuffer->GetDepthDSV()->GetCPUHandle();
+			const auto dsvHandle = m_gbuffer->GetDepthDSV()->GetCPUHandle();
 			constexpr float clearColor[] = {0.0f, 0.0f, 0.0f, 0.0f};
 			commandList->ClearRenderTargetView(rtvHandles[0], clearColor, 0, nullptr);
 			commandList->ClearRenderTargetView(rtvHandles[1], clearColor, 0, nullptr);
@@ -298,6 +299,8 @@ namespace JoyEngine
 
 		// Process raytracing
 		{
+			auto scopedEvent = ScopedGFXEvent(commandList, "Software Raytracing");
+
 			m_raytracing->ProcessRaytracing(commandList, m_currentFrameIndex, &mainCameraMatrixVP, m_skybox->GetSkyboxTextureDataSrv());
 
 
@@ -347,6 +350,8 @@ namespace JoyEngine
 
 		if (g_drawProbes)
 		{
+			auto scopedEvent = ScopedGFXEvent(commandList, "Draw probes");
+
 			auto dsvHandle = m_gbuffer->GetDepthDSV()->GetCPUHandle();
 			//commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
@@ -360,6 +365,8 @@ namespace JoyEngine
 
 		// HDR->LDR
 		{
+			auto scopedEvent = ScopedGFXEvent(commandList, "HDR->SDR transition + tonemapping");
+
 			GraphicsUtils::Barrier(commandList,
 			                       hdrRTVResource,
 			                       D3D12_RESOURCE_STATE_RENDER_TARGET,
@@ -378,7 +385,11 @@ namespace JoyEngine
 			                      m_swapchainRenderTargets[m_currentFrameIndex].get());
 
 
-			DrawGui(commandList, &mainCameraMatrixVP);
+			{
+				auto scopedEvent1 = ScopedGFXEvent(commandList, "IMGUI drawings");
+
+				DrawGui(commandList, &mainCameraMatrixVP);
+			}
 
 
 			GraphicsUtils::Barrier(commandList,

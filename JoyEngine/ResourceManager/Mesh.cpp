@@ -59,6 +59,7 @@ namespace JoyEngine
 		m_vertexCount = vertexDataSize / sizeof(Vertex);
 		m_indexCount = indexDataSize / sizeof(uint32_t);
 
+		// TODO place vertex and index buffers into one single buffer to decrease number of descriptors
 		m_vertexBuffer = std::make_unique<UAVGpuBuffer>(
 			m_vertexCount,
 			sizeof(Vertex),

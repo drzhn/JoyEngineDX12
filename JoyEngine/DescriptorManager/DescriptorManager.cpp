@@ -25,44 +25,45 @@ namespace JoyEngine
 					: D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
 				0
 			};
-			ASSERT_SUCC(GraphicsManager::Get()->GetDevice()->
-				CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_heaps[type])));
 
-			auto descriptorSize = GraphicsManager::Get()->GetDevice()->GetDescriptorHandleIncrementSize(type);
-			D3D12_CPU_DESCRIPTOR_HANDLE cpuHeapStart = m_heaps[type]->GetCPUDescriptorHandleForHeapStart();
+			ComPtr<ID3D12DescriptorHeap> heap;
+			ASSERT_SUCC(GraphicsManager::Get()->GetDevice()-> CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&heap)));
+
+			const auto descriptorSize = GraphicsManager::Get()->GetDevice()->GetDescriptorHandleIncrementSize(type);
+			const D3D12_CPU_DESCRIPTOR_HANDLE cpuHeapStart = heap->GetCPUDescriptorHandleForHeapStart();
 			D3D12_GPU_DESCRIPTOR_HANDLE gpuHeapStart = {};
 			if (type != D3D12_DESCRIPTOR_HEAP_TYPE_RTV && type != D3D12_DESCRIPTOR_HEAP_TYPE_DSV)
 			{
-				gpuHeapStart = m_heaps[type]->GetGPUDescriptorHandleForHeapStart();
+				gpuHeapStart = heap->GetGPUDescriptorHandleForHeapStart();
 			}
 
-			auto entry = std::make_unique<HeapEntry>(
-				descriptorSize,
-				cpuHeapStart,
-				gpuHeapStart,
-				DESCRIPTORS_COUNT
-			);
-
-			m_descriptorStorage[type] = std::move(entry);
+			m_heapStorage.insert({
+				type,
+				HeapEntry(heap,
+				          descriptorSize,
+				          cpuHeapStart,
+				          gpuHeapStart,
+				          DESCRIPTORS_COUNT)
+			});
 		}
 	}
 
 	void DescriptorManager::AllocateDescriptor(
-		D3D12_DESCRIPTOR_HEAP_TYPE type,
+		const D3D12_DESCRIPTOR_HEAP_TYPE type,
 		_Out_ uint32_t& index,
 		_Out_ D3D12_CPU_DESCRIPTOR_HANDLE& cpuHandle,
 		_Out_ D3D12_GPU_DESCRIPTOR_HANDLE& gpuHandle
 	)
 	{
-		const auto entry = m_descriptorStorage[type].get();
+		auto& entry = m_heapStorage.at(type);
 
-		ASSERT((entry->m_currentDescriptorIndex + 1) < entry->m_descriptorsCount)
+		ASSERT((entry.m_currentDescriptorIndex + 1) < entry.m_descriptorsCount)
 
-		cpuHandle.ptr = entry->m_cpuHeapStart.ptr + entry->m_currentDescriptorIndex * entry->m_descriptorSize;
-		gpuHandle.ptr = entry->m_gpuHeapStart.ptr + entry->m_currentDescriptorIndex * entry->m_descriptorSize;
-		index = entry->m_currentDescriptorIndex;
+		cpuHandle.ptr = entry.m_cpuHeapStart.ptr + entry.m_currentDescriptorIndex * entry.m_descriptorSize;
+		gpuHandle.ptr = entry.m_gpuHeapStart.ptr + entry.m_currentDescriptorIndex * entry.m_descriptorSize;
+		index = entry.m_currentDescriptorIndex;
 
-		entry->m_currentDescriptorIndex++;
+		entry.m_currentDescriptorIndex++;
 	}
 
 	void DescriptorManager::GetDescriptorHandleAtIndex(
@@ -70,14 +71,14 @@ namespace JoyEngine
 		const uint32_t index,
 		_Out_ D3D12_CPU_DESCRIPTOR_HANDLE& cpuHandle,
 		_Out_ D3D12_GPU_DESCRIPTOR_HANDLE& gpuHandle
-	)
+	) const
 	{
-		const auto entry = m_descriptorStorage[type].get();
+		const auto& entry = m_heapStorage.at(type);
 
-		ASSERT((entry->m_currentDescriptorIndex + 1) < entry->m_descriptorsCount)
+		ASSERT((entry.m_currentDescriptorIndex + 1) < entry.m_descriptorsCount)
 
-		cpuHandle.ptr = entry->m_cpuHeapStart.ptr + index * entry->m_descriptorSize;
-		gpuHandle.ptr = entry->m_gpuHeapStart.ptr + index * entry->m_descriptorSize;
+		cpuHandle.ptr = entry.m_cpuHeapStart.ptr + index * entry.m_descriptorSize;
+		gpuHandle.ptr = entry.m_gpuHeapStart.ptr + index * entry.m_descriptorSize;
 	}
 
 	void DescriptorManager::FreeDescriptor(
@@ -87,13 +88,21 @@ namespace JoyEngine
 		// TODO
 	}
 
-	ID3D12DescriptorHeap* DescriptorManager::GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE typeIndex) const
+	void DescriptorManager::PrintStats() const
 	{
-		return m_heaps[typeIndex].Get();
+		Logger::LogFormat("Heap CBV_SRV_UAV allocated %d descriptors\n", m_heapStorage.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).m_currentDescriptorIndex);
+		Logger::LogFormat("Heap SAMPLER allocated %d descriptors\n", m_heapStorage.at(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER).m_currentDescriptorIndex);
+		Logger::LogFormat("Heap RTV allocated %d descriptors\n", m_heapStorage.at(D3D12_DESCRIPTOR_HEAP_TYPE_RTV).m_currentDescriptorIndex);
+		Logger::LogFormat("Heap DSV allocated %d descriptors\n", m_heapStorage.at(D3D12_DESCRIPTOR_HEAP_TYPE_DSV).m_currentDescriptorIndex);
+	}
+
+	ID3D12DescriptorHeap* DescriptorManager::GetHeapByType(D3D12_DESCRIPTOR_HEAP_TYPE type) const
+	{
+		return m_heapStorage.at(type).m_heap.Get();
 	}
 
 	D3D12_GPU_DESCRIPTOR_HANDLE DescriptorManager::GetSRVHeapStartDescriptorHandle() const
 	{
-		return m_descriptorStorage.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).get()->m_gpuHeapStart;
+		return m_heapStorage.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).m_gpuHeapStart;
 	}
 }

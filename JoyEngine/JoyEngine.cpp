@@ -83,6 +83,7 @@ namespace JoyEngine
 		Logger::LogFormat("=========== Context initialized in %.3f seconds ===========\n", time);
 
 		m_memoryManager->PrintStats();
+		m_descriptorSetManager->PrintStats();
 
 		Logger::Log("==================================================================\n");
 	}

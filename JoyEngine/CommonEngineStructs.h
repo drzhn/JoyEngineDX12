@@ -197,11 +197,6 @@ struct ObjectIndexData
 	UINT1 data;
 };
 
-struct TextureIndexData
-{
-	UINT1 data;
-};
-
 struct ObjectMatricesData
 {
 	MAT4 data[OBJECT_SIZE];
@@ -278,6 +273,11 @@ struct RaytracedProbesData
 	UINT1 gridY;
 	UINT1 gridZ;
 	UINT1 useDDGI;
+
+	UINT1 skyboxTextureIndex;
+	UINT1 dummy_0;
+	UINT1 dummy_1;
+	UINT1 dummy_2;
 };
 
 struct BufferSorterData

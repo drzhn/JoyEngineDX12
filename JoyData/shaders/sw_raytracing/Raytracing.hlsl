@@ -19,8 +19,6 @@ StructuredBuffer<UINT1> objectIndices[] : register(t0, space2);
 ConstantBuffer<StandardMaterialData> materials;
 Texture2D textures[] : register(t0, space3);
 SamplerState linearClampSampler;
-ConstantBuffer<TextureIndexData> skyboxTextureIndex;
-
 
 RWTexture2D<float4> colorTexture;
 RWTexture2D<float4> normalsTexture;
@@ -265,7 +263,7 @@ void CSMain(uint3 groupId : SV_GroupID, uint3 groupThreadId : SV_GroupThreadID)
 	const float hasResult = result.distance != MAX_FLOAT;
 
 	float4 color = textures[materials.data[materialIndex].diffuseTextureIndex].SampleLevel(linearClampSampler, uv, 2);
-	float4 skyboxColor = textures[skyboxTextureIndex.data].SampleLevel(linearClampSampler, SampleSphericalMap(-ray.dir), 2);
+    float4 skyboxColor = textures[raytracedProbesData.skyboxTextureIndex].SampleLevel(linearClampSampler, SampleSphericalMap(-ray.dir), 2);
 
 	colorTexture[id.xy] = float4(lerp(skyboxColor.rgb, color.rgb, hasResult), 1);
 	positionTexture[id.xy] = float4(ray.origin + ray.dir * result.distance, hasResult);

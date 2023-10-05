@@ -15,8 +15,6 @@ namespace JoyEngine
 		m_skyboxMesh = ResourceManager::Get()->LoadResource<Mesh>(
 			GUID::StringToGuid("b7d27f1a-006b-41fa-b10b-01b212ebfebe")); // DefaultSphere
 
-		m_skyboxTextureIndexData.SetData(TextureIndexData{.data = m_skyboxTexture->GetSRV()->GetDescriptorIndex()});
-
 		const GUID skyboxShaderGuid = GUID::StringToGuid("7e43e76d-9d5f-4fc8-a8f1-c8ec0dce95ef"); //shaders/skybox.hlsl
 
 		//const D3D12_RENDER_TARGET_BLEND_DESC blendDesc = {

@@ -36,7 +36,7 @@ namespace JoyEngine
 			uint32_t height);
 		void UploadSceneData();
 		void PrepareBVH() const;
-		void ProcessRaytracing(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, ViewProjectionMatrixData* data, ResourceView* skyboxTextureIndexDataView);
+		void ProcessRaytracing(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, const ViewProjectionMatrixData* data, const ResourceView* skyboxTextureIndexDataView);
 		void GenerateProbeIrradiance(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex) const;
 		void DebugDrawRaytracedImage(ID3D12GraphicsCommandList* commandList) const;
 		void DebugDrawAABBGizmo(ID3D12GraphicsCommandList* commandList, const ViewProjectionMatrixData* viewProjectionMatrixData) const;
@@ -87,7 +87,6 @@ namespace JoyEngine
 
 		std::unique_ptr<ComputePipeline> m_raytracingPipeline;
 		std::unique_ptr<ComputePipeline> m_probeIrradiancePipeline;
-		std::unique_ptr<GraphicsPipeline> m_raytracedImageApplier;
 
 		ResourceHandle<Mesh> m_debugSphereProbeMesh;
 		std::unique_ptr<GraphicsPipeline> m_debugDrawProbesGraphicsPipeline;

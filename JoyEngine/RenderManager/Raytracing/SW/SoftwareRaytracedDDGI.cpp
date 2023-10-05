@@ -25,7 +25,8 @@ namespace JoyEngine
 		.gridX = 14,
 		.gridY = 8,
 		.gridZ = 6,
-		.useDDGI = 1
+		.useDDGI = 1,
+		.skyboxTextureIndex = 0,
 	};
 
 	uint32_t ExpandBits(uint32_t v)
@@ -175,7 +176,6 @@ namespace JoyEngine
 			{
 				// generate texture w = probesCount, h = DDGI_RAYS_COUNT
 				const GUID pipelineIrradianceShaderGuid = GUID::StringToGuid("1d69c9ec-de6a-4fff-96ea-3a68808ca8f7"); //shaders/raytracing/ProbeIrradiance.hlsl
-				const GUID pipelineIrradiancePipelineGuid = GUID::Random();
 
 				m_probeIrradiancePipeline = std::make_unique<ComputePipeline>(ComputePipelineArgs
 					{
@@ -341,10 +341,11 @@ namespace JoyEngine
 
 	void SoftwareRaytracedDDGI::ProcessRaytracing(
 		ID3D12GraphicsCommandList* commandList,
-		uint32_t frameIndex,
-		ViewProjectionMatrixData* data,
-		ResourceView* skyboxTextureIndexDataView)
+		const uint32_t frameIndex,
+		const ViewProjectionMatrixData* data,
+		const ResourceView* skyboxTextureIndexDataView)
 	{
+		g_raytracedProbesData.skyboxTextureIndex = skyboxTextureIndexDataView->GetDescriptorIndex();
 		m_raytracedProbesData.SetData(&g_raytracedProbesData, frameIndex);
 
 		// Raytracing process
@@ -370,7 +371,6 @@ namespace JoyEngine
 #if !defined(CAMERA_TRACE)
 			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "raytracedProbesData", m_raytracedProbesData.GetView(frameIndex));
 #endif
-			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "skyboxTextureIndex", skyboxTextureIndexDataView);
 
 			GraphicsUtils::ProcessEngineBindings(
 				commandList,

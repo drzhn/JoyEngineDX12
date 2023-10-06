@@ -2,93 +2,61 @@
 
 #include "CommonEngineStructs.h"
 #include "Common/HashDefs.h"
+#include "Components/MeshRenderer.h"
+#include "DescriptorManager/DescriptorManager.h"
+#include "EngineMaterialProvider/EngineMaterialProvider.h"
 #include "GraphicsManager/GraphicsManager.h"
+#include "RenderManager/Raytracing/SW/SoftwareRaytracedDDGI.h"
 #include "ResourceManager/ResourceManager.h"
 #include "Utils/GraphicsUtils.h"
 
 namespace JoyEngine
 {
-	HardwareRaytracedDDGI::HardwareRaytracedDDGI()
+	HardwareRaytracedDDGI::HardwareRaytracedDDGI(
+		const RaytracedDDGIDataContainer& dataContainer,
+		DXGI_FORMAT mainColorFormat,
+		DXGI_FORMAT swapchainFormat,
+		uint32_t width,
+		uint32_t height):
+		m_dataContainer(dataContainer),
+#if defined(HW_CAMERA_TRACE)
+		m_raytracedTextureWidth(width),
+		m_raytracedTextureHeight(height)
+#else
+		m_raytracedTextureWidth(g_raytracedProbesData.gridX* g_raytracedProbesData.gridY* g_raytracedProbesData.gridZ),
+		m_raytracedTextureHeight(DDGI_RAYS_COUNT)
+#endif
 	{
-		m_dispatcher = std::make_unique<ComputeDispatcher>();
 		m_testTexture = std::make_unique<UAVTexture>(
-			1024,
-			1024,
+			m_raytracedTextureWidth,
+			m_raytracedTextureHeight,
 			DXGI_FORMAT_R16G16B16A16_FLOAT,
 			D3D12_RESOURCE_STATE_GENERIC_READ,
 			D3D12_HEAP_TYPE_DEFAULT);
 
 		float border = 0.1f;
 
-		m_screenParamsBuffer.SetData({
-			.viewport = {-1.0f, -1.0f, 1.0f, 1.0f},
-			.stencil = {
-				-1 + border, -1 + border,
-				1.0f - border, 1 - border
-			}
-		});
-		m_testColorBuffer.SetData({{1, 0, 0, 1}});
-
 		m_raytracingPipeline = std::make_unique<RaytracingPipeline>(RaytracingPipelineArgs{
 			GUID::StringToGuid("b2597599-94ef-43ed-abd8-46d3adbb75d4")
 		});
+	}
 
-		uint16_t indices[] =
+	void HardwareRaytracedDDGI::UploadSceneData()
+	{
+		std::vector<D3D12_RAYTRACING_GEOMETRY_DESC*> raytracingGeometryDescs;
+
+		raytracingGeometryDescs.reserve(1000); // TODO more pretty way to store this data. 
+		for (auto const& sm : m_dataContainer.GetSceneSharedMaterials())
 		{
-			0, 1, 2
-		};
-
-		float depthValue = 1.0;
-		float offset = 0.7f;
-
-		Vertex vertices[] =
-		{
-			// The sample raytraces in screen space coordinates.
-			// Since DirectX screen space coordinates are right handed (i.e. Y axis points down).
-			// Define the vertices in counter clockwise order ~ clockwise in left handed.
-			{{0, -offset, depthValue}},
-			{{-offset, offset, depthValue}},
-			{{offset, offset, depthValue}}
-		};
-
-		m_testIndexBuffer = std::make_unique<Buffer>(
-			sizeof(indices),
-			D3D12_RESOURCE_STATE_GENERIC_READ,
-			D3D12_HEAP_TYPE_UPLOAD,
-			D3D12_RESOURCE_FLAG_NONE
-		);
-
-		m_testIndexBuffer->SetCPUData(indices, 0, sizeof(indices));
-
-		m_testVertexBuffer = std::make_unique<Buffer>(
-			sizeof(vertices),
-			D3D12_RESOURCE_STATE_GENERIC_READ,
-			D3D12_HEAP_TYPE_UPLOAD,
-			D3D12_RESOURCE_FLAG_NONE
-		);
-
-		m_testVertexBuffer->SetCPUData(vertices, 0, sizeof(vertices));
-
-		// Acceleration structures
-
-		D3D12_RAYTRACING_GEOMETRY_DESC raytracingGeometryDesc = {
-			.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES,
-			.Flags = D3D12_RAYTRACING_GEOMETRY_FLAG_OPAQUE,
-			.Triangles = {
-				.Transform3x4 = 0,
-				.IndexFormat = DXGI_FORMAT_R16_UINT,
-				.VertexFormat = DXGI_FORMAT_R32G32B32_FLOAT,
-				.IndexCount = sizeof(indices) / sizeof(uint16_t),
-				.VertexCount = sizeof(vertices) / sizeof(Vertex),
-				.IndexBuffer = m_testIndexBuffer->GetBufferResource()->GetGPUVirtualAddress(),
-				.VertexBuffer =
-				{
-					.StartAddress = m_testVertexBuffer->GetBufferResource()->GetGPUVirtualAddress(),
-					.StrideInBytes = sizeof(Vertex)
-				}
+			for (const auto& mr : sm->GetMeshRenderers())
+			{
+				if (!mr->IsStatic()) continue;
+				raytracingGeometryDescs.push_back(mr->GetMesh()->GetRaytracingGeometryDescPtr());
 			}
-		};
+		}
 
+		// Top Level Inputs
+		D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO topLevelPrebuildInfo = {};
 		D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS topLevelInputs = {
 			.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL,
 			.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE,
@@ -100,18 +68,18 @@ namespace JoyEngine
 			.InstanceDescs = 0
 		};
 
-		D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO topLevelPrebuildInfo = {};
 		GraphicsManager::Get()->GetDevice()->GetRaytracingAccelerationStructurePrebuildInfo(&topLevelInputs, &topLevelPrebuildInfo);
 		ASSERT(topLevelPrebuildInfo.ScratchDataSizeInBytes > 0);
 
+		// Bottom Level Inputs
+		D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO bottomLevelPrebuildInfo = {};
 		D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS bottomLevelInputs = {
 			.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL,
 			.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_NONE,
-			.NumDescs = 1,
-			.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY,
-			.pGeometryDescs = &raytracingGeometryDesc
+			.NumDescs = static_cast<uint32_t>(raytracingGeometryDescs.size()),
+			.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY_OF_POINTERS,
+			.ppGeometryDescs = raytracingGeometryDescs.data()
 		};
-		D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO bottomLevelPrebuildInfo = {};
 		GraphicsManager::Get()->GetDevice()->GetRaytracingAccelerationStructurePrebuildInfo(&bottomLevelInputs, &bottomLevelPrebuildInfo);
 		ASSERT(bottomLevelPrebuildInfo.ScratchDataSizeInBytes > 0);
 
@@ -173,13 +141,13 @@ namespace JoyEngine
 			.ScratchAccelerationStructureData = accelerationScratch->GetBuffer()->GetBufferResource()->GetGPUVirtualAddress()
 		};
 
-		auto commandList = m_dispatcher->GetCommandList();
+		auto commandList = m_dataContainer.GetDispatcher()->GetCommandList();
 
 		commandList->BuildRaytracingAccelerationStructure(&bottomLevelBuildDesc, 0, nullptr);
 		GraphicsUtils::UAVBarrier(commandList, m_accelerationBottom->GetBuffer()->GetBufferResource().Get());
 		commandList->BuildRaytracingAccelerationStructure(&topLevelBuildDesc, 0, nullptr);
 
-		m_dispatcher->ExecuteAndWait();
+		m_dataContainer.GetDispatcher()->ExecuteAndWait();
 	}
 
 	void HardwareRaytracedDDGI::ProcessRaytracing(ID3D12GraphicsCommandList4* commandList, uint32_t frameIndex) const
@@ -191,8 +159,10 @@ namespace JoyEngine
 			m_accelerationTop->GetBuffer()->GetBufferResource()->GetGPUVirtualAddress());
 
 		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "g_OutputRenderTarget", m_testTexture->GetUAV());
-		GraphicsUtils::AttachView(m_raytracingPipeline.get(), ShaderTableRaygen, "screenParams", m_screenParamsBuffer.GetView());
-		GraphicsUtils::AttachView(m_raytracingPipeline.get(), ShaderTableHitGroup, "hitColor", m_testColorBuffer.GetView());
+		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "g_engineData", EngineMaterialProvider::Get()->GetEngineDataView(frameIndex));
+		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "raytracedProbesData", m_dataContainer.GetProbesDataView(frameIndex));
+		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "textures", DescriptorManager::Get()->GetSRVHeapStartDescriptorHandle());
+		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "linearClampSampler", EngineSamplersProvider::GetLinearWrapSampler());
 
 		const D3D12_DISPATCH_RAYS_DESC dispatchDesc = {
 			.RayGenerationShaderRecord = {
@@ -210,8 +180,8 @@ namespace JoyEngine
 				.StrideInBytes = m_raytracingPipeline->GetShaderTableByType(ShaderTableHitGroup)->GetSize()
 			},
 			.CallableShaderTable = {},
-			.Width = 1024,
-			.Height = 1024,
+			.Width = m_raytracedTextureWidth,
+			.Height = m_raytracedTextureHeight,
 			.Depth = 1
 		};
 
@@ -219,5 +189,10 @@ namespace JoyEngine
 		commandList->DispatchRays(&dispatchDesc);
 
 		GraphicsUtils::UAVBarrier(commandList, m_testTexture->GetImageResource().Get());
+	}
+
+	void HardwareRaytracedDDGI::DebugDrawRaytracedImage(ID3D12GraphicsCommandList* commandList) const
+	{
+		m_dataContainer.DebugDrawRaytracedImage(commandList, m_testTexture->GetSRV());
 	}
 }

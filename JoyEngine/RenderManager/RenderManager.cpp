@@ -102,7 +102,8 @@ namespace JoyEngine
 		m_tonemapping = std::make_unique<Tonemapping>(
 			this,
 			m_mainColorRenderTarget.get(),
-			hdrRTVFormat, swapchainFormat, depthFormat);
+			hdrRTVFormat, swapchainFormat, depthFormat
+		);
 
 		m_raytracingDataContainer = std::make_unique<RaytracedDDGIDataContainer>(
 			m_sharedMaterials,
@@ -116,9 +117,16 @@ namespace JoyEngine
 			GetMainColorFormat(),
 			GetSwapchainFormat(),
 			m_width,
-			m_height);
+			m_height
+		);
 
-		m_testHWRaytracing = std::make_unique<HardwareRaytracedDDGI>();
+		m_testHWRaytracing = std::make_unique<HardwareRaytracedDDGI>(
+			*m_raytracingDataContainer,
+			GetMainColorFormat(),
+			GetSwapchainFormat(),
+			m_width,
+			m_height
+		);
 
 		m_transformProvider = std::make_unique<TransformProvider>(FRAME_COUNT);
 		m_lightSystem = std::make_unique<ClusteredLightSystem>(FRAME_COUNT);
@@ -148,6 +156,7 @@ namespace JoyEngine
 		m_queue->WaitQueueIdle();
 		m_raytracingDataContainer->UploadSceneData();
 		m_softwareRaytracedDDGI->UploadSceneData();
+		m_testHWRaytracing->UploadSceneData();
 		m_softwareRaytracedDDGI->PrepareBVH();
 	}
 
@@ -307,7 +316,7 @@ namespace JoyEngine
 
 			m_raytracingDataContainer->SetFrameData(m_currentFrameIndex, m_skybox->GetSkyboxTextureSrv());
 
-			m_softwareRaytracedDDGI->ProcessRaytracing(commandList, m_currentFrameIndex, &mainCameraMatrixVP);
+			m_softwareRaytracedDDGI->ProcessRaytracing(commandList, m_currentFrameIndex);
 
 
 			const auto raytracedRTVHandle = m_softwareRaytracedDDGI->GetShadedRenderTexture()->GetRTV()->GetCPUHandle();
@@ -330,9 +339,9 @@ namespace JoyEngine
 			m_softwareRaytracedDDGI->GenerateProbeIrradiance(commandList, m_currentFrameIndex);
 		}
 
-		GraphicsUtils::SetViewportAndScissor(commandList, m_width, m_height);
-
 		m_testHWRaytracing->ProcessRaytracing(commandList, m_currentFrameIndex);
+
+		GraphicsUtils::SetViewportAndScissor(commandList, m_width, m_height);
 
 		// Deferred shading 
 		{
@@ -351,7 +360,7 @@ namespace JoyEngine
 				&hdrRTVHandle,
 				FALSE, nullptr);
 
-			m_softwareRaytracedDDGI->DebugDrawRaytracedImage(commandList);
+			m_testHWRaytracing->DebugDrawRaytracedImage(commandList);
 		}
 
 		if (g_drawProbes)

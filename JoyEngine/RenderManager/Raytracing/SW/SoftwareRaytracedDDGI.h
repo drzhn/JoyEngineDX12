@@ -28,7 +28,7 @@ namespace JoyEngine
 
 		void UploadSceneData();
 		void PrepareBVH() const;
-		void ProcessRaytracing(ID3D12GraphicsCommandList* commandList, const uint32_t frameIndex, const ViewProjectionMatrixData* data) const;
+		void ProcessRaytracing(ID3D12GraphicsCommandList* commandList, const uint32_t frameIndex) const;
 		void GenerateProbeIrradiance(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex) const;
 		void DebugDrawRaytracedImage(ID3D12GraphicsCommandList* commandList) const;
 		void DebugDrawAABBGizmo(ID3D12GraphicsCommandList* commandList, const ViewProjectionMatrixData* viewProjectionMatrixData) const;

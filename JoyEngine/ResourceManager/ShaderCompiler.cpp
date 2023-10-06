@@ -334,8 +334,8 @@ namespace JoyEngine
 					D3D12_SHADER_INPUT_BIND_DESC inputBindDesc;
 					functionReflection->GetResourceBindingDesc(j, &inputBindDesc);
 
-					if (strcmp(inputBindDesc.Name, "g_SceneAccelerationStructure") == 0 ||
-						strcmp(inputBindDesc.Name, "g_OutputRenderTarget") == 0)
+					const char* localPrefix = "local_";
+					if (strncmp(inputBindDesc.Name, localPrefix, 6) != 0)
 					{
 						processShaderInputBindDesc(globalInputMap, inputBindDesc);
 					}

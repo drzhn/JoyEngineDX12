@@ -263,6 +263,7 @@ struct MipMapGenerationData
 // Raytracing structs
 
 //#define CAMERA_TRACE
+#define HW_CAMERA_TRACE
 
 struct RaytracedProbesData
 {

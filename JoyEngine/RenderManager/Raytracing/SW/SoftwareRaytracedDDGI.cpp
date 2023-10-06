@@ -191,7 +191,7 @@ namespace JoyEngine
 
 	void SoftwareRaytracedDDGI::UploadSceneData()
 	{
-		TIME_PERF("Uploading scene data")
+		TIME_PERF("Uploading software DDGI scene data")
 
 		for (auto const& sm : m_dataContainer.GetSceneSharedMaterials())
 		{
@@ -261,10 +261,7 @@ namespace JoyEngine
 		m_bvhConstructor->ConstructBVH();
 	}
 
-	void SoftwareRaytracedDDGI::ProcessRaytracing(
-		ID3D12GraphicsCommandList* commandList,
-		const uint32_t frameIndex,
-		const ViewProjectionMatrixData* data) const
+	void SoftwareRaytracedDDGI::ProcessRaytracing(ID3D12GraphicsCommandList* commandList, const uint32_t frameIndex) const
 	{
 		// Raytracing process
 		{
@@ -295,7 +292,7 @@ namespace JoyEngine
 				m_raytracingPipeline.get(),
 				frameIndex,
 				nullptr,
-				data);
+				nullptr);
 		}
 #if defined(CAMERA_TRACE)
 		commandList->Dispatch((m_raytracedTextureWidth / 32) + 1, (m_raytracedTextureHeight / 32) + 1, 1);

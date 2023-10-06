@@ -39,6 +39,10 @@ namespace JoyEngine
 		{
 			return &m_localInputContainers.at(type);
 		}
+		[[nodiscard]] const std::map<uint32_t, EngineBindingType>& GetEngineBindings() const
+		{
+			return m_globalInputContainer.GetEngineBindings();
+		}
 
 		[[nodiscard]] ShaderTable* GetShaderTableByType(ShaderTableType type) const
 		{
@@ -48,10 +52,8 @@ namespace JoyEngine
 				return m_raygenShaderTable.get();
 			case ShaderTableMiss:
 				return m_missShaderTable.get();
-				break;
 			case ShaderTableHitGroup:
 				return m_hitGroupShaderTable.get();
-				break;
 			case ShaderTableCallable:
 			default:
 				throw;

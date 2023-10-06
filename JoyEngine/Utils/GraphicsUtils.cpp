@@ -106,6 +106,14 @@ namespace JoyEngine
 		commandList->SetComputeRootDescriptorTable(rootParamIndex, view->GetGPUHandle());
 	}
 
+	void GraphicsUtils::AttachView(ID3D12GraphicsCommandList* commandList, const RaytracingPipeline* pipeline, const char* paramName, D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle)
+	{
+		const uint32_t rootParamIndex = pipeline->GetGlobalInputContainer()->GetBindingIndexByHash(strHash(paramName));
+		if (rootParamIndex == -1) return;
+
+		commandList->SetComputeRootDescriptorTable(rootParamIndex, gpuHandle);
+	}
+
 	void GraphicsUtils::AttachView(const RaytracingPipeline* pipeline, ShaderTableType shaderTableType, const char* paramName, const ResourceView* view)
 	{
 		pipeline->GetShaderTableByType(shaderTableType)->SetRootParam(
@@ -194,7 +202,12 @@ namespace JoyEngine
 		}
 	}
 
-	void GraphicsUtils::ProcessEngineBindings(ID3D12GraphicsCommandList* commandList, const ComputePipeline* pipeline, uint32_t frameIndex, const uint32_t* modelIndex, const ViewProjectionMatrixData* viewProjectionMatrix)
+	void GraphicsUtils::ProcessEngineBindings(
+		ID3D12GraphicsCommandList* commandList,
+		const ComputePipeline* pipeline,
+		uint32_t frameIndex,
+		const uint32_t* modelIndex,
+		const ViewProjectionMatrixData* viewProjectionMatrix)
 	{
 		for (const auto& pair : pipeline->GetEngineBindings())
 		{
@@ -223,6 +236,7 @@ namespace JoyEngine
 				}
 			case EngineBindingType::ViewProjectionMatrixData:
 				{
+					ASSERT(viewProjectionMatrix != nullptr);
 					commandList->SetComputeRoot32BitConstants(
 						rootIndex,
 						sizeof(ViewProjectionMatrixData) / 4,

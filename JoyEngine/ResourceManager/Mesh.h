@@ -38,6 +38,8 @@ namespace JoyEngine
 
 		[[nodiscard]] ResourceView* GetIndexSRV() const noexcept { return m_indexBuffer->GetSRV(); }
 
+		[[nodiscard]] D3D12_RAYTRACING_GEOMETRY_DESC* GetRaytracingGeometryDescPtr() noexcept { return &m_raytracingGeometryDesc; }
+
 		[[nodiscard]] bool IsLoaded() const noexcept override { return true; }
 
 	private:
@@ -53,7 +55,9 @@ namespace JoyEngine
 		D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView = {};
 		D3D12_INDEX_BUFFER_VIEW m_indexBufferView = {};
 
-		Vertex* m_verticesData;
+		D3D12_RAYTRACING_GEOMETRY_DESC m_raytracingGeometryDesc;
+
+		Vertex* m_verticesData; // TODO Get rid of storing cpu vertex and index data
 		uint32_t* m_indicesData;
 	};
 }

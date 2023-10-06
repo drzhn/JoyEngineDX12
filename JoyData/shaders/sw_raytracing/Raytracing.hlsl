@@ -10,7 +10,8 @@ StructuredBuffer<AABB> triangleAABB; // size = THREADS_PER_BLOCK * BLOCK_SIZE
 StructuredBuffer<InternalNode> internalNodes; // size = THREADS_PER_BLOCK * BLOCK_SIZE - 1
 StructuredBuffer<LeafNode> leafNodes; // size = THREADS_PER_BLOCK * BLOCK_SIZE
 StructuredBuffer<AABB> bvhData; // size = THREADS_PER_BLOCK * BLOCK_SIZE - 1
-StructuredBuffer<Triangle> triangleData; // size = THREADS_PER_BLOCK * BLOCK_SIZE
+StructuredBuffer<TrianglePayload> trianglePayloadData; // size = THREADS_PER_BLOCK * BLOCK_SIZE
+StructuredBuffer<MeshData> meshData; // size = THREADS_PER_BLOCK * BLOCK_SIZE
 
 // using of multiple spaces is the hack to bind bindless srv of different types
 StructuredBuffer<Vertex> objectVertices[] : register(t0, space1); 
@@ -90,11 +91,12 @@ RaycastResult CheckTriangle(uint triangleIndex, Ray ray, RaycastResult result)
 {
 	if (RayBoxIntersection(triangleAABB[triangleIndex], ray))
 	{
-		const Triangle tri = triangleData[triangleIndex];
+		const TrianglePayload tri = trianglePayloadData[triangleIndex];
+        const MeshData md = meshData[tri.meshIndex];
 
-        const Vertex v0 = objectVertices[tri.verticesIndex][objectIndices[tri.indicesIndex][tri.triangleIndex * 3 + 0]];
-        const Vertex v1 = objectVertices[tri.verticesIndex][objectIndices[tri.indicesIndex][tri.triangleIndex * 3 + 1]];
-        const Vertex v2 = objectVertices[tri.verticesIndex][objectIndices[tri.indicesIndex][tri.triangleIndex * 3 + 2]];
+        const Vertex v0 = objectVertices[md.verticesIndex][objectIndices[md.indicesIndex][tri.triangleIndex * 3 + 0]];
+        const Vertex v1 = objectVertices[md.verticesIndex][objectIndices[md.indicesIndex][tri.triangleIndex * 3 + 1]];
+        const Vertex v2 = objectVertices[md.verticesIndex][objectIndices[md.indicesIndex][tri.triangleIndex * 3 + 2]];
 
 		RaycastResult newResult = RayTriangleIntersection(ray.origin, ray.dir, v0.pos, v1.pos, v2.pos);
 		if (newResult.distance < result.distance)
@@ -233,14 +235,16 @@ void CSMain(uint3 groupId : SV_GroupID, uint3 groupThreadId : SV_GroupThreadID)
 
 	RaycastResult result = TraceRay(ray);
 
-	const Triangle tri = triangleData[result.triangleIndex];
-	const Vertex v0 = objectVertices[tri.verticesIndex][objectIndices[tri.indicesIndex][tri.triangleIndex * 3 + 0]];
-	const Vertex v1 = objectVertices[tri.verticesIndex][objectIndices[tri.indicesIndex][tri.triangleIndex * 3 + 1]];
-    const Vertex v2 = objectVertices[tri.verticesIndex][objectIndices[tri.indicesIndex][tri.triangleIndex * 3 + 2]];
+	const TrianglePayload tri = trianglePayloadData[result.triangleIndex];
+    const MeshData md = meshData[tri.meshIndex];
+
+	const Vertex v0 = objectVertices[md.verticesIndex][objectIndices[md.indicesIndex][tri.triangleIndex * 3 + 0]];
+	const Vertex v1 = objectVertices[md.verticesIndex][objectIndices[md.indicesIndex][tri.triangleIndex * 3 + 1]];
+    const Vertex v2 = objectVertices[md.verticesIndex][objectIndices[md.indicesIndex][tri.triangleIndex * 3 + 2]];
 
 	const float2 uv = (1 - result.uv.x - result.uv.y) * v0.texCoord + result.uv.x * v1.texCoord + result.uv.y * v2.texCoord;
 	const float3 normal = (1 - result.uv.x - result.uv.y) * v0.normal + result.uv.x * v1.normal + result.uv.y * v2.normal;
-	const uint materialIndex = tri.materialIndex;
+    const uint materialIndex = md.materialIndex;
 
 	const float hasResult = result.distance != MAX_FLOAT;
 

@@ -22,7 +22,7 @@ RWTexture2D<float4> g_OutputRenderTarget : register(u0, space0);
 ConstantBuffer<EngineData> g_engineData : register(b0, space0);
 ConstantBuffer<RaytracedProbesData> raytracedProbesData : register(b1, space0);
 
-//StructuredBuffer<Triangle> triangleData; // size = THREADS_PER_BLOCK * BLOCK_SIZE
+//StructuredBuffer<TrianglePayload> triangleData; // size = THREADS_PER_BLOCK * BLOCK_SIZE
 
 // using of multiple spaces is the hack to bind bindless srv of different types
 //StructuredBuffer<Vertex> objectVertices[] : register(t0, space1);

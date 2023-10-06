@@ -16,7 +16,9 @@ namespace JoyEngine
 		m_sceneSharedMaterials(sceneSharedMaterials),
 		m_raytracedProbesData(frameCount)
 	{
-		m_triangleDataBuffer = std::make_unique<DataBuffer<Triangle>>(DATA_ARRAY_COUNT);
+		m_triangleDataBuffer = std::make_unique<DataBuffer<TrianglePayload>>(DATA_ARRAY_COUNT);
+		m_meshDataBuffer = std::make_unique<DataBuffer<MeshData>>(DATA_ARRAY_COUNT);
+
 		m_dispatcher = std::make_unique<ComputeDispatcher>();
 
 		// Draw raytraced texture 
@@ -80,29 +82,35 @@ namespace JoyEngine
 	{
 		TIME_PERF("Uploading scene data");
 
-		uint32_t staticMeshCount = 0;
-		uint32_t m_trianglesLength = 0;
+		uint32_t meshCount = 0;
+		uint32_t trianglesCount = 0;
 		for (auto const& sm : m_sceneSharedMaterials)
 		{
 			for (const auto& mr : sm->GetMeshRenderers())
 			{
 				if (!mr->IsStatic()) continue;
-				staticMeshCount++;
 				const uint32_t meshTrianglesLength = mr->GetMesh()->GetIndexCount() / 3;
 
-				for (uint32_t i = 0; i < meshTrianglesLength; i++, m_trianglesLength++)
+				for (uint32_t i = 0; i < meshTrianglesLength; i++, trianglesCount++)
 				{
-					m_triangleDataBuffer->GetLocalData()[m_trianglesLength] = Triangle
+					m_triangleDataBuffer->GetLocalData()[trianglesCount] = TrianglePayload
 					{
-						.materialIndex = mr->GetMaterial()->GetMaterialIndex(),
-						.verticesIndex = mr->GetMesh()->GetVertexSRV()->GetDescriptorIndex(),
-						.indicesIndex = mr->GetMesh()->GetIndexSRV()->GetDescriptorIndex(),
-						.triangleIndex = i
+						.triangleIndex = i,
+						.meshIndex = meshCount
 					};
 				}
+
+				m_meshDataBuffer->GetLocalData()[meshCount] = MeshData{
+					.materialIndex = mr->GetMaterial()->GetMaterialIndex(),
+					.verticesIndex = mr->GetMesh()->GetVertexSRV()->GetDescriptorIndex(),
+					.indicesIndex = mr->GetMesh()->GetIndexSRV()->GetDescriptorIndex(),
+				};
+
+				meshCount++;
 			}
 		}
 
+		m_meshDataBuffer->UploadCpuData();
 		m_triangleDataBuffer->UploadCpuData();
 	}
 

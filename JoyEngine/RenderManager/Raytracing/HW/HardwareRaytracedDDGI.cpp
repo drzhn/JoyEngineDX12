@@ -9,6 +9,7 @@
 #include "RenderManager/Raytracing/SW/SoftwareRaytracedDDGI.h"
 #include "ResourceManager/ResourceManager.h"
 #include "Utils/GraphicsUtils.h"
+#include "Utils/TimeCounter.h"
 
 namespace JoyEngine
 {
@@ -43,6 +44,8 @@ namespace JoyEngine
 
 	void HardwareRaytracedDDGI::UploadSceneData()
 	{
+		TIME_PERF("Uploading hardware DDGI scene data");
+
 		std::vector<D3D12_RAYTRACING_GEOMETRY_DESC*> raytracingGeometryDescs;
 
 		raytracingGeometryDescs.reserve(1000); // TODO more pretty way to store this data. 

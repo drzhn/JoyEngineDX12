@@ -37,6 +37,7 @@ namespace JoyEngine
 		[[nodiscard]] const std::set<SharedMaterial*>& GetSceneSharedMaterials() const { return m_sceneSharedMaterials; }
 		[[nodiscard]] ResourceView* GetProbesDataView(uint32_t frameIndex) const { return m_raytracedProbesData.GetView(frameIndex); }
 		[[nodiscard]] ResourceView* GetTrianglesDataView() const { return m_triangleDataBuffer->GetSRV(); }
+		[[nodiscard]] ResourceView* GetMeshDataView() const { return m_meshDataBuffer->GetSRV(); }
 		[[nodiscard]] Mesh* GetDebugSphereMesh() const { return m_debugSphereProbeMesh.Get(); }
 
 		void DebugDrawRaytracedImage(ID3D12GraphicsCommandList* commandList, const ResourceView* texture) const;
@@ -44,7 +45,8 @@ namespace JoyEngine
 
 	private:
 		const std::set<SharedMaterial*>& m_sceneSharedMaterials;
-		std::unique_ptr<DataBuffer<Triangle>> m_triangleDataBuffer;
+		std::unique_ptr<DataBuffer<TrianglePayload>> m_triangleDataBuffer;
+		std::unique_ptr<DataBuffer<MeshData>> m_meshDataBuffer;
 
 		DynamicCpuBuffer<RaytracedProbesData> m_raytracedProbesData;
 

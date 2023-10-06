@@ -87,7 +87,7 @@ namespace JoyEngine
 		m_raytracedTextureHeight(DDGI_RAYS_COUNT)
 #endif
 	{
-		static_assert(sizeof(Triangle) == 16);
+		static_assert(sizeof(TrianglePayload) == 16);
 		static_assert(sizeof(AABB) == 32);
 
 		m_keysBuffer = std::make_unique<DataBuffer<uint32_t>>(DATA_ARRAY_COUNT, MAX_UINT);
@@ -279,7 +279,8 @@ namespace JoyEngine
 			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "internalNodes", m_bvhInternalNodesBuffer->GetSRV());
 			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "leafNodes", m_bvhLeafNodesBuffer->GetSRV());
 			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "bvhData", m_bvhDataBuffer->GetSRV());
-			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "triangleData", m_dataContainer.GetTrianglesDataView());
+			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "trianglePayloadData", m_dataContainer.GetTrianglesDataView());
+			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "meshData", m_dataContainer.GetMeshDataView());
 			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "linearClampSampler", EngineSamplersProvider::GetLinearWrapSampler());
 			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "objectVertices", DescriptorManager::Get()->GetSRVHeapStartDescriptorHandle());
 			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "objectIndices", DescriptorManager::Get()->GetSRVHeapStartDescriptorHandle());

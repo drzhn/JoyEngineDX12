@@ -150,7 +150,7 @@ struct LightInfo
 	UINT1 packedColor;
 	float radius;
 	float intensity;
-	UINT1 transformIndex; 
+	UINT1 transformIndex;
 };
 
 struct CubemapConvolutionConstants
@@ -220,7 +220,7 @@ struct ClusterEntryData
 	ClusterEntry data[NUM_CLUSTERS_X * NUM_CLUSTERS_Y * NUM_CLUSTERS_Z];
 };
 
-struct ClusterItem 
+struct ClusterItem
 {
 	UINT1 lightIndex; // TODO WTF
 	UINT1 _dummy0;
@@ -299,12 +299,20 @@ struct AABB
 	float _dummy1;
 };
 
-struct Triangle
+struct TrianglePayload
+{
+	UINT1 triangleIndex;
+	UINT1 meshIndex;
+	UINT1 _dummy0;
+	UINT1 _dummy1;
+};
+
+struct MeshData
 {
 	UINT1 materialIndex;
 	UINT1 verticesIndex;
 	UINT1 indicesIndex;
-	UINT1 triangleIndex;
+	UINT1 _dummy;
 };
 
 struct InternalNode

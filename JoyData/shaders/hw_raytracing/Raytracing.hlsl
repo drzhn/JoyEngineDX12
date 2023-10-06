@@ -22,13 +22,13 @@ RWTexture2D<float4> g_OutputRenderTarget : register(u0, space0);
 ConstantBuffer<EngineData> g_engineData : register(b0, space0);
 ConstantBuffer<RaytracedProbesData> raytracedProbesData : register(b1, space0);
 
-//StructuredBuffer<TrianglePayload> triangleData; // size = THREADS_PER_BLOCK * BLOCK_SIZE
+StructuredBuffer<MeshData> meshData : register(t1, space0); // size = THREADS_PER_BLOCK * BLOCK_SIZE
 
 // using of multiple spaces is the hack to bind bindless srv of different types
-//StructuredBuffer<Vertex> objectVertices[] : register(t0, space1);
-//StructuredBuffer<UINT1> objectIndices[] : register(t0, space2);
+StructuredBuffer<Vertex> objectVertices[] : register(t0, space1);
+StructuredBuffer<UINT1> objectIndices[] : register(t0, space2);
 
-//ConstantBuffer<StandardMaterialData> materials;
+ConstantBuffer<StandardMaterialData> materials : register(b2, space0);
 Texture2D textures[] : register(t0, space3);
 SamplerState linearClampSampler : register(s0, space0);
 
@@ -69,7 +69,7 @@ void MyRaygenShader()
 	// Set the ray's extents.
 	RayDesc ray;
 	ray.Origin = origin;
-    ray.Direction = dir;
+	ray.Direction = dir;
 	// Set TMin to a non-zero small value to avoid aliasing issues due to floating - point errors.
 	// TMin should be kept small to prevent missing geometry at close contact areas.
 	ray.TMin = 0.001;
@@ -86,13 +86,24 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
 {
 	float3 barycentrics = float3(1 - attr.barycentrics.x - attr.barycentrics.y, attr.barycentrics.x, attr.barycentrics.y);
 
-    payload.color = float4(1, 0.1, 0.1, 1); //float4(barycentrics, 1);
+    const MeshData md = meshData[GeometryIndex()];
+
+	const Vertex v0 = objectVertices[md.verticesIndex][objectIndices[md.indicesIndex][PrimitiveIndex() * 3 + 0]];
+	const Vertex v1 = objectVertices[md.verticesIndex][objectIndices[md.indicesIndex][PrimitiveIndex() * 3 + 1]];
+    const Vertex v2 = objectVertices[md.verticesIndex][objectIndices[md.indicesIndex][PrimitiveIndex() * 3 + 2]];
+
+	const float2 uv = barycentrics.x * v0.texCoord + barycentrics.y * v1.texCoord + barycentrics.z * v2.texCoord;
+	const float3 normal = barycentrics.x * v0.normal + barycentrics.y * v1.normal + barycentrics.z * v2.normal;
+	const uint materialIndex = md.materialIndex;
+
+    payload.color = textures[materials.data[materialIndex].diffuseTextureIndex].SampleLevel(linearClampSampler, uv, 2);
+	//payload.color = float4(1, 0.1, 0.1, 1); //float4(barycentrics, 1);
 }
 
 [shader("miss")]
 void MyMissShader(inout RayPayload payload)
 {
-    payload.color = textures[raytracedProbesData.skyboxTextureIndex].SampleLevel(linearClampSampler, SampleSphericalMap(-normalize(WorldRayDirection())), 2);
+	payload.color = textures[raytracedProbesData.skyboxTextureIndex].SampleLevel(linearClampSampler, SampleSphericalMap(-normalize(WorldRayDirection())), 2);
 }
 
 #endif // RAYTRACING_HLSL

@@ -1,5 +1,6 @@
 #include "RaytracingPipeline.h"
 
+#include "CommonEngineStructs.h"
 #include "d3dx12.h"
 #include "GraphicsManager/GraphicsManager.h"
 #include "ResourceManager/ResourceManager.h"
@@ -138,7 +139,7 @@ namespace JoyEngine
 
 		// raystracing shader config
 		D3D12_RAYTRACING_SHADER_CONFIG raytracingShaderConfig{
-			.MaxPayloadSizeInBytes = 4 * sizeof(float), // float4 color
+			.MaxPayloadSizeInBytes = sizeof(HardwareRayPayload), // float4 color
 			.MaxAttributeSizeInBytes = 2 * sizeof(float) // float2 barycentrics
 		};
 

@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "CommonEngineStructs.h"
+#include "RenderManager/GBuffer.h"
 #include "RenderManager/Raytracing/RaytracedDDGIDataContainer.h"
 #include "ResourceManager/Texture.h"
 #include "ResourceManager/Buffers/UAVGpuBuffer.h"
@@ -32,7 +33,7 @@ namespace JoyEngine
 		std::unique_ptr<UAVGpuBuffer> m_accelerationTop;
 		std::unique_ptr<UAVGpuBuffer> m_accelerationBottom;
 
-		std::unique_ptr<UAVTexture> m_testTexture;
+		std::unique_ptr<UAVGbuffer> m_gbuffer;
 
 		uint32_t m_raytracedTextureWidth;
 		uint32_t m_raytracedTextureHeight;

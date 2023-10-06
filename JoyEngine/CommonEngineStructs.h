@@ -265,6 +265,13 @@ struct MipMapGenerationData
 //#define CAMERA_TRACE
 #define HW_CAMERA_TRACE
 
+struct HardwareRayPayload
+{
+	VEC4 color;
+	VEC4 normals;
+	VEC4 position;
+};
+
 struct RaytracedProbesData
 {
 	VEC3 gridMin;

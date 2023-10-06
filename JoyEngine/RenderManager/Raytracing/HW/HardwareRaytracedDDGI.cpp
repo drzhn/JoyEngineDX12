@@ -28,12 +28,7 @@ namespace JoyEngine
 		m_raytracedTextureHeight(DDGI_RAYS_COUNT)
 #endif
 	{
-		m_testTexture = std::make_unique<UAVTexture>(
-			m_raytracedTextureWidth,
-			m_raytracedTextureHeight,
-			DXGI_FORMAT_R16G16B16A16_FLOAT,
-			D3D12_RESOURCE_STATE_GENERIC_READ,
-			D3D12_HEAP_TYPE_DEFAULT);
+		m_gbuffer = std::make_unique<UAVGbuffer>(m_raytracedTextureWidth, m_raytracedTextureHeight);
 
 		float border = 0.1f;
 
@@ -161,7 +156,9 @@ namespace JoyEngine
 			m_raytracingPipeline->GetGlobalInputContainer()->GetBindingIndexByHash(strHash("g_SceneAccelerationStructure")),
 			m_accelerationTop->GetBuffer()->GetBufferResource()->GetGPUVirtualAddress());
 
-		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "g_OutputRenderTarget", m_testTexture->GetUAV());
+		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "colorTexture", m_gbuffer->GetColorUAV());
+		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "normalsTexture", m_gbuffer->GetNormalsUAV());
+		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "positionTexture", m_gbuffer->GetPositionUAV());
 		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "g_engineData", EngineMaterialProvider::Get()->GetEngineDataView(frameIndex));
 		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "raytracedProbesData", m_dataContainer.GetProbesDataView(frameIndex));
 		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "textures", DescriptorManager::Get()->GetSRVHeapStartDescriptorHandle());
@@ -196,11 +193,11 @@ namespace JoyEngine
 		commandList->SetPipelineState1(m_raytracingPipeline->GetPipelineState());
 		commandList->DispatchRays(&dispatchDesc);
 
-		GraphicsUtils::UAVBarrier(commandList, m_testTexture->GetImageResource().Get());
+		m_gbuffer->BarrierColorToRead(commandList);
 	}
 
 	void HardwareRaytracedDDGI::DebugDrawRaytracedImage(ID3D12GraphicsCommandList* commandList) const
 	{
-		m_dataContainer.DebugDrawRaytracedImage(commandList, m_testTexture->GetSRV());
+		m_dataContainer.DebugDrawRaytracedImage(commandList, m_gbuffer->GetColorSRV());
 	}
 }

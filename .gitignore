@@ -28,7 +28,7 @@
 *.cache
 
 imgui.ini
-JoyEngineDX_FullDebug.*
+JoyEngineDX_GraphicsDebug.*
 JoyEngineDX_Debug.*
 JoyEngineDX_Release.*
 AssetBuilderLib.*

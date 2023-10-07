@@ -46,7 +46,7 @@ namespace JoyEngine
 		ComPtr<IDXGIAdapter4> m_physicalDevice = nullptr;
 		ComPtr<ID3D12Device5> m_logicalDevice = nullptr;
 
-#if defined(FULL_DEBUG)
+#if defined(GRAPHICS_DEBUG)
 		ComPtr<ID3D12Debug> m_debugController;
 #endif
 

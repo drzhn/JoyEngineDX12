@@ -17,8 +17,8 @@ void WindowHandler::RegisterMessageHandler(JoyEngine::IWindowHandler* messageHan
 		SetWindowTextA(hwnd, (
 #ifdef _DEBUG
 
-#ifdef FULL_DEBUG
-			               "JoyEngine FULL_DEBUG   " +
+#ifdef GRAPHICS_DEBUG
+			               "JoyEngine GRAPHICS_DEBUG   " +
 #else
 			               "JoyEngine DEBUG   " +
 #endif

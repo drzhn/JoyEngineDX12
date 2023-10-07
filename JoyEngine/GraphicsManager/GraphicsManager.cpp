@@ -13,7 +13,7 @@ namespace JoyEngine
 	{
 		TIME_PERF("GraphicsManager ctor")
 		UINT createFactoryFlags = 0;
-#if defined(FULL_DEBUG)
+#if defined(GRAPHICS_DEBUG)
 
 		ASSERT_SUCC(D3D12GetDebugInterface(IID_PPV_ARGS(&m_debugController)));
 		m_debugController->EnableDebugLayer();
@@ -83,7 +83,7 @@ namespace JoyEngine
 		ASSERT(options5.RaytracingTier > D3D12_RAYTRACING_TIER_1_0);
 
 		// Enable debug messages in debug mode.
-#if defined(FULL_DEBUG)
+#if defined(GRAPHICS_DEBUG)
 		ComPtr<ID3D12InfoQueue> pInfoQueue;
 		if (SUCCEEDED(m_logicalDevice.As(&pInfoQueue)))
 		{

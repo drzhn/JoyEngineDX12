@@ -40,7 +40,6 @@ namespace JoyEngine
 		[[nodiscard]] UAVTexture* GetProbeDepthTexture() const { return m_probeDepthTexture.get(); }
 		[[nodiscard]] uint32_t GetRaytracedTextureWidth() const noexcept { return m_raytracedTextureWidth; }
 		[[nodiscard]] uint32_t GetRaytracedTextureHeight() const noexcept { return m_raytracedTextureHeight; }
-		[[nodiscard]] RaytracedProbesData* GetRaytracedProbesDataPtr() noexcept;
 
 	private:
 		const RaytracedDDGIDataContainer& m_dataContainer;
@@ -70,7 +69,6 @@ namespace JoyEngine
 		std::unique_ptr<BVHConstructor> m_bvhConstructor;
 
 		std::unique_ptr<ComputePipeline> m_raytracingPipeline;
-		std::unique_ptr<ComputePipeline> m_probeIrradiancePipeline;
 
 		std::unique_ptr<GraphicsPipeline> m_debugGizmoAABBDrawerGraphicsPipeline;
 	};

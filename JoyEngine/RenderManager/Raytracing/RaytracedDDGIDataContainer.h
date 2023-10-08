@@ -4,9 +4,11 @@
 #include "CommonEngineStructs.h"
 #include "DataBuffer.h"
 #include "RenderManager/ComputeDispatcher.h"
+#include "RenderManager/GBuffer.h"
 #include "ResourceManager/Mesh.h"
 #include "ResourceManager/SharedMaterial.h"
 #include "ResourceManager/Buffers/DynamicCpuBuffer.h"
+#include "ResourceManager/Pipelines/ComputePipeline.h"
 
 namespace JoyEngine
 {
@@ -32,6 +34,7 @@ namespace JoyEngine
 			DXGI_FORMAT depthFormat);
 		void SetFrameData(uint32_t frameIndex, const ResourceView* skyboxTextureIndexDataView);
 		void UploadSceneData() const;
+		void GenerateProbeIrradiance(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, RenderTexture* shadedRenderTexture, UAVGbuffer* gbuffer, UAVTexture* probeIrradianceTexture, UAVTexture* probeDepthTexture) const;
 
 		[[nodiscard]] ComputeDispatcher* GetDispatcher() const { return m_dispatcher.get(); }
 		[[nodiscard]] const std::set<SharedMaterial*>& GetSceneSharedMaterials() const { return m_sceneSharedMaterials; }
@@ -42,6 +45,7 @@ namespace JoyEngine
 
 		void DebugDrawRaytracedImage(ID3D12GraphicsCommandList* commandList, const ResourceView* texture) const;
 		void DebugDrawProbes(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, const ViewProjectionMatrixData* viewProjectionMatrixData, const ResourceView* probeIrradianceTexture) const;
+		static RaytracedProbesData* GetRaytracedProbesDataPtr() { return &g_raytracedProbesData; }
 
 	private:
 		const std::set<SharedMaterial*>& m_sceneSharedMaterials;
@@ -51,6 +55,8 @@ namespace JoyEngine
 		DynamicCpuBuffer<RaytracedProbesData> m_raytracedProbesData;
 
 		std::unique_ptr<ComputeDispatcher> m_dispatcher;
+
+		std::unique_ptr<ComputePipeline> m_probeIrradiancePipeline;
 
 		ResourceHandle<Mesh> m_debugSphereProbeMesh;
 		std::unique_ptr<GraphicsPipeline> m_debugDrawProbesGraphicsPipeline;

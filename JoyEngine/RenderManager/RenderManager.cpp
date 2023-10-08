@@ -120,7 +120,7 @@ namespace JoyEngine
 			m_height
 		);
 
-		m_testHWRaytracing = std::make_unique<HardwareRaytracedDDGI>(
+		m_hardwareRaytracedDDGI = std::make_unique<HardwareRaytracedDDGI>(
 			*m_raytracingDataContainer,
 			GetMainColorFormat(),
 			GetSwapchainFormat(),
@@ -156,7 +156,7 @@ namespace JoyEngine
 		m_queue->WaitQueueIdle();
 		m_raytracingDataContainer->UploadSceneData();
 		m_softwareRaytracedDDGI->UploadSceneData();
-		m_testHWRaytracing->UploadSceneData();
+		m_hardwareRaytracedDDGI->UploadSceneData();
 		m_softwareRaytracedDDGI->PrepareBVH();
 	}
 
@@ -339,7 +339,28 @@ namespace JoyEngine
 			m_softwareRaytracedDDGI->GenerateProbeIrradiance(commandList, m_currentFrameIndex);
 		}
 
-		m_testHWRaytracing->ProcessRaytracing(commandList, m_currentFrameIndex);
+		{
+			auto scopedEvent = ScopedGFXEvent(commandList, "Hardware Raytracing");
+
+			m_hardwareRaytracedDDGI->ProcessRaytracing(commandList, m_currentFrameIndex);
+
+			const auto raytracedRTVHandle = m_hardwareRaytracedDDGI->GetShadedRenderTexture()->GetRTV()->GetCPUHandle();
+
+			GraphicsUtils::Barrier(commandList, m_hardwareRaytracedDDGI->GetShadedRenderTexture()->GetImageResource().Get(),
+				D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
+
+			GraphicsUtils::SetViewportAndScissor(commandList, m_hardwareRaytracedDDGI->GetRaytracedTextureWidth(), m_hardwareRaytracedDDGI->GetRaytracedTextureHeight());
+
+			commandList->OMSetRenderTargets(
+				1,
+				&raytracedRTVHandle,
+				FALSE, nullptr);
+
+			RenderDeferredShading(commandList, m_hardwareRaytracedDDGI->GetGBuffer(), &mainCameraMatrixVP);
+
+			GraphicsUtils::Barrier(commandList, m_hardwareRaytracedDDGI->GetShadedRenderTexture()->GetImageResource().Get(),
+				D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
+		}
 
 		GraphicsUtils::SetViewportAndScissor(commandList, m_width, m_height);
 
@@ -360,7 +381,7 @@ namespace JoyEngine
 				&hdrRTVHandle,
 				FALSE, nullptr);
 
-			m_testHWRaytracing->DebugDrawRaytracedImage(commandList);
+			m_hardwareRaytracedDDGI->DebugDrawRaytracedImage(commandList);
 		}
 
 		if (g_drawProbes)
@@ -490,12 +511,12 @@ namespace JoyEngine
 		ImGui::SetNextWindowPos({0, windowPosY});
 		ImGui::SetNextWindowSize({300, windowHeight});
 		{
-			bool useDDGI = m_softwareRaytracedDDGI->GetRaytracedProbesDataPtr()->useDDGI == 1;
+			bool useDDGI = m_raytracingDataContainer->GetRaytracedProbesDataPtr()->useDDGI == 1;
 			ImGui::Begin("DDGI:");
 			ImGui::Checkbox("Draw probes", &g_drawProbes);
 			ImGui::Checkbox("Use GI", &useDDGI);
 			ImGui::End();
-			m_softwareRaytracedDDGI->GetRaytracedProbesDataPtr()->useDDGI = useDDGI ? 1 : 0;
+			m_raytracingDataContainer->GetRaytracedProbesDataPtr()->useDDGI = useDDGI ? 1 : 0;
 		}
 		windowPosY += windowHeight;
 		windowHeight = 75;

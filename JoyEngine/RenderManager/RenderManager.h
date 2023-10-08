@@ -129,7 +129,7 @@ namespace JoyEngine
 		std::unique_ptr<Tonemapping> m_tonemapping;
 		std::unique_ptr<RaytracedDDGIDataContainer> m_raytracingDataContainer;
 		std::unique_ptr<SoftwareRaytracedDDGI> m_softwareRaytracedDDGI;
-		std::unique_ptr<HardwareRaytracedDDGI> m_testHWRaytracing;
+		std::unique_ptr<HardwareRaytracedDDGI> m_hardwareRaytracedDDGI;
 		std::unique_ptr<TransformProvider> m_transformProvider;
 		std::unique_ptr<ClusteredLightSystem> m_lightSystem;
 		std::set<SharedMaterial*> m_sharedMaterials;

@@ -21,6 +21,16 @@ namespace JoyEngine
 
 		m_dispatcher = std::make_unique<ComputeDispatcher>();
 
+		{
+			// generate texture w = probesCount, h = DDGI_RAYS_COUNT
+			const GUID pipelineIrradianceShaderGuid = GUID::StringToGuid("1d69c9ec-de6a-4fff-96ea-3a68808ca8f7"); //shaders/raytracing/ProbeIrradiance.hlsl
+
+			m_probeIrradiancePipeline = std::make_unique<ComputePipeline>(ComputePipelineArgs
+				{
+					pipelineIrradianceShaderGuid
+				});
+		}
+
 		// Draw raytraced texture 
 		{
 			const GUID debugImageComposerShaderGuid = GUID::StringToGuid("cc8de13c-0510-4842-99f5-de2327aa95d4"); // shaders/raytracing/debugImageCompose.hlsl
@@ -112,6 +122,35 @@ namespace JoyEngine
 
 		m_meshDataBuffer->UploadCpuData();
 		m_triangleDataBuffer->UploadCpuData();
+	}
+
+	void RaytracedDDGIDataContainer::GenerateProbeIrradiance(
+		ID3D12GraphicsCommandList* commandList, 
+		uint32_t frameIndex,
+		RenderTexture* shadedRenderTexture,
+		UAVGbuffer* gbuffer,
+		UAVTexture* probeIrradianceTexture,
+		UAVTexture* probeDepthTexture
+		) const
+	{
+		// lightprobe data generation process
+		{
+			commandList->SetComputeRootSignature(m_probeIrradiancePipeline->GetRootSignature().Get());
+			commandList->SetPipelineState(m_probeIrradiancePipeline->GetPipelineObject().Get());
+
+
+			GraphicsUtils::AttachView(commandList, m_probeIrradiancePipeline.get(), "shadedColorTexture", shadedRenderTexture->GetSRV());
+			GraphicsUtils::AttachView(commandList, m_probeIrradiancePipeline.get(), "positionsTexture", gbuffer->GetPositionSRV());
+
+			GraphicsUtils::AttachView(commandList, m_probeIrradiancePipeline.get(), "probeIrradianceTexture", probeIrradianceTexture->GetUAV());
+			GraphicsUtils::AttachView(commandList, m_probeIrradiancePipeline.get(), "probeDepthTexture", probeDepthTexture->GetUAV());
+
+			GraphicsUtils::AttachView(commandList, m_probeIrradiancePipeline.get(), "raytracedProbesData", m_raytracedProbesData.GetView(frameIndex));
+		}
+		commandList->Dispatch(g_raytracedProbesData.gridX, g_raytracedProbesData.gridY, g_raytracedProbesData.gridZ);
+
+		GraphicsUtils::UAVBarrier(commandList, probeIrradianceTexture->GetImageResource().Get());
+		GraphicsUtils::UAVBarrier(commandList, probeDepthTexture->GetImageResource().Get());
 	}
 
 

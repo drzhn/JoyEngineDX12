@@ -29,8 +29,11 @@ namespace JoyEngine
 #endif
 	{
 		m_gbuffer = std::make_unique<UAVGbuffer>(m_raytracedTextureWidth, m_raytracedTextureHeight);
-
-		float border = 0.1f;
+		m_shadedRenderTexture = std::make_unique<RenderTexture>(
+			m_raytracedTextureWidth, m_raytracedTextureHeight,
+			mainColorFormat,
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			D3D12_HEAP_TYPE_DEFAULT);
 
 		m_raytracingPipeline = std::make_unique<RaytracingPipeline>(RaytracingPipelineArgs{
 			GUID::StringToGuid("b2597599-94ef-43ed-abd8-46d3adbb75d4")
@@ -198,6 +201,6 @@ namespace JoyEngine
 
 	void HardwareRaytracedDDGI::DebugDrawRaytracedImage(ID3D12GraphicsCommandList* commandList) const
 	{
-		m_dataContainer.DebugDrawRaytracedImage(commandList, m_gbuffer->GetColorSRV());
+		m_dataContainer.DebugDrawRaytracedImage(commandList, m_shadedRenderTexture->GetSRV());
 	}
 }

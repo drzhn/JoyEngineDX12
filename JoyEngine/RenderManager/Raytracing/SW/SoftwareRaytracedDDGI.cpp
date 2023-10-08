@@ -151,16 +151,6 @@ namespace JoyEngine
 						D3D_SHADER_MODEL_6_5
 					});
 			}
-
-			{
-				// generate texture w = probesCount, h = DDGI_RAYS_COUNT
-				const GUID pipelineIrradianceShaderGuid = GUID::StringToGuid("1d69c9ec-de6a-4fff-96ea-3a68808ca8f7"); //shaders/raytracing/ProbeIrradiance.hlsl
-
-				m_probeIrradiancePipeline = std::make_unique<ComputePipeline>(ComputePipelineArgs
-					{
-						pipelineIrradianceShaderGuid
-					});
-			}
 		}
 
 		// Gizmo AABB draw 
@@ -306,24 +296,13 @@ namespace JoyEngine
 
 	void SoftwareRaytracedDDGI::GenerateProbeIrradiance(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex) const
 	{
-		// lightprobe data generation process
-		{
-			commandList->SetComputeRootSignature(m_probeIrradiancePipeline->GetRootSignature().Get());
-			commandList->SetPipelineState(m_probeIrradiancePipeline->GetPipelineObject().Get());
-
-
-			GraphicsUtils::AttachView(commandList, m_probeIrradiancePipeline.get(), "shadedColorTexture", m_shadedRenderTexture->GetSRV());
-			GraphicsUtils::AttachView(commandList, m_probeIrradiancePipeline.get(), "positionsTexture", m_gbuffer->GetPositionSRV());
-
-			GraphicsUtils::AttachView(commandList, m_probeIrradiancePipeline.get(), "probeIrradianceTexture", m_probeIrradianceTexture->GetUAV());
-			GraphicsUtils::AttachView(commandList, m_probeIrradiancePipeline.get(), "probeDepthTexture", m_probeDepthTexture->GetUAV());
-
-			GraphicsUtils::AttachView(commandList, m_probeIrradiancePipeline.get(), "raytracedProbesData", m_dataContainer.GetProbesDataView(frameIndex));
-		}
-		commandList->Dispatch(g_raytracedProbesData.gridX, g_raytracedProbesData.gridY, g_raytracedProbesData.gridZ);
-
-		GraphicsUtils::UAVBarrier(commandList, m_probeIrradianceTexture->GetImageResource().Get());
-		GraphicsUtils::UAVBarrier(commandList, m_probeDepthTexture->GetImageResource().Get());
+		m_dataContainer.GenerateProbeIrradiance(
+			commandList, 
+			frameIndex, 
+			m_shadedRenderTexture.get(),
+			m_gbuffer.get(), 
+			m_probeIrradianceTexture.get(), 
+			m_probeDepthTexture.get());
 	}
 
 	void SoftwareRaytracedDDGI::DebugDrawRaytracedImage(ID3D12GraphicsCommandList* commandList) const
@@ -360,10 +339,5 @@ namespace JoyEngine
 	void SoftwareRaytracedDDGI::DebugDrawProbes(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, const ViewProjectionMatrixData* viewProjectionMatrixData) const
 	{
 		m_dataContainer.DebugDrawProbes(commandList, frameIndex, viewProjectionMatrixData, m_probeIrradianceTexture->GetSRV());
-	}
-
-	RaytracedProbesData* SoftwareRaytracedDDGI::GetRaytracedProbesDataPtr() noexcept
-	{
-		return &g_raytracedProbesData;
 	}
 }

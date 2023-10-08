@@ -44,6 +44,7 @@ typedef BuiltInTriangleIntersectionAttributes MyAttributes;
 [shader("raygeneration")]
 void MyRaygenShader()
 {
+#if defined(HW_CAMERA_TRACE)
 	uint3 id = DispatchRaysIndex();
 
 	const float near = g_engineData.cameraNear;
@@ -60,6 +61,18 @@ void MyRaygenShader()
 
 	const float3 origin = mul(g_engineData.cameraInvView, float4(originCamera, 1)).xyz;
 	const float3 dir = mul(g_engineData.cameraInvView, float4(dirCamera, 0)).xyz;
+#else
+
+	const uint3 id = DispatchRaysIndex();
+	const float3 probeId = float3(
+		(id.x / (raytracedProbesData.gridY * raytracedProbesData.gridZ)),
+		((id.x / raytracedProbesData.gridZ) % raytracedProbesData.gridY),
+		(id.x % raytracedProbesData.gridZ)
+	);
+	const float3 origin = raytracedProbesData.gridMin + probeId * raytracedProbesData.cellSize;
+	const float3 dir = sphericalFibonacci(id.y, DDGI_RAYS_COUNT);
+
+#endif
 
 	// Trace the ray.
 	// Set the ray's extents.
@@ -70,18 +83,18 @@ void MyRaygenShader()
 	// TMin should be kept small to prevent missing geometry at close contact areas.
 	ray.TMin = 0.001;
 	ray.TMax = 10000.0;
-    HardwareRayPayload payload =
-    {
-        float4(0, 0, 0, 0),
+	HardwareRayPayload payload =
+	{
+		float4(0, 0, 0, 0),
 		float4(0, 0, 0, 0),
 		float4(0, 0, 0, 0)
 	};
 	TraceRay(g_SceneAccelerationStructure, RAY_FLAG_CULL_BACK_FACING_TRIANGLES, ~0, 0, 0, 0, ray, payload);
 
 	// Write the raytraced color to the output texture.
-	colorTexture[DispatchRaysIndex().xy] = payload.color;
-	normalsTexture[DispatchRaysIndex().xy] = payload.normals;
-	positionTexture[DispatchRaysIndex().xy] = payload.position;
+	colorTexture[id.xy] = payload.color;
+	normalsTexture[id.xy] = payload.normals;
+    positionTexture[id.xy] = payload.position;
 }
 
 [shader("closesthit")]

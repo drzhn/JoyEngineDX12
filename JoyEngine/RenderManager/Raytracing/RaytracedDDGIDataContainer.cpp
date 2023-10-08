@@ -125,13 +125,13 @@ namespace JoyEngine
 	}
 
 	void RaytracedDDGIDataContainer::GenerateProbeIrradiance(
-		ID3D12GraphicsCommandList* commandList, 
+		ID3D12GraphicsCommandList* commandList,
 		uint32_t frameIndex,
-		RenderTexture* shadedRenderTexture,
-		UAVGbuffer* gbuffer,
-		UAVTexture* probeIrradianceTexture,
-		UAVTexture* probeDepthTexture
-		) const
+		const RenderTexture* shadedRenderTexture,
+		const UAVGbuffer* gbuffer,
+		const UAVTexture* probeIrradianceTexture,
+		const UAVTexture* probeDepthTexture
+	) const
 	{
 		// lightprobe data generation process
 		{

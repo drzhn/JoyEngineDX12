@@ -311,11 +311,11 @@ namespace JoyEngine
 			m_gbuffer->BarrierColorToRead(commandList);
 		}
 
+		m_raytracingDataContainer->SetFrameData(m_currentFrameIndex, m_skybox->GetSkyboxTextureSrv());
+
 		// Process raytracing
 		{
 			auto scopedEvent = ScopedGFXEvent(commandList, "Software Raytracing");
-
-			m_raytracingDataContainer->SetFrameData(m_currentFrameIndex, m_skybox->GetSkyboxTextureSrv());
 
 			m_softwareRaytracedDDGI->ProcessRaytracing(commandList, m_currentFrameIndex);
 
@@ -361,6 +361,8 @@ namespace JoyEngine
 
 			GraphicsUtils::Barrier(commandList, m_hardwareRaytracedDDGI->GetShadedRenderTexture()->GetImageResource().Get(),
 				D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
+
+			m_hardwareRaytracedDDGI->GenerateProbeIrradiance(commandList, m_currentFrameIndex);
 		}
 
 		GraphicsUtils::SetViewportAndScissor(commandList, m_width, m_height);
@@ -383,6 +385,7 @@ namespace JoyEngine
 				FALSE, nullptr);
 
 			m_hardwareRaytracedDDGI->DebugDrawRaytracedImage(commandList);
+			//m_softwareRaytracedDDGI->DebugDrawRaytracedImage(commandList);
 		}
 
 		if (g_drawProbes)
@@ -495,7 +498,7 @@ namespace JoyEngine
 				0, 0);
 		}
 		float windowPosY = 0;
-		float windowHeight = 100;
+		float windowHeight = 150;
 		ImGui::SetNextWindowPos({0, windowPosY});
 		ImGui::SetNextWindowSize({300, windowHeight});
 		{
@@ -505,6 +508,11 @@ namespace JoyEngine
 			const glm::vec3 camPos = m_currentCamera->GetGameObject().GetTransform()->GetPosition();
 			ImGui::Text("Camera: %.3f %.3f %.3f", camPos.x, camPos.y, camPos.z);
 			ImGui::Checkbox("Draw raytraced image", &g_drawRaytracedImage);
+
+			static int e = 0;
+			ImGui::RadioButton("radio a", &e, 0);
+			ImGui::RadioButton("radio b", &e, 1);
+
 			ImGui::End();
 		}
 		windowPosY += windowHeight;
@@ -533,6 +541,7 @@ namespace JoyEngine
 			ImGui::End();
 			m_tonemapping->UpdateConstants(m_currentFrameIndex);
 		}
+		
 		ImGui::Render();
 		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
 	}

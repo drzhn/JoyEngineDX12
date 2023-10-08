@@ -24,16 +24,36 @@ namespace JoyEngine
 		m_raytracedTextureWidth(width),
 		m_raytracedTextureHeight(height)
 #else
-		m_raytracedTextureWidth(g_raytracedProbesData.gridX* g_raytracedProbesData.gridY* g_raytracedProbesData.gridZ),
+		m_raytracedTextureWidth(g_raytracedProbesData.gridX * g_raytracedProbesData.gridY * g_raytracedProbesData.gridZ),
 		m_raytracedTextureHeight(DDGI_RAYS_COUNT)
 #endif
 	{
-		m_gbuffer = std::make_unique<UAVGbuffer>(m_raytracedTextureWidth, m_raytracedTextureHeight);
-		m_shadedRenderTexture = std::make_unique<RenderTexture>(
-			m_raytracedTextureWidth, m_raytracedTextureHeight,
-			mainColorFormat,
-			D3D12_RESOURCE_STATE_GENERIC_READ,
-			D3D12_HEAP_TYPE_DEFAULT);
+		// texture resources.
+		// TODO move to Data container
+		{
+			m_gbuffer = std::make_unique<UAVGbuffer>(m_raytracedTextureWidth, m_raytracedTextureHeight);
+			m_shadedRenderTexture = std::make_unique<RenderTexture>(
+				m_raytracedTextureWidth, m_raytracedTextureHeight,
+				mainColorFormat,
+				D3D12_RESOURCE_STATE_GENERIC_READ,
+				D3D12_HEAP_TYPE_DEFAULT);
+
+			m_probeIrradianceTexture = std::make_unique<UAVTexture>(
+				g_raytracedProbesData.gridX * g_raytracedProbesData.gridY * (DDGI_PROBE_DATA_RESOLUTION + 2),
+				g_raytracedProbesData.gridZ * (DDGI_PROBE_DATA_RESOLUTION + 2),
+				DXGI_FORMAT_R11G11B10_FLOAT,
+				D3D12_RESOURCE_STATE_GENERIC_READ,
+				D3D12_HEAP_TYPE_DEFAULT
+			);
+
+			m_probeDepthTexture = std::make_unique<UAVTexture>(
+				g_raytracedProbesData.gridX * g_raytracedProbesData.gridY * (DDGI_PROBE_DATA_RESOLUTION + 2),
+				g_raytracedProbesData.gridZ * (DDGI_PROBE_DATA_RESOLUTION + 2),
+				DXGI_FORMAT_R16G16_FLOAT,
+				D3D12_RESOURCE_STATE_GENERIC_READ,
+				D3D12_HEAP_TYPE_DEFAULT
+			);
+		}
 
 		m_raytracingPipeline = std::make_unique<RaytracingPipeline>(RaytracingPipelineArgs{
 			GUID::StringToGuid("b2597599-94ef-43ed-abd8-46d3adbb75d4")
@@ -162,7 +182,6 @@ namespace JoyEngine
 		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "colorTexture", m_gbuffer->GetColorUAV());
 		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "normalsTexture", m_gbuffer->GetNormalsUAV());
 		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "positionTexture", m_gbuffer->GetPositionUAV());
-		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "g_engineData", EngineMaterialProvider::Get()->GetEngineDataView(frameIndex));
 		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "raytracedProbesData", m_dataContainer.GetProbesDataView(frameIndex));
 		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "textures", DescriptorManager::Get()->GetSRVHeapStartDescriptorHandle());
 		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "linearClampSampler", EngineSamplersProvider::GetLinearWrapSampler());
@@ -171,6 +190,11 @@ namespace JoyEngine
 		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "objectVertices", DescriptorManager::Get()->GetSRVHeapStartDescriptorHandle());
 		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "objectIndices", DescriptorManager::Get()->GetSRVHeapStartDescriptorHandle());
 		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "materials", EngineMaterialProvider::Get()->GetMaterialsDataView());
+
+#if defined(HW_CAMERA_TRACE)
+		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "g_engineData", EngineMaterialProvider::Get()->GetEngineDataView(frameIndex));
+#endif
+
 
 		const D3D12_DISPATCH_RAYS_DESC dispatchDesc = {
 			.RayGenerationShaderRecord = {
@@ -201,6 +225,21 @@ namespace JoyEngine
 
 	void HardwareRaytracedDDGI::DebugDrawRaytracedImage(ID3D12GraphicsCommandList* commandList) const
 	{
+#if defined(HW_CAMERA_TRACE)
 		m_dataContainer.DebugDrawRaytracedImage(commandList, m_shadedRenderTexture->GetSRV());
+#else
+		m_dataContainer.DebugDrawRaytracedImage(commandList, m_probeIrradianceTexture->GetSRV());
+#endif
+	}
+
+	void HardwareRaytracedDDGI::GenerateProbeIrradiance(ID3D12GraphicsCommandList4* commandList, uint32_t frameIndex) const
+	{
+		m_dataContainer.GenerateProbeIrradiance(
+			commandList,
+			frameIndex,
+			m_shadedRenderTexture.get(),
+			m_gbuffer.get(),
+			m_probeIrradianceTexture.get(),
+			m_probeDepthTexture.get());
 	}
 }

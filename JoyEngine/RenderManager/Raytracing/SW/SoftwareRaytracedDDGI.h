@@ -8,14 +8,13 @@
 #include "BufferSorter.h"
 #include "BVHConstructor.h"
 #include "RenderManager/GBuffer.h"
+#include "RenderManager/Raytracing/AbstractRaytracedDDGI.h"
 #include "RenderManager/Raytracing/RaytracedDDGIDataContainer.h"
 #include "ResourceManager/SharedMaterial.h"
 
 namespace JoyEngine
 {
-	class IRenderManager;
-
-	class SoftwareRaytracedDDGI
+	class SoftwareRaytracedDDGI : public AbstractRaytracedDDGI
 	{
 	public:
 		SoftwareRaytracedDDGI() = delete;

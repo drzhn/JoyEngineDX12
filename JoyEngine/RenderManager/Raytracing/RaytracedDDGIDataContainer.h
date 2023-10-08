@@ -34,7 +34,7 @@ namespace JoyEngine
 			DXGI_FORMAT depthFormat);
 		void SetFrameData(uint32_t frameIndex, const ResourceView* skyboxTextureIndexDataView);
 		void UploadSceneData() const;
-		void GenerateProbeIrradiance(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, RenderTexture* shadedRenderTexture, UAVGbuffer* gbuffer, UAVTexture* probeIrradianceTexture, UAVTexture* probeDepthTexture) const;
+		void GenerateProbeIrradiance(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, const RenderTexture* shadedRenderTexture, const UAVGbuffer* gbuffer, const UAVTexture* probeIrradianceTexture, const UAVTexture* probeDepthTexture) const;
 
 		[[nodiscard]] ComputeDispatcher* GetDispatcher() const { return m_dispatcher.get(); }
 		[[nodiscard]] const std::set<SharedMaterial*>& GetSceneSharedMaterials() const { return m_sceneSharedMaterials; }

@@ -176,21 +176,6 @@ inline RaycastResult TraceRay(Ray ray)
 //	return (1.0 / distance - w) / z;
 //}
 
-inline float madfrac(float A, float B)
-{
-	return ((A) * (B) - floor((A) * (B)));
-}
-
-inline float3 sphericalFibonacci(float i, float n)
-{
-	float PHI = sqrt(5) * 0.5 + 0.5;
-	float phi = 2.0 * PI * madfrac(i, PHI - 1);
-	float cosTheta = 1.0 - (2.0 * i + 1.0) * (1.0 / n);
-	float sinTheta = sqrt(saturate(1.0f - cosTheta * cosTheta));
-
-	return float3(cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta);
-}
-
 //}
 #if defined(CAMERA_TRACE)
 

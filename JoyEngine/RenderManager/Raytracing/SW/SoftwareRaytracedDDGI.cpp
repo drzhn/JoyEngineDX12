@@ -115,7 +115,8 @@ namespace JoyEngine
 			&m_bvhConstructionData
 		);
 
-		// Raytracing
+		// Raytracing texture resources
+		// TODO move to Data container
 		{
 			m_gbuffer = std::make_unique<UAVGbuffer>(m_raytracedTextureWidth, m_raytracedTextureHeight);
 			m_shadedRenderTexture = std::make_unique<RenderTexture>(
@@ -275,9 +276,7 @@ namespace JoyEngine
 			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "linearClampSampler", EngineSamplersProvider::GetLinearWrapSampler());
 			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "objectVertices", DescriptorManager::Get()->GetSRVHeapStartDescriptorHandle());
 			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "objectIndices", DescriptorManager::Get()->GetSRVHeapStartDescriptorHandle());
-#if !defined(CAMERA_TRACE)
 			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "raytracedProbesData", m_dataContainer.GetProbesDataView(frameIndex));
-#endif
 
 			GraphicsUtils::ProcessEngineBindings(
 				commandList,

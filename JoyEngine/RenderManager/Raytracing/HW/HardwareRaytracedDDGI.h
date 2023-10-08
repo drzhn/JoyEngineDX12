@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "RenderManager/GBuffer.h"
+#include "RenderManager/Raytracing/AbstractRaytracedDDGI.h"
 #include "RenderManager/Raytracing/RaytracedDDGIDataContainer.h"
 #include "ResourceManager/Texture.h"
 #include "ResourceManager/Buffers/UAVGpuBuffer.h"
@@ -11,7 +12,7 @@
 
 namespace JoyEngine
 {
-	class HardwareRaytracedDDGI
+	class HardwareRaytracedDDGI : public AbstractRaytracedDDGI
 	{
 	public:
 		HardwareRaytracedDDGI(
@@ -24,6 +25,7 @@ namespace JoyEngine
 		void UploadSceneData();
 		void ProcessRaytracing(ID3D12GraphicsCommandList4* commandList, uint32_t frameIndex) const;
 		void DebugDrawRaytracedImage(ID3D12GraphicsCommandList* commandList) const;
+		void GenerateProbeIrradiance(ID3D12GraphicsCommandList4* commandList, uint32_t frameIndex) const;
 
 		[[nodiscard]] UAVGbuffer* GetGBuffer() const { return m_gbuffer.get(); }
 		[[nodiscard]] RenderTexture* GetShadedRenderTexture() const { return m_shadedRenderTexture.get(); }
@@ -39,6 +41,8 @@ namespace JoyEngine
 
 		std::unique_ptr<UAVGbuffer> m_gbuffer;
 		std::unique_ptr<RenderTexture> m_shadedRenderTexture;
+		std::unique_ptr<UAVTexture> m_probeIrradianceTexture; // octohedral irradince per-probe storage
+		std::unique_ptr<UAVTexture> m_probeDepthTexture; // octohedral depth per-probe storage
 
 		uint32_t m_raytracedTextureWidth;
 		uint32_t m_raytracedTextureHeight;

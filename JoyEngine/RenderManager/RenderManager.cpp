@@ -25,6 +25,9 @@
 #include "SceneManager/GameObject.h"
 #include "SceneManager/Transform.h"
 
+#include "Raytracing/HW/HardwareRaytracedDDGI.h"
+#include "Raytracing/SW/SoftwareRaytracedDDGI.h"
+
 #include "Utils/GraphicsUtils.h"
 #include "Utils/TimeCounter.h"
 

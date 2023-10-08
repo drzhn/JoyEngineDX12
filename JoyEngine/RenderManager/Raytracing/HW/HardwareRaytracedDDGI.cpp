@@ -242,4 +242,9 @@ namespace JoyEngine
 			m_probeIrradianceTexture.get(),
 			m_probeDepthTexture.get());
 	}
+
+	void HardwareRaytracedDDGI::DebugDrawProbes(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, const ViewProjectionMatrixData* viewProjectionMatrixData) const
+	{
+		m_dataContainer.DebugDrawProbes(commandList, frameIndex, viewProjectionMatrixData, m_probeIrradianceTexture->GetSRV());
+	}
 }

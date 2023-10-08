@@ -12,6 +12,7 @@
 #include <wrl.h>
 
 #include "CommonEngineStructs.h"
+#include "GBuffer.h"
 #include "IRenderManager.h"
 #include "Skybox.h"
 #include "Common/Singleton.h"
@@ -19,8 +20,9 @@
 #include "Tonemapping.h"
 #include "TransformProvider.h"
 #include "LightSystems/ClusteredLightSystem.h"
-#include "Raytracing/HW/HardwareRaytracedDDGI.h"
-#include "Raytracing/SW/SoftwareRaytracedDDGI.h"
+#include "Raytracing/AbstractRaytracedDDGI.h"
+#include "Raytracing/RaytracedDDGIDataContainer.h"
+
 
 using Microsoft::WRL::ComPtr;
 
@@ -128,8 +130,8 @@ namespace JoyEngine
 
 		std::unique_ptr<Tonemapping> m_tonemapping;
 		std::unique_ptr<RaytracedDDGIDataContainer> m_raytracingDataContainer;
-		std::unique_ptr<SoftwareRaytracedDDGI> m_softwareRaytracedDDGI;
-		std::unique_ptr<HardwareRaytracedDDGI> m_hardwareRaytracedDDGI;
+		std::unique_ptr<AbstractRaytracedDDGI> m_softwareRaytracedDDGI;
+		std::unique_ptr<AbstractRaytracedDDGI> m_hardwareRaytracedDDGI;
 		std::unique_ptr<TransformProvider> m_transformProvider;
 		std::unique_ptr<ClusteredLightSystem> m_lightSystem;
 		std::set<SharedMaterial*> m_sharedMaterials;

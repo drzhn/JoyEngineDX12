@@ -228,7 +228,6 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="JoyEngine\RenderManager\Raytracing\AbstractRaytracedDDGI.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\Raytracing\HW\HardwareRaytracedDDGI.cpp" />
     <ClCompile Include="JoyEngine\Common\CameraUnit.cpp" />
     <ClCompile Include="JoyEngine\Components\Camera.cpp" />

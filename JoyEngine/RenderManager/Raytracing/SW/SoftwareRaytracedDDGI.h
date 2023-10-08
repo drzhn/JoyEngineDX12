@@ -25,19 +25,22 @@ namespace JoyEngine
 			uint32_t width,
 			uint32_t height);
 
-		void UploadSceneData();
-		void ProcessRaytracing(ID3D12GraphicsCommandList* commandList, const uint32_t frameIndex) const;
-		void GenerateProbeIrradiance(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex) const;
-		void DebugDrawRaytracedImage(ID3D12GraphicsCommandList* commandList) const;
+		void UploadSceneData() override;
+		void ProcessRaytracing(ID3D12GraphicsCommandList4* commandList, const uint32_t frameIndex) const override;
+		void GenerateProbeIrradiance(ID3D12GraphicsCommandList4* commandList, uint32_t frameIndex) const override;
+		void DebugDrawRaytracedImage(ID3D12GraphicsCommandList* commandList) const override;
 		void DebugDrawAABBGizmo(ID3D12GraphicsCommandList* commandList, const ViewProjectionMatrixData* viewProjectionMatrixData) const;
-		void DebugDrawProbes(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, const ViewProjectionMatrixData* viewProjectionMatrixData) const;
+		void DebugDrawProbes(
+			ID3D12GraphicsCommandList* commandList,
+			uint32_t frameIndex,
+			const ViewProjectionMatrixData* viewProjectionMatrixData) const override;
 
-		[[nodiscard]] UAVGbuffer* GetGBuffer() const { return m_gbuffer.get(); }
-		[[nodiscard]] RenderTexture* GetShadedRenderTexture() const { return m_shadedRenderTexture.get(); }
-		[[nodiscard]] UAVTexture* GetProbeIrradianceTexture() const { return m_probeIrradianceTexture.get(); }
-		[[nodiscard]] UAVTexture* GetProbeDepthTexture() const { return m_probeDepthTexture.get(); }
-		[[nodiscard]] uint32_t GetRaytracedTextureWidth() const noexcept { return m_raytracedTextureWidth; }
-		[[nodiscard]] uint32_t GetRaytracedTextureHeight() const noexcept { return m_raytracedTextureHeight; }
+		[[nodiscard]] UAVGbuffer* GetGBuffer() const override { return m_gbuffer.get(); }
+		[[nodiscard]] RenderTexture* GetShadedRenderTexture() const override { return m_shadedRenderTexture.get(); }
+		[[nodiscard]] UAVTexture* GetProbeIrradianceTexture() const override { return m_probeIrradianceTexture.get(); }
+		[[nodiscard]] UAVTexture* GetProbeDepthTexture() const override { return m_probeDepthTexture.get(); }
+		[[nodiscard]] uint32_t GetRaytracedTextureWidth() const noexcept override { return m_raytracedTextureWidth; }
+		[[nodiscard]] uint32_t GetRaytracedTextureHeight() const noexcept override { return m_raytracedTextureHeight; }
 
 	private:
 		const RaytracedDDGIDataContainer& m_dataContainer;

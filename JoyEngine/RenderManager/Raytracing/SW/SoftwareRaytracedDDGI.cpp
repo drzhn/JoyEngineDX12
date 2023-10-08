@@ -253,7 +253,7 @@ namespace JoyEngine
 		}
 	}
 
-	void SoftwareRaytracedDDGI::ProcessRaytracing(ID3D12GraphicsCommandList* commandList, const uint32_t frameIndex) const
+	void SoftwareRaytracedDDGI::ProcessRaytracing(ID3D12GraphicsCommandList4* commandList, const uint32_t frameIndex) const
 	{
 		// Raytracing process
 		{
@@ -294,7 +294,7 @@ namespace JoyEngine
 		m_gbuffer->BarrierColorToRead(commandList);
 	}
 
-	void SoftwareRaytracedDDGI::GenerateProbeIrradiance(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex) const
+	void SoftwareRaytracedDDGI::GenerateProbeIrradiance(ID3D12GraphicsCommandList4* commandList, uint32_t frameIndex) const
 	{
 		m_dataContainer.GenerateProbeIrradiance(
 			commandList,

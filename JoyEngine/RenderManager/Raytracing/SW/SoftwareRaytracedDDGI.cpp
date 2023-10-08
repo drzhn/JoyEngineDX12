@@ -181,74 +181,75 @@ namespace JoyEngine
 
 	void SoftwareRaytracedDDGI::UploadSceneData()
 	{
-		TIME_PERF("Uploading software DDGI scene data")
-
-		for (auto const& sm : m_dataContainer.GetSceneSharedMaterials())
 		{
-			for (const auto& mr : sm->GetMeshRenderers())
+			TIME_PERF("Uploading software DDGI scene data")
+
+			for (auto const& sm : m_dataContainer.GetSceneSharedMaterials())
 			{
-				if (!mr->IsStatic()) continue;
-
-				const uint32_t meshTrianglesLength = mr->GetMesh()->GetIndexCount() / 3;
-
-				const Vertex* vertices = mr->GetMesh()->GetVertices();
-				const uint32_t* indices = mr->GetMesh()->GetIndices();
-
-				for (uint32_t i = 0; i < meshTrianglesLength; i++, m_trianglesLength++)
+				for (const auto& mr : sm->GetMeshRenderers())
 				{
-					glm::vec3 a = vertices[indices[i * 3 + 0]].pos;
-					glm::vec3 b = vertices[indices[i * 3 + 1]].pos;
-					glm::vec3 c = vertices[indices[i * 3 + 2]].pos;
+					if (!mr->IsStatic()) continue;
 
-					glm::vec3 centroid;
-					AABB aabb = {};
+					const uint32_t meshTrianglesLength = mr->GetMesh()->GetIndexCount() / 3;
 
-					GetCentroidAndAABB(a, b, c, &centroid, &aabb);
-					centroid = NormalizeCentroid(centroid);
-					const uint32_t mortonCode = Morton3D(centroid.x, centroid.y, centroid.z);
-					m_keysBuffer->GetLocalData()[m_trianglesLength] = mortonCode;
-					m_triangleIndexBuffer->GetLocalData()[m_trianglesLength] = m_trianglesLength;
-					m_triangleAABBBuffer->GetLocalData()[m_trianglesLength] = aabb;
+					const Vertex* vertices = mr->GetMesh()->GetVertices();
+					const uint32_t* indices = mr->GetMesh()->GetIndices();
+
+					for (uint32_t i = 0; i < meshTrianglesLength; i++, m_trianglesLength++)
+					{
+						glm::vec3 a = vertices[indices[i * 3 + 0]].pos;
+						glm::vec3 b = vertices[indices[i * 3 + 1]].pos;
+						glm::vec3 c = vertices[indices[i * 3 + 2]].pos;
+
+						glm::vec3 centroid;
+						AABB aabb = {};
+
+						GetCentroidAndAABB(a, b, c, &centroid, &aabb);
+						centroid = NormalizeCentroid(centroid);
+						const uint32_t mortonCode = Morton3D(centroid.x, centroid.y, centroid.z);
+						m_keysBuffer->GetLocalData()[m_trianglesLength] = mortonCode;
+						m_triangleIndexBuffer->GetLocalData()[m_trianglesLength] = m_trianglesLength;
+						m_triangleAABBBuffer->GetLocalData()[m_trianglesLength] = aabb;
+					}
 				}
-			}
-		}
-
-		m_keysBuffer->UploadCpuData();
-		m_triangleIndexBuffer->UploadCpuData();
-		m_triangleAABBBuffer->UploadCpuData();
-		m_bvhConstructionData.SetData({.trianglesCount = m_trianglesLength});
-	}
-
-	void SoftwareRaytracedDDGI::PrepareBVH() const
-	{
-		Logger::LogFormat("Triangles length %d\n", m_trianglesLength);
-
-		TIME_PERF("Prepare Scene BVH")
-
-		m_bufferSorter->Sort();
-
-		{
-			// Update keys array. Now we guarantee all the elements are unique
-			m_keysBuffer->ReadbackGpuData();
-
-			uint32_t* keysArray = m_keysBuffer->GetLocalData();
-
-			uint32_t newCurrentValue = 0;
-			uint32_t oldCurrentValue = keysArray[0];
-			keysArray[0] = newCurrentValue;
-
-			for (uint32_t i = 1; i < m_trianglesLength; i++)
-			{
-				newCurrentValue += std::max(keysArray[i] - oldCurrentValue, 1u);
-				oldCurrentValue = keysArray[i];
-				keysArray[i] = newCurrentValue;
 			}
 
 			m_keysBuffer->UploadCpuData();
+			m_triangleIndexBuffer->UploadCpuData();
+			m_triangleAABBBuffer->UploadCpuData();
+			m_bvhConstructionData.SetData({.trianglesCount = m_trianglesLength});
 		}
 
-		m_bvhConstructor->ConstructTree();
-		m_bvhConstructor->ConstructBVH();
+		Logger::LogFormat("Triangles length %d\n", m_trianglesLength);
+
+		{
+			TIME_PERF("Prepare Scene BVH")
+
+			m_bufferSorter->Sort();
+
+			{
+				// Update keys array. Now we guarantee all the elements are unique
+				m_keysBuffer->ReadbackGpuData();
+
+				uint32_t* keysArray = m_keysBuffer->GetLocalData();
+
+				uint32_t newCurrentValue = 0;
+				uint32_t oldCurrentValue = keysArray[0];
+				keysArray[0] = newCurrentValue;
+
+				for (uint32_t i = 1; i < m_trianglesLength; i++)
+				{
+					newCurrentValue += std::max(keysArray[i] - oldCurrentValue, 1u);
+					oldCurrentValue = keysArray[i];
+					keysArray[i] = newCurrentValue;
+				}
+
+				m_keysBuffer->UploadCpuData();
+			}
+
+			m_bvhConstructor->ConstructTree();
+			m_bvhConstructor->ConstructBVH();
+		}
 	}
 
 	void SoftwareRaytracedDDGI::ProcessRaytracing(ID3D12GraphicsCommandList* commandList, const uint32_t frameIndex) const
@@ -297,11 +298,11 @@ namespace JoyEngine
 	void SoftwareRaytracedDDGI::GenerateProbeIrradiance(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex) const
 	{
 		m_dataContainer.GenerateProbeIrradiance(
-			commandList, 
-			frameIndex, 
+			commandList,
+			frameIndex,
 			m_shadedRenderTexture.get(),
-			m_gbuffer.get(), 
-			m_probeIrradianceTexture.get(), 
+			m_gbuffer.get(),
+			m_probeIrradianceTexture.get(),
 			m_probeDepthTexture.get());
 	}
 

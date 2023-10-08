@@ -155,9 +155,10 @@ namespace JoyEngine
 	{
 		m_queue->WaitQueueIdle();
 		m_raytracingDataContainer->UploadSceneData();
+
 		m_softwareRaytracedDDGI->UploadSceneData();
+
 		m_hardwareRaytracedDDGI->UploadSceneData();
-		m_softwareRaytracedDDGI->PrepareBVH();
 	}
 
 

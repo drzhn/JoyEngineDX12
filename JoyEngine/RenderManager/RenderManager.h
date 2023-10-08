@@ -101,7 +101,7 @@ namespace JoyEngine
 
 		void RenderDeferredShading(
 			ID3D12GraphicsCommandList* commandList,
-			const AbstractGBuffer* gBuffer, const ViewProjectionMatrixData* cameraVP
+			const AbstractGBuffer* gBuffer, const ViewProjectionMatrixData* cameraVP, const AbstractRaytracedDDGI* raytracer
 		) const;
 
 		static void CopyRTVResource(ID3D12GraphicsCommandList* commandList, ID3D12Resource* rtvResource,

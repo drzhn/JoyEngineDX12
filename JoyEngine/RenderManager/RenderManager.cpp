@@ -33,6 +33,16 @@
 
 namespace JoyEngine
 {
+	enum class CurrentDDGIRaytracer : int
+	{
+		Software = 0,
+		Hardware = 1
+	};
+
+	bool g_drawRaytracedImage = false;
+	bool g_drawProbes = true;
+	CurrentDDGIRaytracer g_currentRaytracer = CurrentDDGIRaytracer::Software;
+
 	void RenderManager::Init()
 	{
 		TIME_PERF("RenderManager init")
@@ -170,6 +180,7 @@ namespace JoyEngine
 		m_queue->WaitQueueIdle();
 
 		m_softwareRaytracedDDGI = nullptr;
+		m_hardwareRaytracedDDGI = nullptr;
 		m_tonemapping = nullptr;
 		m_queue = nullptr;
 
@@ -204,10 +215,6 @@ namespace JoyEngine
 		m_currentCamera = nullptr;
 	}
 
-
-	bool g_drawRaytracedImage = false;
-	bool g_drawProbes = true;
-
 	void RenderManager::PreUpdate()
 	{
 		ImGui_ImplDX12_NewFrame();
@@ -217,6 +224,20 @@ namespace JoyEngine
 
 	void RenderManager::Update()
 	{
+		AbstractRaytracedDDGI* raytracer;
+		switch (g_currentRaytracer)
+		{
+		case CurrentDDGIRaytracer::Software:
+			raytracer = m_softwareRaytracedDDGI.get();
+			break;
+		case CurrentDDGIRaytracer::Hardware:
+			raytracer = m_hardwareRaytracedDDGI.get();
+			break;
+		default:
+			raytracer = nullptr;
+			ASSERT(false);
+		}
+
 		m_currentFrameIndex = m_swapChain->GetCurrentBackBufferIndex();
 
 		m_queue->WaitForFence(m_currentFrameIndex);
@@ -318,54 +339,31 @@ namespace JoyEngine
 
 		// Process raytracing
 		{
-			auto scopedEvent = ScopedGFXEvent(commandList, "Software Raytracing");
+			auto scopedEvent = ScopedGFXEvent(
+				commandList,
+				g_currentRaytracer == CurrentDDGIRaytracer::Software ? "Software Raytracing" : "Hardware Raytracing");
 
-			m_softwareRaytracedDDGI->ProcessRaytracing(commandList, m_currentFrameIndex);
+			raytracer->ProcessRaytracing(commandList, m_currentFrameIndex);
 
 
-			const auto raytracedRTVHandle = m_softwareRaytracedDDGI->GetShadedRenderTexture()->GetRTV()->GetCPUHandle();
+			const auto raytracedRTVHandle = raytracer->GetShadedRenderTexture()->GetRTV()->GetCPUHandle();
 
-			GraphicsUtils::Barrier(commandList, m_softwareRaytracedDDGI->GetShadedRenderTexture()->GetImageResource().Get(),
+			GraphicsUtils::Barrier(commandList, raytracer->GetShadedRenderTexture()->GetImageResource().Get(),
 			                       D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
-			GraphicsUtils::SetViewportAndScissor(commandList, m_softwareRaytracedDDGI->GetRaytracedTextureWidth(), m_softwareRaytracedDDGI->GetRaytracedTextureHeight());
+			GraphicsUtils::SetViewportAndScissor(commandList, raytracer->GetRaytracedTextureWidth(), raytracer->GetRaytracedTextureHeight());
 
 			commandList->OMSetRenderTargets(
 				1,
 				&raytracedRTVHandle,
 				FALSE, nullptr);
 
-			RenderDeferredShading(commandList, m_softwareRaytracedDDGI->GetGBuffer(), &mainCameraMatrixVP);
+			RenderDeferredShading(commandList, raytracer->GetGBuffer(), &mainCameraMatrixVP, raytracer);
 
-			GraphicsUtils::Barrier(commandList, m_softwareRaytracedDDGI->GetShadedRenderTexture()->GetImageResource().Get(),
+			GraphicsUtils::Barrier(commandList, raytracer->GetShadedRenderTexture()->GetImageResource().Get(),
 			                       D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
 
-			m_softwareRaytracedDDGI->GenerateProbeIrradiance(commandList, m_currentFrameIndex);
-		}
-
-		{
-			auto scopedEvent = ScopedGFXEvent(commandList, "Hardware Raytracing");
-
-			m_hardwareRaytracedDDGI->ProcessRaytracing(commandList, m_currentFrameIndex);
-
-			const auto raytracedRTVHandle = m_hardwareRaytracedDDGI->GetShadedRenderTexture()->GetRTV()->GetCPUHandle();
-
-			GraphicsUtils::Barrier(commandList, m_hardwareRaytracedDDGI->GetShadedRenderTexture()->GetImageResource().Get(),
-				D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
-
-			GraphicsUtils::SetViewportAndScissor(commandList, m_hardwareRaytracedDDGI->GetRaytracedTextureWidth(), m_hardwareRaytracedDDGI->GetRaytracedTextureHeight());
-
-			commandList->OMSetRenderTargets(
-				1,
-				&raytracedRTVHandle,
-				FALSE, nullptr);
-
-			RenderDeferredShading(commandList, m_hardwareRaytracedDDGI->GetGBuffer(), &mainCameraMatrixVP);
-
-			GraphicsUtils::Barrier(commandList, m_hardwareRaytracedDDGI->GetShadedRenderTexture()->GetImageResource().Get(),
-				D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
-
-			m_hardwareRaytracedDDGI->GenerateProbeIrradiance(commandList, m_currentFrameIndex);
+			raytracer->GenerateProbeIrradiance(commandList, m_currentFrameIndex);
 		}
 
 		GraphicsUtils::SetViewportAndScissor(commandList, m_width, m_height);
@@ -377,7 +375,7 @@ namespace JoyEngine
 				&hdrRTVHandle,
 				FALSE, nullptr);
 
-			RenderDeferredShading(commandList, m_gbuffer.get(), &mainCameraMatrixVP);
+			RenderDeferredShading(commandList, m_gbuffer.get(), &mainCameraMatrixVP, raytracer);
 		}
 
 		if (g_drawRaytracedImage)
@@ -387,8 +385,7 @@ namespace JoyEngine
 				&hdrRTVHandle,
 				FALSE, nullptr);
 
-			m_hardwareRaytracedDDGI->DebugDrawRaytracedImage(commandList);
-			//m_softwareRaytracedDDGI->DebugDrawRaytracedImage(commandList);
+			raytracer->DebugDrawRaytracedImage(commandList);
 		}
 
 		if (g_drawProbes)
@@ -403,7 +400,7 @@ namespace JoyEngine
 				&hdrRTVHandle,
 				FALSE, &dsvHandle);
 
-			m_softwareRaytracedDDGI->DebugDrawProbes(commandList, m_currentFrameIndex, &mainCameraMatrixVP);
+			raytracer->DebugDrawProbes(commandList, m_currentFrameIndex, &mainCameraMatrixVP);
 		}
 
 		// HDR->LDR
@@ -510,11 +507,10 @@ namespace JoyEngine
 			ImGui::Text("Num triangles %d", m_trianglesCount);
 			const glm::vec3 camPos = m_currentCamera->GetGameObject().GetTransform()->GetPosition();
 			ImGui::Text("Camera: %.3f %.3f %.3f", camPos.x, camPos.y, camPos.z);
-			ImGui::Checkbox("Draw raytraced image", &g_drawRaytracedImage);
+			ImGui::Checkbox("Debug draw raytraced image", &g_drawRaytracedImage);
 
-			static int e = 0;
-			ImGui::RadioButton("radio a", &e, 0);
-			ImGui::RadioButton("radio b", &e, 1);
+			ImGui::RadioButton("Software raytracing", reinterpret_cast<int*>(&g_currentRaytracer), 0);
+			ImGui::RadioButton("Hardware raytracing", reinterpret_cast<int*>(&g_currentRaytracer), 1);
 
 			ImGui::End();
 		}
@@ -544,7 +540,7 @@ namespace JoyEngine
 			ImGui::End();
 			m_tonemapping->UpdateConstants(m_currentFrameIndex);
 		}
-		
+
 		ImGui::Render();
 		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
 	}
@@ -626,7 +622,8 @@ namespace JoyEngine
 	void RenderManager::RenderDeferredShading(
 		ID3D12GraphicsCommandList* commandList,
 		const AbstractGBuffer* gBuffer,
-		const ViewProjectionMatrixData* cameraVP) const
+		const ViewProjectionMatrixData* cameraVP,
+		const AbstractRaytracedDDGI* raytracer) const
 	{
 		const auto& sm = EngineMaterialProvider::Get()->GetDeferredShadingProcessorSharedMaterial();
 
@@ -646,8 +643,8 @@ namespace JoyEngine
 		GraphicsUtils::AttachView(commandList, sm->GetGraphicsPipeline(), "raytracedProbesData", m_raytracingDataContainer->GetProbesDataView(m_currentFrameIndex));
 		GraphicsUtils::AttachView(commandList, sm->GetGraphicsPipeline(), "linearBlackBorderSampler", EngineSamplersProvider::GetLinearBlackBorderSampler());
 
-		GraphicsUtils::AttachView(commandList, sm->GetGraphicsPipeline(), "probeIrradianceTexture", m_softwareRaytracedDDGI->GetProbeIrradianceTexture()->GetSRV());
-		GraphicsUtils::AttachView(commandList, sm->GetGraphicsPipeline(), "probeDepthTexture", m_softwareRaytracedDDGI->GetProbeDepthTexture()->GetSRV());
+		GraphicsUtils::AttachView(commandList, sm->GetGraphicsPipeline(), "probeIrradianceTexture", raytracer->GetProbeIrradianceTexture()->GetSRV());
+		GraphicsUtils::AttachView(commandList, sm->GetGraphicsPipeline(), "probeDepthTexture", raytracer->GetProbeDepthTexture()->GetSRV());
 
 		GraphicsUtils::AttachView(commandList, sm->GetGraphicsPipeline(), "clusteredEntryData", m_lightSystem->GetClusterEntryDataView(m_currentFrameIndex));
 		GraphicsUtils::AttachView(commandList, sm->GetGraphicsPipeline(), "clusteredItemData", m_lightSystem->GetClusterItemDataView(m_currentFrameIndex));

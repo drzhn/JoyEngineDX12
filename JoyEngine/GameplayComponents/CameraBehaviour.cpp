@@ -1,8 +1,5 @@
 ﻿#include "CameraBehaviour.h"
 
-#include <glm/ext/quaternion_trigonometric.hpp>
-
-
 #include "Common/Time.h"
 #include "InputManager/InputManager.h"
 #include "SceneManager/GameObject.h"
@@ -11,9 +8,8 @@
 namespace JoyEngine
 {
 	CameraBehaviour::CameraBehaviour(GameObject& go)
-		:Component(go)
+		: Component(go)
 	{
-
 	}
 
 	void CameraBehaviour::Enable()
@@ -31,7 +27,7 @@ namespace JoyEngine
 		float deltaTime = Time::GetDeltaTime();
 
 		float deltaX =
-#ifdef GLM_FORCE_LEFT_HANDED
+#ifdef jmath_FORCE_LEFT_HANDED
 			(InputManager::Get()->GetKeyDown(KeyCode::KEYCODE_D) ? deltaTime : 0) -
 			(InputManager::Get()->GetKeyDown(KeyCode::KEYCODE_A) ? deltaTime : 0);
 #else
@@ -52,17 +48,21 @@ namespace JoyEngine
 			(InputManager::Get()->GetKeyDown(KeyCode::KEYCODE_J) ? Time::GetDeltaTime() : 0);
 
 
-		glm::vec3 vec = glm::vec3(deltaX, deltaY, deltaZ);
+		jmath::vec3 vec = jmath::vec3(deltaX, deltaY, deltaZ);
 
-		const glm::vec3 vecWorld = m_gameObject.GetTransform()->GetRotation() * glm::vec4(deltaX, deltaY, deltaZ, 1);
-
-		m_gameObject.GetTransform()->SetPosition(
-			m_gameObject.GetTransform()->GetPosition() + vecWorld * m_speed
-		);
-		m_gameObject.GetTransform()->SetRotation(
-			glm::angleAxis(deltaYRotation, glm::vec3(0, 1, 0)) *
-			glm::angleAxis(deltaXRotation, m_gameObject.GetTransform()->GetRight()) *
+		const jmath::xvec4 vecWorld = jmath::rotate3(
+			jmath::loadVec4(jmath::vec4(deltaX, deltaY, deltaZ, 1)),
 			m_gameObject.GetTransform()->GetRotation()
+		);
+
+		m_gameObject.GetTransform()->SetXPosition(
+			m_gameObject.GetTransform()->GetXPosition() + jmath::mul(m_speed, vecWorld)
+		);
+
+		m_gameObject.GetTransform()->SetRotation(
+			jmath::mul(m_gameObject.GetTransform()->GetRotation(),
+			           jmath::mul(jmath::angleAxis(m_gameObject.GetTransform()->GetXRight(), deltaXRotation),
+			                      jmath::angleAxis(jmath::xup, deltaYRotation)))
 		);
 	}
 }

@@ -1,7 +1,5 @@
 #include "Camera.h"
 
-#include <glm/gtx/matrix_decompose.hpp>
-
 #include "RenderManager/IRenderManager.h"
 #include "SceneManager/GameObject.h"
 #include "SceneManager/Transform.h"
@@ -38,12 +36,15 @@ namespace JoyEngine
 	{
 	}
 
-	glm::mat4 Camera::GetViewMatrix() const
+	jmath::mat4x4 Camera::GetViewMatrix() const
 	{
-		return m_cameraUnit.GetViewMatrix(m_gameObject.GetTransform()->GetPosition(), m_gameObject.GetTransform()->GetRotation());
+		return m_cameraUnit.GetViewMatrix(
+			m_gameObject.GetTransform()->GetXPosition(),
+			m_gameObject.GetTransform()->GetRotation()
+		);
 	}
 
-	glm::mat4x4 Camera::GetProjMatrix() const
+	jmath::mat4x4 Camera::GetProjMatrix() const
 	{
 		return m_cameraUnit.GetProjMatrix();
 	}

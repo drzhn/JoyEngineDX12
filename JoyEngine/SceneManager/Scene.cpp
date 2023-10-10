@@ -17,7 +17,7 @@ namespace JoyEngine
 {
 	inline void ParseTransform(const std::unique_ptr<GameObject>& go, const rapidjson::Value& transformValue)
 	{
-		glm::vec3 vec;
+		jmath::vec3 vec;
 		SerializationUtils::DeserializeToPtr(strHash("vec3"), transformValue["localPosition"], &vec, 1);
 		go->GetTransform()->SetPosition(vec);
 		SerializationUtils::DeserializeToPtr(strHash("vec3"), transformValue["localRotation"], &vec, 1);

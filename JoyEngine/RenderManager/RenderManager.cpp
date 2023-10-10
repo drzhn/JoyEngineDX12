@@ -252,8 +252,8 @@ namespace JoyEngine
 		const auto hdrRTVHandle = m_mainColorRenderTarget->GetRTV()->GetCPUHandle();
 
 		ASSERT(m_currentCamera != nullptr);
-		const glm::mat4 mainCameraViewMatrix = m_currentCamera->GetViewMatrix();
-		const glm::mat4 mainCameraProjMatrix = m_currentCamera->GetProjMatrix();
+		const jmath::mat4x4 mainCameraViewMatrix = m_currentCamera->GetViewMatrix();
+		const jmath::mat4x4 mainCameraProjMatrix = m_currentCamera->GetProjMatrix();
 
 		ViewProjectionMatrixData mainCameraMatrixVP = {
 			.view = mainCameraViewMatrix,
@@ -266,8 +266,8 @@ namespace JoyEngine
 			const auto data = static_cast<EngineData*>(engineDataBuffer->GetPtr(m_currentFrameIndex));
 			data->cameraWorldPos = m_currentCamera->GetGameObject().GetTransform()->GetPosition();
 			data->time = Time::GetTime();
-			data->cameraInvProj = glm::inverse(mainCameraProjMatrix);
-			data->cameraInvView = glm::inverse(mainCameraViewMatrix);
+			data->cameraInvProj = jmath::inverse(mainCameraProjMatrix);
+			data->cameraInvView = jmath::inverse(mainCameraViewMatrix);
 			data->cameraNear = m_currentCamera->GetNear();
 			data->cameraFar = m_currentCamera->GetFar();
 			data->cameraFovRadians = m_currentCamera->GetFovRadians();
@@ -505,7 +505,7 @@ namespace JoyEngine
 			ImGui::Begin("Stats:");
 			//ImGui::Text("Screen: %dx%d", m_width, m_height);
 			ImGui::Text("Num triangles %d", m_trianglesCount);
-			const glm::vec3 camPos = m_currentCamera->GetGameObject().GetTransform()->GetPosition();
+			const jmath::vec3 camPos = m_currentCamera->GetGameObject().GetTransform()->GetPosition();
 			ImGui::Text("Camera: %.3f %.3f %.3f", camPos.x, camPos.y, camPos.z);
 			ImGui::Checkbox("Debug draw raytraced image", &g_drawRaytracedImage);
 

@@ -13,7 +13,7 @@
 
 namespace JoyEngine
 {
-	bool SphereCubeIntersection(glm::vec3 cubeMin, glm::vec3 cubeMax, glm::vec3 sphereCenter, float sphereRadius)
+	bool SphereCubeIntersection(jmath::vec3 cubeMin, jmath::vec3 cubeMax, jmath::vec3 sphereCenter, float sphereRadius)
 	{
 		float dmin = 0;
 		float r2 = pow(sphereRadius, 2.f);
@@ -32,10 +32,10 @@ namespace JoyEngine
 		return false;
 	}
 
-	inline glm::vec4 ToVec4(glm::vec3 vec3)
-	{
-		return {vec3.x, vec3.y, vec3.z, 1};
-	}
+	//inline jmath::vec4 ToVec4(jmath::vec3 vec3)
+	//{
+	//	return {vec3.x, vec3.y, vec3.z, 1};
+	//}
 
 	ClusteredLightSystem::ClusteredLightSystem(const uint32_t frameCount) :
 		m_frameCount(frameCount),
@@ -64,7 +64,6 @@ namespace JoyEngine
 			{
 				dataPtr->data[i] = dataArray[i];
 			}
-
 		}
 
 		const float cameraNear = m_camera->GetNear();
@@ -75,7 +74,7 @@ namespace JoyEngine
 		const float distance = cameraFar - cameraNear;
 		const float logDistance = log2(distance + 1);
 
-		const glm::mat4 cameraViewMatrix = m_camera->GetViewMatrix();
+		const jmath::mat4x4 cameraViewMatrix = m_camera->GetViewMatrix();
 
 		auto GetCubeVertex = [&](int x, int y, int z)
 		{
@@ -85,13 +84,13 @@ namespace JoyEngine
 			const float cubeX = x * nearW / NUM_CLUSTERS_X - nearW / 2;
 			const float cubeY = y * nearH / NUM_CLUSTERS_Y - nearH / 2;
 
-			return glm::vec3(cubeX, cubeY, nearZ);
+			return jmath::vec3(cubeX, cubeY, nearZ);
 		};
 
 		for (auto& pair : m_lights) // TODO make it in parallel
 		{
-			glm::vec4 sphereCenter = ToVec4(pair.first->GetGameObject().GetTransform()->GetPosition());
-			sphereCenter = cameraViewMatrix * sphereCenter;
+			jmath::xvec4 sphereCenter = pair.first->GetGameObject().GetTransform()->GetXPosition();
+			sphereCenter = jmath::mul(cameraViewMatrix, sphereCenter);
 			pair.second = sphereCenter;
 		}
 
@@ -101,7 +100,7 @@ namespace JoyEngine
 			{
 				for (int y = 0; y < NUM_CLUSTERS_Y; y++)
 				{
-					glm::vec3 cubePoints[8];
+					jmath::vec3 cubePoints[8];
 
 					cubePoints[0] = GetCubeVertex(x + 0, y + 0, z + 0);
 					cubePoints[1] = GetCubeVertex(x + 0, y + 0, z + 1);
@@ -112,13 +111,13 @@ namespace JoyEngine
 					cubePoints[6] = GetCubeVertex(x + 1, y + 1, z + 0);
 					cubePoints[7] = GetCubeVertex(x + 1, y + 1, z + 1);
 
-					glm::vec3 cubeMin = cubePoints[0];
-					glm::vec3 cubeMax = cubePoints[0];
+					jmath::vec3 cubeMin = cubePoints[0];
+					jmath::vec3 cubeMax = cubePoints[0];
 
 					for (int i = 1; i < 8; i++)
 					{
-						cubeMin = glm::min(cubePoints[i], cubeMin);
-						cubeMax = glm::max(cubePoints[i], cubeMax);
+						cubeMin = jmath::min(cubePoints[i], cubeMin);
+						cubeMax = jmath::max(cubePoints[i], cubeMax);
 					}
 
 					int currentLight = 0;
@@ -131,7 +130,7 @@ namespace JoyEngine
 					{
 						uint32_t lightIndex = light.first->GetIndex();
 
-						if (SphereCubeIntersection(cubeMin, cubeMax, light.second, m_lightDataPool.GetElem(lightIndex).radius))
+						if (SphereCubeIntersection(cubeMin, cubeMax, jmath::toVec3(light.second), m_lightDataPool.GetElem(lightIndex).radius))
 						{
 							ASSERT(currentLight < LIGHTS_PER_CLUSTER);
 							m_clusterLightIndices[clusterStartingPoint + currentLight] = lightIndex;
@@ -186,7 +185,6 @@ namespace JoyEngine
 				}
 			}
 		}
-
 	}
 
 	void ClusteredLightSystem::RenderDirectionalShadows(
@@ -266,7 +264,7 @@ namespace JoyEngine
 	uint32_t ClusteredLightSystem::RegisterLight(LightBase* light)
 	{
 		ASSERT(!m_lights.contains(light));
-		m_lights.insert({ light, glm::vec4() });
+		m_lights.insert({light, jmath::xvec4()});
 		return m_lightDataPool.Allocate();
 	}
 

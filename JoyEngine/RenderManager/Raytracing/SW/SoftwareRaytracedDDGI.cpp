@@ -16,8 +16,8 @@
 namespace JoyEngine
 {
 	const AABB g_sceneAabb = {
-		.min = glm::vec3(-40.0f, -3.0f, -25.0f),
-		.max = glm::vec3(40.0f, 30.0f, 25.0f),
+		.min = jmath::vec3(-40.0f, -3.0f, -25.0f),
+		.max = jmath::vec3(40.0f, 30.0f, 25.0f),
 	};
 
 	uint32_t ExpandBits(uint32_t v)
@@ -40,14 +40,14 @@ namespace JoyEngine
 		return xx * 4 + yy * 2 + zz;
 	}
 
-	void GetCentroidAndAABB(glm::vec3 a, glm::vec3 b, glm::vec3 c, glm::vec3* centroid, AABB* aabb)
+	void GetCentroidAndAABB(jmath::vec3 a, jmath::vec3 b, jmath::vec3 c, jmath::vec3* centroid, AABB* aabb)
 	{
-		glm::vec3 min = glm::vec3(
+		jmath::vec3 min = jmath::vec3(
 			std::min(std::min(a.x, b.x), c.x) - 0.001f,
 			std::min(std::min(a.y, b.y), c.y) - 0.001f,
 			std::min(std::min(a.z, b.z), c.z) - 0.001f
 		);
-		glm::vec3 max = glm::vec3(
+		jmath::vec3 max = jmath::vec3(
 			std::max(std::max(a.x, b.x), c.x) + 0.001f,
 			std::max(std::max(a.y, b.y), c.y) + 0.001f,
 			std::max(std::max(a.z, b.z), c.z) + 0.001f
@@ -60,9 +60,9 @@ namespace JoyEngine
 		};
 	}
 
-	glm::vec3 NormalizeCentroid(glm::vec3 centroid)
+	jmath::vec3 NormalizeCentroid(jmath::vec3 centroid)
 	{
-		glm::vec3 ret = centroid;
+		jmath::vec3 ret = centroid;
 		ret.x -= g_sceneAabb.min.x;
 		ret.y -= g_sceneAabb.min.y;
 		ret.z -= g_sceneAabb.min.z;
@@ -198,11 +198,11 @@ namespace JoyEngine
 
 					for (uint32_t i = 0; i < meshTrianglesLength; i++, m_trianglesLength++)
 					{
-						glm::vec3 a = vertices[indices[i * 3 + 0]].pos;
-						glm::vec3 b = vertices[indices[i * 3 + 1]].pos;
-						glm::vec3 c = vertices[indices[i * 3 + 2]].pos;
+						jmath::vec3 a = vertices[indices[i * 3 + 0]].pos;
+						jmath::vec3 b = vertices[indices[i * 3 + 1]].pos;
+						jmath::vec3 c = vertices[indices[i * 3 + 2]].pos;
 
-						glm::vec3 centroid;
+						jmath::vec3 centroid;
 						AABB aabb = {};
 
 						GetCentroidAndAABB(a, b, c, &centroid, &aabb);

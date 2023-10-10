@@ -2,7 +2,6 @@
 #define CAMERA_H
 
 #include "Component.h"
-#include <glm/glm.hpp>
 
 #include "Common/CameraUnit.h"
 
@@ -18,8 +17,8 @@ namespace JoyEngine
 		void Enable() override;
 		void Disable() override;
 		void Update() override;
-		[[nodiscard]] glm::mat4x4 GetViewMatrix() const;
-		[[nodiscard]] glm::mat4x4 GetProjMatrix() const;
+		[[nodiscard]] jmath::mat4x4 GetViewMatrix() const;
+		[[nodiscard]] jmath::mat4x4 GetProjMatrix() const;
 
 		[[nodiscard]] float GetFovRadians() const;
 		[[nodiscard]] float GetNear() const;

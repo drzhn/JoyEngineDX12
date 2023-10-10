@@ -3,10 +3,6 @@
 
 #include "InputManager/InputManager.h"
 
-#include <iostream>
-#include <glm/glm.hpp>
-#include <glm/gtc/quaternion.hpp>
-
 #include "Common/Time.h"
 #include "SceneManager/GameObject.h"
 #include "SceneManager/Transform.h"
@@ -14,9 +10,8 @@
 namespace JoyEngine
 {
 	RoomBehaviour::RoomBehaviour(GameObject& go)
-		:Component(go)
+		: Component(go)
 	{
-
 	}
 
 	void RoomBehaviour::Enable()
@@ -43,7 +38,7 @@ namespace JoyEngine
 		//		m_transform->GetPosition() + glm::vec3(-Time::GetDeltaTime(), 0, 0)
 		//	);
 		//}
-		m_gameObject.GetTransform()->SetRotation(// glm::angleAxis(glm::pi<float>() / 2, glm::vec3(-1, 0, 0)));// *
-			glm::angleAxis(Time::GetTime() * m_speed, glm::vec3(0, 1, 0)));
+		m_gameObject.GetTransform()->SetRotation( // glm::angleAxis(glm::pi<float>() / 2, glm::vec3(-1, 0, 0)));// *
+			jmath::angleAxis(jmath::xup, Time::GetTime() * m_speed));
 	}
 }

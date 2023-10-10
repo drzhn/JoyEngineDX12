@@ -1,9 +1,9 @@
 #include "SerializationUtils.h"
 
-#include <glm/glm.hpp>
 #include "Color.h"
 
 #include "HashDefs.h"
+#include "Math/MathTypes.h"
 
 namespace JoyEngine
 {
@@ -11,11 +11,11 @@ namespace JoyEngine
 		{strHash("int"), sizeof(int32_t)},
 		{strHash("uint"), sizeof(uint32_t)},
 		{strHash("float"), sizeof(float)},
-		{strHash("vec2"), sizeof(glm::vec2)},
-		{strHash("vec3"), sizeof(glm::vec3)},
-		{strHash("vec4"), sizeof(glm::vec4)},
-		{strHash("mat3"), sizeof(glm::mat3)},
-		{strHash("mat4"), sizeof(glm::mat4)},
+		{strHash("vec2"), sizeof(jmath::vec2)},
+		{strHash("vec3"), sizeof(jmath::vec3)},
+		{strHash("vec4"), sizeof(jmath::vec4)},
+		//{strHash("mat3"), sizeof(jmath::mat3)},
+		//{strHash("mat4"), sizeof(jmath::mat4)},
 		{strHash("color"), sizeof(Color)},
 
 	};

@@ -86,14 +86,14 @@ namespace JoyEngine
 
 
 		m_constantsValues = {
-			.Res = glm::uvec2(m_screenWidth / 4, m_screenHeight / 4),
+			.Res = jmath::uvec2(m_screenWidth / 4, m_screenHeight / 4),
 			.Domain = m_screenWidth * m_screenHeight / 16,
 			.GroupSize = m_groupSize,
 			.AdaptationSpeed = 0.2f,
 			.UseGammaCorrection = true,
 			.MiddleGrey = 0.9f,
 			.LumWhiteSqr = 40.0f,
-			.LumFactor = glm::vec3(0.299f, 0.587f, 0.114f),
+			.LumFactor = jmath::vec3(0.299f, 0.587f, 0.114f),
 			.UseTonemapping = true
 		};
 

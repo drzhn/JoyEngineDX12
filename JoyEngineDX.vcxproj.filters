@@ -213,6 +213,9 @@
     <ClCompile Include="JoyEngine\RenderManager\Raytracing\RaytracedDDGIDataContainer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="JoyEngine\Common\Math\MathTypes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="JoyEngine\JoyEngine.h">
@@ -468,6 +471,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JoyEngine\RenderManager\Raytracing\AbstractRaytracedDDGI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JoyEngine\Common\Math\MathTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

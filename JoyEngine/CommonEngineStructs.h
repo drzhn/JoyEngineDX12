@@ -3,16 +3,16 @@
 
 #ifdef ENGINE
 #include <cstdint>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 
-#define VEC2 glm::vec2
-#define VEC3 glm::vec3
-#define VEC4 glm::vec4
-#define MAT4 glm::mat4
+#include "Common/Math/MathTypes.h"
+
+#define VEC2 JoyEngine::jmath::vec2
+#define VEC3 JoyEngine::jmath::vec3
+#define VEC4 JoyEngine::jmath::vec4
+#define MAT4 JoyEngine::jmath::mat4x4
 #define UINT1 uint32_t
-#define UINT2 glm::uvec2
-#define UINT3 glm::uvec3
+#define UINT2 JoyEngine::jmath::uvec2
+#define UINT3 JoyEngine::jmath::uvec3
 #endif
 
 #ifdef SHADER
@@ -62,24 +62,24 @@
 
 #define PI 3.14159265359f
 
-inline glm::vec3 shadowTransformsForward[6]
+inline JoyEngine::jmath::vec3 shadowTransformsForward[6]
 {
-	VEC3(1.0, 0.0, 0.0),
-	VEC3(-1.0, 0.0, 0.0),
-	VEC3(0.0, 1.0, 0.0),
-	VEC3(0.0, -1.0, 0.0),
-	VEC3(0.0, 0.0, 1.0),
-	VEC3(0.0, 0.0, -1.0)
+	VEC3(1.0f, 0.0f, 0.0f),
+	VEC3(-1.0f, 0.0f, 0.0f),
+	VEC3(0.0f, 1.0f, 0.0f),
+	VEC3(0.0f, -1.0f, 0.0f),
+	VEC3(0.0f, 0.0f, 1.0f),
+	VEC3(0.0f, 0.0f, -1.0f)
 };
 
-inline glm::vec3 shadowTransformsUp[6]
+inline JoyEngine::jmath::vec3 shadowTransformsUp[6]
 {
-	VEC3(0.0, 1.0, 0.0),
-	VEC3(0.0, 1.0, 0.0),
-	VEC3(0.0, 0.0, 1.0),
-	VEC3(0.0, 0.0, 1.0),
-	VEC3(0.0, 1.0, 0.0),
-	VEC3(0.0, 1.0, 0.0)
+	VEC3(0.0f, 1.0f, 0.0f),
+	VEC3(0.0f, 1.0f, 0.0f),
+	VEC3(0.0f, 0.0f, 1.0f),
+	VEC3(0.0f, 0.0f, 1.0f),
+	VEC3(0.0f, 1.0f, 0.0f),
+	VEC3(0.0f, 1.0f, 0.0f)
 };
 
 enum LightType

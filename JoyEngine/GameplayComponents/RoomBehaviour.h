@@ -1,6 +1,7 @@
 #ifndef ROOM_BEHAVIOUR_H
 #define ROOM_BEHAVIOUR_H
 
+#include "Common/Color.h"
 #include "Common/Serialization.h"
 #include "Components/Component.h"
 

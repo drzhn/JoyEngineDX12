@@ -3,7 +3,6 @@
 
 #include "imgui.h"
 #include "MeshRenderer.h"
-#include "DataManager/DataManager.h"
 #include "EngineMaterialProvider/EngineMaterialProvider.h"
 #include "RenderManager/RenderManager.h"
 #include "RenderManager/LightSystems/ILightSystem.h"
@@ -124,18 +123,18 @@ namespace JoyEngine
 	//	}
 	//}
 
-	//glm::mat4 Light::GetViewMatrix() const
+	//jmath::mat4 Light::GetViewMatrix() const
 	//{
 	//	return m_cameraUnit.GetViewMatrix(m_transform->GetPosition(), m_transform->GetRotation());
 	//}
 
-	//glm::mat4 Light::GetCubeViewMatrix(uint32_t index) const
+	//jmath::mat4 Light::GetCubeViewMatrix(uint32_t index) const
 	//{
-	//	const glm::vec3 eye = m_transform->GetPosition();
-	//	return glm::lookAtLH(eye, eye + shadowTransformsForward[index], shadowTransformsUp[index]);
+	//	const jmath::vec3 eye = m_transform->GetPosition();
+	//	return jmath::lookAtLH(eye, eye + shadowTransformsForward[index], shadowTransformsUp[index]);
 	//}
 
-	//glm::mat4x4 Light::GetProjMatrix() const
+	//jmath::mat4x4 Light::GetProjMatrix() const
 	//{
 	//	return m_cameraUnit.GetProjMatrix();
 	//}
@@ -186,17 +185,19 @@ namespace JoyEngine
 	void DirectionalLight::Update()
 	{
 		// TODO this should be controlled by behaviour class
-		m_gameObject.GetTransform()->SetRotation(glm::vec3(m_currentAngle, 180, 0));
-		m_gameObject.GetTransform()->SetPosition(glm::vec3(
+		m_gameObject.GetTransform()->SetRotation(jmath::vec3(m_currentAngle, 180, 0));
+		m_gameObject.GetTransform()->SetPosition(jmath::vec3(
 			0,
-			70 * glm::cos(glm::radians(90 - m_currentAngle)),
-			70 * glm::sin(glm::radians(90 - m_currentAngle))));
+			70 * jmath::cos(jmath::toRadians(90 - m_currentAngle)),
+			70 * jmath::sin(jmath::toRadians(90 - m_currentAngle))));
 
 		DirectionalLightInfo& lightData = m_lightSystem.GetDirectionalLightData();
 
 		lightData.direction = m_gameObject.GetTransform()->GetForward();
 		lightData.proj = m_cameraUnit.GetProjMatrix();
-		lightData.view = m_cameraUnit.GetViewMatrix(m_gameObject.GetTransform()->GetPosition(), m_gameObject.GetTransform()->GetRotation());
+		lightData.view = m_cameraUnit.GetViewMatrix(
+			m_gameObject.GetTransform()->GetXPosition(), 
+			m_gameObject.GetTransform()->GetRotation());
 
 		float tempColor[4];
 		UnpackColor(tempColor, lightData.packedColor);

@@ -3,11 +3,9 @@
 
 #include <string>
 #include <map>
-#include <glm/glm.hpp>
 #include <rapidjson/document.h>
 
 #include "Utils/Assert.h"
-#include "Common/Color.h"
 #include "Serializable.h"
 #include "HashDefs.h"
 

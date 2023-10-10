@@ -87,7 +87,7 @@ namespace JoyEngine
 		DynamicBufferPool<LightInfo, LightData, LIGHT_SIZE> m_lightDataPool;
 		// TODO we store pointers to lights here for getting their positions during light clusterization
 		// TODO make something smarter than this
-		std::map<LightBase*, glm::vec4> m_lights;
+		std::map<LightBase*, jmath::xvec4> m_lights;
 		std::array<uint32_t, NUM_CLUSTERS_X * NUM_CLUSTERS_Y * NUM_CLUSTERS_Z * LIGHTS_PER_CLUSTER> m_clusterLightIndices;
 		DynamicCpuBuffer<ClusterEntryData> m_clusterEntryData;
 		DynamicCpuBuffer<ClusterItemData> m_clusterItemData;

@@ -1,8 +1,6 @@
 ﻿#ifndef MODEL_DATA_SYSTEM_H
 #define MODEL_DATA_SYSTEM_H
 
-#include <glm/fwd.hpp>
-
 #include "CommonEngineStructs.h"
 #include "ResourceManager/Buffers/DynamicBufferPool.h"
 #include "SceneManager/Transform.h"

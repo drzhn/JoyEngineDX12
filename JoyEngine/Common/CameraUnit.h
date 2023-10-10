@@ -1,7 +1,7 @@
 ﻿#ifndef CAMERA_UNIT_H
 #define CAMERA_UNIT_H
 
-#include <glm/glm.hpp>
+#include "Math/MathTypes.h"
 
 namespace JoyEngine
 {
@@ -20,8 +20,8 @@ namespace JoyEngine
 		explicit CameraUnit(float aspect, float width, float height, float fovDeg, float nearPlane, float farPlane);
 		explicit CameraUnit(float aspect, float size, float nearPlane, float farPlane);
 
-		[[nodiscard]] virtual glm::mat4x4 GetProjMatrix() const;
-		[[nodiscard]] virtual glm::mat4x4 GetViewMatrix(glm::vec3 position, glm::quat rotation) const;
+		[[nodiscard]] virtual jmath::mat4x4 GetProjMatrix() const;
+		[[nodiscard]] virtual jmath::mat4x4 GetViewMatrix(jmath::xvec4 position, jmath::quat rotation) const;
 
 		[[nodiscard]] float GetNear() const noexcept { return m_near; }
 		[[nodiscard]] float GetFar() const noexcept { return m_far; }

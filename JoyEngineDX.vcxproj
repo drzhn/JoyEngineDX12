@@ -229,6 +229,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="JoyEngine\Common\Math\MathTypes.cpp" />
+    <ClCompile Include="JoyEngine\EngineDataProvider\MeshContainer.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\Raytracing\HW\HardwareRaytracedDDGI.cpp" />
     <ClCompile Include="JoyEngine\Common\CameraUnit.cpp" />
     <ClCompile Include="JoyEngine\Components\Camera.cpp" />
@@ -238,7 +239,7 @@
     <ClCompile Include="JoyEngine\GameplayComponents\CameraBehaviour.cpp" />
     <ClCompile Include="JoyEngine\GameplayComponents\LightBehaviour.cpp" />
     <ClCompile Include="JoyEngine\GameplayComponents\RoomBehaviour.cpp" />
-    <ClCompile Include="JoyEngine\MemoryManager\DeviceLinearAllocator.cpp" />
+    <ClCompile Include="JoyEngine\MemoryManager\LinearMemoryAllocator.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\LightSystems\ClusteredLightSystem.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\ComputeDispatcher.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\GBuffer.cpp" />
@@ -281,12 +282,13 @@
     <ClCompile Include="JoyEngine\SceneManager\Scene.cpp" />
     <ClCompile Include="JoyEngine\SceneManager\SceneManager.cpp" />
     <ClCompile Include="JoyEngine\SceneManager\Transform.cpp" />
-    <ClCompile Include="JoyEngine\EngineMaterialProvider\EngineMaterialProvider.cpp" />
+    <ClCompile Include="JoyEngine\EngineDataProvider\EngineDataProvider.cpp" />
     <ClCompile Include="JoyEngine\Utils\GraphicsUtils.cpp" />
     <ClCompile Include="JoyEngine\Utils\Log.cpp" />
     <ClCompile Include="JoyEngine\main.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\Pipelines\RaytracingPipeline.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\Pipelines\ShaderInputContainer.cpp" />
+    <ClCompile Include="JoyEngine\Common\Allocators\LinearAllocator.cpp" />
     <ClCompile Include="ThirdParty\imgui\backends\imgui_impl_dx12.cpp" />
     <ClCompile Include="ThirdParty\imgui\backends\imgui_impl_win32.cpp" />
     <ClCompile Include="ThirdParty\imgui\imgui.cpp" />
@@ -298,6 +300,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="JoyEngine\Common\Math\MathTypes.h" />
+    <ClInclude Include="JoyEngine\Common\Math\MathUtils.h" />
+    <ClInclude Include="JoyEngine\EngineDataProvider\MeshContainer.h" />
     <ClInclude Include="JoyEngine\RenderManager\Raytracing\AbstractRaytracedDDGI.h" />
     <ClInclude Include="JoyEngine\RenderManager\Raytracing\HW\HardwareRaytracedDDGI.h" />
     <ClInclude Include="JoyEngine\Common\CameraUnit.h" />
@@ -311,7 +315,7 @@
     <ClInclude Include="JoyEngine\GameplayComponents\LightBehaviour.h" />
     <ClInclude Include="JoyEngine\GameplayComponents\RoomBehaviour.h" />
     <ClInclude Include="JoyEngine\JoyAssetHeaders.h" />
-    <ClInclude Include="JoyEngine\MemoryManager\DeviceLinearAllocator.h" />
+    <ClInclude Include="JoyEngine\MemoryManager\LinearMemoryAllocator.h" />
     <ClInclude Include="JoyEngine\RenderManager\LightSystems\ClusteredLightSystem.h" />
     <ClInclude Include="JoyEngine\RenderManager\ComputeDispatcher.h" />
     <ClInclude Include="JoyEngine\RenderManager\GBuffer.h" />
@@ -365,7 +369,7 @@
     <ClInclude Include="JoyEngine\SceneManager\SceneManager.h" />
     <ClInclude Include="JoyEngine\SceneManager\Transform.h" />
     <ClInclude Include="JoyEngine\Utils\Assert.h" />
-    <ClInclude Include="JoyEngine\EngineMaterialProvider\EngineMaterialProvider.h" />
+    <ClInclude Include="JoyEngine\EngineDataProvider\EngineDataProvider.h" />
     <ClInclude Include="JoyEngine\Utils\FileUtils.h" />
     <ClInclude Include="JoyEngine\Utils\GraphicsUtils.h" />
     <ClInclude Include="JoyEngine\Utils\GUID.h" />
@@ -374,6 +378,7 @@
     <ClInclude Include="JoyEngine\Utils\TimeCounter.h" />
     <ClInclude Include="JoyEngine\ResourceManager\Pipelines\RaytracingPipeline.h" />
     <ClInclude Include="JoyEngine\ResourceManager\Pipelines\ShaderInputContainer.h" />
+    <ClInclude Include="JoyEngine\Common\Allocators\LinearAllocator.h" />
     <ClInclude Include="ThirdParty\imgui\backends\imgui_impl_dx12.h" />
     <ClInclude Include="ThirdParty\imgui\backends\imgui_impl_win32.h" />
     <ClInclude Include="ThirdParty\imgui\imconfig.h" />

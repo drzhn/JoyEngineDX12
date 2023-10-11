@@ -1,6 +1,5 @@
 #include "Mesh.h"
 
-#include <vector>
 #include "JoyAssetHeaders.h"
 #include "DataManager/DataManager.h"
 #include "MemoryManager/MemoryManager.h"

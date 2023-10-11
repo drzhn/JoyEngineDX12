@@ -20,7 +20,7 @@
 #include "Components/MeshRenderer.h"
 #include "DescriptorManager/DescriptorManager.h"
 #include "GraphicsManager/GraphicsManager.h"
-#include "EngineMaterialProvider/EngineMaterialProvider.h"
+#include "EngineDataProvider/EngineDataProvider.h"
 #include "ResourceManager/Material.h"
 #include "SceneManager/GameObject.h"
 #include "SceneManager/Transform.h"
@@ -261,7 +261,7 @@ namespace JoyEngine
 		};
 
 		{
-			const DynamicCpuBuffer<EngineData>* engineDataBuffer = EngineMaterialProvider::Get()->GetEngineDataBuffer();
+			const DynamicCpuBuffer<EngineData>* engineDataBuffer = EngineDataProvider::Get()->GetEngineDataBuffer();
 
 			const auto data = static_cast<EngineData*>(engineDataBuffer->GetPtr(m_currentFrameIndex));
 			data->cameraWorldPos = m_currentCamera->GetGameObject().GetTransform()->GetPosition();
@@ -293,7 +293,7 @@ namespace JoyEngine
 			m_lightSystem->RenderDirectionalShadows(
 				commandList,
 				m_currentFrameIndex,
-				EngineMaterialProvider::Get()->GetGBufferWriteSharedMaterial());
+				EngineDataProvider::Get()->GetGBufferWriteSharedMaterial());
 		}
 
 		// Set main viewport-scissor rects
@@ -330,7 +330,7 @@ namespace JoyEngine
 				FALSE, &dsvHandle);
 
 			RenderSceneForSharedMaterial(commandList, &mainCameraMatrixVP,
-			                             EngineMaterialProvider::Get()->GetGBufferWriteSharedMaterial());
+			                             EngineDataProvider::Get()->GetGBufferWriteSharedMaterial());
 
 			m_gbuffer->BarrierColorToRead(commandList);
 		}
@@ -460,7 +460,7 @@ namespace JoyEngine
 	{
 		// Draw axis gizmo
 		{
-			auto sm = EngineMaterialProvider::Get()->GetGizmoAxisDrawerSharedMaterial();
+			auto sm = EngineDataProvider::Get()->GetGizmoAxisDrawerSharedMaterial();
 
 			commandList->SetPipelineState(sm->GetGraphicsPipeline()->GetPipelineObject().Get());
 			commandList->SetGraphicsRootSignature(sm->GetGraphicsPipeline()->GetRootSignature().Get());
@@ -625,7 +625,7 @@ namespace JoyEngine
 		const ViewProjectionMatrixData* cameraVP,
 		const AbstractRaytracedDDGI* raytracer) const
 	{
-		const auto& sm = EngineMaterialProvider::Get()->GetDeferredShadingProcessorSharedMaterial();
+		const auto& sm = EngineDataProvider::Get()->GetDeferredShadingProcessorSharedMaterial();
 
 		commandList->SetPipelineState(sm->GetGraphicsPipeline()->GetPipelineObject().Get());
 		commandList->SetGraphicsRootSignature(sm->GetGraphicsPipeline()->GetRootSignature().Get());

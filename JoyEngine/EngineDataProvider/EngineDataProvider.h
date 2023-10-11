@@ -1,5 +1,5 @@
-﻿#ifndef DUMMY_MATERIAL_PROVIDER_H
-#define DUMMY_MATERIAL_PROVIDER_H
+﻿#ifndef ENGINE_DATA_PROVIDER_H
+#define ENGINE_DATA_PROVIDER_H
 
 #include "Common/Singleton.h"
 
@@ -11,11 +11,11 @@
 
 namespace JoyEngine
 {
-	class EngineMaterialProvider : public Singleton<EngineMaterialProvider>
+	class EngineDataProvider : public Singleton<EngineDataProvider>
 	{
 	public:
-		EngineMaterialProvider() = default;
-		~EngineMaterialProvider() = default;
+		EngineDataProvider() = default;
+		~EngineDataProvider() = default;
 		void Init();
 
 		[[nodiscard]] ResourceHandle<SharedMaterial> GetStandardSharedMaterial() const noexcept { return m_standardSharedMaterial; }
@@ -51,8 +51,6 @@ namespace JoyEngine
 	private:
 		ResourceHandle<SharedMaterial> m_standardSharedMaterial;
 
-		//ResourceHandle<ComputePipeline> m_generateMipsComputePipeline;
-
 		ResourceHandle<SharedMaterial> m_gizmoAxisDrawerSharedMaterial;
 
 		ResourceHandle<SharedMaterial> m_gbufferWriteSharedMaterial;
@@ -67,6 +65,7 @@ namespace JoyEngine
 
 		std::unique_ptr<DynamicCpuBuffer<EngineData>> m_engineDataBuffer;
 
+		//ResourceHandle<ComputePipeline> m_generateMipsComputePipeline;
 
 		//ResourceHandle<SharedMaterial> m_shadowPointProcessingSharedMaterial;
 
@@ -99,4 +98,4 @@ namespace JoyEngine
 	};
 }
 
-#endif // DUMMY_MATERIAL_PROVIDER_H
+#endif // ENGINE_DATA_PROVIDER_H

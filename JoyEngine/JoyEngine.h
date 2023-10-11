@@ -25,7 +25,7 @@ namespace JoyEngine
 
 	class RenderManager;
 
-	class EngineMaterialProvider;
+	class EngineDataProvider;
 
 	class IWindowHandler
 	{
@@ -75,7 +75,7 @@ namespace JoyEngine
 		std::unique_ptr<ResourceManager> m_resourceManager;
 		std::unique_ptr<SceneManager> m_sceneManager;
 		std::unique_ptr<RenderManager> m_renderManager;
-		std::unique_ptr<EngineMaterialProvider> m_engineMaterials;
+		std::unique_ptr<EngineDataProvider> m_engineMaterials;
 	};
 }
 

@@ -12,7 +12,7 @@
 
 
 #include "GraphicsManager/GraphicsManager.h"
-#include "EngineMaterialProvider/EngineMaterialProvider.h"
+#include "EngineDataProvider/EngineDataProvider.h"
 
 #include "ResourceManager/Texture.h"
 #include "Utils/Assert.h"
@@ -47,7 +47,7 @@ namespace JoyEngine
 			(b > 0 ? std::to_string(b) + " b" : "");
 	}
 
-	std::string ParseAllocatorStats(const DeviceLinearAllocator* allocator)
+	std::string ParseAllocatorStats(const LinearMemoryAllocator* allocator)
 	{
 		uint64_t aligned = allocator->GetAlignedBytesAllocated();
 		return "Requested " + ParseByteNumber(aligned) +
@@ -60,31 +60,31 @@ namespace JoyEngine
 
 		m_queue = std::make_unique<CommandQueue>(D3D12_COMMAND_LIST_TYPE_DIRECT, GraphicsManager::Get()->GetDevice());
 
-		m_allocators[DeviceAllocatorTypeGpuBuffer] = std::make_unique<DeviceLinearAllocator>(
+		m_allocators[DeviceAllocatorTypeGpuBuffer] = std::make_unique<LinearMemoryAllocator>(
 			D3D12_HEAP_TYPE_DEFAULT,
 			DeviceAllocatorTypeGpuBuffer,
 			GPU_BUFFER_ALLOCATION_SIZE,
 			GraphicsManager::Get()->GetDevice());
 
-		m_allocators[DeviceAllocatorTypeTextures] = std::make_unique<DeviceLinearAllocator>(
+		m_allocators[DeviceAllocatorTypeTextures] = std::make_unique<LinearMemoryAllocator>(
 			D3D12_HEAP_TYPE_DEFAULT,
 			DeviceAllocatorTypeTextures,
 			GPU_TEXTURE_ALLOCATION_SIZE,
 			GraphicsManager::Get()->GetDevice());
 
-		m_allocators[DeviceAllocatorTypeRtDsTextures] = std::make_unique<DeviceLinearAllocator>(
+		m_allocators[DeviceAllocatorTypeRtDsTextures] = std::make_unique<LinearMemoryAllocator>(
 			D3D12_HEAP_TYPE_DEFAULT,
 			DeviceAllocatorTypeRtDsTextures,
 			GPU_RT_DS_ALLOCATION_SIZE,
 			GraphicsManager::Get()->GetDevice());
 
-		m_allocators[DeviceAllocatorTypeCpuUploadBuffer] = std::make_unique<DeviceLinearAllocator>(
+		m_allocators[DeviceAllocatorTypeCpuUploadBuffer] = std::make_unique<LinearMemoryAllocator>(
 			D3D12_HEAP_TYPE_UPLOAD,
 			DeviceAllocatorTypeCpuUploadBuffer,
 			CPU_UPLOAD_ALLOCATION_SIZE,
 			GraphicsManager::Get()->GetDevice());
 
-		m_allocators[DeviceAllocatorTypeCpuReadbackBuffer] = std::make_unique<DeviceLinearAllocator>(
+		m_allocators[DeviceAllocatorTypeCpuReadbackBuffer] = std::make_unique<LinearMemoryAllocator>(
 			D3D12_HEAP_TYPE_READBACK,
 			DeviceAllocatorTypeCpuReadbackBuffer,
 			CPU_READBACK_ALLOCATION_SIZE,
@@ -253,7 +253,7 @@ namespace JoyEngine
 			0, 1, resourceDesc);
 
 
-		DeviceLinearAllocator* allocator = nullptr;
+		LinearMemoryAllocator* allocator = nullptr;
 
 		if (heapType == D3D12_HEAP_TYPE_DEFAULT)
 		{

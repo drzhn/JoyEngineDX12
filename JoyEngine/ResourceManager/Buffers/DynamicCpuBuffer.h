@@ -6,11 +6,10 @@
 #include "Buffer.h"
 #include "ResourceManager/ResourceView.h"
 #include "Utils/Assert.h"
+#include "Common/Math/MathUtils.h"
 
 namespace JoyEngine
 {
-	uint32_t Align(uint32_t size, uint32_t alignment);
-
 	template <typename T>
 	class DynamicCpuBuffer
 	{
@@ -19,7 +18,7 @@ namespace JoyEngine
 
 		explicit DynamicCpuBuffer(uint32_t count):
 			m_count(count),
-			m_alignedStride(Align(sizeof(T), D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT))
+			m_alignedStride(jmath::align<uint32_t>(sizeof(T), D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT))
 		{
 			m_resourceViews = std::vector<std::unique_ptr<ResourceView>>(m_count);
 

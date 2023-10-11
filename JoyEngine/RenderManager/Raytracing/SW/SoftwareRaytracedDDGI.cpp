@@ -4,7 +4,7 @@
 #include "ResourceManager/ResourceManager.h"
 #include "Components/MeshRenderer.h"
 #include "DescriptorManager/DescriptorManager.h"
-#include "EngineMaterialProvider/EngineMaterialProvider.h"
+#include "EngineDataProvider/EngineDataProvider.h"
 #include "SceneManager/GameObject.h"
 #include "SceneManager/Transform.h"
 #include "Utils/GraphicsUtils.h"
@@ -265,7 +265,7 @@ namespace JoyEngine
 			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "normalsTexture", m_gbuffer->GetNormalsUAV());
 			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "positionTexture", m_gbuffer->GetPositionUAV());
 			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "textures", DescriptorManager::Get()->GetSRVHeapStartDescriptorHandle());
-			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "materials", EngineMaterialProvider::Get()->GetMaterialsDataView());
+			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "materials", EngineDataProvider::Get()->GetMaterialsDataView());
 			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "sortedTriangleIndices", m_triangleIndexBuffer->GetSRV());
 			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "triangleAABB", m_triangleAABBBuffer->GetSRV());
 			GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "internalNodes", m_bvhInternalNodesBuffer->GetSRV());

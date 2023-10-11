@@ -4,7 +4,7 @@
 
 #include "Components/Camera.h"
 #include "Components/MeshRenderer.h"
-#include "EngineMaterialProvider/EngineMaterialProvider.h"
+#include "EngineDataProvider/EngineDataProvider.h"
 #include "ResourceManager/Mesh.h"
 #include "SceneManager/GameObject.h"
 #include "Utils/GraphicsUtils.h"
@@ -206,7 +206,7 @@ namespace JoyEngine
 
 		commandList->ClearDepthStencilView(shadowMapHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
-		const auto sm = EngineMaterialProvider::Get()->GetShadowProcessingSharedMaterial();
+		const auto sm = EngineDataProvider::Get()->GetShadowProcessingSharedMaterial();
 		commandList->SetPipelineState(sm->GetGraphicsPipeline()->GetPipelineObject().Get());
 		commandList->SetGraphicsRootSignature(sm->GetGraphicsPipeline()->GetRootSignature().Get());
 

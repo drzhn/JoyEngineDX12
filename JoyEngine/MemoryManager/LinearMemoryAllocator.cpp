@@ -1,13 +1,13 @@
-﻿#include "DeviceLinearAllocator.h"
+﻿#include "LinearMemoryAllocator.h"
 
 #include "d3dx12.h"
 #include "Utils/Assert.h"
 
 namespace JoyEngine
 {
-	DeviceLinearAllocator::DeviceLinearAllocator(D3D12_HEAP_TYPE heapType, DeviceAllocatorType type, uint64_t size, ID3D12Device* device):
+	LinearMemoryAllocator::LinearMemoryAllocator(D3D12_HEAP_TYPE heapType, DeviceAllocatorType type, uint64_t size, ID3D12Device* device):
 		m_device(device),
-		m_size(size)
+		m_allocator(size, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT)
 	{
 		// https://docs.microsoft.com/en-us/windows/win32/api/d3d12/ne-d3d12-d3d12_heap_flags#remarks
 		// I have device heap tier 1 on my GTX 1060 3G.
@@ -47,17 +47,13 @@ namespace JoyEngine
 		ASSERT_SUCC(device->CreateHeap(&heapDesc, IID_PPV_ARGS(&m_heap)));
 	}
 
-	uint64_t DeviceLinearAllocator::Allocate(uint64_t size)
+	uint64_t LinearMemoryAllocator::Allocate(uint64_t size)
 	{
-		ASSERT(m_currentOffset + size < m_size);
 		m_unalignedBytesAllocated += size;
-
-		const uint64_t oldOffset = m_currentOffset;
-		m_currentOffset += (((size - 1) / D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT) + 1) * D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT;
-		return oldOffset;
+		return m_allocator.Allocate(size);
 	}
 
-	ID3D12Heap* DeviceLinearAllocator::GetHeap() const
+	ID3D12Heap* LinearMemoryAllocator::GetHeap() const
 	{
 		return m_heap.Get();
 	}

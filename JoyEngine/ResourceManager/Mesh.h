@@ -2,7 +2,6 @@
 #define MESH_H
 
 #include <memory>
-#include <wrl/client.h>
 
 #include "CommonEngineStructs.h"
 #include "Buffers/UAVGpuBuffer.h"

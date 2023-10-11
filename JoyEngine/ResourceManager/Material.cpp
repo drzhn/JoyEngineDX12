@@ -11,7 +11,7 @@
 #include "RenderManager/RenderManager.h"
 
 #include "SharedMaterial.h"
-#include "EngineMaterialProvider/EngineMaterialProvider.h"
+#include "EngineDataProvider/EngineDataProvider.h"
 #include "ResourceManager/Texture.h"
 
 namespace JoyEngine
@@ -21,7 +21,7 @@ namespace JoyEngine
 	Material::Material(GUID guid) :
 		Resource(guid),
 		m_materialIndex(s_currentMaterialIndex++),
-		m_sharedMaterial(EngineMaterialProvider::Get()->GetGBufferWriteSharedMaterial()) // We will only use standard material for serialized materials
+		m_sharedMaterial(EngineDataProvider::Get()->GetGBufferWriteSharedMaterial()) // We will only use standard material for serialized materials
 	{
 		rapidjson::Document json = DataManager::Get()->GetSerializedData(guid, material);
 
@@ -40,7 +40,7 @@ namespace JoyEngine
 	Material::Material(GUID guid, const std::map<std::string, std::string>& bindings, bool bindingsArePaths = false) :
 		Resource(guid),
 		m_materialIndex(s_currentMaterialIndex++),
-		m_sharedMaterial(EngineMaterialProvider::Get()->GetGBufferWriteSharedMaterial())
+		m_sharedMaterial(EngineDataProvider::Get()->GetGBufferWriteSharedMaterial())
 	{
 		InitMaterial(bindings, bindingsArePaths);
 	}
@@ -64,7 +64,7 @@ namespace JoyEngine
 				}
 			case D3D_SIT_TEXTURE:
 				{
-					ResourceView* srv = EngineMaterialProvider::Get()->GetNullTextureView();
+					ResourceView* srv = EngineDataProvider::Get()->GetNullTextureView();
 					if (!data.empty())
 					{
 						if (bindingsArePaths)
@@ -82,7 +82,7 @@ namespace JoyEngine
 						m_sharedMaterial->GetGraphicsPipeline()->GetBindingIndexByName(name),
 						srv
 					});
-					EngineMaterialProvider::Get()->SetMaterialData(m_materialIndex, srv->GetDescriptorIndex());
+					EngineDataProvider::Get()->SetMaterialData(m_materialIndex, srv->GetDescriptorIndex());
 
 					break;
 				}

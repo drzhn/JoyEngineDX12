@@ -2,7 +2,7 @@
 
 #include "CommonEngineStructs.h"
 #include "Common/HashDefs.h"
-#include "EngineMaterialProvider/EngineMaterialProvider.h"
+#include "EngineDataProvider/EngineDataProvider.h"
 #include "RenderManager/RenderManager.h"
 #include "ResourceManager/ResourceView.h"
 
@@ -193,7 +193,7 @@ namespace JoyEngine
 						commandList,
 						pipeline,
 						rootIndex,
-						EngineMaterialProvider::Get()->GetEngineDataView(frameIndex));
+						EngineDataProvider::Get()->GetEngineDataView(frameIndex));
 					break;
 				}
 			default:
@@ -250,7 +250,7 @@ namespace JoyEngine
 						commandList,
 						pipeline,
 						rootIndex,
-						EngineMaterialProvider::Get()->GetEngineDataView(frameIndex));
+						EngineDataProvider::Get()->GetEngineDataView(frameIndex));
 					break;
 				}
 			default:

@@ -4,7 +4,7 @@
 #include "ResourceManager/Material.h"
 #include "ResourceManager/Mesh.h"
 
-#include "EngineMaterialProvider/EngineMaterialProvider.h"
+#include "EngineDataProvider/EngineDataProvider.h"
 
 namespace JoyEngine
 {
@@ -66,7 +66,7 @@ namespace JoyEngine
 
 	//void MeshRenderer::SetMaterial(const std::string& materialName)
 	//{
-	//	m_material = EngineMaterialProvider::Get()->GetSampleMaterialByName(materialName); //for debug purposes 
+	//	m_material = EngineDataProvider::Get()->GetSampleMaterialByName(materialName); //for debug purposes 
 	//}
 
 	void MeshRenderer::SetMaterial(const GUID& materialGuid)

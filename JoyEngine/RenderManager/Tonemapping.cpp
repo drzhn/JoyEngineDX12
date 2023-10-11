@@ -2,7 +2,7 @@
 
 #include "IRenderManager.h"
 #include "Common/HashDefs.h"
-#include "EngineMaterialProvider/EngineMaterialProvider.h"
+#include "EngineDataProvider/EngineDataProvider.h"
 #include "ResourceManager/ResourceManager.h"
 #include "ResourceManager/Texture.h"
 #include "ResourceManager/Pipelines/ComputePipeline.h"

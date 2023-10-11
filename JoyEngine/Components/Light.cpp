@@ -3,8 +3,7 @@
 
 #include "imgui.h"
 #include "MeshRenderer.h"
-#include "EngineMaterialProvider/EngineMaterialProvider.h"
-#include "RenderManager/RenderManager.h"
+#include "EngineDataProvider/EngineDataProvider.h"
 #include "RenderManager/LightSystems/ILightSystem.h"
 #include "SceneManager/GameObject.h"
 #include "SceneManager/Transform.h"
@@ -185,9 +184,9 @@ namespace JoyEngine
 	void DirectionalLight::Update()
 	{
 		// TODO this should be controlled by behaviour class
-		m_gameObject.GetTransform()->SetRotation(jmath::vec3(m_currentAngle, 180, 0));
+		m_gameObject.GetTransform()->SetRotation(jmath::vec3(m_currentAngle, 180.f, 0.f));
 		m_gameObject.GetTransform()->SetPosition(jmath::vec3(
-			0,
+			0.f,
 			70 * jmath::cos(jmath::toRadians(90 - m_currentAngle)),
 			70 * jmath::sin(jmath::toRadians(90 - m_currentAngle))));
 

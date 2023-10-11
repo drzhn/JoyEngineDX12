@@ -1,4 +1,4 @@
-﻿#include "EngineMaterialProvider.h"
+﻿#include "EngineDataProvider.h"
 
 #include <d3d12.h>
 
@@ -11,9 +11,9 @@
 
 namespace JoyEngine
 {
-	void EngineMaterialProvider::Init()
+	void EngineDataProvider::Init()
 	{
-		TIME_PERF("EngineMaterialProvider init")
+		TIME_PERF("EngineDataProvider init")
 
 		EngineSamplersProvider::InitSamplers();
 		DXGI_FORMAT mainRTVFormat = RenderManager::Get()->GetHdrRTVFormat();
@@ -484,7 +484,7 @@ namespace JoyEngine
 		//}
 	}
 
-	void EngineMaterialProvider::SetMaterialData(uint32_t index, uint32_t diffuseTextureIndex) const
+	void EngineDataProvider::SetMaterialData(uint32_t index, uint32_t diffuseTextureIndex) const
 	{
 		StandardMaterialData* dataPtr = m_materials->GetPtr();
 		dataPtr->data[index].diffuseTextureIndex = diffuseTextureIndex;

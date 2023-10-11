@@ -4,7 +4,7 @@
 #include "Common/HashDefs.h"
 #include "Components/MeshRenderer.h"
 #include "DescriptorManager/DescriptorManager.h"
-#include "EngineMaterialProvider/EngineMaterialProvider.h"
+#include "EngineDataProvider/EngineDataProvider.h"
 #include "GraphicsManager/GraphicsManager.h"
 #include "RenderManager/Raytracing/SW/SoftwareRaytracedDDGI.h"
 #include "ResourceManager/ResourceManager.h"
@@ -189,10 +189,10 @@ namespace JoyEngine
 		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "meshData", m_dataContainer.GetMeshDataView());
 		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "objectVertices", DescriptorManager::Get()->GetSRVHeapStartDescriptorHandle());
 		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "objectIndices", DescriptorManager::Get()->GetSRVHeapStartDescriptorHandle());
-		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "materials", EngineMaterialProvider::Get()->GetMaterialsDataView());
+		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "materials", EngineDataProvider::Get()->GetMaterialsDataView());
 
 #if defined(HW_CAMERA_TRACE)
-		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "g_engineData", EngineMaterialProvider::Get()->GetEngineDataView(frameIndex));
+		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "g_engineData", EngineDataProvider::Get()->GetEngineDataView(frameIndex));
 #endif
 
 

@@ -6,7 +6,7 @@
 #include "Common/CommandQueue.h"
 #include "ResourceManager/Texture.h"
 
-#include "DeviceLinearAllocator.h"
+#include "LinearMemoryAllocator.h"
 #include "Common/Singleton.h"
 #include "ResourceManager/Buffers/Buffer.h"
 
@@ -57,7 +57,7 @@ namespace JoyEngine
 		void LoadDataToBufferInternal(uint64_t bufferSize, const Buffer* gpuBuffer) const;
 
 		std::unique_ptr<CommandQueue> m_queue;
-		std::array<std::unique_ptr<DeviceLinearAllocator>, 5> m_allocators;
+		std::array<std::unique_ptr<LinearMemoryAllocator>, 5> m_allocators;
 		std::unique_ptr<Buffer> m_uploadStagingBuffer;
 		std::unique_ptr<Buffer> m_readbackStagingBuffer;
 	};

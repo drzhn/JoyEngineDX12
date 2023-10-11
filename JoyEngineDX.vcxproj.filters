@@ -96,7 +96,7 @@
     <ClCompile Include="JoyEngine\GameplayComponents\RoomBehaviour.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JoyEngine\EngineMaterialProvider\EngineMaterialProvider.cpp">
+    <ClCompile Include="JoyEngine\EngineDataProvider\EngineDataProvider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="JoyEngine\ResourceManager\Material.cpp">
@@ -117,7 +117,7 @@
     <ClCompile Include="JoyEngine\ResourceManager\MtlBinaryParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JoyEngine\MemoryManager\DeviceLinearAllocator.cpp">
+    <ClCompile Include="JoyEngine\MemoryManager\LinearMemoryAllocator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="JoyEngine\RenderManager\Tonemapping.cpp">
@@ -214,6 +214,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="JoyEngine\Common\Math\MathTypes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JoyEngine\EngineDataProvider\MeshContainer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JoyEngine\Common\Allocators\LinearAllocator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -323,7 +329,7 @@
     <ClInclude Include="JoyEngine\GameplayComponents\RoomBehaviour.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JoyEngine\EngineMaterialProvider\EngineMaterialProvider.h">
+    <ClInclude Include="JoyEngine\EngineDataProvider\EngineDataProvider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JoyEngine\ResourceManager\Material.h">
@@ -350,7 +356,7 @@
     <ClInclude Include="JoyEngine\ResourceManager\MtlBinaryParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JoyEngine\MemoryManager\DeviceLinearAllocator.h">
+    <ClInclude Include="JoyEngine\MemoryManager\LinearMemoryAllocator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JoyEngine\Common\Singleton.h">
@@ -474,6 +480,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JoyEngine\Common\Math\MathTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JoyEngine\EngineDataProvider\MeshContainer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JoyEngine\Common\Allocators\LinearAllocator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JoyEngine\Common\Math\MathUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

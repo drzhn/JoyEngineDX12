@@ -14,7 +14,7 @@ namespace JoyEngine
 	const wchar_t* g_hitGroupName = L"HitGroup";
 
 	ShaderTable::ShaderTable(uint64_t size, const void* shaderIdentifier):
-		m_size(Align(D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES + size, D3D12_RAYTRACING_SHADER_RECORD_BYTE_ALIGNMENT))
+		m_size(jmath::align<uint64_t>(D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES + size, D3D12_RAYTRACING_SHADER_RECORD_BYTE_ALIGNMENT))
 	{
 		m_dataBuffer = std::make_unique<Buffer>(
 			m_size,

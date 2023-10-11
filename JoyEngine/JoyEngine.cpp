@@ -7,7 +7,7 @@
 
 #include "SceneManager/SceneManager.h"
 #include "RenderManager/RenderManager.h"
-#include "EngineMaterialProvider/EngineMaterialProvider.h"
+#include "EngineDataProvider/EngineDataProvider.h"
 #include "MemoryManager/MemoryManager.h"
 #include "ResourceManager/ResourceManager.h"
 #include "DataManager/DataManager.h"
@@ -37,7 +37,7 @@ namespace JoyEngine
 		m_resourceManager(new ResourceManager()),
 		m_sceneManager(new SceneManager()),
 		m_renderManager(new RenderManager()),
-		m_engineMaterials(new EngineMaterialProvider())
+		m_engineMaterials(new EngineDataProvider())
 	{
 		ASSERT(m_inputManager != nullptr);
 		ASSERT(m_graphicsManager != nullptr);

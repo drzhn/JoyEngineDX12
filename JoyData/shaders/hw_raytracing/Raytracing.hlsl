@@ -22,8 +22,8 @@ ConstantBuffer<EngineData> g_engineData : register(b0, space0);
 ConstantBuffer<RaytracedProbesData> raytracedProbesData : register(b1, space0);
 
 StructuredBuffer<MeshData> meshData : register(t1, space0); // size = THREADS_PER_BLOCK * BLOCK_SIZE
-StructuredBuffer<Vertex> objectVertices[] : register(t0, space1);
-StructuredBuffer<UINT1> objectIndices[] : register(t0, space2);
+StructuredBuffer<Vertex> objectVertices : register(t0, space1);
+StructuredBuffer<UINT1> objectIndices : register(t0, space2);
 
 ConstantBuffer<StandardMaterialData> materials : register(b2, space0);
 Texture2D textures[] : register(t0, space3);
@@ -94,7 +94,7 @@ void MyRaygenShader()
 	// Write the raytraced color to the output texture.
 	colorTexture[id.xy] = payload.color;
 	normalsTexture[id.xy] = payload.normals;
-    positionTexture[id.xy] = payload.position;
+	positionTexture[id.xy] = payload.position;
 }
 
 [shader("closesthit")]
@@ -104,9 +104,9 @@ void MyClosestHitShader(inout HardwareRayPayload payload, in MyAttributes attr)
 
 	const MeshData md = meshData[GeometryIndex()];
 
-	const Vertex v0 = objectVertices[md.verticesIndex][objectIndices[md.indicesIndex][PrimitiveIndex() * 3 + 0]];
-	const Vertex v1 = objectVertices[md.verticesIndex][objectIndices[md.indicesIndex][PrimitiveIndex() * 3 + 1]];
-	const Vertex v2 = objectVertices[md.verticesIndex][objectIndices[md.indicesIndex][PrimitiveIndex() * 3 + 2]];
+	const Vertex v0 = objectVertices[md.verticesIndex + objectIndices[md.indicesIndex + PrimitiveIndex() * 3 + 0]];
+	const Vertex v1 = objectVertices[md.verticesIndex + objectIndices[md.indicesIndex + PrimitiveIndex() * 3 + 1]];
+	const Vertex v2 = objectVertices[md.verticesIndex + objectIndices[md.indicesIndex + PrimitiveIndex() * 3 + 2]];
 
 	const float2 uv = barycentrics.x * v0.texCoord + barycentrics.y * v1.texCoord + barycentrics.z * v2.texCoord;
 	const float3 normal = barycentrics.x * v0.normal + barycentrics.y * v1.normal + barycentrics.z * v2.normal;

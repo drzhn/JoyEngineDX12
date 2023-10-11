@@ -187,8 +187,8 @@ namespace JoyEngine
 		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "linearClampSampler", EngineSamplersProvider::GetLinearWrapSampler());
 
 		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "meshData", m_dataContainer.GetMeshDataView());
-		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "objectVertices", DescriptorManager::Get()->GetSRVHeapStartDescriptorHandle());
-		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "objectIndices", DescriptorManager::Get()->GetSRVHeapStartDescriptorHandle());
+		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "objectVertices", EngineDataProvider::Get()->GetMeshContainer()->GetVertexBufferSRV());
+		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "objectIndices", EngineDataProvider::Get()->GetMeshContainer()->GetIndexBufferSRV());
 		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "materials", EngineDataProvider::Get()->GetMaterialsDataView());
 
 #if defined(HW_CAMERA_TRACE)

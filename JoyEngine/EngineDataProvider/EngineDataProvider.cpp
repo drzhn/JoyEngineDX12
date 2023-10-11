@@ -29,6 +29,7 @@ namespace JoyEngine
 			m_standardSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial>(standardSharedMaterialGuid);
 		}
 
+
 		//// Mip map generation
 		//{
 		//	const GUID mipMapGenerationShaderGuid = GUID::StringToGuid("3fb4d89b-ceab-46c3-b34f-d41a49e072cf"); //shaders/generateMipMaps.hlsl
@@ -102,6 +103,10 @@ namespace JoyEngine
 
 		{
 			m_engineDataBuffer = std::make_unique<DynamicCpuBuffer<EngineData>>(RenderManager::Get()->GetFrameCount());
+		}
+
+		{
+			m_meshContainer = std::make_unique<MeshContainer>();
 		}
 
 

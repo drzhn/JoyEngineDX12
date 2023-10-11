@@ -2,6 +2,7 @@
 
 #include "JoyAssetHeaders.h"
 #include "DataManager/DataManager.h"
+#include "EngineDataProvider/EngineDataProvider.h"
 #include "MemoryManager/MemoryManager.h"
 
 namespace JoyEngine
@@ -58,31 +59,12 @@ namespace JoyEngine
 		m_vertexCount = vertexDataSize / sizeof(Vertex);
 		m_indexCount = indexDataSize / sizeof(Index);
 
-		// TODO place vertex and index buffers into one single buffer to decrease number of descriptors
-		m_vertexBuffer = std::make_unique<UAVGpuBuffer>(
-			m_vertexCount,
-			sizeof(Vertex),
-			D3D12_RESOURCE_STATE_GENERIC_READ); // for using in raytracing
+		MeshContainer* mc = EngineDataProvider::Get()->GetMeshContainer();
 
-		m_indexBuffer = std::make_unique<UAVGpuBuffer>(
-			m_indexCount,
-			sizeof(Index),
-			D3D12_RESOURCE_STATE_GENERIC_READ);
+		mc->CreateMeshView(vertexDataSize, indexDataSize, m_meshView);
 
-		MemoryManager::Get()->LoadDataToBuffer(m_verticesData, vertexDataSize, m_vertexBuffer->GetBuffer(), 0);
-		MemoryManager::Get()->LoadDataToBuffer(m_indicesData, indexDataSize, m_indexBuffer->GetBuffer(), 0);
-
-		m_vertexBufferView = {
-			m_vertexBuffer->GetBuffer()->GetBufferResource()->GetGPUVirtualAddress(),
-			vertexDataSize,
-			sizeof(Vertex)
-		};
-
-		m_indexBufferView = {
-			m_indexBuffer->GetBuffer()->GetBufferResource()->GetGPUVirtualAddress(),
-			indexDataSize,
-			DXGI_FORMAT_R32_UINT,
-		};
+		MemoryManager::Get()->LoadDataToBuffer(m_verticesData, vertexDataSize, mc->GetVertexBuffer(), m_meshView.vertexBufferOffset);
+		MemoryManager::Get()->LoadDataToBuffer(m_indicesData, indexDataSize, mc->GetIndexBuffer(), m_meshView.indexBufferOffset);
 
 		m_raytracingGeometryDesc = {
 			.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES,
@@ -93,10 +75,10 @@ namespace JoyEngine
 				.VertexFormat = DXGI_FORMAT_R32G32B32_FLOAT,
 				.IndexCount = m_indexCount,
 				.VertexCount = m_vertexCount,
-				.IndexBuffer = m_indexBuffer->GetBuffer()->GetBufferResource()->GetGPUVirtualAddress(),
+				.IndexBuffer = m_meshView.indexBufferView.BufferLocation,
 				.VertexBuffer =
 				{
-					.StartAddress = m_vertexBuffer->GetBuffer()->GetBufferResource()->GetGPUVirtualAddress(),
+					.StartAddress = m_meshView.vertexBufferView.BufferLocation,
 					.StrideInBytes = sizeof(Vertex)
 				}
 			}

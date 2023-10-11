@@ -4,6 +4,7 @@
 #include "Common/Singleton.h"
 
 #include "CommonEngineStructs.h"
+#include "MeshContainer.h"
 #include "ResourceManager/SharedMaterial.h"
 #include "ResourceManager/ResourceView.h"
 #include "ResourceManager/Buffers/ConstantCpuBuffer.h"
@@ -28,6 +29,8 @@ namespace JoyEngine
 		[[nodiscard]] ResourceView* GetNullTextureView() const noexcept { return m_nullTextureView.get(); }
 		[[nodiscard]] ResourceView* GetMaterialsDataView() const noexcept { return m_materials->GetView(); }
 		[[nodiscard]] ResourceView* GetEngineDataView(uint32_t index) const noexcept { return m_engineDataBuffer->GetView(index); }
+
+		[[nodiscard]] MeshContainer* GetMeshContainer() const { return m_meshContainer.get(); }
 
 		[[nodiscard]] DynamicCpuBuffer<EngineData>* GetEngineDataBuffer() const noexcept { return m_engineDataBuffer.get(); }
 
@@ -58,12 +61,14 @@ namespace JoyEngine
 		ResourceHandle<SharedMaterial> m_deferredShadingProcessorSharedMaterial;
 
 		ResourceHandle<SharedMaterial> m_shadowProcessingSharedMaterial;
-		
+
 		std::unique_ptr<ResourceView> m_nullTextureView;
 
 		std::unique_ptr<ConstantCpuBuffer<StandardMaterialData>> m_materials;
 
 		std::unique_ptr<DynamicCpuBuffer<EngineData>> m_engineDataBuffer;
+
+		std::unique_ptr<MeshContainer> m_meshContainer;
 
 		//ResourceHandle<ComputePipeline> m_generateMipsComputePipeline;
 

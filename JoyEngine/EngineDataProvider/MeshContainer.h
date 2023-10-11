@@ -9,7 +9,8 @@ namespace JoyEngine
 {
 	struct MeshView
 	{
-		uint64_t offset = 0;
+		uint32_t vertexBufferOffset = 0;
+		uint32_t indexBufferOffset = 0;
 		D3D12_VERTEX_BUFFER_VIEW vertexBufferView = {};
 		D3D12_INDEX_BUFFER_VIEW indexBufferView = {};
 	};
@@ -20,11 +21,19 @@ namespace JoyEngine
 	public:
 		MeshContainer();
 		void CreateMeshView(uint64_t vertexBufferSize, uint64_t indexBufferSize, MeshView& outView);
-		[[nodiscard]] ResourceView* GetBufferSRV() const noexcept { return m_buffer->GetSRV(); }
+
+		[[nodiscard]] Buffer* GetVertexBuffer() const { return m_vertexBuffer->GetBuffer(); }
+		[[nodiscard]] Buffer* GetIndexBuffer() const { return m_indexBuffer->GetBuffer(); }
+
+		[[nodiscard]] ResourceView* GetVertexBufferSRV() const noexcept { return m_vertexBuffer->GetSRV(); }
+		[[nodiscard]] ResourceView* GetIndexBufferSRV() const noexcept { return m_indexBuffer->GetSRV(); }
 
 	private:
-		LinearAllocator m_allocator;
-		std::unique_ptr<UAVGpuBuffer> m_buffer;
+		LinearAllocator m_vertexAllocator;
+		std::unique_ptr<UAVGpuBuffer> m_vertexBuffer;
+
+		LinearAllocator m_indexAllocator;
+		std::unique_ptr<UAVGpuBuffer> m_indexBuffer;
 	};
 }
 #endif // MESH_CONTAINER_H

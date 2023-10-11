@@ -5,6 +5,7 @@
 
 #include "CommonEngineStructs.h"
 #include "Buffers/UAVGpuBuffer.h"
+#include "EngineDataProvider/MeshContainer.h"
 
 #include "Common/Resource.h"
 #include "Utils/GUID.h"
@@ -29,15 +30,14 @@ namespace JoyEngine
 
 		[[nodiscard]] uint32_t* GetIndices() const noexcept { return m_indicesData; }
 
-		[[nodiscard]] D3D12_VERTEX_BUFFER_VIEW* GetVertexBufferView() noexcept { return &m_vertexBufferView; }
+		[[nodiscard]] D3D12_VERTEX_BUFFER_VIEW* GetVertexBufferView() noexcept { return &m_meshView.vertexBufferView; }
 
-		[[nodiscard]] D3D12_INDEX_BUFFER_VIEW* GetIndexBufferView() noexcept { return &m_indexBufferView; }
-
-		[[nodiscard]] ResourceView* GetVertexSRV() const noexcept { return m_vertexBuffer->GetSRV(); }
-
-		[[nodiscard]] ResourceView* GetIndexSRV() const noexcept { return m_indexBuffer->GetSRV(); }
+		[[nodiscard]] D3D12_INDEX_BUFFER_VIEW* GetIndexBufferView() noexcept { return &m_meshView.indexBufferView; }
 
 		[[nodiscard]] D3D12_RAYTRACING_GEOMETRY_DESC* GetRaytracingGeometryDescPtr() noexcept { return &m_raytracingGeometryDesc; }
+
+		[[nodiscard]] uint32_t GetVerticesBufferOffsetInBytes() const { return m_meshView.vertexBufferOffset; }
+		[[nodiscard]] uint32_t GetIndicesBufferOffsetInBytes() const { return m_meshView.indexBufferOffset; }
 
 		[[nodiscard]] bool IsLoaded() const noexcept override { return true; }
 
@@ -48,11 +48,7 @@ namespace JoyEngine
 		uint32_t m_indexCount = 0;
 		uint32_t m_vertexCount = 0;
 
-		std::unique_ptr<UAVGpuBuffer> m_vertexBuffer;
-		std::unique_ptr<UAVGpuBuffer> m_indexBuffer;
-
-		D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView = {};
-		D3D12_INDEX_BUFFER_VIEW m_indexBufferView = {};
+		MeshView m_meshView;
 
 		D3D12_RAYTRACING_GEOMETRY_DESC m_raytracingGeometryDesc;
 

@@ -112,8 +112,8 @@ namespace JoyEngine
 
 				m_meshDataBuffer->GetLocalData()[meshCount] = MeshData{
 					.materialIndex = mr->GetMaterial()->GetMaterialIndex(),
-					.verticesIndex = mr->GetMesh()->GetVertexSRV()->GetDescriptorIndex(),
-					.indicesIndex = mr->GetMesh()->GetIndexSRV()->GetDescriptorIndex(),
+					.verticesIndex = mr->GetMesh()->GetVerticesBufferOffsetInBytes() / static_cast<uint32_t>(sizeof(Vertex)),
+					.indicesIndex = mr->GetMesh()->GetIndicesBufferOffsetInBytes() / static_cast<uint32_t>(sizeof(Index)),
 				};
 
 				meshCount++;

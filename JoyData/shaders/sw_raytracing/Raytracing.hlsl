@@ -14,8 +14,8 @@ StructuredBuffer<TrianglePayload> trianglePayloadData; // size = THREADS_PER_BLO
 StructuredBuffer<MeshData> meshData; // size = THREADS_PER_BLOCK * BLOCK_SIZE
 
 // using of multiple spaces is the hack to bind bindless srv of different types
-StructuredBuffer<Vertex> objectVertices[] : register(t0, space1); 
-StructuredBuffer<UINT1> objectIndices[] : register(t0, space2);
+StructuredBuffer<Vertex> objectVertices : register(t0, space1);
+StructuredBuffer<Index> objectIndices : register(t0, space2);
 
 ConstantBuffer<StandardMaterialData> materials;
 Texture2D textures[] : register(t0, space3);
@@ -92,11 +92,11 @@ RaycastResult CheckTriangle(uint triangleIndex, Ray ray, RaycastResult result)
 	if (RayBoxIntersection(triangleAABB[triangleIndex], ray))
 	{
 		const TrianglePayload tri = trianglePayloadData[triangleIndex];
-        const MeshData md = meshData[tri.meshIndex];
+		const MeshData md = meshData[tri.meshIndex];
 
-        const Vertex v0 = objectVertices[md.verticesIndex][objectIndices[md.indicesIndex][tri.triangleIndex * 3 + 0]];
-        const Vertex v1 = objectVertices[md.verticesIndex][objectIndices[md.indicesIndex][tri.triangleIndex * 3 + 1]];
-        const Vertex v2 = objectVertices[md.verticesIndex][objectIndices[md.indicesIndex][tri.triangleIndex * 3 + 2]];
+		const Vertex v0 = objectVertices[md.verticesIndex + objectIndices[md.indicesIndex + tri.triangleIndex * 3 + 0]];
+		const Vertex v1 = objectVertices[md.verticesIndex + objectIndices[md.indicesIndex + tri.triangleIndex * 3 + 1]];
+		const Vertex v2 = objectVertices[md.verticesIndex + objectIndices[md.indicesIndex + tri.triangleIndex * 3 + 2]];
 
 		RaycastResult newResult = RayTriangleIntersection(ray.origin, ray.dir, v0.pos, v1.pos, v2.pos);
 		if (newResult.distance < result.distance)
@@ -221,20 +221,20 @@ void CSMain(uint3 groupId : SV_GroupID, uint3 groupThreadId : SV_GroupThreadID)
 	RaycastResult result = TraceRay(ray);
 
 	const TrianglePayload tri = trianglePayloadData[result.triangleIndex];
-    const MeshData md = meshData[tri.meshIndex];
+	const MeshData md = meshData[tri.meshIndex];
 
-	const Vertex v0 = objectVertices[md.verticesIndex][objectIndices[md.indicesIndex][tri.triangleIndex * 3 + 0]];
-	const Vertex v1 = objectVertices[md.verticesIndex][objectIndices[md.indicesIndex][tri.triangleIndex * 3 + 1]];
-    const Vertex v2 = objectVertices[md.verticesIndex][objectIndices[md.indicesIndex][tri.triangleIndex * 3 + 2]];
+	const Vertex v0 = objectVertices[md.verticesIndex + objectIndices[md.indicesIndex + tri.triangleIndex * 3 + 0]];
+	const Vertex v1 = objectVertices[md.verticesIndex + objectIndices[md.indicesIndex + tri.triangleIndex * 3 + 1]];
+	const Vertex v2 = objectVertices[md.verticesIndex + objectIndices[md.indicesIndex + tri.triangleIndex * 3 + 2]];
 
 	const float2 uv = (1 - result.uv.x - result.uv.y) * v0.texCoord + result.uv.x * v1.texCoord + result.uv.y * v2.texCoord;
 	const float3 normal = (1 - result.uv.x - result.uv.y) * v0.normal + result.uv.x * v1.normal + result.uv.y * v2.normal;
-    const uint materialIndex = md.materialIndex;
+	const uint materialIndex = md.materialIndex;
 
 	const float hasResult = result.distance != MAX_FLOAT;
 
 	float4 color = textures[materials.data[materialIndex].diffuseTextureIndex].SampleLevel(linearClampSampler, uv, 2);
-    float4 skyboxColor = textures[raytracedProbesData.skyboxTextureIndex].SampleLevel(linearClampSampler, SampleSphericalMap(-ray.dir), 2);
+	float4 skyboxColor = textures[raytracedProbesData.skyboxTextureIndex].SampleLevel(linearClampSampler, SampleSphericalMap(-ray.dir), 2);
 
 	colorTexture[id.xy] = float4(lerp(skyboxColor.rgb, color.rgb, hasResult), 1);
 	positionTexture[id.xy] = float4(ray.origin + ray.dir * result.distance, hasResult);

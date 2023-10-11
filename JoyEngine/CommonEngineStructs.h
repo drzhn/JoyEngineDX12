@@ -125,6 +125,8 @@ struct Vertex
 	VEC2 texCoord;
 };
 
+typedef UINT1 Index;
+
 struct ViewProjectionMatrixData
 {
 	MAT4 view;

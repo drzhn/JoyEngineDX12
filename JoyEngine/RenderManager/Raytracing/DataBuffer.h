@@ -39,7 +39,7 @@ namespace JoyEngine
 			MemoryManager::Get()->LoadDataToBuffer(
 				m_dataArray,
 				GetSize(),
-				m_gpuBuffer.get());
+				m_gpuBuffer.get(), 0);
 		}
 
 		void ReadbackGpuData() const

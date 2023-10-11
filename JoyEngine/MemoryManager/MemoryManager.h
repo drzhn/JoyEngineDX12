@@ -33,9 +33,9 @@ namespace JoyEngine
 			const Buffer* gpuBuffer) const;
 
 		void LoadDataToBuffer(
-			void* ptr, 
-			uint64_t bufferSize, 
-			const Buffer* gpuBuffer) const;
+			void* ptr,
+			uint64_t bufferSize,
+			const Buffer* gpuBuffer, uint64_t bufferOffset) const;
 
 		void LoadDataToImage(
 			std::ifstream& stream,
@@ -54,7 +54,7 @@ namespace JoyEngine
 			const D3D12_CLEAR_VALUE* clearValue = nullptr) const;
 
 	private:
-		void LoadDataToBufferInternal(uint64_t bufferSize, const Buffer* gpuBuffer) const;
+		void LoadDataToBufferInternal(uint64_t bufferSize, const Buffer* gpuBuffer, uint64_t bufferOffset) const;
 
 		std::unique_ptr<CommandQueue> m_queue;
 		std::array<std::unique_ptr<LinearMemoryAllocator>, 5> m_allocators;

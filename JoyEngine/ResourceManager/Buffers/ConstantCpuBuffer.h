@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "Buffer.h"
+#include "Common/Math/MathUtils.h"
 #include "ResourceManager/ResourceView.h"
 
 namespace JoyEngine
@@ -14,7 +15,7 @@ namespace JoyEngine
 	{
 	public:
 		explicit ConstantCpuBuffer() :
-			m_size(((sizeof(T) - 1) / 256 + 1) * 256)
+			m_size(jmath::align<uint32_t>(sizeof(T), D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT))
 		{
 			m_buffer = std::make_unique<Buffer>(
 				m_size,
@@ -47,7 +48,7 @@ namespace JoyEngine
 			return m_resourceView.get();
 		}
 
-		[[nodiscard]] T* GetPtr() 
+		[[nodiscard]] T* GetPtr()
 		{
 			return static_cast<T*>(m_currentLockedArea.GetPtr());
 		}
@@ -59,6 +60,7 @@ namespace JoyEngine
 		}
 
 		~ConstantCpuBuffer() = default;
+
 	private:
 		std::unique_ptr<Buffer> m_buffer;
 		std::unique_ptr<ResourceView> m_resourceView;

@@ -311,24 +311,26 @@ namespace JoyEngine
 		stream.seekg(offset);
 		stream.read(static_cast<char*>(bufferMappedPtr.GetPtr()), bufferSize);
 
-		LoadDataToBufferInternal(bufferSize, gpuBuffer);
+		LoadDataToBufferInternal(bufferSize, gpuBuffer, 0);
 	}
 
 	void MemoryManager::LoadDataToBuffer(
 		void* ptr,
 		uint64_t bufferSize,
-		const Buffer* gpuBuffer) const
+		const Buffer* gpuBuffer,
+		uint64_t bufferOffset) const
 	{
 		const MappedAreaHandle bufferMappedPtr = m_uploadStagingBuffer->Map();
 
 		memcpy(bufferMappedPtr.GetPtr(), ptr, bufferSize);
 
-		LoadDataToBufferInternal(bufferSize, gpuBuffer);
+		LoadDataToBufferInternal(bufferSize, gpuBuffer, bufferOffset);
 	}
 
 	void MemoryManager::LoadDataToBufferInternal(
 		uint64_t bufferSize,
-		const Buffer* gpuBuffer) const
+		const Buffer* gpuBuffer,
+		uint64_t bufferOffset) const
 	{
 		if (bufferSize > g_debugMaxResourceSizeAllocated)
 		{
@@ -347,7 +349,7 @@ namespace JoyEngine
 
 		commandList->CopyBufferRegion(
 			gpuBuffer->GetBufferResource().Get(),
-			0,
+			bufferOffset,
 			m_uploadStagingBuffer->GetBufferResource().Get(),
 			0,
 			bufferSize);

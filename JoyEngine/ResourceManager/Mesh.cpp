@@ -45,7 +45,7 @@ namespace JoyEngine
 		uint32_t indexDataStreamOffset)
 	{
 		m_verticesData = static_cast<Vertex*>(malloc(vertexDataSize));
-		m_indicesData = static_cast<uint32_t*>(malloc(indexDataSize));
+		m_indicesData = static_cast<Index*>(malloc(indexDataSize));
 
 		modelStream.clear();
 		modelStream.seekg(vertexDataStreamOffset);
@@ -56,7 +56,7 @@ namespace JoyEngine
 		modelStream.read(reinterpret_cast<char*>(m_indicesData), indexDataSize);
 
 		m_vertexCount = vertexDataSize / sizeof(Vertex);
-		m_indexCount = indexDataSize / sizeof(uint32_t);
+		m_indexCount = indexDataSize / sizeof(Index);
 
 		// TODO place vertex and index buffers into one single buffer to decrease number of descriptors
 		m_vertexBuffer = std::make_unique<UAVGpuBuffer>(
@@ -66,11 +66,11 @@ namespace JoyEngine
 
 		m_indexBuffer = std::make_unique<UAVGpuBuffer>(
 			m_indexCount,
-			sizeof(uint32_t),
+			sizeof(Index),
 			D3D12_RESOURCE_STATE_GENERIC_READ);
 
-		MemoryManager::Get()->LoadDataToBuffer(m_verticesData, vertexDataSize, m_vertexBuffer->GetBuffer());
-		MemoryManager::Get()->LoadDataToBuffer(m_indicesData, indexDataSize, m_indexBuffer->GetBuffer());
+		MemoryManager::Get()->LoadDataToBuffer(m_verticesData, vertexDataSize, m_vertexBuffer->GetBuffer(), 0);
+		MemoryManager::Get()->LoadDataToBuffer(m_indicesData, indexDataSize, m_indexBuffer->GetBuffer(), 0);
 
 		m_vertexBufferView = {
 			m_vertexBuffer->GetBuffer()->GetBufferResource()->GetGPUVirtualAddress(),

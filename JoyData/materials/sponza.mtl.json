@@ -8,7 +8,7 @@
     },
     {
       "name": "sponza:Material__47",
-      "diffuse": "textures/background.tga",
+      "diffuse": "",
       "textureSampler": "linearWrap"
     },
     {

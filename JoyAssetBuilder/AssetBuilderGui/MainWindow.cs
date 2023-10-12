@@ -21,6 +21,9 @@ namespace JoyAssetBuilder
 
         public MainWindow()
         {
+            //this.AutoScaleMode = AutoScaleMode.Dpi;
+            //this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 150F);
+            //PerformAutoScale();
             m_dataPath = Path.Combine(Directory.GetCurrentDirectory(), Resources.DATA_PATH);
             m_dllPath = Path.Combine(Directory.GetCurrentDirectory(), Resources.BUILDER_LIB);
             m_materialsPath = Path.Combine(m_dataPath, Resources.MATERIALS_FOLDER);

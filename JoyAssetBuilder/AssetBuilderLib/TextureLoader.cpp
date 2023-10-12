@@ -1,101 +1,82 @@
 ﻿#include "TextureLoader.h"
 
-#define STB_IMAGE_IMPLEMENTATION
 #include <filesystem>
 
-#include "stb_image.h"
-
 #include <fstream>
-#include <iostream>
+#include "combaseapi.h"
+#include "winerror.h"
 
-std::string exec(const char* cmd)
+#include "Texconv.h"
+
+const wchar_t* GetErrorDesc(HRESULT hr)
 {
-	char buffer[128];
-	std::string result;
-	std::unique_ptr<FILE, decltype(&_pclose)> pipe(_popen(cmd, "r"), _pclose);
-	if (!pipe)
+	static wchar_t desc[1024] = {};
+
+	LPWSTR errorText = nullptr;
+
+	const DWORD result = FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_ALLOCATE_BUFFER,
+		nullptr, static_cast<DWORD>(hr),
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<LPWSTR>(&errorText), 0, nullptr);
+
+	*desc = 0;
+
+	if (result > 0 && errorText)
 	{
-		throw std::runtime_error("popen() failed!");
+		swprintf_s(desc, L": %ls", errorText);
+
+		size_t len = wcslen(desc);
+		if (len >= 1)
+		{
+			desc[len - 1] = 0;
+		}
+
+		if (errorText)
+			LocalFree(errorText);
 	}
-	while (fgets(buffer, 128, pipe.get()) != nullptr)
-	{
-		result += buffer;
-	}
-	return result;
+
+	return desc;
+}
+
+TextureLoader::TextureLoader()
+{
+	int result = AssetConversion::TextureConversionInit();
 }
 
 bool TextureLoader::LoadTexture(const std::string& filePath, std::string& errorMessage)
 {
-	int texChannels;
-	const bool isHdr = stbi_is_hdr(filePath.c_str());
+	const bool isHdr = AssetConversion::IsHDR(filePath.c_str());
 
-	size_t dataSize = 0;
+	AssetConversion::TextureConversionParams conversionParams{
+		.width = 0, // preserve original
+		.height = 0,
+		.mipLevels = 0,
+		.format = DXGI_FORMAT_UNKNOWN
+	};
 
-	std::filesystem::path fullPath = std::filesystem::path(filePath);
-	std::filesystem::path folder = fullPath.parent_path();
-	std::filesystem::path ddsfilename = fullPath.stem().generic_string() + ".dds";
-	std::filesystem::path generatedFile = folder / ddsfilename;
+	const uint64_t options =
+		(1ull << OPT_MIPLEVELS) |
+		(1ull << OPT_FORMAT) |
+		(1ull << OPT_FIT_POWEROF2) |
+		(1ull << OPT_USE_DX10);
 
-	std::string command;
 	if (isHdr)
 	{
 		m_currentTextureData.m_header.format = BC6H_UF16;
-		command = "texconv.exe " + fullPath.generic_string() + " -m 0 -f BC6H_UF16 -y -pow2";
+		conversionParams.format = DXGI_FORMAT_BC6H_UF16;
 	}
 	else
 	{
 		m_currentTextureData.m_header.format = BC1_UNORM;
-		command = "texconv.exe " + fullPath.generic_string() + " -m 0 -f BC1_UNORM -y -pow2";
+		conversionParams.format = DXGI_FORMAT_BC1_UNORM;
 	}
 
-	std::string output = exec(command.c_str());
-	std::cout << output;
+	AssetConversion::TextureMetadata metadata;
+	int result = AssetConversion::Convert(conversionParams, options, filePath.c_str(), metadata, m_currentTextureData.blob);
 
-	std::ifstream file(generatedFile, std::ios::binary | std::ios::ate);
-	if (!file.is_open())
-	{
-		errorMessage = "Couldn't open generated file " + generatedFile.generic_string();
-		return false;
-	}
-
-	dataSize = file.tellg();
-	file.seekg(0, std::ios::beg);
-
-	m_currentTextureData.m_data.resize(dataSize);
-	if (!file.read(m_currentTextureData.m_data.data(), dataSize))
-	{
-		errorMessage = "Couldn't read generated file " + generatedFile.generic_string();
-		return false;
-	}
-	m_currentTextureData.m_header.dataSize = dataSize;
-
-	auto openBraceIndex = output.find_last_of('(');
-	auto closeBraceIndex = output.find_last_of(')');
-
-	auto info = output.substr(openBraceIndex + 1, closeBraceIndex - openBraceIndex - 1);
-
-	auto xpos = info.find_first_of('x');
-	auto commaPos = info.find_first_of(',');
-	auto spacePos = info.find_first_of(' ');
-
-	m_currentTextureData.m_header.width = std::stoul(info.substr(0, xpos));
-	if (commaPos != -1)
-	{
-		m_currentTextureData.m_header.height = std::stoul(info.substr(xpos + 1, commaPos - xpos));
-		m_currentTextureData.m_header.mipCount = std::stoul(info.substr(commaPos + 1, spacePos - commaPos));
-	}
-	else
-	{
-		m_currentTextureData.m_header.height = std::stoul(info.substr(xpos + 1, spacePos - xpos));
-		m_currentTextureData.m_header.mipCount = 1;
-	}
-	file.close();
-
-	if (!std::filesystem::remove(generatedFile))
-	{
-		errorMessage = "Couldn't delete generated file " + generatedFile.generic_string();
-		return false;
-	}
+	m_currentTextureData.m_header.dataSize = m_currentTextureData.blob.GetBufferSize();
+	m_currentTextureData.m_header.height = metadata.height;
+	m_currentTextureData.m_header.width = metadata.width;
+	m_currentTextureData.m_header.mipCount = metadata.mipLevels;
 
 	return true;
 }
@@ -105,7 +86,7 @@ bool TextureLoader::WriteData(const std::string& dataFilename, std::string& erro
 	std::ofstream modelFileStream(dataFilename, std::ofstream::binary | std::ofstream::trunc);
 
 	modelFileStream.write(reinterpret_cast<const char*>(&m_currentTextureData.m_header), sizeof(TextureAssetHeader));
-	modelFileStream.write(reinterpret_cast<const char*>(m_currentTextureData.m_data.data()), m_currentTextureData.m_data.size());
+	modelFileStream.write(reinterpret_cast<const char*>(m_currentTextureData.blob.GetBufferPointer()), m_currentTextureData.blob.GetBufferSize());
 
 	if (modelFileStream.is_open())
 	{

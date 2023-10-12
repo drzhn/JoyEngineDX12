@@ -4,9 +4,6 @@
 [submodule "ThirdParty/imgui"]
 	path = ThirdParty/imgui
 	url = ../../ocornut/imgui.git
-[submodule "ThirdParty/stb"]
-	path = ThirdParty/stb
-	url = ../../nothings/stb.git
 [submodule "ThirdParty/tinyobjloader"]
 	path = ThirdParty/tinyobjloader
 	url = ../../tinyobjloader/tinyobjloader.git
@@ -14,3 +11,6 @@
 	path = ThirdParty/DirectXMath
 	url = ../../microsoft/DirectXMath.git
 	branch = main
+[submodule "ThirdParty/TexconvLib"]
+	path = ThirdParty/TexconvLib
+	url = ../TexconvLib.git

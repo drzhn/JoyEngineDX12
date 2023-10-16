@@ -124,7 +124,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;ENGINE;WIN32_LEAN_AND_MEAN;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)JoyEngine;$(SolutionDir)ThirdParty\tinyobjloader;$(SolutionDir)ThirdParty\TexconvLib\include;$(SolutionDir)ThirdParty\fbxsdk\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)JoyEngine;$(SolutionDir)ThirdParty\TexconvLib\include;$(SolutionDir)ThirdParty\fbxsdk\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -144,7 +144,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;ENGINE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)JoyEngine;$(SolutionDir)ThirdParty\tinyobjloader;$(SolutionDir)ThirdParty\TexconvLib\include;$(SolutionDir)ThirdParty\fbxsdk\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)JoyEngine;$(SolutionDir)ThirdParty\TexconvLib\include;$(SolutionDir)ThirdParty\fbxsdk\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -156,7 +156,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\ThirdParty\tinyobjloader\tiny_obj_loader.cc" />
     <ClCompile Include="EntryPoint.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="TextureLoader.cpp" />

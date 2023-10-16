@@ -18,9 +18,6 @@
     <ClCompile Include="EntryPoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\ThirdParty\tinyobjloader\tiny_obj_loader.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ModelLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

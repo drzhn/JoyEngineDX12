@@ -3,6 +3,7 @@
 
 #include <Blob.h>
 #include <string>
+#include <thread>
 #include <vector>
 
 #include "JoyAssetHeaders.h"
@@ -21,6 +22,7 @@ private:
 	};
 
 	TextureData m_currentTextureData = {};
+	std::thread m_workerThread;
 };
 
 #endif //TEXTURE_LOADER_H

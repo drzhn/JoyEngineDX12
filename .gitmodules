@@ -4,9 +4,6 @@
 [submodule "ThirdParty/imgui"]
 	path = ThirdParty/imgui
 	url = ../../ocornut/imgui.git
-[submodule "ThirdParty/tinyobjloader"]
-	path = ThirdParty/tinyobjloader
-	url = ../../tinyobjloader/tinyobjloader.git
 [submodule "ThirdParty/DirectXMath"]
 	path = ThirdParty/DirectXMath
 	url = ../../microsoft/DirectXMath.git

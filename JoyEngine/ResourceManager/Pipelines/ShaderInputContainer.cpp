@@ -14,8 +14,8 @@ namespace JoyEngine
 {
 	uint32_t ShaderInputContainer::GetBindingIndexByName(const std::string& name) const
 	{
-		ASSERT(m_rootIndices.contains(strHash(name.c_str())));
-		return m_rootIndices.find(strHash(name.c_str()))->second;
+		ASSERT(m_rootIndices.contains(StrHash32(name.c_str())));
+		return m_rootIndices.find(StrHash32(name.c_str()))->second;
 	}
 
 	uint32_t ShaderInputContainer::GetBindingIndexByHash(const uint32_t hash) const
@@ -84,7 +84,7 @@ namespace JoyEngine
 			else if (name == "g_SceneAccelerationStructure")
 			{
 				params[paramsIndex].InitAsShaderResourceView(input.BindPoint, input.Space);
-				m_rootIndices.insert({strHash(name.c_str()), paramsIndex});
+				m_rootIndices.insert({StrHash32(name.c_str()), paramsIndex});
 				paramsIndex++;
 			}
 			else
@@ -128,7 +128,7 @@ namespace JoyEngine
 					input.Space,
 					input.BindCount == 0 ? D3D12_DESCRIPTOR_RANGE_FLAG_DESCRIPTORS_VOLATILE : D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
 				params[paramsIndex].InitAsDescriptorTable(1, &ranges[rangesIndex], input.Visibility);
-				m_rootIndices.insert({strHash(name.c_str()), paramsIndex});
+				m_rootIndices.insert({StrHash32(name.c_str()), paramsIndex});
 				rangesIndex++;
 				paramsIndex++;
 			}

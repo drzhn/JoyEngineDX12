@@ -89,12 +89,12 @@ namespace JoyEngine
 			case D3D_SIT_SAMPLER:
 				{
 					ResourceView* samplerView = nullptr;
-					switch (strHash(data.c_str()))
+					switch (StrHash32(data.c_str()))
 					{
-					case strHash("linearWrap"):
+					case StrHash32("linearWrap"):
 						samplerView = EngineSamplersProvider::GetLinearWrapSampler();
 						break;
-					case strHash("linearClamp"):
+					case StrHash32("linearClamp"):
 						samplerView = EngineSamplersProvider::GetLinearClampSampler();
 						break;
 					default:

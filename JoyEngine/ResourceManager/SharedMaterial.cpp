@@ -29,9 +29,9 @@ namespace JoyEngine
 		args.depthWrite = json["depthWrite"].GetBool();
 
 		std::string depthCompStr = json["comparison"].GetString();
-		switch (strHash(depthCompStr.c_str()))
+		switch (StrHash32(depthCompStr.c_str()))
 		{
-		case strHash("less_equal"):
+		case StrHash32("less_equal"):
 			args.depthComparisonFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 			break;
 		default:
@@ -39,15 +39,15 @@ namespace JoyEngine
 		}
 
 		std::string cullModeStr = json["cull"].GetString();
-		switch (strHash(cullModeStr.c_str()))
+		switch (StrHash32(cullModeStr.c_str()))
 		{
-		case strHash("back"):
+		case StrHash32("back"):
 			args.cullMode = D3D12_CULL_MODE_BACK;
 			break;
-		case strHash("front"):
+		case StrHash32("front"):
 			args.cullMode = D3D12_CULL_MODE_FRONT;
 			break;
-		case strHash("none"):
+		case StrHash32("none"):
 			args.cullMode = D3D12_CULL_MODE_NONE;
 			break;
 		default:
@@ -56,9 +56,9 @@ namespace JoyEngine
 
 		std::string blendStr = json["blend"].GetString();
 		CD3DX12_BLEND_DESC blendDesc;
-		switch (strHash(blendStr.c_str()))
+		switch (StrHash32(blendStr.c_str()))
 		{
-		case strHash("default"):
+		case StrHash32("default"):
 			blendDesc = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 			break;
 		default:
@@ -67,9 +67,9 @@ namespace JoyEngine
 
 		std::string topologyStr = json["topology"].GetString();
 		D3D12_PRIMITIVE_TOPOLOGY_TYPE topology = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-		switch (strHash(topologyStr.c_str()))
+		switch (StrHash32(topologyStr.c_str()))
 		{
-		case strHash("triangle"):
+		case StrHash32("triangle"):
 			topology = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 			break;
 		default:
@@ -82,21 +82,21 @@ namespace JoyEngine
 		for (auto& type : json["shaderTypes"].GetArray())
 		{
 			std::string typeStr = type.GetString();
-			switch (strHash(typeStr.c_str()))
+			switch (StrHash32(typeStr.c_str()))
 			{
-			case strHash("vertex"): args.shaderTypes |= JoyShaderTypeVertex;
+			case StrHash32("vertex"): args.shaderTypes |= JoyShaderTypeVertex;
 				break;
-			case strHash("hull"): args.shaderTypes |= JoyShaderTypeHull;
+			case StrHash32("hull"): args.shaderTypes |= JoyShaderTypeHull;
 				break;
-			case strHash("domain"): args.shaderTypes |= JoyShaderTypeDomain;
+			case StrHash32("domain"): args.shaderTypes |= JoyShaderTypeDomain;
 				break;
-			case strHash("geometry"): args.shaderTypes |= JoyShaderTypeGeometry;
+			case StrHash32("geometry"): args.shaderTypes |= JoyShaderTypeGeometry;
 				break;
-			case strHash("pixel"): args.shaderTypes |= JoyShaderTypePixel;
+			case StrHash32("pixel"): args.shaderTypes |= JoyShaderTypePixel;
 				break;
-			case strHash("amplification"): args.shaderTypes |= JoyShaderTypeAmplification;
+			case StrHash32("amplification"): args.shaderTypes |= JoyShaderTypeAmplification;
 				break;
-			case strHash("mesh"): args.shaderTypes |= JoyShaderTypeMesh;
+			case StrHash32("mesh"): args.shaderTypes |= JoyShaderTypeMesh;
 				break;
 			default:
 				ASSERT(false);

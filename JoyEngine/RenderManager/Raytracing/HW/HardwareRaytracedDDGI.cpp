@@ -176,7 +176,7 @@ namespace JoyEngine
 		commandList->SetComputeRootSignature(m_raytracingPipeline->GetGlobalInputContainer()->GetRootSignature().Get());
 
 		commandList->SetComputeRootShaderResourceView(
-			m_raytracingPipeline->GetGlobalInputContainer()->GetBindingIndexByHash(strHash("g_SceneAccelerationStructure")),
+			m_raytracingPipeline->GetGlobalInputContainer()->GetBindingIndexByHash(StrHash32("g_SceneAccelerationStructure")),
 			m_accelerationTop->GetBuffer()->GetBufferResource()->GetGPUVirtualAddress());
 
 		GraphicsUtils::AttachView(commandList, m_raytracingPipeline.get(), "colorTexture", m_gbuffer->GetColorUAV());

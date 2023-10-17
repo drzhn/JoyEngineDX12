@@ -60,7 +60,7 @@ namespace JoyEngine
 		const ResourceView* view
 	)
 	{
-		const uint32_t rootParamIndex = pipeline->GetBindingIndexByHash(strHash(paramName));
+		const uint32_t rootParamIndex = pipeline->GetBindingIndexByHash(StrHash32(paramName));
 		if (rootParamIndex == -1) return;
 
 		AttachView(commandList, pipeline, rootParamIndex, view);
@@ -77,7 +77,7 @@ namespace JoyEngine
 		const char* paramName,
 		D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle)
 	{
-		commandList->SetComputeRootDescriptorTable(pipeline->GetBindingIndexByHash(strHash(paramName)), gpuHandle);
+		commandList->SetComputeRootDescriptorTable(pipeline->GetBindingIndexByHash(StrHash32(paramName)), gpuHandle);
 	}
 
 
@@ -87,7 +87,7 @@ namespace JoyEngine
 		const char* paramName,
 		const ResourceView* view)
 	{
-		const uint32_t rootParamIndex = pipeline->GetBindingIndexByHash(strHash(paramName));
+		const uint32_t rootParamIndex = pipeline->GetBindingIndexByHash(StrHash32(paramName));
 		if (rootParamIndex == -1) return;
 
 		AttachView(commandList, pipeline, rootParamIndex, view);
@@ -100,7 +100,7 @@ namespace JoyEngine
 
 	void GraphicsUtils::AttachView(ID3D12GraphicsCommandList* commandList, const RaytracingPipeline* pipeline, const char* paramName, const ResourceView* view)
 	{
-		const uint32_t rootParamIndex = pipeline->GetGlobalInputContainer()->GetBindingIndexByHash(strHash(paramName));
+		const uint32_t rootParamIndex = pipeline->GetGlobalInputContainer()->GetBindingIndexByHash(StrHash32(paramName));
 		if (rootParamIndex == -1) return;
 
 		commandList->SetComputeRootDescriptorTable(rootParamIndex, view->GetGPUHandle());
@@ -108,7 +108,7 @@ namespace JoyEngine
 
 	void GraphicsUtils::AttachView(ID3D12GraphicsCommandList* commandList, const RaytracingPipeline* pipeline, const char* paramName, D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle)
 	{
-		const uint32_t rootParamIndex = pipeline->GetGlobalInputContainer()->GetBindingIndexByHash(strHash(paramName));
+		const uint32_t rootParamIndex = pipeline->GetGlobalInputContainer()->GetBindingIndexByHash(StrHash32(paramName));
 		if (rootParamIndex == -1) return;
 
 		commandList->SetComputeRootDescriptorTable(rootParamIndex, gpuHandle);

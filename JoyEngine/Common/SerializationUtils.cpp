@@ -8,38 +8,38 @@
 namespace JoyEngine
 {
 	const std::map<uint32_t, size_t> SerializationUtils::m_typeSizes = {
-		{strHash("int"), sizeof(int32_t)},
-		{strHash("uint"), sizeof(uint32_t)},
-		{strHash("float"), sizeof(float)},
-		{strHash("vec2"), sizeof(jmath::vec2)},
-		{strHash("vec3"), sizeof(jmath::vec3)},
-		{strHash("vec4"), sizeof(jmath::vec4)},
-		//{strHash("mat3"), sizeof(jmath::mat3)},
-		//{strHash("mat4"), sizeof(jmath::mat4)},
-		{strHash("color"), sizeof(Color)},
+		{StrHash32("int"), sizeof(int32_t)},
+		{StrHash32("uint"), sizeof(uint32_t)},
+		{StrHash32("float"), sizeof(float)},
+		{StrHash32("vec2"), sizeof(jmath::vec2)},
+		{StrHash32("vec3"), sizeof(jmath::vec3)},
+		{StrHash32("vec4"), sizeof(jmath::vec4)},
+		//{StrHash32("mat3"), sizeof(jmath::mat3)},
+		//{StrHash32("mat4"), sizeof(jmath::mat4)},
+		{StrHash32("color"), sizeof(Color)},
 
 	};
 
 	const std::map<uint32_t, uint32_t> SerializationUtils::m_typeMapping = {
-		{HASH(int32_t), strHash("int")},
-		{HASH(uint32_t), strHash("uint")},
-		{HASH(float), strHash("float")},
-		{HASH(glm::vec2), strHash("vec2")},
-		{HASH(glm::vec3), strHash("vec3")},
-		{HASH(glm::vec4), strHash("vec4")},
-		{HASH(glm::mat3), strHash("mat3")},
-		{HASH(glm::mat4), strHash("mat4")},
-		{HASH(Color), strHash("color")},
+		{HASH(int32_t), StrHash32("int")},
+		{HASH(uint32_t), StrHash32("uint")},
+		{HASH(float), StrHash32("float")},
+		{HASH(glm::vec2), StrHash32("vec2")},
+		{HASH(glm::vec3), StrHash32("vec3")},
+		{HASH(glm::vec4), StrHash32("vec4")},
+		{HASH(glm::mat3), StrHash32("mat3")},
+		{HASH(glm::mat4), StrHash32("mat4")},
+		{HASH(Color), StrHash32("color")},
 	};
 
 	size_t SerializationUtils::GetTypeSize(const std::string& type)
 	{
-		return GetTypeSize(strHash(type.c_str()));
+		return GetTypeSize(StrHash32(type.c_str()));
 	}
 
 	size_t SerializationUtils::GetTypeSize(const char* type)
 	{
-		return GetTypeSize(strHash(type));
+		return GetTypeSize(StrHash32(type));
 	}
 
 	size_t SerializationUtils::GetTypeSize(uint32_t typeHash)
@@ -140,7 +140,7 @@ namespace JoyEngine
 
 		switch (typeHash)
 		{
-		case strHash("int"):
+		case StrHash32("int"):
 			{
 				if (count == 1)
 				{
@@ -152,7 +152,7 @@ namespace JoyEngine
 				}
 				break;
 			}
-		case strHash("uint"):
+		case StrHash32("uint"):
 			{
 				if (count == 1)
 				{
@@ -164,7 +164,7 @@ namespace JoyEngine
 				}
 				break;
 			}
-		case strHash("float"):
+		case StrHash32("float"):
 			{
 				if (count == 1)
 				{
@@ -176,28 +176,28 @@ namespace JoyEngine
 				}
 				break;
 			}
-		case strHash("vec2"):
+		case StrHash32("vec2"):
 			{
 				ReadStruct<float>(val, ptr, count, 2);
 				break;
 			}
-		case strHash("vec3"):
+		case StrHash32("vec3"):
 			{
 				ReadStruct<float>(val, ptr, count, 3);
 				break;
 			}
-		case strHash("vec4"):
-		case strHash("color"):
+		case StrHash32("vec4"):
+		case StrHash32("color"):
 			{
 				ReadStruct<float>(val, ptr, count, 4);
 				break;
 			}
-		case strHash("mat3"):
+		case StrHash32("mat3"):
 			{
 				ReadStruct<float>(val, ptr, count, 9);
 				break;
 			}
-		case strHash("mat4"):
+		case StrHash32("mat4"):
 			{
 				ReadStruct<float>(val, ptr, count, 16);
 				break;

@@ -6,10 +6,7 @@
 
 #include "d3dx12.h"
 
-
-#include "Common/HashDefs.h"
 #include "DescriptorManager/DescriptorManager.h"
-
 
 #include "GraphicsManager/GraphicsManager.h"
 #include "EngineDataProvider/EngineDataProvider.h"

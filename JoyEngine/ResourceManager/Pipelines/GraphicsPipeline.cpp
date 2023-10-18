@@ -1,4 +1,4 @@
-﻿#include "GraphicsPipeline.h"
+#include "GraphicsPipeline.h"
 
 #include "GraphicsManager/GraphicsManager.h"
 
@@ -25,7 +25,7 @@ namespace JoyEngine
 
 	GraphicsPipeline::GraphicsPipeline(const GraphicsPipelineArgs& args) :
 		AbstractPipelineObject(
-			args.shader,
+			args.shaderPath,
 			args.shaderTypes,
 			args.hasVertexInput ? D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT : D3D12_ROOT_SIGNATURE_FLAG_NONE),
 		m_topology(args.topology),

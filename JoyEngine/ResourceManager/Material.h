@@ -10,7 +10,6 @@
 #include "ResourceView.h"
 #include "Buffers/Buffer.h"
 
-#include "Utils/GUID.h"
 
 namespace JoyEngine
 {
@@ -22,11 +21,10 @@ namespace JoyEngine
 	{
 	public :
 		Material() = delete;
-		explicit Material(GUID);
+		explicit Material(const char* materialPath);
 		explicit Material(
-			GUID guid, 
-			const std::map<std::string, std::string>& bindings, 
-			bool bindingsArePaths);
+			uint64_t id,
+			const std::map<std::string, std::string>& bindings);
 
 		~Material() override = default;
 
@@ -37,7 +35,7 @@ namespace JoyEngine
 		[[nodiscard]] uint32_t GetMaterialIndex() const noexcept { return m_materialIndex; }
 
 	private:
-		void InitMaterial(const std::map<std::string, std::string>& bindings, bool bindingsArePaths);
+		void InitMaterial(const std::map<std::string, std::string>& bindings);
 
 	private :
 		uint32_t m_materialIndex;

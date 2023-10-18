@@ -1,4 +1,4 @@
-﻿#ifndef SHADER_COMPILER_H
+#ifndef SHADER_COMPILER_H
 #define SHADER_COMPILER_H
 #include <d3d12.h>
 #include <d3d12shader.h>

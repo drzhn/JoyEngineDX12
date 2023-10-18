@@ -58,7 +58,7 @@ namespace JoyEngine
 	// Buffer
 
 	Buffer::Buffer(uint64_t size, D3D12_RESOURCE_STATES usage, D3D12_HEAP_TYPE properties, D3D12_RESOURCE_FLAGS flags):
-		Resource(GUID::Random()),
+		Resource(RandomHash64()),
 		m_sizeInBytes(size),
 		m_currentResourceState(usage),
 		m_properties(properties)

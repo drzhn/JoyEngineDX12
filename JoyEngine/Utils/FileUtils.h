@@ -8,16 +8,16 @@
 
 namespace JoyEngine
 {
-	static std::vector<char> ReadFile(const std::string& filename, uint32_t offset=0)
+	static std::vector<char> ReadFile(const std::string& filename, uint32_t offset = 0)
 	{
 		std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
 		ASSERT(file.is_open());
 
-		std::streamsize fileSize = file.tellg();
+		const std::streamsize fileSize = file.tellg();
 		std::vector<char> buffer(fileSize - offset);
 		file.seekg(offset);
-		file.read(reinterpret_cast<char*>(buffer.data()), fileSize - offset);
+		file.read(buffer.data(), fileSize - offset);
 		file.close();
 
 		return buffer;

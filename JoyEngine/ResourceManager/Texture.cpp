@@ -1,4 +1,4 @@
-﻿#include "Texture.h"
+#include "Texture.h"
 
 #include <utility>
 
@@ -247,22 +247,9 @@ namespace JoyEngine
 	}
 
 
-	Texture::Texture(GUID guid) :
-		Resource(guid)
-	{
-		m_usageFlags = D3D12_RESOURCE_STATE_COPY_DEST;
-		m_memoryPropertiesFlags = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-
-		bool hasRawData = DataManager::Get()->HasRawData(guid);
-		auto textureStream = DataManager::Get()->GetFileStream(guid, hasRawData);
-
-		InitTextureFromFile(textureStream);
-	}
-
 	Texture::Texture(
-		GUID guid,
 		const std::string& file) :
-		Resource(guid)
+		Resource(file.c_str())
 	{
 		m_usageFlags = D3D12_RESOURCE_STATE_COPY_DEST;
 		m_memoryPropertiesFlags = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
@@ -335,7 +322,7 @@ namespace JoyEngine
 	//	DXGI_FORMAT format,
 	//	D3D12_RESOURCE_STATES usage,
 	//	D3D12_HEAP_TYPE heapType) :
-	//	Resource(GUID::Random())
+	//	Resource(uint64_t::Random())
 	//{
 	//	m_width = width;
 	//	m_height = height;

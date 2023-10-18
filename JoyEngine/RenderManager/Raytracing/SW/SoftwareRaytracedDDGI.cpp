@@ -1,4 +1,4 @@
-﻿#include "SoftwareRaytracedDDGI.h"
+#include "SoftwareRaytracedDDGI.h"
 
 #include "Common/HashDefs.h"
 #include "ResourceManager/ResourceManager.h"
@@ -144,11 +144,10 @@ namespace JoyEngine
 
 			{
 				// generate texture w = probesCount, h = DDGI_RAYS_COUNT
-				const GUID raytracingShaderGuid = GUID::StringToGuid("b24e90ac-fcfa-4754-b0e5-8553b19e27ca"); //shaders/raytracing/Raytracing.hlsl
 
 				m_raytracingPipeline = std::make_unique<ComputePipeline>(ComputePipelineArgs
 					{
-						raytracingShaderGuid,
+						"shaders/sw_raytracing/Raytracing.hlsl",
 						D3D_SHADER_MODEL_6_5
 					});
 			}
@@ -156,12 +155,9 @@ namespace JoyEngine
 
 		// Gizmo AABB draw 
 		{
-			const GUID gizmoAABBDrawerShaderGuid = GUID::StringToGuid("a231c467-dc15-4753-a3db-8888efc73c1a");
-			// shaders/raytracing/gizmoAABBDrawer.hlsl
-
 			m_debugGizmoAABBDrawerGraphicsPipeline = std::make_unique<GraphicsPipeline>(GraphicsPipelineArgs
 				{
-					gizmoAABBDrawerShaderGuid,
+					"shaders/sw_raytracing/gizmoAABBDrawer.hlsl",
 					JoyShaderTypeVertex | JoyShaderTypePixel,
 					false,
 					false,

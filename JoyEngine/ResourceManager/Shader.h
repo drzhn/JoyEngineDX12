@@ -6,6 +6,7 @@
 
 #include "Common/Resource.h"
 #include "ShaderCompiler.h"
+#include "Utils/Assert.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -16,7 +17,7 @@ namespace JoyEngine
 	public :
 		Shader() = delete;
 
-		explicit Shader(GUID, ShaderTypeFlags shaderType);
+		explicit Shader(const char* shaderPath, ShaderTypeFlags shaderType);
 
 		~Shader() final = default;
 

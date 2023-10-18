@@ -1,4 +1,4 @@
-﻿#ifndef TEXTURE_H
+#ifndef TEXTURE_H
 #define TEXTURE_H
 
 #include <array>
@@ -88,8 +88,7 @@ namespace JoyEngine
 	public:
 		explicit Texture() = delete;
 
-		explicit Texture(GUID);
-		explicit Texture(GUID guid, const std::string& file);
+		explicit Texture(const std::string& file);
 
 		//explicit Texture(
 		//	uint32_t width,

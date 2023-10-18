@@ -1,4 +1,4 @@
-﻿#ifndef ENGINE_DATA_PROVIDER_H
+#ifndef ENGINE_DATA_PROVIDER_H
 #define ENGINE_DATA_PROVIDER_H
 
 #include "Common/Singleton.h"

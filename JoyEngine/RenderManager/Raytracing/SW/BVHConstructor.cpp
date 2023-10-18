@@ -1,4 +1,4 @@
-﻿#include "BVHConstructor.h"
+#include "BVHConstructor.h"
 
 #include "DescriptorManager/DescriptorManager.h"
 #include "RenderManager/ComputeDispatcher.h"
@@ -32,24 +32,18 @@ namespace JoyEngine
 
 		// TREE CONSTRUCTOR
 		{
-			//shaders/raytracing/BVHTreeConstructor.hlsl
-			const GUID bvhTreeConstructorShaderGuid = GUID::StringToGuid("326057ce-8c0c-40be-b912-67b63d25211e");
-
 			m_bvhTreeConstructorPipeline = std::make_unique<ComputePipeline>(ComputePipelineArgs
 				{
-					bvhTreeConstructorShaderGuid,
+					"shaders/sw_raytracing/BVHTreeConstructor.hlsl",
 					D3D_SHADER_MODEL_6_5
 				});
 		}
 
 		// LOCAL RADIX SORT
 		{
-			//shaders/raytracing/BVHAABBMerger.hlsl
-			const GUID bvhMergerShaderGuid = GUID::StringToGuid("d611cd9f-6ce0-42f5-b908-af7289b0eae5");
-
 			m_bvhMergerPipeline = std::make_unique<ComputePipeline>(ComputePipelineArgs
 				{
-					bvhMergerShaderGuid,
+					"shaders/sw_raytracing/BVHAABBMerger.hlsl",
 					D3D_SHADER_MODEL_6_5
 				});
 		}

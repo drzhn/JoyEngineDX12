@@ -1,4 +1,4 @@
-﻿#ifndef TIME_COUNTER_H
+#ifndef TIME_COUNTER_H
 #define TIME_COUNTER_H
 #include <chrono>
 

@@ -13,12 +13,12 @@ namespace JoyEngine
 	public:
 		ResourceHandle() = default;
 
-		explicit ResourceHandle(T* ptr, std::function<void(GUID)>* unregisterResourceAction)
+		explicit ResourceHandle(T* ptr, std::function<void(uint64_t)>* unregisterResourceAction)
 			: m_unregisterResourceAction(unregisterResourceAction)
 		{
 			const Resource* resource = static_cast<Resource*>(ptr);
 			m_ptr = ptr;
-			m_guid = resource->GetGuid();
+			m_guid = resource->GetResourceId();
 		}
 
 		// copy
@@ -73,9 +73,9 @@ namespace JoyEngine
 		}
 
 	private:
-		GUID m_guid;
+		uint64_t m_guid;
 		T* m_ptr = nullptr;
-		std::function<void(GUID)>* m_unregisterResourceAction;
+		std::function<void(uint64_t)>* m_unregisterResourceAction;
 
 
 		void Copy(const ResourceHandle<T>& other)

@@ -41,9 +41,9 @@ namespace JoyEngine
 		}
 	}
 
-	Scene::Scene(const GUID& guid)
+	Scene::Scene(const char* path)
 	{
-		rapidjson::Document json = DataManager::Get()->GetSerializedData(guid, scene);
+		rapidjson::Document json = DataManager::Get()->GetSerializedData(path, scene);
 		m_name = json["name"].GetString();
 
 		rapidjson::Value& val = json["objects"];
@@ -69,8 +69,8 @@ namespace JoyEngine
 					{
 						bool isStatic = component["static"].GetBool();
 						std::unique_ptr<MeshRenderer> mr = std::make_unique<MeshRenderer>(*go, isStatic);
-						mr->SetMesh(GUID::StringToGuid(component["model"].GetString()));
-						mr->SetMaterial(GUID::StringToGuid(component["material"].GetString()));
+						mr->SetMesh(component["model"].GetString());
+						mr->SetMaterial(component["material"].GetString());
 						go->AddComponent(std::move(mr));
 					}
 					else if (type == "component")
@@ -168,8 +168,8 @@ namespace JoyEngine
 			if (objType == "obj_complex")
 			{
 				std::string nameStr = obj["name"].GetString();
-				GUID modelGuid = GUID::StringToGuid(obj["model"].GetString());
-				GUID materialGuid = GUID::StringToGuid(obj["material"].GetString());
+				std::string modelGuid = obj["model"].GetString();
+				std::string materialGuid = obj["material"].GetString();
 				bool isStatic = obj["static"].GetBool();
 				std::unique_ptr<MtlBinaryParser> parser = std::make_unique<MtlBinaryParser>(modelGuid, materialGuid);
 				MtlMeshStreamData* data = parser->Next();
@@ -186,8 +186,7 @@ namespace JoyEngine
 					ParseTransform(go, transformValue);
 
 					std::unique_ptr<MeshRenderer> mr = std::make_unique<MeshRenderer>(*go, isStatic);
-					mr->SetMesh(GUID::Random(),
-					            data->vertexDataSize,
+					mr->SetMesh(data->vertexDataSize,
 					            data->indexDataSize,
 					            parser->GetModelStream(),
 					            data->vertexStreamOffset,

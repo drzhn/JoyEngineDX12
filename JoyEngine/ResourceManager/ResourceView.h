@@ -1,4 +1,4 @@
-﻿#ifndef HEAP_HANDLE_H
+#ifndef HEAP_HANDLE_H
 #define HEAP_HANDLE_H
 
 #include <cstdint>

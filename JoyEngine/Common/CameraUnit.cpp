@@ -1,4 +1,4 @@
-﻿#include "CameraUnit.h"
+#include "CameraUnit.h"
 
 #include "Math/MathTypes.h"
 

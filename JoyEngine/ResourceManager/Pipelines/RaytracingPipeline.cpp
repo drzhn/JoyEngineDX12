@@ -34,7 +34,7 @@ namespace JoyEngine
 	RaytracingPipeline::RaytracingPipeline(const RaytracingPipelineArgs& args)
 	{
 		m_raytracingShader = ResourceManager::Get()->LoadResource<Shader>(
-			args.raytracingShaderGuid,
+			args.shaderPath,
 			JoyShaderTypeRaytracing
 		);
 

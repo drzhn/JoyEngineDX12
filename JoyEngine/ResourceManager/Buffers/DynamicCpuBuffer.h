@@ -1,4 +1,4 @@
-﻿#ifndef CPU_BUFFER_H
+#ifndef CPU_BUFFER_H
 #define CPU_BUFFER_H
 
 #include <memory>

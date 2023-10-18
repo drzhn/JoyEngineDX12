@@ -1,4 +1,4 @@
-﻿#include "GraphicsUtils.h"
+#include "GraphicsUtils.h"
 
 #include "CommonEngineStructs.h"
 #include "Common/HashDefs.h"

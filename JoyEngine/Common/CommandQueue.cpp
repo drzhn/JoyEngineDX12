@@ -1,4 +1,4 @@
-﻿#include "CommandQueue.h"
+#include "CommandQueue.h"
 
 #include "Utils/Assert.h"
 

@@ -1,4 +1,4 @@
-﻿#ifndef MESH_CONTAINER_H
+#ifndef MESH_CONTAINER_H
 #define MESH_CONTAINER_H
 #include <memory>
 

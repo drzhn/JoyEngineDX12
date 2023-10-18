@@ -4,7 +4,7 @@
 #include "Common/Resource.h"
 #include "Texture.h"
 #include "Pipelines/GraphicsPipeline.h"
-#include "Utils/GUID.h"
+
 #include "ResourceManager/ResourceManager.h"
 
 namespace JoyEngine
@@ -16,8 +16,8 @@ namespace JoyEngine
 	public :
 		SharedMaterial() = delete;
 
-		explicit SharedMaterial(GUID);
-		explicit SharedMaterial(GUID, GraphicsPipelineArgs);
+		explicit SharedMaterial(const char* path);
+		explicit SharedMaterial(uint64_t, GraphicsPipelineArgs);
 
 		~SharedMaterial() final;
 

@@ -1,17 +1,17 @@
-﻿#ifndef GRAPHICS_PIPELINE_H
+#ifndef GRAPHICS_PIPELINE_H
 #define GRAPHICS_PIPELINE_H
 
 #include "AbstractPipelineObject.h"
 #include "d3dx12.h"
 #include "ResourceManager/ShaderCompiler.h"
-#include "Utils/GUID.h"
+
 
 namespace JoyEngine
 {
 
 	struct GraphicsPipelineArgs
 	{
-		GUID shader;
+		const char* shaderPath;
 		ShaderTypeFlags shaderTypes;
 		bool hasVertexInput;
 		bool depthTest;

@@ -1,4 +1,4 @@
-﻿#include "RaytracedDDGIDataContainer.h"
+#include "RaytracedDDGIDataContainer.h"
 
 #include "Components/MeshRenderer.h"
 #include "RenderManager/RenderManager.h"
@@ -23,21 +23,17 @@ namespace JoyEngine
 
 		{
 			// generate texture w = probesCount, h = DDGI_RAYS_COUNT
-			const GUID pipelineIrradianceShaderGuid = GUID::StringToGuid("1d69c9ec-de6a-4fff-96ea-3a68808ca8f7"); //shaders/raytracing/ProbeIrradiance.hlsl
-
 			m_probeIrradiancePipeline = std::make_unique<ComputePipeline>(ComputePipelineArgs
 				{
-					pipelineIrradianceShaderGuid
+					"shaders/sw_raytracing/ProbeIrradiance.hlsl"
 				});
 		}
 
 		// Draw raytraced texture 
 		{
-			const GUID debugImageComposerShaderGuid = GUID::StringToGuid("cc8de13c-0510-4842-99f5-de2327aa95d4"); // shaders/raytracing/debugImageCompose.hlsl
-
 			m_debugRaytracingTextureDrawGraphicsPipeline = std::make_unique<GraphicsPipeline>(GraphicsPipelineArgs
 				{
-					debugImageComposerShaderGuid,
+					"shaders/sw_raytracing/debugImageCompose.hlsl",
 					JoyShaderTypeVertex | JoyShaderTypePixel,
 					false,
 					false,
@@ -55,16 +51,14 @@ namespace JoyEngine
 		}
 
 		{
-			m_debugSphereProbeMesh = ResourceManager::Get()->LoadResource<Mesh>(GUID::StringToGuid("b7d27f1a-006b-41fa-b10b-01b212ebfebe"));
+			m_debugSphereProbeMesh = ResourceManager::Get()->LoadResource<Mesh>("models/DefaultSphere.obj");
 		}
 
 		// Debug draw probes
 		{
-			const GUID drawProbesShaderGuid = GUID::StringToGuid("8757d834-8dd7-4858-836b-bb6a4eb6fea0"); //shaders/raytracing/debugDrawProbes.hlsl
-
 			m_debugDrawProbesGraphicsPipeline = std::make_unique<GraphicsPipeline>(GraphicsPipelineArgs
 				{
-					drawProbesShaderGuid,
+					"shaders/sw_raytracing/debugDrawProbes.hlsl",
 					JoyShaderTypeVertex | JoyShaderTypePixel,
 					true,
 					true,

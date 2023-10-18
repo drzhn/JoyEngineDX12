@@ -1,4 +1,4 @@
-﻿#ifndef SKYBOX_H
+#ifndef SKYBOX_H
 #define SKYBOX_H
 
 #include "ResourceManager/Mesh.h"

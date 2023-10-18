@@ -1,4 +1,4 @@
-﻿#include "ComputePipeline.h"
+#include "ComputePipeline.h"
 
 #include "d3dx12.h"
 #include "GraphicsManager/GraphicsManager.h"
@@ -7,7 +7,7 @@ namespace JoyEngine
 {
 	ComputePipeline::ComputePipeline(const ComputePipelineArgs& args) :
 		AbstractPipelineObject(
-			args.computeShaderGuid,
+			args.shaderPath,
 			JoyShaderTypeCompute,
 			D3D12_ROOT_SIGNATURE_FLAG_NONE)
 	{

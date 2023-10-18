@@ -2,17 +2,11 @@
 #define DATA_MANAGER_H
 
 #include <string>
-#include <map>
 #include <filesystem>
 
-#include <d3dcommon.h>
-#include <dxcapi.h>
-
 #include <rapidjson/document.h>
-#include <wrl/client.h>
 
 #include "Utils/FileUtils.h"
-#include "Utils/GUID.h"
 #include "Common/Singleton.h"
 
 
@@ -35,21 +29,12 @@ namespace JoyEngine
 		DataManager();
 		~DataManager() = default;
 
-		[[nodiscard]] std::vector<char> GetData(GUID guid, bool shouldReadRawData = false, uint32_t offset = 0) const;
-		[[nodiscard]] bool HasRawData(GUID guid) const;
-		[[nodiscard]] bool HasRawData(const std::string& path) const;
-		[[nodiscard]] std::ifstream GetFileStream(GUID guid, bool shouldReadRawData = false) const;
+		[[nodiscard]] std::vector<char> GetData(const std::string& path, bool shouldReadRawData = false, uint32_t offset = 0) const;
+		bool HasRawData(const std::string& path) const;
 		[[nodiscard]] std::ifstream GetFileStream(const std::string& path, bool shouldReadRawData = false) const;
-		[[nodiscard]] rapidjson::Document GetSerializedData(const GUID&, DataType) const;
-		[[nodiscard]] std::filesystem::path GetAbsolutePath(GUID) const;
+		[[nodiscard]] rapidjson::Document GetSerializedData(const std::string& path, DataType) const;
 	private:
-		const std::string m_dataPath;
-		const std::string m_databaseFilename;
-		std::map<GUID, std::filesystem::path> m_pathDatabase;
-
-	private:
-		const std::filesystem::path& GetPath(GUID);
-		void ParseDatabase(std::map<GUID, std::filesystem::path>& pathDatabase, const char* data);
+		const std::filesystem::path m_dataPath;
 	};
 }
 

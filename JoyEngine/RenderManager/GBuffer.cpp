@@ -1,4 +1,4 @@
-﻿#include "GBuffer.h"
+#include "GBuffer.h"
 
 #include "RenderManager.h"
 #include "Utils/GraphicsUtils.h"

@@ -8,7 +8,7 @@
 #include "EngineDataProvider/MeshContainer.h"
 
 #include "Common/Resource.h"
-#include "Utils/GUID.h"
+
 
 namespace JoyEngine
 {
@@ -17,8 +17,12 @@ namespace JoyEngine
 	public:
 		Mesh() = delete;
 
-		explicit Mesh(GUID);
-		explicit Mesh(GUID, uint32_t, uint32_t, std::ifstream&, uint32_t, uint32_t);
+		explicit Mesh(const char* path);
+		explicit Mesh(uint32_t vertexDataSize,
+		              uint32_t indexDataSize,
+		              std::ifstream& modelStream,
+		              uint32_t vertexDataStreamOffset,
+		              uint32_t indexDataStreamOffset);
 
 		~Mesh() override;
 

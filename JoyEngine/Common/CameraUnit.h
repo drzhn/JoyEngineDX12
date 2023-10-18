@@ -1,4 +1,4 @@
-﻿#ifndef CAMERA_UNIT_H
+#ifndef CAMERA_UNIT_H
 #define CAMERA_UNIT_H
 
 #include "Math/MathTypes.h"

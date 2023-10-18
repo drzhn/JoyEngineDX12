@@ -7,7 +7,7 @@
                 "localRotation": [ 0.0, 0.0, 0.0 ],
                 "localScale": [ 0.1, 0.1, 0.1 ]
             },
-            "model": "46bc949d-eacb-4cff-a7f8-07e738bbfb3e",
+            "model": "models/sponza.obj",
             "material": "a254d10b-ba5a-444d-9ef0-4ef7777b918b",
             "static": true
         }

@@ -5,11 +5,11 @@
 
 namespace JoyEngine
 {
-	Shader::Shader(GUID guid, ShaderTypeFlags shaderType):
-		Resource(guid),
+	Shader::Shader(const char* shaderPath, ShaderTypeFlags shaderType):
+		Resource(shaderPath),
 		m_shaderType(shaderType)
 	{
-		const std::vector<char> shaderData = DataManager::Get()->GetData(m_guid);
+		const std::vector<char> shaderData = DataManager::Get()->GetData(shaderPath);
 
 		if (m_shaderType & JoyShaderTypeCompute)
 		{

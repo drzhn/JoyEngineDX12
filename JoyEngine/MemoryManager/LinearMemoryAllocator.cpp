@@ -1,4 +1,4 @@
-﻿#include "LinearMemoryAllocator.h"
+#include "LinearMemoryAllocator.h"
 
 #include "d3dx12.h"
 #include "Utils/Assert.h"

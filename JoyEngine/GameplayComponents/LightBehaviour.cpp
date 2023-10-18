@@ -1,4 +1,4 @@
-﻿#include "LightBehaviour.h"
+#include "LightBehaviour.h"
 
 #include <cmath>
 

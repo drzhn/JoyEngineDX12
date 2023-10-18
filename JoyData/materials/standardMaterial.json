@@ -3,7 +3,7 @@
     "bindings": [
         {
             "name": "diffuse",
-            "data": "17663088-100d-4e78-8305-17b5818256db"
+            "data": "textures/sunset2.hdr"
         },
         {
             "name": "textureSampler",

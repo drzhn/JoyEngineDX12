@@ -1,4 +1,4 @@
-﻿#include "ConstantCpuBuffer.h"
+#include "ConstantCpuBuffer.h"
 
 
 namespace JoyEngine

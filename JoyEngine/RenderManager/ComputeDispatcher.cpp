@@ -1,4 +1,4 @@
-﻿#include "ComputeDispatcher.h"
+#include "ComputeDispatcher.h"
 
 #include "GraphicsManager/GraphicsManager.h"
 #include "Utils/Assert.h"

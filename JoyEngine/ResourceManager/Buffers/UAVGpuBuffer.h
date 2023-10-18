@@ -1,4 +1,4 @@
-﻿#ifndef UAV_GPU_BUFFER_H
+#ifndef UAV_GPU_BUFFER_H
 #define UAV_GPU_BUFFER_H
 #include "Buffer.h"
 #include "ResourceManager/ResourceView.h"

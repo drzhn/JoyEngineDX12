@@ -1,4 +1,4 @@
-﻿#include "UAVGpuBuffer.h"
+#include "UAVGpuBuffer.h"
 
 namespace JoyEngine
 {

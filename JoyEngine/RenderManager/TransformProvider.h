@@ -1,4 +1,4 @@
-﻿#ifndef MODEL_DATA_SYSTEM_H
+#ifndef MODEL_DATA_SYSTEM_H
 #define MODEL_DATA_SYSTEM_H
 
 #include "CommonEngineStructs.h"

@@ -372,7 +372,6 @@
     <ClInclude Include="JoyEngine\EngineDataProvider\EngineDataProvider.h" />
     <ClInclude Include="JoyEngine\Utils\FileUtils.h" />
     <ClInclude Include="JoyEngine\Utils\GraphicsUtils.h" />
-    <ClInclude Include="JoyEngine\Utils\GUID.h" />
     <ClInclude Include="JoyEngine\Utils\Log.h" />
     <ClInclude Include="JoyEngine\ResourceManager\Buffers\DynamicBufferPool.h" />
     <ClInclude Include="JoyEngine\Utils\TimeCounter.h" />

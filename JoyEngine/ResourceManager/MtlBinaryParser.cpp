@@ -1,4 +1,4 @@
-﻿#include "MtlBinaryParser.h"
+#include "MtlBinaryParser.h"
 
 #include <JoyAssetHeaders.h>
 
@@ -11,7 +11,7 @@
 
 namespace JoyEngine
 {
-	MtlBinaryParser::MtlBinaryParser(GUID modelGuid, GUID materialGuid)
+	MtlBinaryParser::MtlBinaryParser(const std::string& modelGuid, const std::string& materialGuid)
 	{
 		m_modelStream = DataManager::Get()->GetFileStream(modelGuid, true);
 		rapidjson::Document json = DataManager::Get()->GetSerializedData(materialGuid, standard_material_list);
@@ -24,11 +24,14 @@ namespace JoyEngine
 				//{"normal", mat["normal"].GetString()}
 				{"textureSampler", mat["textureSampler"].GetString()}
 			};
-			m_materials.emplace_back(ResourceManager::Get()->LoadResource<Material>(
-				GUID::Random(),
-				bindings,
-				true
-			));
+			m_materials.emplace_back(
+				ResourceManager::Get()->RegisterResource<Material>(
+					new Material(
+						RandomHash64(),
+						bindings
+					)
+				)
+			);
 		}
 	}
 

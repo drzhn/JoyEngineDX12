@@ -1,4 +1,4 @@
-﻿#include "SSAO.h"
+#include "SSAO.h"
 
 #include <glm/vec4.hpp>
 
@@ -18,7 +18,7 @@ namespace JoyEngine
 		m_height(height)
 	{
 		//m_randomColorTexture = ResourceManager::Get()->LoadResource<Texture>(
-		//	GUID::StringToGuid("65c0d16a-9cf6-46e5-9a5e-a5026b350b8d")
+		//	GUID::StringToGuid("textures/ColorNoise.png")
 		//); // textures/ColorNoise.png
 		//m_ssaoRenderTarget = std::make_unique<RenderTexture>(
 		//	m_width,

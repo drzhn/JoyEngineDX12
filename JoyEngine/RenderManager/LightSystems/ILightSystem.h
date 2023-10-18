@@ -1,4 +1,4 @@
-﻿#ifndef LIGHT_SYSTEM_H
+#ifndef LIGHT_SYSTEM_H
 #define LIGHT_SYSTEM_H
 
 struct DirectionalLightInfo;

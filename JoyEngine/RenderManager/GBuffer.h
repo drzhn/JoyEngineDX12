@@ -1,4 +1,4 @@
-﻿#ifndef G_BUFFER_H
+#ifndef G_BUFFER_H
 #define G_BUFFER_H
 #include <memory>
 

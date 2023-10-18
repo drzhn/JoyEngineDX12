@@ -1,4 +1,4 @@
-﻿#include "BufferSorter.h"
+#include "BufferSorter.h"
 
 #include "CommonEngineStructs.h"
 #include "Common/HashDefs.h"
@@ -18,12 +18,9 @@ namespace JoyEngine
 		{
 			// LOCAL RADIX SORT
 			{
-				//shaders/raytracing/LocalRadixSort.hlsl
-				const GUID localRadixSortShaderGuid = GUID::StringToGuid("fb423066-e885-4ea4-93d5-01b69037a9aa");
-
 				m_localRaidxSortPipeline = std::make_unique<ComputePipeline>(ComputePipelineArgs
 					{
-						localRadixSortShaderGuid,
+						"shaders/sw_raytracing/LocalRadixSort.hlsl",
 						D3D_SHADER_MODEL_6_5
 					});
 			}
@@ -31,32 +28,23 @@ namespace JoyEngine
 		{
 			// SCAN 
 			{
-				//shaders/raytracing/PreScan.hlsl
-				const GUID preScanShaderGuid = GUID::StringToGuid("8190cec8-aa5a-420e-8de2-34c6f838476c");
-
 				m_preScanPipeline = std::make_unique<ComputePipeline>(ComputePipelineArgs
 					{
-						preScanShaderGuid,
+						"shaders/sw_raytracing/PreScan.hlsl",
 						D3D_SHADER_MODEL_6_5
 					});
 			}
 			{
-				//shaders/raytracing/BlockSum.hlsl
-				const GUID blockSumShaderGuid = GUID::StringToGuid("d00ec3ea-53c4-48f3-bc42-d775c67db85c");
-
 				m_blockSumSortPipeline = std::make_unique<ComputePipeline>(ComputePipelineArgs
 					{
-						blockSumShaderGuid,
+						"shaders/sw_raytracing/BlockSum.hlsl",
 						D3D_SHADER_MODEL_6_5
 					});
 			}
 			{
-				//shaders/raytracing/GlobalScan.hlsl
-				const GUID globalScanShaderGuid = GUID::StringToGuid("8e67cd9b-afdf-409e-bb98-a79ad3f692c8");
-
 				m_globalScanPipeline = std::make_unique<ComputePipeline>(ComputePipelineArgs
 					{
-						globalScanShaderGuid,
+						"shaders/sw_raytracing/GlobalScan.hlsl",
 						D3D_SHADER_MODEL_6_5
 					});
 			}
@@ -65,12 +53,9 @@ namespace JoyEngine
 		{
 			// GLOBAL RADIX SORT
 			{
-				//shaders/raytracing/GlobalRadixSort.hlsl
-				const GUID globalRadixSortShaderGuid = GUID::StringToGuid("fc94651f-874c-49c8-9b01-83a238ce580b");
-
 				m_globalRadixSortPipeline = std::make_unique<ComputePipeline>(ComputePipelineArgs
 					{
-						globalRadixSortShaderGuid,
+						"shaders/sw_raytracing/GlobalRadixSort.hlsl",
 						D3D_SHADER_MODEL_6_5
 					});
 			}

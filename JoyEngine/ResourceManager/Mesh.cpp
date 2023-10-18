@@ -7,9 +7,9 @@
 
 namespace JoyEngine
 {
-	Mesh::Mesh(GUID guid) : Resource(guid)
+	Mesh::Mesh(const char* path) : Resource(path)
 	{
-		std::ifstream modelStream = DataManager::Get()->GetFileStream(guid, true);
+		std::ifstream modelStream = DataManager::Get()->GetFileStream(path, true);
 
 		MeshAssetHeader header = {};
 		modelStream.read(reinterpret_cast<char*>(&header), sizeof(MeshAssetHeader));
@@ -24,12 +24,11 @@ namespace JoyEngine
 		modelStream.close();
 	}
 
-	Mesh::Mesh(GUID guid,
-	           uint32_t vertexDataSize,
+	Mesh::Mesh(uint32_t vertexDataSize,
 	           uint32_t indexDataSize,
 	           std::ifstream& modelStream,
 	           uint32_t vertexDataStreamOffset,
-	           uint32_t indexDataStreamOffset) : Resource(guid)
+	           uint32_t indexDataStreamOffset) : Resource(RandomHash64())
 	{
 		InitMesh(vertexDataSize,
 		         indexDataSize,

@@ -1,4 +1,4 @@
-﻿#include "Tonemapping.h"
+#include "Tonemapping.h"
 
 #include "IRenderManager.h"
 #include "Common/HashDefs.h"
@@ -8,7 +8,7 @@
 #include "ResourceManager/Pipelines/ComputePipeline.h"
 #include "Utils/GraphicsUtils.h"
 
-#include "Utils/GUID.h"
+
 
 namespace JoyEngine
 {
@@ -28,31 +28,25 @@ namespace JoyEngine
 	{
 		// Downscaling first pass
 		{
-			const GUID hdrDownscaleFirstPassShaderGuid = GUID::StringToGuid("e3e039f4-4f96-4e5b-b90b-1f46d460b724"); //shaders/hdrDownscaleFirstPass.hlsl
-
 			m_hdrDownscaleFirstPassComputePipeline = std::make_unique<ComputePipeline>(ComputePipelineArgs
 				{
-					hdrDownscaleFirstPassShaderGuid,
+					"shaders/hdrDownscaleFirstPass.hlsl",
 				});
 		}
 
 		// Downscaling second pass
 		{
-			const GUID hdrDownscaleSecondPassShaderGuid = GUID::StringToGuid("c3a1592f-f12d-4c25-bcbb-1e6ace76b0fb"); //shaders/hdrDownscaleSecondPass.hlsl
-
 			m_hdrDownscaleSecondPassComputePipeline = std::make_unique<ComputePipeline>(ComputePipelineArgs
 				{
-					hdrDownscaleSecondPassShaderGuid,
+					"shaders/hdrDownscaleSecondPass.hlsl",
 				});
 		}
 
 		// HDR -> LDR transition
 		{
-			const GUID hdrToLdrTransitionShaderGuid = GUID::StringToGuid("aa366fc9-b8a7-4cca-b5d3-670216174566"); //shaders/hdrToLdrTransition.hlsl
-
 			m_hdrToLdrTransitionGraphicsPipeline = std::make_unique<GraphicsPipeline>(GraphicsPipelineArgs
 				{
-					hdrToLdrTransitionShaderGuid,
+					"shaders/hdrToLdrTransition.hlsl",
 					JoyShaderTypeVertex | JoyShaderTypePixel,
 					false,
 					false,

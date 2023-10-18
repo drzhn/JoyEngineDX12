@@ -9,7 +9,7 @@ namespace JoyEngine
 	{
 		TIME_PERF("SceneManager init")
 
-		m_scene = std::make_unique<Scene>(GUID::StringToGuid("11dcfeba-c2b6-4c2e-a3c7-51054ff06f1d"));
+		m_scene = std::make_unique<Scene>("scenes/room.json");
 	}
 
 	void SceneManager::Start()

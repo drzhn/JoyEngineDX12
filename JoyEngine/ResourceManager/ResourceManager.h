@@ -8,20 +8,21 @@
 #include <memory>
 
 #include "ResourceHandle.h"
+#include "Common/HashDefs.h"
 #include "Common/Resource.h"
 #include "Common/Singleton.h"
 
 namespace JoyEngine
 {
-	class ResourceManager: public Singleton<ResourceManager>
+	class ResourceManager : public Singleton<ResourceManager>
 	{
 	public:
 		ResourceManager():
-			m_unregisterResourceAction([this](GUID guid)
+			m_unregisterResourceAction([this](uint64_t id)
 			{
-				if (IsResourceLoaded(guid))
+				if (IsResourceLoaded(id))
 				{
-					m_isResourceInUse.erase(guid);
+					m_isResourceInUse.erase(id);
 				}
 				else
 				{
@@ -31,38 +32,60 @@ namespace JoyEngine
 		{
 		}
 
-		[[nodiscard]] bool IsResourceLoaded(GUID guid) const
+		[[nodiscard]] bool IsResourceLoaded(uint64_t id) const
 		{
-			return m_isResourceInUse.contains(guid);
+			return m_isResourceInUse.contains(id);
 		}
 
 		template <class T, typename... Args>
-		ResourceHandle<T> LoadResource(GUID guid, Args&&... args)
+		ResourceHandle<T> LoadResource(const char* path, Args&&... args)
 		{
-			if (!IsResourceLoaded(guid))
+			uint64_t id = StrHash64(path);
+			if (!IsResourceLoaded(id))
 			{
-				m_isResourceInUse.insert({guid, new T(guid, args...)});
+				m_isResourceInUse.insert({id, new T(path, std::forward<Args>(args)...)});
 			}
-			m_isResourceInUse[guid]->AddRef();
-			return ResourceHandle<T>(GetResource<T>(guid), &m_unregisterResourceAction);
+			m_isResourceInUse[id]->AddRef();
+			return ResourceHandle<T>(GetResource<T>(id), &m_unregisterResourceAction);
+		}
+
+		template <class T, typename... Args>
+		ResourceHandle<T> LoadResource(uint64_t id, Args&&... args)
+		{
+			if (!IsResourceLoaded(id))
+			{
+				m_isResourceInUse.insert({id, new T(id, std::forward<Args>(args)...)});
+			}
+			m_isResourceInUse[id]->AddRef();
+			return ResourceHandle<T>(GetResource<T>(id), &m_unregisterResourceAction);
+		}
+
+		template <class T>
+		ResourceHandle<T> RegisterResource(T* resource)
+		{
+			Resource* res = static_cast<Resource*>(resource);
+			ASSERT(!IsResourceLoaded(res->GetResourceId()));
+			m_isResourceInUse.insert({res->GetResourceId(), res});
+			res->AddRef();
+			return ResourceHandle<T>(resource, &m_unregisterResourceAction);
 		}
 
 	private:
 		template <class T>
-		T* GetResource(GUID guid)
+		T* GetResource(uint64_t id)
 		{
-			ASSERT(IsResourceLoaded(guid));
+			ASSERT(IsResourceLoaded(id));
 #ifdef _DEBUG
-			T* ptr = dynamic_cast<T*>(m_isResourceInUse[guid]);
+			T* ptr = dynamic_cast<T*>(m_isResourceInUse[id]);
 			ASSERT(ptr != nullptr);
 #else
-            T *ptr = reinterpret_cast<T *>(m_isResourceInUse[guid]);
+            T *ptr = reinterpret_cast<T *>(m_isResourceInUse[id]);
 #endif //DEBUG
 			return ptr;
 		}
 
-		std::map<GUID, Resource*> m_isResourceInUse;
-		std::function<void(GUID)> m_unregisterResourceAction;
+		std::map<uint64_t, Resource*> m_isResourceInUse;
+		std::function<void(uint64_t)> m_unregisterResourceAction;
 	};
 }
 

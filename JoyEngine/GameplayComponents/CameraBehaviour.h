@@ -1,4 +1,4 @@
-﻿#ifndef CAMERA_BEHAVIOUR_H
+#ifndef CAMERA_BEHAVIOUR_H
 #define CAMERA_BEHAVIOUR_H
 
 #include "Components/Component.h"

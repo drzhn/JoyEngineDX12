@@ -1,4 +1,4 @@
-﻿#ifndef SINGLETON_H
+#ifndef SINGLETON_H
 #define SINGLETON_H
 
 namespace JoyEngine

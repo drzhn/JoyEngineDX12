@@ -1,4 +1,4 @@
-﻿#ifndef COMPUTE_DISPATCHER_H
+#ifndef COMPUTE_DISPATCHER_H
 #define COMPUTE_DISPATCHER_H
 #include <memory>
 

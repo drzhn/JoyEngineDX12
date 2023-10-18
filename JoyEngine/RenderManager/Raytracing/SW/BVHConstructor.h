@@ -1,4 +1,4 @@
-﻿#ifndef BVH_CONSTRUCTOR_H
+#ifndef BVH_CONSTRUCTOR_H
 #define BVH_CONSTRUCTOR_H
 
 #include <cstdint>

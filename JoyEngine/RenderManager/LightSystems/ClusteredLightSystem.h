@@ -1,4 +1,4 @@
-﻿#ifndef CLUSTERED_LIGHT_SYSTEM_H
+#ifndef CLUSTERED_LIGHT_SYSTEM_H
 #define CLUSTERED_LIGHT_SYSTEM_H
 
 #include <map>

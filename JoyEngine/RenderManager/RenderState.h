@@ -1,4 +1,4 @@
-﻿#ifndef RENDER_STATE_H
+#ifndef RENDER_STATE_H
 #define RENDER_STATE_H
 
 namespace JoyEngine

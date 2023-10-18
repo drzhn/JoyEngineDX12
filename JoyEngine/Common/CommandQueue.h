@@ -1,4 +1,4 @@
-﻿#ifndef COMMAND_QUEUE_H
+#ifndef COMMAND_QUEUE_H
 #define COMMAND_QUEUE_H
 
 #include <vector>

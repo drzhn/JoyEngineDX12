@@ -35,9 +35,9 @@ namespace JoyEngine
 		}
 	}
 
-	void MeshRenderer::SetMesh(GUID meshGuid)
+	void MeshRenderer::SetMesh(const char* path)
 	{
-		m_mesh = ResourceManager::Get()->LoadResource<Mesh>(meshGuid);
+		m_mesh = ResourceManager::Get()->LoadResource<Mesh>(path);
 	}
 
 
@@ -46,7 +46,6 @@ namespace JoyEngine
 	}
 
 	void MeshRenderer::SetMesh(
-		GUID meshGuid,
 		uint32_t vertexDataSize,
 		uint32_t indexDataSize,
 		std::ifstream& modelStream,
@@ -54,14 +53,14 @@ namespace JoyEngine
 		uint32_t indexDataStreamOffset)
 	{
 		InitMesh(modelStream);
-		m_mesh = ResourceManager::Get()->LoadResource<Mesh>(
-			meshGuid,
-			vertexDataSize,
-			indexDataSize,
-			modelStream,
-			vertexDataStreamOffset,
-			indexDataStreamOffset
-		);
+		m_mesh = ResourceManager::Get()->RegisterResource<Mesh>(
+			new Mesh(
+				vertexDataSize,
+				indexDataSize,
+				modelStream,
+				vertexDataStreamOffset,
+				indexDataStreamOffset
+			));
 	}
 
 	//void MeshRenderer::SetMaterial(const std::string& materialName)
@@ -69,9 +68,9 @@ namespace JoyEngine
 	//	m_material = EngineDataProvider::Get()->GetSampleMaterialByName(materialName); //for debug purposes 
 	//}
 
-	void MeshRenderer::SetMaterial(const GUID& materialGuid)
+	void MeshRenderer::SetMaterial(const char* path)
 	{
-		m_material = ResourceManager::Get()->LoadResource<Material>(materialGuid);
+		m_material = ResourceManager::Get()->LoadResource<Material>(path);
 	}
 
 	void MeshRenderer::SetMaterial(const ResourceHandle<Material>& mat)

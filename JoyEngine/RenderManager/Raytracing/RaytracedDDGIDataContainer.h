@@ -1,4 +1,4 @@
-﻿#ifndef RAYTRACED_DDGI_DATA_CONTAINER_H
+#ifndef RAYTRACED_DDGI_DATA_CONTAINER_H
 #define RAYTRACED_DDGI_DATA_CONTAINER_H
 
 #include "CommonEngineStructs.h"

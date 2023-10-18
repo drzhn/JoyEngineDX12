@@ -1,4 +1,4 @@
-﻿#include "MeshContainer.h"
+#include "MeshContainer.h"
 
 #include "CommonEngineStructs.h"
 

@@ -1,4 +1,4 @@
-﻿#include "ResourceView.h"
+#include "ResourceView.h"
 
 
 #include "GraphicsManager/GraphicsManager.h"

@@ -1,4 +1,4 @@
-﻿#ifndef CONSTANT_BUFFER_H
+#ifndef CONSTANT_BUFFER_H
 #define CONSTANT_BUFFER_H
 
 #include <cstdint>

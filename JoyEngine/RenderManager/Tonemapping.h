@@ -1,4 +1,4 @@
-﻿#ifndef TONEMAPPING_H
+#ifndef TONEMAPPING_H
 #define TONEMAPPING_H
 
 #include <dxgiformat.h>

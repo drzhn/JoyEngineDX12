@@ -1,4 +1,4 @@
-﻿#ifndef CUBEMAP_RENDERER_H
+#ifndef CUBEMAP_RENDERER_H
 #define CUBEMAP_RENDERER_H
 #include <memory>
 

@@ -6,12 +6,12 @@
 #include <memory>
 
 #include "GameObject.h"
-#include "Utils/GUID.h"
+
 
 namespace JoyEngine {
     class Scene {
     public :
-        Scene(const GUID &guid);
+        Scene(const char* path);
 
         void Update();
     private:

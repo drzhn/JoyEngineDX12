@@ -1,4 +1,4 @@
-﻿#include "TransformProvider.h"
+#include "TransformProvider.h"
 
 namespace JoyEngine
 {

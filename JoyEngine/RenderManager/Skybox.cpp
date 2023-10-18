@@ -1,4 +1,4 @@
-﻿#include "Skybox.h"
+#include "Skybox.h"
 
 #include "RenderManager.h"
 #include "ResourceManager/ResourceManager.h"
@@ -10,12 +10,8 @@ namespace JoyEngine
 	// so we paint all pixels where color.a == 0;
 	Skybox::Skybox()
 	{
-		m_skyboxTexture = ResourceManager::Get()->LoadResource<Texture>(
-			GUID::StringToGuid("17663088-100d-4e78-8305-17b5818256db"));
-		m_skyboxMesh = ResourceManager::Get()->LoadResource<Mesh>(
-			GUID::StringToGuid("b7d27f1a-006b-41fa-b10b-01b212ebfebe")); // DefaultSphere
-
-		const GUID skyboxShaderGuid = GUID::StringToGuid("7e43e76d-9d5f-4fc8-a8f1-c8ec0dce95ef"); //shaders/skybox.hlsl
+		m_skyboxTexture = ResourceManager::Get()->LoadResource<Texture>("textures/sunset2.hdr");
+		m_skyboxMesh = ResourceManager::Get()->LoadResource<Mesh>("models/DefaultSphere.obj"); // DefaultSphere
 
 		//const D3D12_RENDER_TARGET_BLEND_DESC blendDesc = {
 		//	true,
@@ -38,7 +34,7 @@ namespace JoyEngine
 
 		m_skyboxPipeline = std::make_unique<GraphicsPipeline>(GraphicsPipelineArgs
 			{
-				skyboxShaderGuid,
+				"shaders/skybox.hlsl",
 				JoyShaderTypeVertex | JoyShaderTypePixel,
 				true,
 				false,

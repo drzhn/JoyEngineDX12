@@ -1,7 +1,6 @@
 #ifndef RESOURCE_H
 #define RESOURCE_H
-
-#include "Utils/GUID.h"
+#include "HashDefs.h"
 
 namespace JoyEngine
 {
@@ -10,7 +9,11 @@ namespace JoyEngine
 	public:
 		Resource() = delete;
 
-		Resource(GUID guid) : m_guid(guid)
+		Resource(uint64_t resourceId) : m_resourceId(resourceId)
+		{
+		}
+
+		Resource(const char* resourcePath) : m_resourceId(StrHash64(resourcePath))
 		{
 		}
 
@@ -23,13 +26,13 @@ namespace JoyEngine
 		void RemoveRef() { m_refCount--; }
 
 		[[nodiscard]] virtual bool IsLoaded() const noexcept = 0;
-		[[nodiscard]] GUID GetGuid() const noexcept { return m_guid; }
+		[[nodiscard]] uint64_t GetResourceId() const noexcept { return m_resourceId; }
 
 	private:
 		int32_t m_refCount = 0;
 
 	protected:
-		const GUID m_guid;
+		const uint64_t m_resourceId;
 	};
 }
 

@@ -5,13 +5,13 @@
 #include "ResourceManager/ResourceHandle.h"
 #include "ResourceManager/Shader.h"
 #include "ResourceManager/Buffers/Buffer.h"
-#include "Utils/GUID.h"
+
 
 namespace JoyEngine
 {
 	struct RaytracingPipelineArgs
 	{
-		GUID raytracingShaderGuid;
+		const char* shaderPath;
 	};
 
 	// TODO this ShaderTable implementation only supports single shader record

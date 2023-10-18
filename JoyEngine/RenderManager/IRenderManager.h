@@ -1,4 +1,4 @@
-﻿#ifndef IRENDERMANAGER_H
+#ifndef IRENDERMANAGER_H
 #define IRENDERMANAGER_H
 
 namespace JoyEngine

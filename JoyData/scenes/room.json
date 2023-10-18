@@ -106,8 +106,8 @@
                 "localRotation": [ 0.0, 0.0, 0.0 ],
                 "localScale": [ 1.0, 1.0, 1.0 ]
             },
-            "model": "46bc949d-eacb-4cff-a7f8-07e738bbfb3e",
-            "material": "a254d10b-ba5a-444d-9ef0-4ef7777b918b",
+            "model": "models/sponza.obj",
+            "material": "materials/sponza.mtl.json",
             "static": true
         },
         {
@@ -121,8 +121,8 @@
             "components": [
                 {
                     "type": "renderer",
-                    "model": "2529df0e-9a8e-4730-9b8d-a70b4b93251a",
-                    "material": "cbab0eb5-74a0-400f-92c2-8aae39175ed7",
+                    "model": "models/Anna_Head.obj",
+                    "material": "materials/standardMaterial.json",
                     "static": false
                 },
                 {

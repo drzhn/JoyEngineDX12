@@ -1,4 +1,4 @@
-﻿#include "CubemapRenderer.h"
+#include "CubemapRenderer.h"
 
 
 #include "Common/CameraUnit.h"

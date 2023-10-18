@@ -1,4 +1,4 @@
-﻿#include "CameraBehaviour.h"
+#include "CameraBehaviour.h"
 
 #include "Common/Time.h"
 #include "InputManager/InputManager.h"

@@ -1,4 +1,4 @@
-﻿#ifndef SOFTWARE_RAYTRACED_DDGI_H
+#ifndef SOFTWARE_RAYTRACED_DDGI_H
 #define SOFTWARE_RAYTRACED_DDGI_H
 
 #include <d3d12.h>

@@ -1,4 +1,4 @@
-﻿#ifndef LOG_H
+#ifndef LOG_H
 #define LOG_H
 #include <cstdint>
 

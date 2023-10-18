@@ -1,4 +1,4 @@
-﻿#include "DynamicCpuBuffer.h"
+#include "DynamicCpuBuffer.h"
 
 namespace JoyEngine
 {

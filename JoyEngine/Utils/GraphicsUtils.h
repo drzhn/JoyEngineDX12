@@ -1,4 +1,4 @@
-﻿#ifndef GRAPHICS_UTILS_H
+#ifndef GRAPHICS_UTILS_H
 #define GRAPHICS_UTILS_H
 
 #include <cstdint>

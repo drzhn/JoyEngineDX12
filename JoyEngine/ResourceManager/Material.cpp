@@ -18,12 +18,12 @@ namespace JoyEngine
 {
 	uint32_t Material::s_currentMaterialIndex = 0;
 
-	Material::Material(GUID guid) :
-		Resource(guid),
+	Material::Material(const char* materialPath) :
+		Resource(materialPath),
 		m_materialIndex(s_currentMaterialIndex++),
 		m_sharedMaterial(EngineDataProvider::Get()->GetGBufferWriteSharedMaterial()) // We will only use standard material for serialized materials
 	{
-		rapidjson::Document json = DataManager::Get()->GetSerializedData(guid, material);
+		rapidjson::Document json = DataManager::Get()->GetSerializedData(materialPath, material);
 
 		std::map<std::string, std::string> bindings;
 		for (auto& bindingJson : json["bindings"].GetArray())
@@ -34,18 +34,18 @@ namespace JoyEngine
 			});
 		}
 
-		InitMaterial(bindings, false);
+		InitMaterial(bindings);
 	}
 
-	Material::Material(GUID guid, const std::map<std::string, std::string>& bindings, bool bindingsArePaths = false) :
-		Resource(guid),
+	Material::Material(uint64_t id, const std::map<std::string, std::string>& bindings) :
+		Resource(id),
 		m_materialIndex(s_currentMaterialIndex++),
 		m_sharedMaterial(EngineDataProvider::Get()->GetGBufferWriteSharedMaterial())
 	{
-		InitMaterial(bindings, bindingsArePaths);
+		InitMaterial(bindings);
 	}
 
-	void Material::InitMaterial(const std::map<std::string, std::string>& bindings, bool bindingsArePaths)
+	void Material::InitMaterial(const std::map<std::string, std::string>& bindings)
 	{
 		for (const auto& binding : bindings)
 		{
@@ -67,14 +67,7 @@ namespace JoyEngine
 					ResourceView* srv = EngineDataProvider::Get()->GetNullTextureView();
 					if (!data.empty())
 					{
-						if (bindingsArePaths)
-						{
-							m_textures.emplace_back(ResourceManager::Get()->LoadResource<Texture>(GUID::Random(), data));
-						}
-						else
-						{
-							m_textures.emplace_back(ResourceManager::Get()->LoadResource<Texture>(GUID::StringToGuid(data)));
-						}
+						m_textures.emplace_back(ResourceManager::Get()->LoadResource<Texture>(data.c_str()));
 						srv = m_textures.back()->GetSRV();
 					}
 

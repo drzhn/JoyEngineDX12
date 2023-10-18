@@ -1,4 +1,4 @@
-﻿#ifndef DEVICE_LINEAR_ALLOCATOR_H
+#ifndef DEVICE_LINEAR_ALLOCATOR_H
 #define DEVICE_LINEAR_ALLOCATOR_H
 
 #include <cstdint>

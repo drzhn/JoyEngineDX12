@@ -9,20 +9,18 @@
 
 
 #include <d3d12.h>
-#include <dxgi1_6.h>
-#include <wrl.h>
 
 #include "Common/HashDefs.h"
 #include "Utils/Log.h"
 
 namespace JoyEngine
 {
-	SharedMaterial::SharedMaterial(GUID guid) :
-		Resource(guid)
+	SharedMaterial::SharedMaterial(const char* path) :
+		Resource(path)
 	{
 		GraphicsPipelineArgs args = {};
 
-		rapidjson::Document json = DataManager::Get()->GetSerializedData(m_guid, sharedMaterial);
+		rapidjson::Document json = DataManager::Get()->GetSerializedData(path, sharedMaterial);
 
 		args.hasVertexInput = json["hasVertexInput"].GetBool();
 		args.depthTest = json["depthTest"].GetBool();
@@ -103,7 +101,7 @@ namespace JoyEngine
 			}
 		}
 
-		args.shader = GUID::StringToGuid(json["shader"].GetString());
+		args.shaderPath = json["shader"].GetString();
 
 		args.depthFormat = RenderManager::Get()->GetDepthFormat();
 		args.blendDesc = blendDesc;
@@ -116,10 +114,9 @@ namespace JoyEngine
 		RenderManager::Get()->RegisterSharedMaterial(this);
 	}
 
-	SharedMaterial::SharedMaterial(GUID guid, GraphicsPipelineArgs args) :
-		Resource(guid)
+	SharedMaterial::SharedMaterial(uint64_t id, GraphicsPipelineArgs args) :
+		Resource(id)
 	{
-		GUID graphicsPipelineGuid = GUID::Random();
 		m_graphicsPipeline = std::make_unique<GraphicsPipeline>(args);
 
 		RenderManager::Get()->RegisterSharedMaterial(this);

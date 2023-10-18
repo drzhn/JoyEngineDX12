@@ -1,4 +1,4 @@
-﻿#ifndef LIGHT_BEHAVIOUR_H
+#ifndef LIGHT_BEHAVIOUR_H
 #define LIGHT_BEHAVIOUR_H
 
 #include "Components/Component.h"

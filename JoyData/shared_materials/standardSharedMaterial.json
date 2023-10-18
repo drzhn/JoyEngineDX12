@@ -1,6 +1,6 @@
 {
     "type": "sharedMaterial",
-    "shader": "908a43e5-84b5-4d81-bf17-3bdcbdd4a224",
+    "shader": "shaders/standardShader.hlsl",
     "hasVertexInput": true,
     "depthTest": true,
     "depthWrite": true,

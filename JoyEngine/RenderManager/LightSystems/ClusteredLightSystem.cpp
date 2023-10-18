@@ -1,4 +1,4 @@
-﻿#include "ClusteredLightSystem.h"
+#include "ClusteredLightSystem.h"
 
 #include <cmath>
 

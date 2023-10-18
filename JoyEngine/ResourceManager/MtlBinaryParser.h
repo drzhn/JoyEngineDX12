@@ -1,4 +1,4 @@
-﻿#ifndef MTL_BINARY_PARSER_H
+#ifndef MTL_BINARY_PARSER_H
 #define MTL_BINARY_PARSER_H
 
 #include <fstream>
@@ -6,7 +6,7 @@
 
 #include "Material.h"
 #include "ResourceManager/ResourceManager.h"
-#include "Utils/GUID.h"
+
 
 namespace JoyEngine
 {
@@ -22,7 +22,7 @@ namespace JoyEngine
 	class MtlBinaryParser
 	{
 	public:
-		MtlBinaryParser(GUID modelGuid, GUID materialGuid);
+		MtlBinaryParser(const std::string& modelGuid, const std::string& materialGuid);
 		std::ifstream& GetModelStream();
 		ResourceHandle<Material> GetMaterialByIndex(uint32_t index);
 		MtlMeshStreamData* Next();
@@ -31,7 +31,7 @@ namespace JoyEngine
 		std::vector<ResourceHandle<Material>> m_materials;
 		bool m_reachedEnd = false;
 		uint32_t m_currentStreamPosition = 0;
-		MtlMeshStreamData m_meshStreamData;
+		MtlMeshStreamData m_meshStreamData = {};
 	};
 }
 

@@ -1,4 +1,4 @@
-﻿#ifndef BUFFER_SORTER_H
+#ifndef BUFFER_SORTER_H
 #define BUFFER_SORTER_H
 
 #include "CommonEngineStructs.h"

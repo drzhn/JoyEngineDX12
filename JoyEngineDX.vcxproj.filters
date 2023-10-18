@@ -236,9 +236,6 @@
     <ClInclude Include="JoyEngine\Utils\FileUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JoyEngine\Utils\GUID.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="JoyEngine\Common\Color.h">
       <Filter>Header Files</Filter>
     </ClInclude>

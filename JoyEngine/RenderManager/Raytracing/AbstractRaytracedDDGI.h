@@ -1,4 +1,4 @@
-﻿#ifndef ABSTRACT_RAYTRACED_DDGI_H
+#ifndef ABSTRACT_RAYTRACED_DDGI_H
 #define ABSTRACT_RAYTRACED_DDGI_H
 #include <cstdint>
 

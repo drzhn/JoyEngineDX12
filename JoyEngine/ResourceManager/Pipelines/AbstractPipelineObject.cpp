@@ -1,15 +1,15 @@
-﻿#include "AbstractPipelineObject.h"
+#include "AbstractPipelineObject.h"
 
 #include "ResourceManager/ResourceManager.h"
 
 namespace JoyEngine
 {
 	AbstractPipelineObject::AbstractPipelineObject(
-		GUID shaderGuid,
+		const char* shaderPath,
 		ShaderTypeFlags shaderTypes,
 		D3D12_ROOT_SIGNATURE_FLAGS flags)
 	{
-		m_shader = ResourceManager::Get()->LoadResource<Shader>(shaderGuid, shaderTypes);
+		m_shader = ResourceManager::Get()->LoadResource<Shader>(shaderPath, shaderTypes);
 		m_inputContainer.InitContainer(m_shader.Get()->GetInputMap(), flags);
 	}
 

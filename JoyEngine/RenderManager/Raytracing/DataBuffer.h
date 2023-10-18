@@ -1,4 +1,4 @@
-﻿#ifndef DATA_BUFFER_H
+#ifndef DATA_BUFFER_H
 #define DATA_BUFFER_H
 
 #include "MemoryManager/MemoryManager.h"

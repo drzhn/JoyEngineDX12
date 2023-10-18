@@ -106,8 +106,8 @@
                 "localRotation": [ 0.0, 0.0, 0.0 ],
                 "localScale": [ 1.0, 1.0, 1.0 ]
             },
-            "model": "models/sponza.obj",
-            "material": "materials/sponza.mtl.json",
+            "model": "sponza/sponza.obj",
+            "material": "sponza/sponza.json",
             "static": true
         },
         {

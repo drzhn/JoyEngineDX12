@@ -1,5 +1,120 @@
 {
-    "sdfsdf": {
-        "val": "vaaaaaal"
-    }
+    "type": "standard_material_list",
+    "materials": [
+        {
+            "name": "sponza:vase_round",
+            "diffuse": "sponza/vase_round.tga",
+            "textureSampler": "linearWrap"
+        },
+        {
+            "name": "sponza:Material__298",
+            "diffuse": "sponza/background.tga",
+            "textureSampler": "linearWrap"
+        },
+        {
+            "name": "sponza:bricks",
+            "diffuse": "sponza/spnza_bricks_a_diff.tga",
+            "textureSampler": "linearWrap"
+        },
+        {
+            "name": "sponza:arch",
+            "diffuse": "sponza/sponza_arch_diff.tga",
+            "textureSampler": "linearWrap"
+        },
+        {
+            "name": "sponza:ceiling",
+            "diffuse": "sponza/sponza_ceiling_a_diff.tga",
+            "textureSampler": "linearWrap"
+        },
+        {
+            "name": "sponza:column_a",
+            "diffuse": "sponza/sponza_column_a_diff.tga",
+            "textureSampler": "linearWrap"
+        },
+        {
+            "name": "sponza:column_c",
+            "diffuse": "sponza/sponza_column_c_diff.tga",
+            "textureSampler": "linearWrap"
+        },
+        {
+            "name": "sponza:floor",
+            "diffuse": "sponza/sponza_floor_a_diff.tga",
+            "textureSampler": "linearWrap"
+        },
+        {
+            "name": "sponza:column_b",
+            "diffuse": "sponza/sponza_column_b_diff.tga",
+            "textureSampler": "linearWrap"
+        },
+        {
+            "name": "sponza:Material__47",
+            "diffuse": "",
+            "textureSampler": "linearWrap"
+        },
+        {
+            "name": "sponza:flagpole",
+            "diffuse": "sponza/sponza_flagpole_diff.tga",
+            "textureSampler": "linearWrap"
+        },
+        {
+            "name": "sponza:fabric_e",
+            "diffuse": "sponza/sponza_fabric_green_diff.tga",
+            "textureSampler": "linearWrap"
+        },
+        {
+            "name": "sponza:fabric_d",
+            "diffuse": "sponza/sponza_fabric_blue_diff.tga",
+            "textureSampler": "linearWrap"
+        },
+        {
+            "name": "sponza:fabric_a",
+            "diffuse": "sponza/sponza_fabric_diff.tga",
+            "textureSampler": "linearWrap"
+        },
+        {
+            "name": "sponza:fabric_g",
+            "diffuse": "sponza/sponza_curtain_blue_diff.tga",
+            "textureSampler": "linearWrap"
+        },
+        {
+            "name": "sponza:fabric_c",
+            "diffuse": "sponza/sponza_curtain_diff.tga",
+            "textureSampler": "linearWrap"
+        },
+        {
+            "name": "sponza:fabric_f",
+            "diffuse": "sponza/sponza_curtain_green_diff.tga",
+            "textureSampler": "linearWrap"
+        },
+        {
+            "name": "sponza:chain",
+            "diffuse": "sponza/chain_texture.tga",
+            "textureSampler": "linearWrap"
+        },
+        {
+            "name": "sponza:vase_hanging",
+            "diffuse": "sponza/vase_hanging.tga",
+            "textureSampler": "linearWrap"
+        },
+        {
+            "name": "sponza:vase",
+            "diffuse": "sponza/vase_dif.tga",
+            "textureSampler": "linearWrap"
+        },
+        {
+            "name": "sponza:Material__25",
+            "diffuse": "sponza/lion.tga",
+            "textureSampler": "linearWrap"
+        },
+        {
+            "name": "sponza:roof",
+            "diffuse": "sponza/sponza_roof_diff.tga",
+            "textureSampler": "linearWrap"
+        },
+        {
+            "name": "sponza:details",
+            "diffuse": "sponza/sponza_details_diff.tga",
+            "textureSampler": "linearWrap"
+        }
+    ]
 }

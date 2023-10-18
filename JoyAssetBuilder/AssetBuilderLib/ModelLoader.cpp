@@ -40,7 +40,6 @@ struct NodeData
 {
 	FbxMesh* mesh = nullptr;
 	FbxSurfaceMaterial* material = nullptr;
-	std::string diffuseTexture;
 	std::string materialName;
 };
 
@@ -109,7 +108,12 @@ bool ModelLoader::LoadModel(const std::string& modelFilename, const std::string&
 
 	FindData(lRootNode, nodes);
 
-	std::map<std::string, uint32_t> materialIndices;
+	struct materialdata
+	{
+		uint32_t materialIndex;
+		std::string diffuseTexture;
+	};
+	std::map<std::string, materialdata> materialIndices;
 	uint32_t currentMaterialIndex = 0;
 
 	for (auto& node : nodes)
@@ -123,22 +127,23 @@ bool ModelLoader::LoadModel(const std::string& modelFilename, const std::string&
 		std::string materialName = material->GetName();
 		if (!materialIndices.contains(materialName))
 		{
-			materialIndices.insert({materialName, currentMaterialIndex});
+			FbxProperty prop = material->FindProperty(FbxSurfaceMaterial::sDiffuse);
+			int layeredTextureCount = prop.GetSrcObjectCount<FbxLayeredTexture>();
+			//int textureCount = prop.GetSrcObjectCount<FbxTexture>();
+			const int textureIndex = 0;
+			FbxFileTexture* texture = FbxCast<FbxFileTexture>(prop.GetSrcObject<FbxTexture>(textureIndex));
+			std::string diffuseTexture;
+			if (texture != nullptr)
+			{
+				std::filesystem::path path = texture->GetFileName();
+				diffuseTexture = std::filesystem::relative(path, dataDir).generic_string();
+			}
+
+			materialIndices.insert({materialName, {currentMaterialIndex, diffuseTexture}});
 			currentMaterialIndex++;
 		}
 
 		node.materialName = materialName;
-
-		FbxProperty prop = material->FindProperty(FbxSurfaceMaterial::sDiffuse);
-		int layeredTextureCount = prop.GetSrcObjectCount<FbxLayeredTexture>();
-		//int textureCount = prop.GetSrcObjectCount<FbxTexture>();
-		const int textureIndex = 0;
-		FbxFileTexture* texture = FbxCast<FbxFileTexture>(prop.GetSrcObject<FbxTexture>(textureIndex));
-		if (texture != nullptr)
-		{
-			std::filesystem::path path = texture->GetFileName();
-			node.diffuseTexture = std::filesystem::relative(path, dataDir).generic_string();
-		}
 	}
 
 	m_shapes.resize(nodes.size());
@@ -191,13 +196,19 @@ bool ModelLoader::LoadModel(const std::string& modelFilename, const std::string&
 		m_shapes[nodesIndex].m_header = {
 			.vertexDataSize = static_cast<uint32_t>(polygonsCount * 3 * sizeof(Vertex)),
 			.indexDataSize = static_cast<uint32_t>(polygonsCount * 3 * sizeof(Index)),
-			.materialIndex = materialIndices.at(nodes[nodesIndex].materialName)
+			.materialIndex = materialIndices.at(nodes[nodesIndex].materialName).materialIndex
 		};
 	}
 
 	lScene->Destroy(true);
 
 	if (nodes.size() == 1) return true;
+
+	std::vector<std::string> materials(currentMaterialIndex);
+	for (const auto& value : materialIndices)
+	{
+		materials[value.second.materialIndex] = value.first;
+	}
 
 	std::filesystem::path materialPath = std::filesystem::path(modelFilename).replace_extension(".json");
 
@@ -206,9 +217,20 @@ bool ModelLoader::LoadModel(const std::string& modelFilename, const std::string&
 
 	rapidjson::Document::AllocatorType& alloc = json.GetAllocator();
 
-	rapidjson::Value val(rapidjson::kObjectType);
-	val.AddMember("val", "vaaaaaal", alloc);
-	json.AddMember("sdfsdf", val, alloc);
+
+	json.AddMember("type", "standard_material_list", alloc);
+
+	rapidjson::Value mat(rapidjson::kArrayType);
+	for (int i = 0; i < currentMaterialIndex; i++)
+	{
+		rapidjson::Value m(rapidjson::kObjectType);
+		m.AddMember("name", rapidjson::Value(materials[i].c_str(), alloc), alloc);
+		m.AddMember("diffuse", rapidjson::Value(materialIndices[materials[i]].diffuseTexture.c_str(), alloc), alloc);
+		m.AddMember("textureSampler", "linearWrap", alloc);
+
+		mat.PushBack(m, alloc);
+	}
+	json.AddMember("materials", mat, alloc);
 
 	std::ofstream materialStream(materialPath, std::ofstream::trunc);
 

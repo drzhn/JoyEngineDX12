@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 
 #include <Blob.h>
 
@@ -32,14 +32,14 @@ extern "C" __declspec(dllexport) int __cdecl TerminateBuilder()
 
 extern "C" __declspec(dllexport) int __cdecl BuildModel(
 	const char* modelFileName,
-	const char* materialsDir,
+	const char* dataDir,
 	const char** errorMessageCStr)
 {
 	const std::string modelFilename = std::string(modelFileName);
-	const std::string materialsDirString = std::string(materialsDir);
+	const std::string dataDirString = std::string(dataDir);
 	const std::string dataFilename = std::string(modelFileName) + ".data";
 
-	if (!modelLoader->LoadModel(modelFilename, materialsDirString, errorMessage))
+	if (!modelLoader->LoadModel(modelFilename, dataDirString, errorMessage))
 	{
 		*errorMessageCStr = errorMessage.c_str();
 		return 1;

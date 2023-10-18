@@ -16,15 +16,15 @@ namespace JoyAssetBuilder
         private List<IBuildable> m_assetToBuilds = new List<IBuildable>();
         private IBuildable m_currentSelected = null;
 
-        private readonly string m_materialsPath;
+        private readonly string m_dataPath;
 
         private DatabaseBuilder m_databaseBuilder;
 
-        public AssetPanelViewController(TreeView panel, TextBox box, string dataPath, string materialsPath)
+        public AssetPanelViewController(TreeView panel, TextBox box, string dataPath)
         {
             m_view = panel;
             m_logBox = box;
-            m_materialsPath = materialsPath;
+            m_dataPath = dataPath;
             ImageList imageList = new ImageList();
             imageList.Images.Add(AssetType.Folder.ToString(), Properties.Resources.FolderClosed_16x);
             imageList.Images.Add(AssetType.Model.ToString(), Properties.Resources.Model3D_outline_16x);
@@ -41,7 +41,7 @@ namespace JoyAssetBuilder
 
         public void RebuildDatabase()
         {
-            m_databaseBuilder.RebuildDatabase();
+            //m_databaseBuilder.RebuildDatabase();
         }
 
         public void ExpandAll()
@@ -56,7 +56,7 @@ namespace JoyAssetBuilder
 
         private void GetDirsAndFiles(string path, AssetTreeNode parentNode)
         {
-            AssetTreeNode dirItem = new AssetTreeNode(AssetType.Folder, Path.GetFileName(path), m_materialsPath);
+            AssetTreeNode dirItem = new AssetTreeNode(AssetType.Folder, Path.GetFileName(path), m_dataPath);
             //rootItem.SelectedImageKey = "Folder";
             dirItem.ImageKey = "Folder";
             if (parentNode == null)
@@ -84,7 +84,7 @@ namespace JoyAssetBuilder
                 switch (Path.GetExtension(file))
                 {
                     case ".obj":
-                        fileItem = new AssetTreeNode(AssetType.Model, file, m_materialsPath);
+                        fileItem = new AssetTreeNode(AssetType.Model, file, m_dataPath);
                         break;
                     case ".png":
                     case ".jpg":
@@ -92,10 +92,10 @@ namespace JoyAssetBuilder
                     case ".hdr":
                     case ".tga":
                     //case ".dds":
-                        fileItem = new AssetTreeNode(AssetType.Texture, file, m_materialsPath);
+                        fileItem = new AssetTreeNode(AssetType.Texture, file, m_dataPath);
                         break;
                     case ".mtl":
-                        fileItem = new AssetTreeNode(AssetType.Material, file, m_materialsPath);
+                        fileItem = new AssetTreeNode(AssetType.Material, file, m_dataPath);
                         break;
                     // for now we build shaders in runtime
                     //case ".shader": 

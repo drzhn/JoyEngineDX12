@@ -14,13 +14,13 @@ class ModelLoader
 public:
 	ModelLoader();
 	~ModelLoader();
-	[[nodiscard]] bool LoadModel(const std::string& modelFilename, const std::string& materialsDir, std::string& errorMessage);
+	[[nodiscard]] bool LoadModel(const std::string& modelFilename, const std::string& dataDir, std::string& errorMessage);
 	[[nodiscard]] bool WriteData(const std::string& dataFilename, std::string& errorMessage) const;
 
 private:
 	struct ShapeData
 	{
-		MeshAssetHeader m_header;
+		JoyEngine::MeshAssetHeader m_header;
 		std::vector<Vertex> m_vertices;
 		std::vector<uint32_t> m_indices;
 	};
@@ -29,6 +29,7 @@ private:
 
 	FbxManager* m_lSdkManager;
 	FbxImporter* m_lImporter;
+	std::unique_ptr<FbxGeometryConverter> m_lGeometryConverter;
 };
 
 

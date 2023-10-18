@@ -29,11 +29,11 @@ namespace JoyAssetBuilder
             TerminateBuilder();
         }
 
-        public static unsafe int BuildModel(string modelFileName, string materialsDir, out string errorMessage)
+        public static unsafe int BuildModel(string modelFileName, string dataDir, out string errorMessage)
         {
             IntPtr errorMessagePtr = IntPtr.Zero;
 
-            int result = BuildModel(modelFileName, materialsDir, &errorMessagePtr);
+            int result = BuildModel(modelFileName, dataDir, &errorMessagePtr);
             if (result == 0)
             {
                 errorMessage = null;
@@ -47,7 +47,7 @@ namespace JoyAssetBuilder
         }
 
         [DllImport(m_dllPath, CallingConvention = CallingConvention.Cdecl)]
-        private static extern unsafe int BuildModel(string modelFileName, string materialsDir, IntPtr* errorMessage);
+        private static extern unsafe int BuildModel(string modelFileName, string dataDir, IntPtr* errorMessage);
 
 
         public static unsafe int BuildTexture(string textureFileName, out string errorMessage)

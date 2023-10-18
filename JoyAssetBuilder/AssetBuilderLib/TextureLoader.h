@@ -17,7 +17,7 @@ public:
 private:
 	struct TextureData
 	{
-		TextureAssetHeader m_header;
+		JoyEngine::TextureAssetHeader m_header;
 		Blob blob;
 	};
 

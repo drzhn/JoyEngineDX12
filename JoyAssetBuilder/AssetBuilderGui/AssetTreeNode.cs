@@ -28,18 +28,18 @@ namespace JoyAssetBuilder
     {
         private readonly AssetType m_type;
         private readonly string m_path;
-        private readonly string m_materialsPath;
+        private readonly string m_dataPath;
         private readonly Color okColor = Color.DarkSeaGreen;
         private readonly Color errorColor = Color.IndianRed;
 
         bool IBuildable.Built => _mBuilt;
         private bool _mBuilt = false;
 
-        public AssetTreeNode(AssetType type, string path, string materialsPath)
+        public AssetTreeNode(AssetType type, string path, string dataPath)
         {
             m_type = type;
             m_path = path;
-            m_materialsPath = materialsPath;
+            m_dataPath = dataPath;
             Text = Path.GetFileName(path);
             ImageKey = m_type.ToString();
             SelectedImageKey = m_type.ToString();
@@ -83,7 +83,7 @@ namespace JoyAssetBuilder
                     }
                     break;
                 case AssetType.Model:
-                    _mBuilt = ModelBuilder.BuildModel(m_path, m_materialsPath, out resultMessage);
+                    _mBuilt = ModelBuilder.BuildModel(m_path, m_dataPath, out resultMessage);
                     yield return resultMessage;
                     break;
                 case AssetType.Texture:

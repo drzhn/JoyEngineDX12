@@ -1,4 +1,4 @@
-﻿#include "TextureLoader.h"
+#include "TextureLoader.h"
 
 #include "objbase.h"
 
@@ -38,10 +38,6 @@ struct ThreadPayload
 void TextureConversionCycle2()
 {
 	int result = AssetConversion::TextureConversionInit(COINIT_MULTITHREADED);
-	if (result != 0)
-	{
-		int a = 5;
-	}
 	while (true)
 	{
 		std::unique_lock lk(m2);
@@ -73,12 +69,12 @@ bool TextureLoader::LoadTexture(const std::string& filePath, std::string& errorM
 	threadPayload.filePath = filePath.c_str();
 	if (isHdr)
 	{
-		m_currentTextureData.m_header.format = BC6H_UF16;
+		m_currentTextureData.m_header.format = JoyEngine::BC6H_UF16;
 		threadPayload.conversionParams.format = DXGI_FORMAT_BC6H_UF16;
 	}
 	else
 	{
-		m_currentTextureData.m_header.format = BC1_UNORM;
+		m_currentTextureData.m_header.format = JoyEngine::BC1_UNORM;
 		threadPayload.conversionParams.format = DXGI_FORMAT_BC1_UNORM;
 	}
 	threadPayload.blob = &m_currentTextureData.blob;
@@ -109,7 +105,7 @@ bool TextureLoader::WriteData(const std::string& dataFilename, std::string& erro
 {
 	std::ofstream modelFileStream(dataFilename, std::ofstream::binary | std::ofstream::trunc);
 
-	modelFileStream.write(reinterpret_cast<const char*>(&m_currentTextureData.m_header), sizeof(TextureAssetHeader));
+	modelFileStream.write(reinterpret_cast<const char*>(&m_currentTextureData.m_header), sizeof(JoyEngine::TextureAssetHeader));
 	modelFileStream.write(reinterpret_cast<const char*>(m_currentTextureData.blob.GetBufferPointer()), m_currentTextureData.blob.GetBufferSize());
 
 	if (modelFileStream.is_open())

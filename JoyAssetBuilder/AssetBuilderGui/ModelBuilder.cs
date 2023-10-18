@@ -6,9 +6,9 @@ namespace JoyAssetBuilder
 {
     public class ModelBuilder
     {
-        public static bool BuildModel(string modelPath, string materialsDir, out string resultMessage)
+        public static bool BuildModel(string modelPath, string dataDir, out string resultMessage)
         {
-            int result = BuilderFacade.BuildModel(modelPath,  materialsDir, out var buidlResult);
+            int result = BuilderFacade.BuildModel(modelPath,  dataDir, out var buidlResult);
             if (result != 0)
             {
                 resultMessage = Path.GetFileName(modelPath) + ": Error building model\n" + buidlResult +

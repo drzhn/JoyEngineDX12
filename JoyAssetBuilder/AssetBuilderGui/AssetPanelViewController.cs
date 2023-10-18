@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace JoyAssetBuilder
 {
@@ -91,12 +92,12 @@ namespace JoyAssetBuilder
                     case ".jpeg":
                     case ".hdr":
                     case ".tga":
-                    //case ".dds":
+                        //case ".dds":
                         fileItem = new AssetTreeNode(AssetType.Texture, file, m_dataPath);
                         break;
-                    case ".mtl":
-                        fileItem = new AssetTreeNode(AssetType.Material, file, m_dataPath);
-                        break;
+                    //case ".mtl":
+                    //    fileItem = new AssetTreeNode(AssetType.Material, file, m_dataPath);
+                    //    break;
                     // for now we build shaders in runtime
                     //case ".shader": 
                     //    fileItem = new AssetTreeNode(AssetType.Shader, file);
@@ -138,6 +139,7 @@ namespace JoyAssetBuilder
 
         public void BuildAll()
         {
+            Stopwatch _stopWatch = Stopwatch.StartNew();
             m_assetToBuilds.ForEach(x =>
             {
                 foreach (string resultMessage in x.Build())
@@ -145,6 +147,12 @@ namespace JoyAssetBuilder
                     m_logBox.AppendText(resultMessage);
                 }
             });
+
+            _stopWatch.Stop();
+            string message = "Elapsed time: " + _stopWatch.Elapsed.Minutes + " minutes, "
+                             + _stopWatch.Elapsed.Seconds + " seconds";
+            MessageBox.Show(message, "Rebuild finished", MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
         }
     }
 }

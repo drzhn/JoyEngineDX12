@@ -26,11 +26,12 @@ namespace JoyEngine
 		rapidjson::Document json = DataManager::Get()->GetSerializedData(materialPath, material);
 
 		std::map<std::string, std::string> bindings;
-		for (auto& bindingJson : json["bindings"].GetArray())
+		const auto& bindingJson = json["bindings"];
+		for (auto member = bindingJson.MemberBegin(); member != bindingJson.MemberEnd(); ++member)
 		{
 			bindings.insert({
-				bindingJson["name"].GetString(),
-				bindingJson["data"].GetString()
+				member->name.GetString(),
+				member->value.GetString()
 			});
 		}
 

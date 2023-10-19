@@ -500,9 +500,12 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="JoyData\shaders\standardShader.hlsl">
+    <FxCompile Include="JoyData\shaders\standardShader.hlsl">
       <FileType>Document</FileType>
-    </None>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GraphicsDebug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="JoyData\shaders\gizmoAxisDrawer.hlsl">

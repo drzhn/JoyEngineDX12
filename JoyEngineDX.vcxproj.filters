@@ -513,7 +513,6 @@
     <None Include="JoyData\shaders\ssaoappend.hlsl" />
     <None Include="JoyData\shaders\ssaoblur.hlsl" />
     <None Include="JoyData\shaders\sslrpostprocess.hlsl" />
-    <None Include="JoyData\shaders\standardShader.hlsl" />
     <None Include="JoyData\shaders\gizmoAxisDrawer.hlsl" />
     <None Include="JoyData\shaders\sw_raytracing\LocalRadixSort.hlsl" />
     <None Include="JoyData\shaders\sw_raytracing\GlobalScan.hlsl" />
@@ -533,5 +532,6 @@
   <ItemGroup>
     <FxCompile Include="JoyData\shaders\hw_raytracing\Raytracing.hlsl" />
     <FxCompile Include="JoyData\shaders\sw_raytracing\Raytracing.hlsl" />
+    <FxCompile Include="JoyData\shaders\standardShader.hlsl" />
   </ItemGroup>
 </Project>

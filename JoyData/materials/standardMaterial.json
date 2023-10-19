@@ -1,13 +1,8 @@
 {
     "type": "material",
-    "bindings": [
+    "bindings": 
         {
-            "name": "diffuse",
-            "data": "textures/sunset2.hdr"
-        },
-        {
-            "name": "textureSampler",
-            "data": "linearWrap"
+            "diffuse": "Anna_FBX/Std_Skin_Head_Diffuse.jpg",
+            "textureSampler": "linearWrap"
         }
-    ]
 }

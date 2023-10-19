@@ -87,6 +87,9 @@ ModelLoader::~ModelLoader()
 
 bool ModelLoader::LoadModel(const std::string& modelFilename, const std::string& dataDir, std::string& errorMessage)
 {
+	std::filesystem::path modelDirectory = std::filesystem::path(modelFilename).parent_path();
+	std::filesystem::path dataDirectory = std::filesystem::path(dataDir);
+
 	if (!m_lImporter->Initialize(modelFilename.c_str(), -1, m_lSdkManager->GetIOSettings()))
 	{
 		printf("Call to FbxImporter::Initialize() failed.\n");
@@ -122,9 +125,11 @@ bool ModelLoader::LoadModel(const std::string& modelFilename, const std::string&
 		auto shadingModel = material->ShadingModel.Get();
 		//FbxSurfacePhong* phong = static_cast<FbxSurfacePhong*>(material);
 		//auto name = phong->GetName();
-		//std::cout << name << std::endl;
 
 		std::string materialName = material->GetName();
+
+		std::cout << materialName << " " << shadingModel << std::endl;
+
 		if (!materialIndices.contains(materialName))
 		{
 			FbxProperty prop = material->FindProperty(FbxSurfaceMaterial::sDiffuse);
@@ -135,12 +140,29 @@ bool ModelLoader::LoadModel(const std::string& modelFilename, const std::string&
 			std::string diffuseTexture;
 			if (texture != nullptr)
 			{
-				std::filesystem::path path = texture->GetFileName();
-				diffuseTexture = std::filesystem::relative(path, dataDir).generic_string();
+				// fbx stores absolute path in the PC the file created
+				std::filesystem::path textureAbsolutePath = texture->GetFileName();
+				diffuseTexture = std::filesystem::relative(
+					modelDirectory / textureAbsolutePath.filename(),
+					dataDirectory
+				).generic_string();
 			}
 
 			materialIndices.insert({materialName, {currentMaterialIndex, diffuseTexture}});
 			currentMaterialIndex++;
+
+
+			//for (int i = 0; i < 22; i++)
+			//{
+			//	FbxSurfacePhong* phong = static_cast<FbxSurfacePhong*>(material);
+			//	FbxProperty prop1 = phong->FindProperty(props[i]);
+
+			//	FbxFileTexture* texture1 = FbxCast<FbxFileTexture>(prop1.GetSrcObject<FbxTexture>(0));
+			//	if (texture1 != nullptr)
+			//	{
+			//		std::cout << props[i] << " " << texture1->GetFileName() << std::endl;
+			//	}
+			//}
 		}
 
 		node.materialName = materialName;
@@ -153,10 +175,15 @@ bool ModelLoader::LoadModel(const std::string& modelFilename, const std::string&
 		auto mesh = nodes[nodesIndex].mesh;
 
 		mesh = static_cast<FbxMesh*>(m_lGeometryConverter->Triangulate(mesh, true));
-
 		const auto polygonsCount = mesh->GetPolygonCount();
 		FbxStringList uvSetNames;
 		mesh->GetUVSetNames(uvSetNames);
+
+		mesh->GenerateTangentsData(uvSetNames[0]);
+		auto tangentsCount = mesh->GetElementTangentCount();
+		FbxGeometryElementTangent* tangents = mesh->GetElementTangent(0);
+		FbxLayerElementArrayTemplate<FbxVector4>& directArray = tangents->GetDirectArray();
+		FbxLayerElementArrayTemplate<int>& indexArray = tangents->GetIndexArray();
 
 		m_shapes[nodesIndex].m_vertices = std::vector<Vertex>(polygonsCount * 3);
 		m_shapes[nodesIndex].m_indices = std::vector<Index>(polygonsCount * 3);
@@ -172,6 +199,22 @@ bool ModelLoader::LoadModel(const std::string& modelFilename, const std::string&
 				bool unmapped;
 				mesh->GetPolygonVertexUV(i, vi, uvSetNames.GetStringAt(0), uv, unmapped);
 
+				FbxVector4 tangent;
+				switch (tangents->GetReferenceMode())
+				{
+				case FbxGeometryElement::eDirect:
+					tangent = directArray.GetAt(index);
+					break;
+				case FbxGeometryElement::eIndexToDirect:
+					{
+						int id = indexArray.GetAt(index);
+						tangent = directArray.GetAt(id);
+					}
+					break;
+				default:
+					break; // other reference modes not shown here!
+				}
+
 				m_shapes[nodesIndex].m_vertices[i * 3 + vi] = Vertex{
 					.pos = {
 						static_cast<float>(position[0]),
@@ -183,7 +226,11 @@ bool ModelLoader::LoadModel(const std::string& modelFilename, const std::string&
 						static_cast<float>(normal[1]),
 						static_cast<float>(normal[2])
 					},
-					.tangent = {},
+					.tangent = {
+						static_cast<float>(tangent[0]),
+						static_cast<float>(tangent[1]),
+						static_cast<float>(tangent[2])
+					},
 					.texCoord = {
 						static_cast<float>(uv[0]),
 						1.f - static_cast<float>(uv[1])

@@ -82,7 +82,7 @@ namespace JoyAssetBuilder
             foreach (string file in Directory.GetFiles(path))
             {
                 AssetTreeNode fileItem;
-                switch (Path.GetExtension(file))
+                switch (Path.GetExtension(file).ToLower())
                 {
                     case ".obj":
                     case ".fbx":

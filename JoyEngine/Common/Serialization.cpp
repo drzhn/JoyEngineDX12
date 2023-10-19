@@ -41,7 +41,7 @@ namespace JoyEngine
 		ASSERT(GetInstance()->m_fieldOffsetStorage.contains(className));
 
 		auto fieldOffsetStorage = GetInstance()->m_fieldOffsetStorage[className];
-		for (auto member = fieldsJson.MemberBegin(); member != fieldsJson.MemberEnd(); member++)
+		for (auto member = fieldsJson.MemberBegin(); member != fieldsJson.MemberEnd(); ++member)
 		{
 			const std::string fieldName = member->name.GetString();
 			uint32_t typeHash = fieldOffsetStorage[fieldName].typeHash;

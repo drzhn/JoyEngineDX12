@@ -6,6 +6,7 @@
 
 #ifdef _MSC_VER
 #include <intrin.h>
+#include <intsafe.h>
 #define DEBUG_BREAK __debugbreak()
 #else
 #error Unsupported compiler
@@ -19,7 +20,12 @@
 if (expr) {} else {\
 	Logger::LogFormat("Error: %s %s %s:%d\n", message, #expr, __FILE__, __LINE__);\
 	DEBUG_BREAK;}
-#define ASSERT_SUCC(expr) if (FAILED(expr)) {BREAK(expr)}
+#define ASSERT_SUCC(expr) {\
+HRESULT expressionResult = expr; \
+if (FAILED(expressionResult)) {\
+	Logger::LogFormat("HRESULT: %X\n", expressionResult);\
+	BREAK(expr);\
+}}
 
 #else
 #define ASSERT(expr)

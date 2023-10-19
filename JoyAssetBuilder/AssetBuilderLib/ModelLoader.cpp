@@ -178,12 +178,12 @@ bool ModelLoader::LoadModel(const std::string& modelFilename, const std::string&
 						static_cast<float>(position[1]),
 						static_cast<float>(position[2])
 					},
-					.color = {},
 					.normal = {
 						static_cast<float>(normal[0]),
 						static_cast<float>(normal[1]),
 						static_cast<float>(normal[2])
 					},
+					.tangent = {},
 					.texCoord = {
 						static_cast<float>(uv[0]),
 						1.f - static_cast<float>(uv[1])

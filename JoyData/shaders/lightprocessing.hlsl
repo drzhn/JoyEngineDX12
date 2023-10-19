@@ -88,7 +88,7 @@ float3 CalcAttenuationForSpot(float3 lightPosition, float3 fragPosition, float3 
 	return (1 - conAtt); // *distToLightNorm;
 }
 
-PSInput VSMain(float3 position : POSITION, float3 color : COLOR, float3 normal : NORMAL, float2 uv : TEXCOORD)
+PSInput VSMain(float3 position : POSITION,  float3 normal : NORMAL, float2 uv : TEXCOORD)
 {
 	PSInput result;
 	const float4x4 resMatrix = mul(mvp.projection, mul(mvp.view, mvp.model));

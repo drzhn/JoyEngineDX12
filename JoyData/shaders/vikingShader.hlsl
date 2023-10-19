@@ -25,7 +25,7 @@ inline float4 ComputeNonStereoScreenPos(float4 pos) {
 	return o;
 }
 
-PSInput VSMain(float3 position : POSITION, float3 color : COLOR, float3 normal: NORMAL, float2 uv : TEXCOORD)
+PSInput VSMain(float3 position : POSITION,  float3 normal: NORMAL, float2 uv : TEXCOORD)
 {
 	PSInput result;
 	float4x4 resMatrix = mul(viewProjectionData.proj, mul(viewProjectionData.view, modelData.model));

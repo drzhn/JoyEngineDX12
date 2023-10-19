@@ -120,8 +120,8 @@ struct Color
 struct Vertex
 {
 	VEC3 pos;
-	VEC3 color;
 	VEC3 normal;
+	VEC3 tangent;
 	VEC2 texCoord;
 };
 

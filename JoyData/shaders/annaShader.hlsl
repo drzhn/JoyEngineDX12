@@ -109,7 +109,7 @@ float2 SampleSphericalMap(float3 v)
 }
 
 
-PSInput VSMain(float3 position : POSITION, float3 color : COLOR, float3 normal: NORMAL, float2 uv : TEXCOORD)
+PSInput VSMain(float3 position : POSITION,  float3 normal: NORMAL, float2 uv : TEXCOORD)
 {
 	PSInput result;
 	float4x4 resMatrix = mul(mvp.projection, mul(mvp.view, mvp.model));

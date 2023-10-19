@@ -85,6 +85,7 @@ namespace JoyAssetBuilder
                 switch (Path.GetExtension(file))
                 {
                     case ".obj":
+                    case ".fbx":
                         fileItem = new AssetTreeNode(AssetType.Model, file, m_dataPath);
                         break;
                     case ".png":

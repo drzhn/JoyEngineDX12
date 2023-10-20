@@ -34,7 +34,7 @@ namespace JoyEngine
 
 		[[nodiscard]] DynamicCpuBuffer<EngineData>* GetEngineDataBuffer() const noexcept { return m_engineDataBuffer.get(); }
 
-		void SetMaterialData(uint32_t index, uint32_t diffuseTextureIndex) const;
+		void SetMaterialData(const uint32_t materialIndex, const size_t fieldOffset, const void* valuePtr, const size_t valueSize) const;
 
 		//[[nodiscard]] ResourceHandle<SharedMaterial> GetLightProcessingSharedMaterial() const noexcept { return m_lightProcessingSharedMaterial; }
 		//[[nodiscard]] ResourceHandle<SharedMaterial> GetDirectionLightProcessingSharedMaterial() const noexcept { return m_directionLightProcessingSharedMaterial; }

@@ -15,7 +15,6 @@ namespace JoyEngine
 		m_near(nearPlane),
 		m_far(farPlane)
 	{
-		jmath::vec2 a;
 	}
 
 	CameraUnit::CameraUnit(float aspect, float size, float nearPlane, float farPlane):

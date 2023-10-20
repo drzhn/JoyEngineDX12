@@ -10,28 +10,35 @@
 
 #include "Utils.h"
 
-#define PROPS_COUNT 11
+#define PROPS_COUNT 14
 
 const char* props[PROPS_COUNT] = {
+	// lambert
 	FbxSurfaceMaterial::sShadingModel,
 	FbxSurfaceMaterial::sDiffuse,
 	FbxSurfaceMaterial::sEmissive,
 	FbxSurfaceMaterial::sEmissiveFactor,
 	FbxSurfaceMaterial::sAmbient,
 	FbxSurfaceMaterial::sAmbientFactor,
+	FbxSurfaceMaterial::sNormalMap,
+
+	// + alpha cutoff
+	FbxSurfaceMaterial::sTransparentColor,
+	// + transparent
+	FbxSurfaceMaterial::sTransparencyFactor,
+
+	// + phong
 	FbxSurfaceMaterial::sSpecular,
 	FbxSurfaceMaterial::sSpecularFactor,
-	FbxSurfaceMaterial::sNormalMap,
-	FbxSurfaceMaterial::sTransparentColor,
-	FbxSurfaceMaterial::sTransparencyFactor,
+	FbxSurfaceMaterial::sReflection,
+	FbxSurfaceMaterial::sReflectionFactor,
+	FbxSurfaceMaterial::sShininess,
 
 	//FbxSurfaceMaterial::sMultiLayer,
 	//FbxSurfaceMaterial::sDiffuseFactor,
-	//FbxSurfaceMaterial::sShininess,
 	//FbxSurfaceMaterial::sBump,
 	//FbxSurfaceMaterial::sBumpFactor,
-	//FbxSurfaceMaterial::sReflection,
-	//FbxSurfaceMaterial::sReflectionFactor,
+
 	//FbxSurfaceMaterial::sDisplacementColor,
 	//FbxSurfaceMaterial::sDisplacementFactor,
 	//FbxSurfaceMaterial::sVectorDisplacementColor,
@@ -49,8 +56,20 @@ struct NodeData
 struct MaterialData
 {
 	uint32_t materialIndex;
-	std::string diffuseTexture;
-	std::string normalTexture;
+
+	std::string DiffuseMap;
+	std::string EmissiveMap;
+	float EmissiveFactor;
+	std::string AmbientMap;
+	float AmbientFactor;
+	std::string NormalMap;
+	std::string TransparentColor;
+	float TransparencyFactor;
+	std::string SpecularMap;
+	float SpecularFactor;
+	std::string ReflectionMap;
+	float ReflectionFactor;
+	std::string ShininessMap;
 };
 
 void FindData(FbxNode* node, std::vector<NodeData>& nodes)
@@ -136,13 +155,26 @@ bool ModelLoader::LoadModel(const std::string& modelFilename, const std::string&
 
 		if (!materialIndices.contains(materialName))
 		{
-			auto GetTextureByProperty = [&](const char* property)
+			auto GetFloatByProperty = [&](const char* property)
+			{
+				FbxProperty prop = material->FindProperty(property);
+				if (prop.IsValid())
+				{
+					return static_cast<float>(prop.Get<FbxDouble>());
+				}
+				return 0.f;
+			};
+
+			auto GetTextureNameByProperty = [&](const char* property)
 			{
 				FbxProperty prop = material->FindProperty(property);
 				int layeredTextureCount = prop.GetSrcObjectCount<FbxLayeredTexture>();
-				//int textureCount = prop.GetSrcObjectCount<FbxTexture>();
-				const int textureIndex = 0;
-				FbxFileTexture* texture = FbxCast<FbxFileTexture>(prop.GetSrcObject<FbxTexture>(textureIndex));
+				int textureCount = prop.GetSrcObjectCount<FbxTexture>();
+				if (layeredTextureCount != 0 || textureCount != 0)
+				{
+					// TODO we dont have multiple textures support yet
+				}
+				FbxFileTexture* texture = FbxCast<FbxFileTexture>(prop.GetSrcObject<FbxTexture>(0));
 				std::string textureName;
 				if (texture != nullptr)
 				{
@@ -160,14 +192,25 @@ bool ModelLoader::LoadModel(const std::string& modelFilename, const std::string&
 			materialIndices.insert({
 				materialName, {
 					.materialIndex = currentMaterialIndex,
-					.diffuseTexture = GetTextureByProperty(FbxSurfaceMaterial::sDiffuse),
-					.normalTexture = GetTextureByProperty(FbxSurfaceMaterial::sNormalMap),
+					.DiffuseMap = GetTextureNameByProperty(FbxSurfaceMaterial::sDiffuse),
+					.EmissiveMap = GetTextureNameByProperty(FbxSurfaceMaterial::sEmissive),
+					.EmissiveFactor = GetFloatByProperty(FbxSurfaceMaterial::sEmissiveFactor),
+					.AmbientMap = GetTextureNameByProperty(FbxSurfaceMaterial::sAmbient),
+					.AmbientFactor = GetFloatByProperty(FbxSurfaceMaterial::sAmbientFactor),
+					.NormalMap = GetTextureNameByProperty(FbxSurfaceMaterial::sNormalMap),
+					.TransparentColor = GetTextureNameByProperty(FbxSurfaceMaterial::sTransparentColor),
+					.TransparencyFactor = GetFloatByProperty(FbxSurfaceMaterial::sTransparencyFactor),
+					.SpecularMap = GetTextureNameByProperty(FbxSurfaceMaterial::sSpecular),
+					.SpecularFactor = GetFloatByProperty(FbxSurfaceMaterial::sSpecularFactor),
+					.ReflectionMap = GetTextureNameByProperty(FbxSurfaceMaterial::sReflection),
+					.ReflectionFactor = GetFloatByProperty(FbxSurfaceMaterial::sReflectionFactor),
+					.ShininessMap = GetTextureNameByProperty(FbxSurfaceMaterial::sShininess),
 				}
 			});
 			currentMaterialIndex++;
 
 
-			for (int i = 0; i < 22; i++)
+			for (int i = 0; i < PROPS_COUNT; i++)
 			{
 				FbxSurfacePhong* phong = static_cast<FbxSurfacePhong*>(material);
 				FbxProperty prop1 = phong->FindProperty(props[i]);
@@ -282,18 +325,55 @@ bool ModelLoader::LoadModel(const std::string& modelFilename, const std::string&
 
 	json.AddMember("asset_type", "standard_material_list", alloc);
 
-	rapidjson::Value mat(rapidjson::kArrayType);
+	rapidjson::Value jsonMaterialArray(rapidjson::kArrayType);
 	for (int i = 0; i < currentMaterialIndex; i++)
 	{
-		rapidjson::Value m(rapidjson::kObjectType);
-		m.AddMember("name", rapidjson::Value(materials[i].c_str(), alloc), alloc);
-		m.AddMember("diffuseMap", rapidjson::Value(materialIndices[materials[i]].diffuseTexture.c_str(), alloc), alloc);
-		m.AddMember("normalMap", rapidjson::Value(materialIndices[materials[i]].normalTexture.c_str(), alloc), alloc);
-		m.AddMember("textureSampler", "linearWrap", alloc);
+		std::string materialTypeStr;
+		if (materialIndices[materials[i]].TransparencyFactor != 0)
+		{
+			materialTypeStr = "standard_transparent";
+		}
+		else
+		{
+			if (materialIndices[materials[i]].TransparentColor.empty())
+			{
+				materialTypeStr = "standard";
+			}
+			else
+			{
+				materialTypeStr = "standard_cutoff";
+			}
+		}
 
-		mat.PushBack(m, alloc);
+		rapidjson::Value jsonMaterialEntry(rapidjson::kObjectType);
+		jsonMaterialEntry.AddMember("asset_type", rapidjson::Value("material", alloc), alloc);
+		jsonMaterialEntry.AddMember("name", rapidjson::Value(materials[i].c_str(), alloc), alloc);
+		jsonMaterialEntry.AddMember("material_type", rapidjson::Value(materialTypeStr.c_str(), alloc), alloc);
+
+		{
+			rapidjson::Value jsonBindingsEntry(rapidjson::kObjectType);
+			jsonBindingsEntry.AddMember("DiffuseMap", rapidjson::Value(materialIndices[materials[i]].DiffuseMap.c_str(), alloc), alloc);
+			jsonBindingsEntry.AddMember("EmissiveMap", rapidjson::Value(materialIndices[materials[i]].EmissiveMap.c_str(), alloc), alloc);
+			jsonBindingsEntry.AddMember("EmissiveFactor", rapidjson::Value(materialIndices[materials[i]].EmissiveFactor), alloc);
+			jsonBindingsEntry.AddMember("AmbientMap", rapidjson::Value(materialIndices[materials[i]].AmbientMap.c_str(), alloc), alloc);
+			jsonBindingsEntry.AddMember("AmbientFactor", rapidjson::Value(materialIndices[materials[i]].AmbientFactor), alloc);
+			jsonBindingsEntry.AddMember("NormalMap", rapidjson::Value(materialIndices[materials[i]].NormalMap.c_str(), alloc), alloc);
+			jsonBindingsEntry.AddMember("TransparentColor", rapidjson::Value(materialIndices[materials[i]].TransparentColor.c_str(), alloc), alloc);
+			jsonBindingsEntry.AddMember("TransparencyFactor", rapidjson::Value(materialIndices[materials[i]].TransparencyFactor), alloc);
+			jsonBindingsEntry.AddMember("SpecularMap", rapidjson::Value(materialIndices[materials[i]].SpecularMap.c_str(), alloc), alloc);
+			jsonBindingsEntry.AddMember("SpecularFactor", rapidjson::Value(materialIndices[materials[i]].SpecularFactor), alloc);
+			jsonBindingsEntry.AddMember("ReflectionMap", rapidjson::Value(materialIndices[materials[i]].ReflectionMap.c_str(), alloc), alloc);
+			jsonBindingsEntry.AddMember("ReflectionFactor", rapidjson::Value(materialIndices[materials[i]].ReflectionFactor), alloc);
+			jsonBindingsEntry.AddMember("ShininessMap", rapidjson::Value(materialIndices[materials[i]].ShininessMap.c_str(), alloc), alloc);
+
+			jsonBindingsEntry.AddMember("TextureSampler", "linearWrap", alloc);
+
+			jsonMaterialEntry.AddMember("bindings", jsonBindingsEntry, alloc);
+		}
+
+		jsonMaterialArray.PushBack(jsonMaterialEntry, alloc);
 	}
-	json.AddMember("materials", mat, alloc);
+	json.AddMember("materials", jsonMaterialArray, alloc);
 
 	std::ofstream materialStream(materialPath, std::ofstream::trunc);
 

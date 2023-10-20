@@ -14,7 +14,7 @@ namespace JoyEngine
 		static size_t GetTypeSize(uint32_t typeHash);
 		static size_t GetTypeSize(const std::string& type);
 
-		static size_t GetType(uint32_t cppTypeHash);
+		static uint32_t GetType(uint32_t cppTypeHash);
 		static void DeserializeAndWriteCppToPtr(uint32_t typeHash, const rapidjson::Value& val, void* ptr);
 		static void DeserializeToPtr(uint32_t typeHash, const rapidjson::Value&, void* ptr, uint32_t count=1);
 	private:

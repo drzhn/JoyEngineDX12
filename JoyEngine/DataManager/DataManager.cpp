@@ -44,6 +44,7 @@ namespace JoyEngine
 		}
 	}
 
+	// TODO rewrite using template<ResourceT>
 	rapidjson::Document DataManager::GetSerializedData(const std::string& path, DataType type) const
 	{
 		const std::vector<char> data = GetData(path);

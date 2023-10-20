@@ -2,7 +2,7 @@
 
 Texture2D diffuse : register(t0);
 Texture2D normal : register(t1);
-SamplerState textureSampler : register(s0);
+SamplerState TextureSampler : register(s0);
 ConstantBuffer<ObjectIndexData> objectIndex : register(b0);
 ConstantBuffer<ViewProjectionMatrixData> viewProjectionData : register(b1);
 ConstantBuffer<ObjectMatricesData> objectMatricesData : register(b2);
@@ -44,8 +44,8 @@ PSOutput PSMain(PSInput input) // : SV_TARGET
 {
 	PSOutput output;
 	const float2 screenPosition = (input.clipPos.xy / input.clipPos.w);
-	const float4 diffuseColor = diffuse.Sample(textureSampler, input.uv);
-	const float4 normalColor = normal.Sample(textureSampler, input.uv);
+	const float4 diffuseColor = diffuse.Sample(TextureSampler, input.uv);
+	const float4 normalColor = normal.Sample(TextureSampler, input.uv);
 
     output.Color = diffuseColor * normalColor; // *normalColor;
 

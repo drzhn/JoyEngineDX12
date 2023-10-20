@@ -1,8 +1,8 @@
 #include "CommonEngineStructs.h"
 
-Texture2D diffuseMap : register(t0);
-Texture2D normalMap : register(t1);
-SamplerState textureSampler : register(s0);
+Texture2D DiffuseMap : register(t0);
+Texture2D NormalMap : register(t1);
+SamplerState TextureSampler : register(s0);
 ConstantBuffer<ObjectIndexData> objectIndex : register(b0);
 ConstantBuffer<ViewProjectionMatrixData> viewProjectionData : register(b1);
 ConstantBuffer<ObjectMatricesData> objectMatricesData : register(b2);
@@ -58,15 +58,12 @@ PSOutput PSMain(PSInput input)
 {
 	PSOutput output;
 
-    float3 normal = normalMap.Sample(textureSampler, input.uv);
+    float3 normal = NormalMap.Sample(TextureSampler, input.uv);
     normal = length(normal) < FLT_EPSILON ? float3(0, 0, 1) : normalize(normal * 2.0 - 1.0);
-    //normal = normalize(normal * 2.0 - 1.0);
-    normal = normalize(mul(input.TBN, normal));
+    normal = mul(input.TBN, normal);
 	output.Normal = float4(normal, 1);
 
-    //output.Normal = input.worldNormal;
-
-	output.Color = diffuseMap.Sample(textureSampler, input.uv);
+	output.Color = DiffuseMap.Sample(TextureSampler, input.uv);
 	output.Position = input.worldPosition;
 
 	return output;

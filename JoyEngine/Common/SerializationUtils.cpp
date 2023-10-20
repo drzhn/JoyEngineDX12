@@ -48,7 +48,7 @@ namespace JoyEngine
 		return m_typeSizes.find(typeHash)->second;
 	}
 
-	size_t SerializationUtils::GetType(uint32_t cppTypeHash)
+	uint32_t SerializationUtils::GetType(uint32_t cppTypeHash)
 	{
 		ASSERT(m_typeMapping.contains(cppTypeHash));
 		return m_typeMapping.find(cppTypeHash)->second;

@@ -8,11 +8,11 @@ namespace JoyEngine {
 	class Time
 	{
 	public:
-		static void Init(std::function<void (float currentDeltaTime)>) noexcept;
+		static void Init(const std::function<void (float currentDeltaTime)>&) noexcept;
 		static void Update() noexcept;
 		static float GetDeltaTime() noexcept;
 		static float GetTime() noexcept;
-		static float GetFrameCount() noexcept;
+		static uint32_t GetFrameCount() noexcept;
 	private:
 		static constexpr float m_deltaTimeCounterDelay = 0.3f;
 		static float m_timeFromLastDeltaTimeCounter;

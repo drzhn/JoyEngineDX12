@@ -4,6 +4,7 @@
 #include <map>
 #include <memory>
 #include <vector>
+#include <rapidjson/document.h>
 
 #include "ResourceHandle.h"
 #include "Common/Resource.h"
@@ -24,7 +25,7 @@ namespace JoyEngine
 		explicit Material(const char* materialPath);
 		explicit Material(
 			uint64_t id,
-			const std::map<std::string, std::string>& bindings);
+			rapidjson::Value& materialJson);
 
 		~Material() override = default;
 
@@ -35,7 +36,7 @@ namespace JoyEngine
 		[[nodiscard]] uint32_t GetMaterialIndex() const noexcept { return m_materialIndex; }
 
 	private:
-		void InitMaterial(const std::map<std::string, std::string>& bindings);
+		void InitMaterial(rapidjson::Value& materialJson);
 
 	private :
 		uint32_t m_materialIndex;
@@ -46,6 +47,7 @@ namespace JoyEngine
 		std::vector<std::unique_ptr<Buffer>> m_buffers;
 
 		static uint32_t s_currentMaterialIndex;
+		static std::map<std::string, size_t> s_fieldOffsets;
 	};
 }
 

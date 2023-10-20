@@ -13,7 +13,7 @@ namespace JoyEngine {
 	std::chrono::time_point<std::chrono::high_resolution_clock> Time::m_prevUpdateTime;
 	std::chrono::time_point<std::chrono::high_resolution_clock> Time::m_curUpdateTime;
 
-	void Time::Init(std::function<void(float currentDeltaTime)> handler) noexcept {
+	void Time::Init(const std::function<void(float currentDeltaTime)>& handler) noexcept {
 		m_deltaTimeHandler = handler;
 		m_startTime = std::chrono::high_resolution_clock::now();
 		m_prevUpdateTime = m_startTime;
@@ -40,7 +40,8 @@ namespace JoyEngine {
 	float Time::GetTime() noexcept {
 		return m_time;
 	}
-	float Time::GetFrameCount() noexcept {
+
+	uint32_t Time::GetFrameCount() noexcept {
 		return m_frameCount;
 	}
 }

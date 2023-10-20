@@ -1,7 +1,7 @@
 #include "CommonEngineStructs.h"
 
 Texture2D skyboxTexture;
-SamplerState textureSampler : register(s0);
+SamplerState TextureSampler : register(s0);
 
 ConstantBuffer<ViewProjectionMatrixData> viewProjectionData : register(b1);
 
@@ -36,6 +36,6 @@ PSInput VSMain(float3 position : POSITION, float2 uv : TEXCOORD)
 PSOutput PSMain(PSInput input) // : SV_TARGET
 {
 	PSOutput output;
-	output.Color = skyboxTexture.Sample(textureSampler, input.uv);
+	output.Color = skyboxTexture.Sample(TextureSampler, input.uv);
 	return output;
 }

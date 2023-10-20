@@ -19,16 +19,11 @@ namespace JoyEngine
 		rapidjson::Value& val = json["materials"];
 		for (auto& mat : val.GetArray())
 		{
-			std::map<std::string, std::string> bindings{
-				{"diffuseMap", mat["diffuseMap"].GetString()},
-				{"normalMap", mat["normalMap"].GetString()},
-				{"textureSampler", mat["textureSampler"].GetString()}
-			};
 			m_materials.emplace_back(
 				ResourceManager::Get()->RegisterResource<Material>(
 					new Material(
-						RandomHash64(),
-						bindings
+						RandomHash64(), // todo temprorary solution. we will not have multiple textures in future
+						mat
 					)
 				)
 			);

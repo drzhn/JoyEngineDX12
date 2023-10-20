@@ -2,142 +2,487 @@
     "asset_type": "standard_material_list",
     "materials": [
         {
+            "asset_type": "material",
             "name": "sponza:vase_round",
-            "diffuseMap": "sponza/vase_round.tga",
-            "normalMap": "",
-            "textureSampler": "linearWrap"
+            "material_type": "standard_transparent",
+            "bindings": {
+                "DiffuseMap": "sponza/vase_round.tga",
+                "EmissiveMap": "",
+                "EmissiveFactor": 1.0,
+                "AmbientMap": "",
+                "AmbientFactor": 1.0,
+                "NormalMap": "",
+                "TransparentColor": "",
+                "TransparencyFactor": 1.0,
+                "SpecularMap": "",
+                "SpecularFactor": 1.0,
+                "ReflectionMap": "",
+                "ReflectionFactor": 1.0,
+                "ShininessMap": "",
+                "TextureSampler": "linearWrap"
+            }
         },
         {
+            "asset_type": "material",
             "name": "sponza:Material__298",
-            "diffuseMap": "sponza/background.tga",
-            "normalMap": "",
-            "textureSampler": "linearWrap"
+            "material_type": "standard_transparent",
+            "bindings": {
+                "DiffuseMap": "sponza/background.tga",
+                "EmissiveMap": "",
+                "EmissiveFactor": 1.0,
+                "AmbientMap": "",
+                "AmbientFactor": 1.0,
+                "NormalMap": "",
+                "TransparentColor": "",
+                "TransparencyFactor": 1.0,
+                "SpecularMap": "",
+                "SpecularFactor": 1.0,
+                "ReflectionMap": "",
+                "ReflectionFactor": 1.0,
+                "ShininessMap": "",
+                "TextureSampler": "linearWrap"
+            }
         },
         {
+            "asset_type": "material",
             "name": "sponza:bricks",
-            "diffuseMap": "sponza/spnza_bricks_a_diff.tga",
-            "normalMap": "",
-            "textureSampler": "linearWrap"
+            "material_type": "standard_transparent",
+            "bindings": {
+                "DiffuseMap": "sponza/spnza_bricks_a_diff.tga",
+                "EmissiveMap": "",
+                "EmissiveFactor": 1.0,
+                "AmbientMap": "",
+                "AmbientFactor": 1.0,
+                "NormalMap": "",
+                "TransparentColor": "",
+                "TransparencyFactor": 1.0,
+                "SpecularMap": "",
+                "SpecularFactor": 1.0,
+                "ReflectionMap": "",
+                "ReflectionFactor": 1.0,
+                "ShininessMap": "",
+                "TextureSampler": "linearWrap"
+            }
         },
         {
+            "asset_type": "material",
             "name": "sponza:arch",
-            "diffuseMap": "sponza/sponza_arch_diff.tga",
-            "normalMap": "",
-            "textureSampler": "linearWrap"
+            "material_type": "standard_transparent",
+            "bindings": {
+                "DiffuseMap": "sponza/sponza_arch_diff.tga",
+                "EmissiveMap": "",
+                "EmissiveFactor": 1.0,
+                "AmbientMap": "",
+                "AmbientFactor": 1.0,
+                "NormalMap": "",
+                "TransparentColor": "",
+                "TransparencyFactor": 1.0,
+                "SpecularMap": "",
+                "SpecularFactor": 1.0,
+                "ReflectionMap": "",
+                "ReflectionFactor": 1.0,
+                "ShininessMap": "",
+                "TextureSampler": "linearWrap"
+            }
         },
         {
+            "asset_type": "material",
             "name": "sponza:ceiling",
-            "diffuseMap": "sponza/sponza_ceiling_a_diff.tga",
-            "normalMap": "",
-            "textureSampler": "linearWrap"
+            "material_type": "standard_transparent",
+            "bindings": {
+                "DiffuseMap": "sponza/sponza_ceiling_a_diff.tga",
+                "EmissiveMap": "",
+                "EmissiveFactor": 1.0,
+                "AmbientMap": "",
+                "AmbientFactor": 1.0,
+                "NormalMap": "",
+                "TransparentColor": "",
+                "TransparencyFactor": 1.0,
+                "SpecularMap": "",
+                "SpecularFactor": 1.0,
+                "ReflectionMap": "",
+                "ReflectionFactor": 1.0,
+                "ShininessMap": "",
+                "TextureSampler": "linearWrap"
+            }
         },
         {
+            "asset_type": "material",
             "name": "sponza:column_a",
-            "diffuseMap": "sponza/sponza_column_a_diff.tga",
-            "normalMap": "",
-            "textureSampler": "linearWrap"
+            "material_type": "standard_transparent",
+            "bindings": {
+                "DiffuseMap": "sponza/sponza_column_a_diff.tga",
+                "EmissiveMap": "",
+                "EmissiveFactor": 1.0,
+                "AmbientMap": "",
+                "AmbientFactor": 1.0,
+                "NormalMap": "",
+                "TransparentColor": "",
+                "TransparencyFactor": 1.0,
+                "SpecularMap": "",
+                "SpecularFactor": 1.0,
+                "ReflectionMap": "",
+                "ReflectionFactor": 1.0,
+                "ShininessMap": "",
+                "TextureSampler": "linearWrap"
+            }
         },
         {
+            "asset_type": "material",
             "name": "sponza:column_c",
-            "diffuseMap": "sponza/sponza_column_c_diff.tga",
-            "normalMap": "",
-            "textureSampler": "linearWrap"
+            "material_type": "standard_transparent",
+            "bindings": {
+                "DiffuseMap": "sponza/sponza_column_c_diff.tga",
+                "EmissiveMap": "",
+                "EmissiveFactor": 1.0,
+                "AmbientMap": "",
+                "AmbientFactor": 1.0,
+                "NormalMap": "",
+                "TransparentColor": "",
+                "TransparencyFactor": 1.0,
+                "SpecularMap": "",
+                "SpecularFactor": 1.0,
+                "ReflectionMap": "",
+                "ReflectionFactor": 1.0,
+                "ShininessMap": "",
+                "TextureSampler": "linearWrap"
+            }
         },
         {
+            "asset_type": "material",
             "name": "sponza:floor",
-            "diffuseMap": "sponza/sponza_floor_a_diff.tga",
-            "normalMap": "",
-            "textureSampler": "linearWrap"
+            "material_type": "standard_transparent",
+            "bindings": {
+                "DiffuseMap": "sponza/sponza_floor_a_diff.tga",
+                "EmissiveMap": "",
+                "EmissiveFactor": 1.0,
+                "AmbientMap": "",
+                "AmbientFactor": 1.0,
+                "NormalMap": "",
+                "TransparentColor": "",
+                "TransparencyFactor": 1.0,
+                "SpecularMap": "",
+                "SpecularFactor": 1.0,
+                "ReflectionMap": "",
+                "ReflectionFactor": 1.0,
+                "ShininessMap": "",
+                "TextureSampler": "linearWrap"
+            }
         },
         {
+            "asset_type": "material",
             "name": "sponza:column_b",
-            "diffuseMap": "sponza/sponza_column_b_diff.tga",
-            "normalMap": "",
-            "textureSampler": "linearWrap"
+            "material_type": "standard_transparent",
+            "bindings": {
+                "DiffuseMap": "sponza/sponza_column_b_diff.tga",
+                "EmissiveMap": "",
+                "EmissiveFactor": 1.0,
+                "AmbientMap": "",
+                "AmbientFactor": 1.0,
+                "NormalMap": "",
+                "TransparentColor": "",
+                "TransparencyFactor": 1.0,
+                "SpecularMap": "",
+                "SpecularFactor": 1.0,
+                "ReflectionMap": "",
+                "ReflectionFactor": 1.0,
+                "ShininessMap": "",
+                "TextureSampler": "linearWrap"
+            }
         },
         {
+            "asset_type": "material",
             "name": "sponza:Material__47",
-            "diffuseMap": "",
-            "normalMap": "",
-            "textureSampler": "linearWrap"
+            "material_type": "standard_transparent",
+            "bindings": {
+                "DiffuseMap": "",
+                "EmissiveMap": "",
+                "EmissiveFactor": 1.0,
+                "AmbientMap": "",
+                "AmbientFactor": 1.0,
+                "NormalMap": "",
+                "TransparentColor": "",
+                "TransparencyFactor": 1.0,
+                "SpecularMap": "",
+                "SpecularFactor": 1.0,
+                "ReflectionMap": "",
+                "ReflectionFactor": 1.0,
+                "ShininessMap": "",
+                "TextureSampler": "linearWrap"
+            }
         },
         {
+            "asset_type": "material",
             "name": "sponza:flagpole",
-            "diffuseMap": "sponza/sponza_flagpole_diff.tga",
-            "normalMap": "",
-            "textureSampler": "linearWrap"
+            "material_type": "standard_transparent",
+            "bindings": {
+                "DiffuseMap": "sponza/sponza_flagpole_diff.tga",
+                "EmissiveMap": "",
+                "EmissiveFactor": 1.0,
+                "AmbientMap": "",
+                "AmbientFactor": 1.0,
+                "NormalMap": "",
+                "TransparentColor": "",
+                "TransparencyFactor": 1.0,
+                "SpecularMap": "",
+                "SpecularFactor": 1.0,
+                "ReflectionMap": "",
+                "ReflectionFactor": 1.0,
+                "ShininessMap": "",
+                "TextureSampler": "linearWrap"
+            }
         },
         {
+            "asset_type": "material",
             "name": "sponza:fabric_e",
-            "diffuseMap": "sponza/sponza_fabric_green_diff.tga",
-            "normalMap": "",
-            "textureSampler": "linearWrap"
+            "material_type": "standard_transparent",
+            "bindings": {
+                "DiffuseMap": "sponza/sponza_fabric_green_diff.tga",
+                "EmissiveMap": "",
+                "EmissiveFactor": 1.0,
+                "AmbientMap": "",
+                "AmbientFactor": 1.0,
+                "NormalMap": "",
+                "TransparentColor": "",
+                "TransparencyFactor": 1.0,
+                "SpecularMap": "",
+                "SpecularFactor": 1.0,
+                "ReflectionMap": "",
+                "ReflectionFactor": 1.0,
+                "ShininessMap": "",
+                "TextureSampler": "linearWrap"
+            }
         },
         {
+            "asset_type": "material",
             "name": "sponza:fabric_d",
-            "diffuseMap": "sponza/sponza_fabric_blue_diff.tga",
-            "normalMap": "",
-            "textureSampler": "linearWrap"
+            "material_type": "standard_transparent",
+            "bindings": {
+                "DiffuseMap": "sponza/sponza_fabric_blue_diff.tga",
+                "EmissiveMap": "",
+                "EmissiveFactor": 1.0,
+                "AmbientMap": "",
+                "AmbientFactor": 1.0,
+                "NormalMap": "",
+                "TransparentColor": "",
+                "TransparencyFactor": 1.0,
+                "SpecularMap": "",
+                "SpecularFactor": 1.0,
+                "ReflectionMap": "",
+                "ReflectionFactor": 1.0,
+                "ShininessMap": "",
+                "TextureSampler": "linearWrap"
+            }
         },
         {
+            "asset_type": "material",
             "name": "sponza:fabric_a",
-            "diffuseMap": "sponza/sponza_fabric_diff.tga",
-            "normalMap": "",
-            "textureSampler": "linearWrap"
+            "material_type": "standard_transparent",
+            "bindings": {
+                "DiffuseMap": "sponza/sponza_fabric_diff.tga",
+                "EmissiveMap": "",
+                "EmissiveFactor": 1.0,
+                "AmbientMap": "",
+                "AmbientFactor": 1.0,
+                "NormalMap": "",
+                "TransparentColor": "",
+                "TransparencyFactor": 1.0,
+                "SpecularMap": "",
+                "SpecularFactor": 1.0,
+                "ReflectionMap": "",
+                "ReflectionFactor": 1.0,
+                "ShininessMap": "",
+                "TextureSampler": "linearWrap"
+            }
         },
         {
+            "asset_type": "material",
             "name": "sponza:fabric_g",
-            "diffuseMap": "sponza/sponza_curtain_blue_diff.tga",
-            "normalMap": "",
-            "textureSampler": "linearWrap"
+            "material_type": "standard_transparent",
+            "bindings": {
+                "DiffuseMap": "sponza/sponza_curtain_blue_diff.tga",
+                "EmissiveMap": "",
+                "EmissiveFactor": 1.0,
+                "AmbientMap": "",
+                "AmbientFactor": 1.0,
+                "NormalMap": "",
+                "TransparentColor": "",
+                "TransparencyFactor": 1.0,
+                "SpecularMap": "",
+                "SpecularFactor": 1.0,
+                "ReflectionMap": "",
+                "ReflectionFactor": 1.0,
+                "ShininessMap": "",
+                "TextureSampler": "linearWrap"
+            }
         },
         {
+            "asset_type": "material",
             "name": "sponza:fabric_c",
-            "diffuseMap": "sponza/sponza_curtain_diff.tga",
-            "normalMap": "",
-            "textureSampler": "linearWrap"
+            "material_type": "standard_transparent",
+            "bindings": {
+                "DiffuseMap": "sponza/sponza_curtain_diff.tga",
+                "EmissiveMap": "",
+                "EmissiveFactor": 1.0,
+                "AmbientMap": "",
+                "AmbientFactor": 1.0,
+                "NormalMap": "",
+                "TransparentColor": "",
+                "TransparencyFactor": 1.0,
+                "SpecularMap": "",
+                "SpecularFactor": 1.0,
+                "ReflectionMap": "",
+                "ReflectionFactor": 1.0,
+                "ShininessMap": "",
+                "TextureSampler": "linearWrap"
+            }
         },
         {
+            "asset_type": "material",
             "name": "sponza:fabric_f",
-            "diffuseMap": "sponza/sponza_curtain_green_diff.tga",
-            "normalMap": "",
-            "textureSampler": "linearWrap"
+            "material_type": "standard_transparent",
+            "bindings": {
+                "DiffuseMap": "sponza/sponza_curtain_green_diff.tga",
+                "EmissiveMap": "",
+                "EmissiveFactor": 1.0,
+                "AmbientMap": "",
+                "AmbientFactor": 1.0,
+                "NormalMap": "",
+                "TransparentColor": "",
+                "TransparencyFactor": 1.0,
+                "SpecularMap": "",
+                "SpecularFactor": 1.0,
+                "ReflectionMap": "",
+                "ReflectionFactor": 1.0,
+                "ShininessMap": "",
+                "TextureSampler": "linearWrap"
+            }
         },
         {
+            "asset_type": "material",
             "name": "sponza:chain",
-            "diffuseMap": "sponza/chain_texture.tga",
-            "normalMap": "",
-            "textureSampler": "linearWrap"
+            "material_type": "standard",
+            "bindings": {
+                "DiffuseMap": "sponza/chain_texture.tga",
+                "EmissiveMap": "",
+                "EmissiveFactor": 1.0,
+                "AmbientMap": "",
+                "AmbientFactor": 1.0,
+                "NormalMap": "",
+                "TransparentColor": "",
+                "TransparencyFactor": 0.0,
+                "SpecularMap": "",
+                "SpecularFactor": 1.0,
+                "ReflectionMap": "",
+                "ReflectionFactor": 1.0,
+                "ShininessMap": "",
+                "TextureSampler": "linearWrap"
+            }
         },
         {
+            "asset_type": "material",
             "name": "sponza:vase_hanging",
-            "diffuseMap": "sponza/vase_hanging.tga",
-            "normalMap": "",
-            "textureSampler": "linearWrap"
+            "material_type": "standard_transparent",
+            "bindings": {
+                "DiffuseMap": "sponza/vase_hanging.tga",
+                "EmissiveMap": "",
+                "EmissiveFactor": 1.0,
+                "AmbientMap": "",
+                "AmbientFactor": 1.0,
+                "NormalMap": "",
+                "TransparentColor": "",
+                "TransparencyFactor": 1.0,
+                "SpecularMap": "",
+                "SpecularFactor": 1.0,
+                "ReflectionMap": "",
+                "ReflectionFactor": 1.0,
+                "ShininessMap": "",
+                "TextureSampler": "linearWrap"
+            }
         },
         {
+            "asset_type": "material",
             "name": "sponza:vase",
-            "diffuseMap": "sponza/vase_dif.tga",
-            "normalMap": "",
-            "textureSampler": "linearWrap"
+            "material_type": "standard_transparent",
+            "bindings": {
+                "DiffuseMap": "sponza/vase_dif.tga",
+                "EmissiveMap": "",
+                "EmissiveFactor": 1.0,
+                "AmbientMap": "",
+                "AmbientFactor": 1.0,
+                "NormalMap": "",
+                "TransparentColor": "",
+                "TransparencyFactor": 1.0,
+                "SpecularMap": "",
+                "SpecularFactor": 1.0,
+                "ReflectionMap": "",
+                "ReflectionFactor": 1.0,
+                "ShininessMap": "",
+                "TextureSampler": "linearWrap"
+            }
         },
         {
+            "asset_type": "material",
             "name": "sponza:Material__25",
-            "diffuseMap": "sponza/lion.tga",
-            "normalMap": "",
-            "textureSampler": "linearWrap"
+            "material_type": "standard_transparent",
+            "bindings": {
+                "DiffuseMap": "sponza/lion.tga",
+                "EmissiveMap": "",
+                "EmissiveFactor": 1.0,
+                "AmbientMap": "",
+                "AmbientFactor": 1.0,
+                "NormalMap": "",
+                "TransparentColor": "",
+                "TransparencyFactor": 1.0,
+                "SpecularMap": "",
+                "SpecularFactor": 1.0,
+                "ReflectionMap": "",
+                "ReflectionFactor": 1.0,
+                "ShininessMap": "",
+                "TextureSampler": "linearWrap"
+            }
         },
         {
+            "asset_type": "material",
             "name": "sponza:roof",
-            "diffuseMap": "sponza/sponza_roof_diff.tga",
-            "normalMap": "",
-            "textureSampler": "linearWrap"
+            "material_type": "standard_transparent",
+            "bindings": {
+                "DiffuseMap": "sponza/sponza_roof_diff.tga",
+                "EmissiveMap": "",
+                "EmissiveFactor": 1.0,
+                "AmbientMap": "",
+                "AmbientFactor": 1.0,
+                "NormalMap": "",
+                "TransparentColor": "",
+                "TransparencyFactor": 1.0,
+                "SpecularMap": "",
+                "SpecularFactor": 1.0,
+                "ReflectionMap": "",
+                "ReflectionFactor": 1.0,
+                "ShininessMap": "",
+                "TextureSampler": "linearWrap"
+            }
         },
         {
+            "asset_type": "material",
             "name": "sponza:details",
-            "diffuseMap": "sponza/sponza_details_diff.tga",
-            "normalMap": "",
-            "textureSampler": "linearWrap"
+            "material_type": "standard_transparent",
+            "bindings": {
+                "DiffuseMap": "sponza/sponza_details_diff.tga",
+                "EmissiveMap": "",
+                "EmissiveFactor": 1.0,
+                "AmbientMap": "",
+                "AmbientFactor": 1.0,
+                "NormalMap": "",
+                "TransparentColor": "",
+                "TransparencyFactor": 1.0,
+                "SpecularMap": "",
+                "SpecularFactor": 1.0,
+                "ReflectionMap": "",
+                "ReflectionFactor": 1.0,
+                "ShininessMap": "",
+                "TextureSampler": "linearWrap"
+            }
         }
     ]
 }

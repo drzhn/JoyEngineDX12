@@ -479,9 +479,16 @@ namespace JoyEngine
 		//}
 	}
 
-	void EngineDataProvider::SetMaterialData(uint32_t index, uint32_t diffuseTextureIndex) const
+	void EngineDataProvider::SetMaterialData(
+		const uint32_t materialIndex,
+		const size_t fieldOffset,
+		const void* valuePtr,
+		const size_t valueSize) const
 	{
-		StandardMaterialData* dataPtr = m_materials->GetPtr();
-		dataPtr->data[index].diffuseTextureIndex = diffuseTextureIndex;
+		StandardMaterial* dataPtr = m_materials->GetPtr()->data;
+		memcpy(
+			reinterpret_cast<void*>(reinterpret_cast<uint64_t>(&dataPtr[materialIndex]) + fieldOffset),
+			valuePtr,
+			valueSize);
 	}
 }

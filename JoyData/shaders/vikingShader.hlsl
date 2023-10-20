@@ -42,7 +42,7 @@ PSOutput PSMain(PSInput input) // : SV_TARGET
 	PSOutput output;
 	const float2 screenPosition = (input.clipPos.xy / input.clipPos.w);
 	const float4 mainColor = mainTexture.Sample(sampler, input.uv);
-	//const float4 light = lightAttachment.Load(float3(input.position.xy, 0));// normalTexture.Sample(textureSampler, screenPosition);// mainTexture.Sample(textureSampler, input.uv);
+	//const float4 light = lightAttachment.Load(float3(input.position.xy, 0));// normalTexture.Sample(TextureSampler, screenPosition);// mainTexture.Sample(TextureSampler, input.uv);
 
 	const float ambient = 0.2f;
 

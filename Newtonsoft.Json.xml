@@ -1508,7 +1508,7 @@
             <param name="value">The object to serialize.</param>
             <param name="settings">The <see cref="T:Newtonsoft.Json.JsonSerializerSettings"/> used to serialize the object.
             If this is null, default serialization settings will be used.</param>
-            <param name="type">
+            <param name="asset_type">
             The type of the value being serialized.
             This parameter is used when <see cref="T:Newtonsoft.Json.TypeNameHandling"/> is Auto to write out the type name if the type of the value does not match.
             Specifing the type is optional.
@@ -1537,7 +1537,7 @@
             <param name="formatting">Indicates how the output is formatted.</param>
             <param name="settings">The <see cref="T:Newtonsoft.Json.JsonSerializerSettings"/> used to serialize the object.
             If this is null, default serialization settings will be used.</param>
-            <param name="type">
+            <param name="asset_type">
             The type of the value being serialized.
             This parameter is used when <see cref="T:Newtonsoft.Json.TypeNameHandling"/> is Auto to write out the type name if the type of the value does not match.
             Specifing the type is optional.
@@ -1603,7 +1603,7 @@
             Deserializes the JSON to the specified .NET type.
             </summary>
             <param name="value">The JSON to deserialize.</param>
-            <param name="type">The <see cref="T:System.Type"/> of object being deserialized.</param>
+            <param name="asset_type">The <see cref="T:System.Type"/> of object being deserialized.</param>
             <returns>The deserialized object from the JSON string.</returns>
         </member>
         <member name="M:Newtonsoft.Json.JsonConvert.DeserializeObject``1(System.String)">
@@ -1670,7 +1670,7 @@
             Deserializes the JSON to the specified .NET type using a collection of <see cref="T:Newtonsoft.Json.JsonConverter"/>.
             </summary>
             <param name="value">The JSON to deserialize.</param>
-            <param name="type">The type of the object to deserialize.</param>
+            <param name="asset_type">The type of the object to deserialize.</param>
             <param name="converters">Converters to use while deserializing.</param>
             <returns>The deserialized object from the JSON string.</returns>
         </member>
@@ -1679,7 +1679,7 @@
             Deserializes the JSON to the specified .NET type using <see cref="T:Newtonsoft.Json.JsonSerializerSettings"/>.
             </summary>
             <param name="value">The JSON to deserialize.</param>
-            <param name="type">The type of the object to deserialize to.</param>
+            <param name="asset_type">The type of the object to deserialize to.</param>
             <param name="settings">
             The <see cref="T:Newtonsoft.Json.JsonSerializerSettings"/> used to deserialize the object.
             If this is null, default serialization settings will be used.
@@ -1728,7 +1728,7 @@
             Deserialization will happen on a new thread.
             </summary>
             <param name="value">The JSON to deserialize.</param>
-            <param name="type">The type of the object to deserialize to.</param>
+            <param name="asset_type">The type of the object to deserialize to.</param>
             <param name="settings">
             The <see cref="T:Newtonsoft.Json.JsonSerializerSettings"/> used to deserialize the object.
             If this is null, default serialization settings will be used.
@@ -6199,7 +6199,7 @@
             <summary>
             Gets the first annotation object of the specified type from this <see cref="T:Newtonsoft.Json.Linq.JToken"/>.
             </summary>
-            <param name="type">The <see cref="P:Newtonsoft.Json.Linq.JToken.Type"/> of the annotation to retrieve.</param>
+            <param name="asset_type">The <see cref="P:Newtonsoft.Json.Linq.JToken.Type"/> of the annotation to retrieve.</param>
             <returns>The first annotation object that matches the specified type, or <c>null</c> if no annotation is of the specified type.</returns>
         </member>
         <member name="M:Newtonsoft.Json.Linq.JToken.Annotations``1">
@@ -6213,7 +6213,7 @@
             <summary>
             Gets a collection of annotations of the specified type for this <see cref="T:Newtonsoft.Json.Linq.JToken"/>.
             </summary>
-            <param name="type">The <see cref="P:Newtonsoft.Json.Linq.JToken.Type"/> of the annotations to retrieve.</param>
+            <param name="asset_type">The <see cref="P:Newtonsoft.Json.Linq.JToken.Type"/> of the annotations to retrieve.</param>
             <returns>An <see cref="T:System.Collections.Generic.IEnumerable`1"/> of <see cref="T:System.Object"/> that contains the annotations that match the specified type for this <see cref="T:Newtonsoft.Json.Linq.JToken"/>.</returns>
         </member>
         <member name="M:Newtonsoft.Json.Linq.JToken.RemoveAnnotations``1">
@@ -6226,7 +6226,7 @@
             <summary>
             Removes the annotations of the specified type from this <see cref="T:Newtonsoft.Json.Linq.JToken"/>.
             </summary>
-            <param name="type">The <see cref="P:Newtonsoft.Json.Linq.JToken.Type"/> of annotations to remove.</param>
+            <param name="asset_type">The <see cref="P:Newtonsoft.Json.Linq.JToken.Type"/> of annotations to remove.</param>
         </member>
         <member name="T:Newtonsoft.Json.Linq.JTokenEqualityComparer">
             <summary>
@@ -7462,14 +7462,14 @@
             <summary>
             Generate a <see cref="T:Newtonsoft.Json.Schema.JsonSchema"/> from the specified type.
             </summary>
-            <param name="type">The type to generate a <see cref="T:Newtonsoft.Json.Schema.JsonSchema"/> from.</param>
+            <param name="asset_type">The type to generate a <see cref="T:Newtonsoft.Json.Schema.JsonSchema"/> from.</param>
             <returns>A <see cref="T:Newtonsoft.Json.Schema.JsonSchema"/> generated from the specified type.</returns>
         </member>
         <member name="M:Newtonsoft.Json.Schema.JsonSchemaGenerator.Generate(System.Type,Newtonsoft.Json.Schema.JsonSchemaResolver)">
             <summary>
             Generate a <see cref="T:Newtonsoft.Json.Schema.JsonSchema"/> from the specified type.
             </summary>
-            <param name="type">The type to generate a <see cref="T:Newtonsoft.Json.Schema.JsonSchema"/> from.</param>
+            <param name="asset_type">The type to generate a <see cref="T:Newtonsoft.Json.Schema.JsonSchema"/> from.</param>
             <param name="resolver">The <see cref="T:Newtonsoft.Json.Schema.JsonSchemaResolver"/> used to resolve schema references.</param>
             <returns>A <see cref="T:Newtonsoft.Json.Schema.JsonSchema"/> generated from the specified type.</returns>
         </member>
@@ -7477,7 +7477,7 @@
             <summary>
             Generate a <see cref="T:Newtonsoft.Json.Schema.JsonSchema"/> from the specified type.
             </summary>
-            <param name="type">The type to generate a <see cref="T:Newtonsoft.Json.Schema.JsonSchema"/> from.</param>
+            <param name="asset_type">The type to generate a <see cref="T:Newtonsoft.Json.Schema.JsonSchema"/> from.</param>
             <param name="rootSchemaNullable">Specify whether the generated root <see cref="T:Newtonsoft.Json.Schema.JsonSchema"/> will be nullable.</param>
             <returns>A <see cref="T:Newtonsoft.Json.Schema.JsonSchema"/> generated from the specified type.</returns>
         </member>
@@ -7485,7 +7485,7 @@
             <summary>
             Generate a <see cref="T:Newtonsoft.Json.Schema.JsonSchema"/> from the specified type.
             </summary>
-            <param name="type">The type to generate a <see cref="T:Newtonsoft.Json.Schema.JsonSchema"/> from.</param>
+            <param name="asset_type">The type to generate a <see cref="T:Newtonsoft.Json.Schema.JsonSchema"/> from.</param>
             <param name="resolver">The <see cref="T:Newtonsoft.Json.Schema.JsonSchemaResolver"/> used to resolve schema references.</param>
             <param name="rootSchemaNullable">Specify whether the generated root <see cref="T:Newtonsoft.Json.Schema.JsonSchema"/> will be nullable.</param>
             <returns>A <see cref="T:Newtonsoft.Json.Schema.JsonSchema"/> generated from the specified type.</returns>
@@ -7774,7 +7774,7 @@
             <summary>
             Resolves the contract for a given type.
             </summary>
-            <param name="type">The type to resolve a contract for.</param>
+            <param name="asset_type">The type to resolve a contract for.</param>
             <returns>The contract for a given type.</returns>
         </member>
         <member name="M:Newtonsoft.Json.Serialization.DefaultContractResolver.GetSerializableMembers(System.Type)">
@@ -7874,7 +7874,7 @@
             <summary>
             Creates properties for the given <see cref="T:Newtonsoft.Json.Serialization.JsonContract"/>.
             </summary>
-            <param name="type">The type to create properties for.</param>
+            <param name="asset_type">The type to create properties for.</param>
             /// <param name="memberSerialization">The member serialization mode for the type.</param>
             <returns>Properties for the given <see cref="T:Newtonsoft.Json.Serialization.JsonContract"/>.</returns>
         </member>
@@ -8114,7 +8114,7 @@
             <summary>
             Resolves the contract for a given type.
             </summary>
-            <param name="type">The type to resolve a contract for.</param>
+            <param name="asset_type">The type to resolve a contract for.</param>
             <returns>The contract for a given type.</returns>
         </member>
         <member name="T:Newtonsoft.Json.Serialization.NamingStrategy">
@@ -8821,7 +8821,7 @@
             <summary>
             Initializes a new instance of the <see cref="T:Newtonsoft.Json.Serialization.JsonPropertyCollection"/> class.
             </summary>
-            <param name="type">The type.</param>
+            <param name="asset_type">The type.</param>
         </member>
         <member name="M:Newtonsoft.Json.Serialization.JsonPropertyCollection.GetKeyForItem(Newtonsoft.Json.Serialization.JsonProperty)">
             <summary>
@@ -9104,7 +9104,7 @@
             <summary>
             Gets the type of the typed collection's items.
             </summary>
-            <param name="type">The type.</param>
+            <param name="asset_type">The type.</param>
             <returns>The type of the typed collection's items.</returns>
         </member>
         <member name="M:Newtonsoft.Json.Utilities.ReflectionUtils.GetMemberUnderlyingType(System.Reflection.MemberInfo)">

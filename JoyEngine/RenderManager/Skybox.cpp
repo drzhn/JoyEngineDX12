@@ -69,7 +69,7 @@ namespace JoyEngine
 			viewProjectionData);
 
 		GraphicsUtils::AttachView(commandList, m_skyboxPipeline.get(), "skyboxTexture", m_skyboxTexture->GetSRV());
-		GraphicsUtils::AttachView(commandList, m_skyboxPipeline.get(), "textureSampler", EngineSamplersProvider::GetLinearClampSampler());
+		GraphicsUtils::AttachView(commandList, m_skyboxPipeline.get(), "TextureSampler", EngineSamplersProvider::GetLinearClampSampler());
 
 		commandList->DrawIndexedInstanced(
 			m_skyboxMesh->GetIndexCount(),

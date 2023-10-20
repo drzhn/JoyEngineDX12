@@ -184,10 +184,25 @@ struct EngineData
 
 struct StandardMaterial
 {
-	UINT1 diffuseTextureIndex;
-	UINT1 normalTextureIndex;
+	UINT1 DiffuseMap;
+	UINT1 EmissiveMap;
+	float EmissiveFactor;
+	UINT1 AmbientMap;
+
+	float AmbientFactor;
+	UINT1 NormalMap;
+	UINT1 TransparentColor;
+	float TransparencyFactor;
+
+	UINT1 SpecularMap;
+	float SpecularFactor;
+	UINT1 ReflectionMap;
+	float ReflectionFactor;
+
+	UINT1 ShininessMap;
 	UINT1 _dummy0;
 	UINT1 _dummy1;
+	UINT1 _dummy2;
 };
 
 struct StandardMaterialData

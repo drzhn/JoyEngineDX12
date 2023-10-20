@@ -10,29 +10,32 @@
 
 #include "Utils.h"
 
-const char* props[22] = {
+#define PROPS_COUNT 11
+
+const char* props[PROPS_COUNT] = {
 	FbxSurfaceMaterial::sShadingModel,
-	FbxSurfaceMaterial::sMultiLayer,
+	FbxSurfaceMaterial::sDiffuse,
 	FbxSurfaceMaterial::sEmissive,
 	FbxSurfaceMaterial::sEmissiveFactor,
 	FbxSurfaceMaterial::sAmbient,
 	FbxSurfaceMaterial::sAmbientFactor,
-	FbxSurfaceMaterial::sDiffuse,
-	FbxSurfaceMaterial::sDiffuseFactor,
 	FbxSurfaceMaterial::sSpecular,
 	FbxSurfaceMaterial::sSpecularFactor,
-	FbxSurfaceMaterial::sShininess,
-	FbxSurfaceMaterial::sBump,
 	FbxSurfaceMaterial::sNormalMap,
-	FbxSurfaceMaterial::sBumpFactor,
 	FbxSurfaceMaterial::sTransparentColor,
 	FbxSurfaceMaterial::sTransparencyFactor,
-	FbxSurfaceMaterial::sReflection,
-	FbxSurfaceMaterial::sReflectionFactor,
-	FbxSurfaceMaterial::sDisplacementColor,
-	FbxSurfaceMaterial::sDisplacementFactor,
-	FbxSurfaceMaterial::sVectorDisplacementColor,
-	FbxSurfaceMaterial::sVectorDisplacementFactor,
+
+	//FbxSurfaceMaterial::sMultiLayer,
+	//FbxSurfaceMaterial::sDiffuseFactor,
+	//FbxSurfaceMaterial::sShininess,
+	//FbxSurfaceMaterial::sBump,
+	//FbxSurfaceMaterial::sBumpFactor,
+	//FbxSurfaceMaterial::sReflection,
+	//FbxSurfaceMaterial::sReflectionFactor,
+	//FbxSurfaceMaterial::sDisplacementColor,
+	//FbxSurfaceMaterial::sDisplacementFactor,
+	//FbxSurfaceMaterial::sVectorDisplacementColor,
+	//FbxSurfaceMaterial::sVectorDisplacementFactor,
 };
 
 // Simple data for nodes without hierarchy
@@ -41,6 +44,13 @@ struct NodeData
 	FbxMesh* mesh = nullptr;
 	FbxSurfaceMaterial* material = nullptr;
 	std::string materialName;
+};
+
+struct MaterialData
+{
+	uint32_t materialIndex;
+	std::string diffuseTexture;
+	std::string normalTexture;
 };
 
 void FindData(FbxNode* node, std::vector<NodeData>& nodes)
@@ -111,20 +121,14 @@ bool ModelLoader::LoadModel(const std::string& modelFilename, const std::string&
 
 	FindData(lRootNode, nodes);
 
-	struct materialdata
-	{
-		uint32_t materialIndex;
-		std::string diffuseTexture;
-	};
-	std::map<std::string, materialdata> materialIndices;
+
+	std::map<std::string, MaterialData> materialIndices;
 	uint32_t currentMaterialIndex = 0;
 
 	for (auto& node : nodes)
 	{
 		FbxSurfaceMaterial* material = node.material;
 		auto shadingModel = material->ShadingModel.Get();
-		//FbxSurfacePhong* phong = static_cast<FbxSurfacePhong*>(material);
-		//auto name = phong->GetName();
 
 		std::string materialName = material->GetName();
 
@@ -132,37 +136,48 @@ bool ModelLoader::LoadModel(const std::string& modelFilename, const std::string&
 
 		if (!materialIndices.contains(materialName))
 		{
-			FbxProperty prop = material->FindProperty(FbxSurfaceMaterial::sDiffuse);
-			int layeredTextureCount = prop.GetSrcObjectCount<FbxLayeredTexture>();
-			//int textureCount = prop.GetSrcObjectCount<FbxTexture>();
-			const int textureIndex = 0;
-			FbxFileTexture* texture = FbxCast<FbxFileTexture>(prop.GetSrcObject<FbxTexture>(textureIndex));
-			std::string diffuseTexture;
-			if (texture != nullptr)
+			auto GetTextureByProperty = [&](const char* property)
 			{
-				// fbx stores absolute path in the PC the file created
-				std::filesystem::path textureAbsolutePath = texture->GetFileName();
-				diffuseTexture = std::filesystem::relative(
-					modelDirectory / textureAbsolutePath.filename(),
-					dataDirectory
-				).generic_string();
-			}
+				FbxProperty prop = material->FindProperty(property);
+				int layeredTextureCount = prop.GetSrcObjectCount<FbxLayeredTexture>();
+				//int textureCount = prop.GetSrcObjectCount<FbxTexture>();
+				const int textureIndex = 0;
+				FbxFileTexture* texture = FbxCast<FbxFileTexture>(prop.GetSrcObject<FbxTexture>(textureIndex));
+				std::string textureName;
+				if (texture != nullptr)
+				{
+					// fbx stores absolute path in the PC the file created
+					std::filesystem::path textureAbsolutePath = texture->GetFileName();
+					textureName = std::filesystem::relative(
+						modelDirectory / textureAbsolutePath.filename(),
+						dataDirectory
+					).generic_string();
+				}
+				return textureName;
+			};
 
-			materialIndices.insert({materialName, {currentMaterialIndex, diffuseTexture}});
+
+			materialIndices.insert({
+				materialName, {
+					.materialIndex = currentMaterialIndex,
+					.diffuseTexture = GetTextureByProperty(FbxSurfaceMaterial::sDiffuse),
+					.normalTexture = GetTextureByProperty(FbxSurfaceMaterial::sNormalMap),
+				}
+			});
 			currentMaterialIndex++;
 
 
-			//for (int i = 0; i < 22; i++)
-			//{
-			//	FbxSurfacePhong* phong = static_cast<FbxSurfacePhong*>(material);
-			//	FbxProperty prop1 = phong->FindProperty(props[i]);
+			for (int i = 0; i < 22; i++)
+			{
+				FbxSurfacePhong* phong = static_cast<FbxSurfacePhong*>(material);
+				FbxProperty prop1 = phong->FindProperty(props[i]);
 
-			//	FbxFileTexture* texture1 = FbxCast<FbxFileTexture>(prop1.GetSrcObject<FbxTexture>(0));
-			//	if (texture1 != nullptr)
-			//	{
-			//		std::cout << props[i] << " " << texture1->GetFileName() << std::endl;
-			//	}
-			//}
+				FbxFileTexture* texture1 = FbxCast<FbxFileTexture>(prop1.GetSrcObject<FbxTexture>(0));
+				if (texture1 != nullptr)
+				{
+					std::cout << props[i] << " " << texture1->GetFileName() << std::endl;
+				}
+			}
 		}
 
 		node.materialName = materialName;
@@ -265,14 +280,15 @@ bool ModelLoader::LoadModel(const std::string& modelFilename, const std::string&
 	rapidjson::Document::AllocatorType& alloc = json.GetAllocator();
 
 
-	json.AddMember("type", "standard_material_list", alloc);
+	json.AddMember("asset_type", "standard_material_list", alloc);
 
 	rapidjson::Value mat(rapidjson::kArrayType);
 	for (int i = 0; i < currentMaterialIndex; i++)
 	{
 		rapidjson::Value m(rapidjson::kObjectType);
 		m.AddMember("name", rapidjson::Value(materials[i].c_str(), alloc), alloc);
-		m.AddMember("diffuse", rapidjson::Value(materialIndices[materials[i]].diffuseTexture.c_str(), alloc), alloc);
+		m.AddMember("diffuseMap", rapidjson::Value(materialIndices[materials[i]].diffuseTexture.c_str(), alloc), alloc);
+		m.AddMember("normalMap", rapidjson::Value(materialIndices[materials[i]].normalTexture.c_str(), alloc), alloc);
 		m.AddMember("textureSampler", "linearWrap", alloc);
 
 		mat.PushBack(m, alloc);

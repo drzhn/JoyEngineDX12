@@ -490,7 +490,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="JoyData\shaders\gbufferwrite.hlsl" />
     <None Include="JoyData\shaders\vikingShader.hlsl" />
     <None Include="JoyData\shaders\lightprocessing.hlsl" />
     <None Include="JoyData\shaders\directionlightprocessing.hlsl" />
@@ -533,5 +532,6 @@
     <FxCompile Include="JoyData\shaders\hw_raytracing\Raytracing.hlsl" />
     <FxCompile Include="JoyData\shaders\sw_raytracing\Raytracing.hlsl" />
     <FxCompile Include="JoyData\shaders\standardShader.hlsl" />
+    <FxCompile Include="JoyData\shaders\standard\standardPhong.hlsl" />
   </ItemGroup>
 </Project>

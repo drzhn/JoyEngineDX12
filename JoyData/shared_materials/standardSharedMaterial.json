@@ -1,5 +1,5 @@
 {
-    "type": "sharedMaterial",
+    "asset_type": "sharedMaterial",
     "shader": "shaders/standardShader.hlsl",
     "hasVertexInput": true,
     "depthTest": true,

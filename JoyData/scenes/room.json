@@ -1,10 +1,10 @@
 {
-    "type": "scene",
+    "asset_type": "scene",
     "name": "roomScene",
     "objects": [
         {
             "name": "camera",
-            "type": "obj_simple",
+            "asset_type": "obj_simple",
             "transform": {
                 "localPosition": [ -15.0, 9.0, -1.0 ],
                 "localRotation": [ 0.0, 90.0, 0.0 ],
@@ -12,13 +12,13 @@
             },
             "components": [
                 {
-                    "type": "camera",
+                    "asset_type": "camera",
                     "near": 0.1,
                     "far": 1000,
                     "fov": 60
                 },
                 {
-                    "type": "component",
+                    "asset_type": "component",
                     "component": "CameraBehaviour",
                     "fields": {
                         "m_speed": 8.0
@@ -28,7 +28,7 @@
         },
         {
             "name": "directional_light",
-            "type": "obj_simple",
+            "asset_type": "obj_simple",
             "transform": {
                 "localPosition": [ -5.0, 40.0, 45.0 ],
                 "localRotation": [ 30.0, 180.0, 0.0 ],
@@ -36,7 +36,7 @@
             },
             "components": [
                 {
-                    "type": "light",
+                    "asset_type": "light",
                     "lightType": "direction",
                     "intensity": 1.0,
                     "ambient": 0.0,
@@ -46,7 +46,7 @@
         },
         {
             "name": "point_light_test1",
-            "type": "obj_simple",
+            "asset_type": "obj_simple",
             "transform": {
                 "localPosition": [ 0.0, 1.0, 7.8 ],
                 "localRotation": [ 0.0, 0.0, 0.0 ],
@@ -54,14 +54,14 @@
             },
             "components": [
                 {
-                    "type": "light",
+                    "asset_type": "light",
                     "lightType": "point",
                     "intensity": 1.0,
                     "radius": 3.0,
                     "color": [ 0.0, 1.0, 0.0, 1.0 ]
                 },
                 {
-                    "type": "component",
+                    "asset_type": "component",
                     "component": "LightBehaviour",
                     "fields": {
                         "m_speed": 2.0,
@@ -73,7 +73,7 @@
         },
         {
             "name": "point_light_test2",
-            "type": "obj_simple",
+            "asset_type": "obj_simple",
             "transform": {
                 "localPosition": [ 3.0, 1.0, 7.8 ],
                 "localRotation": [ 0.0, 0.0, 0.0 ],
@@ -81,14 +81,14 @@
             },
             "components": [
                 {
-                    "type": "light",
+                    "asset_type": "light",
                     "lightType": "point",
                     "intensity": 1.0,
                     "radius": 3.0,
                     "color": [ 1.0, 0.0, 0.0, 1.0 ]
                 },
                 {
-                    "type": "component",
+                    "asset_type": "component",
                     "component": "LightBehaviour",
                     "fields": {
                         "m_speed": -2.0,
@@ -100,7 +100,7 @@
         },
         {
             "name": "sponza",
-            "type": "obj_complex",
+            "asset_type": "obj_complex",
             "transform": {
                 "localPosition": [ 0.0, 0.0, 0.0 ],
                 "localRotation": [ 0.0, 0.0, 0.0 ],
@@ -112,7 +112,7 @@
         },
         {
             "name": "head2",
-            "type": "obj_simple",
+            "asset_type": "obj_simple",
             "transform": {
                 "localPosition": [ -12.0, 8.0, -1.0 ],
                 "localRotation": [ 0.0, 0.0, 0.0 ],
@@ -120,16 +120,16 @@
             },
             "components": [
                 {
-                    "type": "renderer",
+                    "asset_type": "renderer",
                     "model": "models/Anna_Head.obj",
-                    "material": "materials/standardMaterial.json",
+                    "material": "materials/Anna_Skin_Head.json",
                     "static": false
                 },
                 {
-                    "type": "component",
+                    "asset_type": "component",
                     "component": "RoomBehaviour",
                     "fields": {
-                        "m_speed": 0.1,
+                        "m_speed": 0.0,
                         "m_color": [ 0.4, 0.5, 0.8, 1.0 ]
                     }
                 }

@@ -21,7 +21,7 @@ namespace JoyEngine
 	Material::Material(const char* materialPath) :
 		Resource(materialPath),
 		m_materialIndex(s_currentMaterialIndex++),
-		m_sharedMaterial(EngineDataProvider::Get()->GetGBufferWriteSharedMaterial()) // We will only use standard material for serialized materials
+		m_sharedMaterial(EngineDataProvider::Get()->GetStandardPhongSharedMaterial()) // We will only use standard material for serialized materials
 	{
 		rapidjson::Document json = DataManager::Get()->GetSerializedData(materialPath, material);
 
@@ -41,7 +41,7 @@ namespace JoyEngine
 	Material::Material(uint64_t id, const std::map<std::string, std::string>& bindings) :
 		Resource(id),
 		m_materialIndex(s_currentMaterialIndex++),
-		m_sharedMaterial(EngineDataProvider::Get()->GetGBufferWriteSharedMaterial())
+		m_sharedMaterial(EngineDataProvider::Get()->GetStandardPhongSharedMaterial())
 	{
 		InitMaterial(bindings);
 	}
@@ -76,7 +76,9 @@ namespace JoyEngine
 						m_sharedMaterial->GetGraphicsPipeline()->GetBindingIndexByName(name),
 						srv
 					});
-					EngineDataProvider::Get()->SetMaterialData(m_materialIndex, srv->GetDescriptorIndex());
+					EngineDataProvider::Get()->SetMaterialData(
+						m_materialIndex,
+						srv->GetDescriptorIndex());
 
 					break;
 				}

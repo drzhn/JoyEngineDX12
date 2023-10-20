@@ -110,10 +110,10 @@ namespace JoyEngine
 
 		// GBuffer write shader
 		{
-			m_gbufferWriteSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, GraphicsPipelineArgs>(
+			m_standardPhongSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, GraphicsPipelineArgs>(
 				RandomHash64(),
 				{
-					"shaders/gbufferwrite.hlsl",
+					"shaders/standard/standardPhong.hlsl",
 					JoyShaderTypeVertex | JoyShaderTypePixel,
 					true,
 					true,

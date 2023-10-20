@@ -293,7 +293,7 @@ namespace JoyEngine
 			m_lightSystem->RenderDirectionalShadows(
 				commandList,
 				m_currentFrameIndex,
-				EngineDataProvider::Get()->GetGBufferWriteSharedMaterial());
+				EngineDataProvider::Get()->GetStandardPhongSharedMaterial());
 		}
 
 		// Set main viewport-scissor rects
@@ -330,7 +330,7 @@ namespace JoyEngine
 				FALSE, &dsvHandle);
 
 			RenderSceneForSharedMaterial(commandList, &mainCameraMatrixVP,
-			                             EngineDataProvider::Get()->GetGBufferWriteSharedMaterial());
+			                             EngineDataProvider::Get()->GetStandardPhongSharedMaterial());
 
 			m_gbuffer->BarrierColorToRead(commandList);
 		}

@@ -79,8 +79,8 @@ namespace JoyEngine
 			ASSERT(false);
 		}
 
-		ASSERT(json.HasMember("type"));
-		ASSERT(json["type"].GetString() == std::string(s));
+		ASSERT(json.HasMember("asset_type"));
+		ASSERT(json["asset_type"].GetString() == std::string(s));
 #endif
 
 		return json;

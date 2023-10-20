@@ -389,9 +389,12 @@
     <ClInclude Include="JoyEngine\WindowHandler.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="JoyData\shaders\gbufferwrite.hlsl">
+    <FxCompile Include="JoyData\shaders\standard\standardPhong.hlsl">
       <FileType>Document</FileType>
-    </None>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GraphicsDebug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <None Include="JoyData\shaders\vikingShader.hlsl">
       <FileType>Document</FileType>
     </None>

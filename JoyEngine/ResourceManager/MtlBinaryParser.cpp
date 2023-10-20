@@ -20,8 +20,8 @@ namespace JoyEngine
 		for (auto& mat : val.GetArray())
 		{
 			std::map<std::string, std::string> bindings{
-				{"diffuse", mat["diffuse"].GetString()},
-				//{"normal", mat["normal"].GetString()}
+				{"diffuseMap", mat["diffuseMap"].GetString()},
+				{"normalMap", mat["normalMap"].GetString()},
 				{"textureSampler", mat["textureSampler"].GetString()}
 			};
 			m_materials.emplace_back(

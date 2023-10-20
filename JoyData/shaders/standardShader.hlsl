@@ -47,7 +47,7 @@ PSOutput PSMain(PSInput input) // : SV_TARGET
 	const float4 diffuseColor = diffuse.Sample(textureSampler, input.uv);
 	const float4 normalColor = normal.Sample(textureSampler, input.uv);
 
-	output.Color = diffuseColor;// *normalColor;
+    output.Color = diffuseColor * normalColor; // *normalColor;
 
 	return output;
 }

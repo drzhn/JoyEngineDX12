@@ -49,7 +49,7 @@ namespace JoyEngine
 		rapidjson::Value& val = json["objects"];
 		for (auto& obj : val.GetArray())
 		{
-			std::string objType = obj["type"].GetString();
+			std::string objType = obj["asset_type"].GetString();
 
 			if (objType == "obj_simple")
 			{
@@ -64,7 +64,7 @@ namespace JoyEngine
 
 				for (auto& component : obj["components"].GetArray())
 				{
-					std::string type = std::string(component["type"].GetString());
+					std::string type = std::string(component["asset_type"].GetString());
 					if (type == "renderer")
 					{
 						bool isStatic = component["static"].GetBool();

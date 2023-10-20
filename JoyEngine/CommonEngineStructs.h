@@ -92,6 +92,7 @@ enum LightType
 #elif SHADER
 
 #define PI 3.14159265359
+#define FLT_EPSILON 1.19209290e-007
 #define BINDLESS 0
 
 #endif

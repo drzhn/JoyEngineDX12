@@ -1,7 +1,7 @@
 ,
         {
             "name": "sponza",
-            "type": "obj_complex",
+            "asset_type": "obj_complex",
             "transform": {
                 "localPosition": [ 0.0, 0.0, 0.0 ],
                 "localRotation": [ 0.0, 0.0, 0.0 ],
@@ -16,7 +16,7 @@
         ,
         {
             "name": "head2",
-            "type": "obj_simple",
+            "asset_type": "obj_simple",
             "transform": {
                 "localPosition": [ -10.0, 5.0, -4.0 ],
                 "localRotation": [ 0.0, 0.0, 0.0 ],
@@ -24,13 +24,13 @@
             },
             "components": [
                 {
-                    "type": "renderer",
+                    "asset_type": "renderer",
                     "model": "13dc6d97-5ced-4b99-b296-bb9e6df2242a",
                     "material": "cbab0eb5-74a0-400f-92c2-8aae39175ed7",
                     "static": false
                 },
                 {
-                    "type": "component",
+                    "asset_type": "component",
                     "component": "RoomBehaviour",
                     "fields": {
                         "m_speed": 4,
@@ -41,7 +41,7 @@
         },
         {
             "name": "TestSphere",
-            "type": "obj_simple",
+            "asset_type": "obj_simple",
             "transform": {
                 "localPosition": [ 0.0, 0.0, 0.0 ],
                 "localRotation": [ 0.0, 0.0, 0.0 ],
@@ -49,7 +49,7 @@
             },
             "components": [
                 {
-                    "type": "renderer",
+                    "asset_type": "renderer",
                     "model": "b7d27f1a-006b-41fa-b10b-01b212ebfebe",
                     "material": "cbab0eb5-74a0-400f-92c2-8aae39175ed7",
                     "static": false

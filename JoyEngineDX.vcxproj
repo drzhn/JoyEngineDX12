@@ -266,7 +266,6 @@
     <ClCompile Include="JoyEngine\RenderManager\RenderManager.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\Buffers\ConstantCpuBuffer.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\Buffers\DynamicCpuBuffer.cpp" />
-    <ClCompile Include="JoyEngine\ResourceManager\MtlBinaryParser.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\Pipelines\AbstractPipelineObject.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\Pipelines\ComputePipeline.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\Pipelines\GraphicsPipeline.cpp" />
@@ -351,7 +350,6 @@
     <ClInclude Include="JoyEngine\ResourceManager\Buffers\ConstantCpuBuffer.h" />
     <ClInclude Include="JoyEngine\ResourceManager\Buffers\DynamicCpuBuffer.h" />
     <ClInclude Include="JoyEngine\ResourceManager\DDS.h" />
-    <ClInclude Include="JoyEngine\ResourceManager\MtlBinaryParser.h" />
     <ClInclude Include="JoyEngine\ResourceManager\Pipelines\AbstractPipelineObject.h" />
     <ClInclude Include="JoyEngine\ResourceManager\Pipelines\ComputePipeline.h" />
     <ClInclude Include="JoyEngine\ResourceManager\Pipelines\GraphicsPipeline.h" />

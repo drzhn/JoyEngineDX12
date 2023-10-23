@@ -114,9 +114,6 @@
     <ClCompile Include="JoyEngine\Common\CameraUnit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JoyEngine\ResourceManager\MtlBinaryParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="JoyEngine\MemoryManager\LinearMemoryAllocator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -348,9 +345,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JoyEngine\ResourceManager\DDS.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="JoyEngine\ResourceManager\MtlBinaryParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JoyEngine\MemoryManager\LinearMemoryAllocator.h">

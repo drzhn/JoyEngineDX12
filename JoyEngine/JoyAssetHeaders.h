@@ -4,8 +4,11 @@
 #include <cstdint>
 #include <Common/Math/MathTypes.h>
 
+
 namespace JoyEngine
 {
+	constexpr uint64_t INVALID_OFFSET = ~(0ull);
+
 	struct TreeEntry
 	{
 		uint64_t nameHash;
@@ -16,7 +19,7 @@ namespace JoyEngine
 
 	struct MeshAssetHeader
 	{
-		uint32_t vertexDataSize =  0;
+		uint32_t vertexDataSize = 0;
 		uint32_t indexDataSize = 0;
 	};
 

@@ -51,7 +51,8 @@ namespace JoyEngine
 		}
 
 		{
-			m_debugSphereProbeMesh = ResourceManager::Get()->LoadResource<Mesh>("models/DefaultSphere.obj");
+			m_debugSphereProbeMesh = ResourceManager::Get()->LoadResource<Mesh>(
+				"models/DefaultSphere.obj:RootNode/DefaultSphere_root/pSphere1");
 		}
 
 		// Debug draw probes

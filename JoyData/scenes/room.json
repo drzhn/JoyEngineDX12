@@ -4,7 +4,7 @@
     "objects": [
         {
             "name": "camera",
-            "asset_type": "obj_simple",
+            "asset_type": "game_object",
             "transform": {
                 "localPosition": [ -15.0, 9.0, -1.0 ],
                 "localRotation": [ 0.0, 90.0, 0.0 ],
@@ -28,7 +28,7 @@
         },
         {
             "name": "directional_light",
-            "asset_type": "obj_simple",
+            "asset_type": "game_object",
             "transform": {
                 "localPosition": [ -5.0, 40.0, 45.0 ],
                 "localRotation": [ 30.0, 180.0, 0.0 ],
@@ -46,7 +46,7 @@
         },
         {
             "name": "point_light_test1",
-            "asset_type": "obj_simple",
+            "asset_type": "game_object",
             "transform": {
                 "localPosition": [ 0.0, 1.0, 7.8 ],
                 "localRotation": [ 0.0, 0.0, 0.0 ],
@@ -73,7 +73,7 @@
         },
         {
             "name": "point_light_test2",
-            "asset_type": "obj_simple",
+            "asset_type": "game_object",
             "transform": {
                 "localPosition": [ 3.0, 1.0, 7.8 ],
                 "localRotation": [ 0.0, 0.0, 0.0 ],
@@ -99,29 +99,17 @@
             ]
         },
         {
-            "name": "sponza",
-            "asset_type": "obj_complex",
+            "name": "hierarchy_test",
+            "asset_type": "game_object",
             "transform": {
-                "localPosition": [ 0.0, 0.0, 0.0 ],
+                "localPosition": [ 0.0, 8.0, 0.0 ],
                 "localRotation": [ 0.0, 0.0, 0.0 ],
                 "localScale": [ 1.0, 1.0, 1.0 ]
-            },
-            "model": "sponza/sponza.obj",
-            "material": "sponza/sponza.json",
-            "static": true
-        },
-        {
-            "name": "head2",
-            "asset_type": "obj_simple",
-            "transform": {
-                "localPosition": [ -12.0, 8.0, -1.0 ],
-                "localRotation": [ 0.0, 0.0, 0.0 ],
-                "localScale": [ 0.05, 0.05, 0.05 ]
             },
             "components": [
                 {
                     "asset_type": "renderer",
-                    "model": "models/Anna_Head.obj",
+                    "model": "hierarchy_test/TestHierarchy.fbx:RootNode/Root/Parent2/Chld4",
                     "material": "materials/Anna_Skin_Head.json",
                     "static": false
                 },

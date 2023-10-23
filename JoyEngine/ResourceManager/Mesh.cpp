@@ -47,12 +47,12 @@ namespace JoyEngine
 		m_verticesData = static_cast<Vertex*>(malloc(vertexDataSize));
 		m_indicesData = static_cast<Index*>(malloc(indexDataSize));
 
-		modelStream.clear();
-		modelStream.seekg(vertexDataStreamOffset);
+		//modelStream.clear();
+		//modelStream.seekg(vertexDataStreamOffset);
 		modelStream.read(reinterpret_cast<char*>(m_verticesData), vertexDataSize);
 
-		modelStream.clear();
-		modelStream.seekg(indexDataStreamOffset);
+		//modelStream.clear();
+		//modelStream.seekg(indexDataStreamOffset);
 		modelStream.read(reinterpret_cast<char*>(m_indicesData), indexDataSize);
 
 		m_vertexCount = vertexDataSize / sizeof(Vertex);

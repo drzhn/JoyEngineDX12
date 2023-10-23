@@ -11,7 +11,8 @@ namespace JoyEngine
 	Skybox::Skybox()
 	{
 		m_skyboxTexture = ResourceManager::Get()->LoadResource<Texture>("textures/sunset2.hdr");
-		m_skyboxMesh = ResourceManager::Get()->LoadResource<Mesh>("models/DefaultSphere.obj"); // DefaultSphere
+		m_skyboxMesh = ResourceManager::Get()->LoadResource<Mesh>(
+			"models/DefaultSphere.obj:RootNode/DefaultSphere_root/pSphere1"); // DefaultSphere
 
 		//const D3D12_RENDER_TARGET_BLEND_DESC blendDesc = {
 		//	true,

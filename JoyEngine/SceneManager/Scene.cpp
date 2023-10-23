@@ -11,7 +11,6 @@
 #include "Components/Light.h"
 #include "DataManager/DataManager.h"
 #include "RenderManager/RenderManager.h"
-#include "ResourceManager/MtlBinaryParser.h"
 
 namespace JoyEngine
 {
@@ -51,7 +50,7 @@ namespace JoyEngine
 		{
 			std::string objType = obj["asset_type"].GetString();
 
-			if (objType == "obj_simple")
+			if (objType == "game_object")
 			{
 				std::unique_ptr<GameObject> go = std::make_unique<GameObject>(
 					obj["name"].GetString(),
@@ -164,41 +163,6 @@ namespace JoyEngine
 					//}
 				}
 				m_objects.push_back(std::move(go));
-			}
-			if (objType == "obj_complex")
-			{
-				std::string nameStr = obj["name"].GetString();
-				std::string modelGuid = obj["model"].GetString();
-				std::string materialGuid = obj["material"].GetString();
-				bool isStatic = obj["static"].GetBool();
-				std::unique_ptr<MtlBinaryParser> parser = std::make_unique<MtlBinaryParser>(modelGuid, materialGuid);
-				MtlMeshStreamData* data = parser->Next();
-				int objectIndex = 0;
-				while (data != nullptr)
-				{
-					std::unique_ptr<GameObject> go = std::make_unique<GameObject>(
-						obj["name"].GetString() + objectIndex,
-						RenderManager::Get()->GetTransformProvider()->Allocate(),
-						RenderManager::Get()->GetTransformProvider()
-					);
-
-					rapidjson::Value& transformValue = obj["transform"];
-					ParseTransform(go, transformValue);
-
-					std::unique_ptr<MeshRenderer> mr = std::make_unique<MeshRenderer>(*go, isStatic);
-					mr->SetMesh(data->vertexDataSize,
-					            data->indexDataSize,
-					            parser->GetModelStream(),
-					            data->vertexStreamOffset,
-					            data->indexStreamOffset);
-					mr->SetMaterial(parser->GetMaterialByIndex(data->materialIndex));
-					go->AddComponent(std::move(mr));
-
-					m_objects.push_back(std::move(go));
-
-					data = parser->Next();
-					objectIndex++;
-				}
 			}
 		}
 	}

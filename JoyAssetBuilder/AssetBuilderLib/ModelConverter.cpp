@@ -454,7 +454,7 @@ namespace JoyEngine
 					.childStartIndex = nodeData[level][i]->childStartIndex,
 					.dataFileOffset = currentFileOffset
 				};
-				nodeData[level][i]->dataFileOffset = currentFileOffset;
+				nodeData[level][i]->dataFileOffset = nodeData[level][i]->shape.GetSizeInBytes() == 0 ? INVALID_OFFSET : currentFileOffset;
 
 				currentFileOffset += nodeData[level][i]->shape.GetSizeInBytes();
 				currentEntryIndex++;

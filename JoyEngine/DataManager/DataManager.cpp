@@ -5,6 +5,8 @@
 
 #include <rapidjson/document.h>
 
+#include "JoyAssetHeaders.h"
+#include "Common/HashDefs.h"
 #include "Utils/FileUtils.h"
 #include "Utils/TimeCounter.h"
 
@@ -34,14 +36,45 @@ namespace JoyEngine
 
 	std::ifstream DataManager::GetFileStream(const std::string& path, bool shouldReadRawData) const
 	{
-		if (shouldReadRawData)
+		const auto delimiterPos = path.find_first_of(':');
+		std::string dataPath = path;
+		if (delimiterPos != std::string::npos)
 		{
-			return GetStream((m_dataPath / (path + ".data")).generic_string());
+			dataPath = dataPath.substr(0, delimiterPos);
 		}
-		else
+		dataPath += shouldReadRawData ? ".data" : "";
+		std::ifstream stream = GetStream((m_dataPath / dataPath).generic_string());
+
+		if (delimiterPos != std::string::npos)
 		{
-			return GetStream((m_dataPath / path).generic_string());
+			std::stringstream treePath = std::stringstream(path.substr(delimiterPos + 1));
+
+			std::string nodeName;
+			uint32_t nodeIndex = 0;
+			uint32_t childCount = 1;
+			TreeEntry entry = {};
+			while (std::getline(treePath, nodeName, '/'))
+			{
+				stream.seekg(sizeof(TreeEntry) * nodeIndex);
+				bool found = false;
+				for (uint32_t i = 0; i < childCount; i++)
+				{
+					stream.read(reinterpret_cast<char*>(&entry), sizeof(TreeEntry));
+					if (entry.nameHash == StrHash64(nodeName.c_str()))
+					{
+						nodeIndex = entry.childStartIndex;
+						childCount = entry.childCount;
+						found = true;
+						break;
+					}
+				}
+				ASSERT(found);
+			}
+
+			stream.seekg(entry.dataFileOffset);
 		}
+
+		return stream;
 	}
 
 	// TODO rewrite using template<ResourceT>

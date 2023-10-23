@@ -157,11 +157,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="EntryPoint.cpp" />
-    <ClCompile Include="ModelLoader.cpp" />
+    <ClCompile Include="ModelConverter.cpp" />
     <ClCompile Include="TextureLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ModelLoader.h" />
+    <ClInclude Include="ModelConverter.h" />
     <ClInclude Include="TextureLoader.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>

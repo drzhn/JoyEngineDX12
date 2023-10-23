@@ -522,7 +522,6 @@
     <None Include="JoyData\shaders\sw_raytracing\BVHAABBMerger.hlsl" />
     <None Include="JoyData\shaders\sw_raytracing\gizmoAABBDrawer.hlsl" />
     <None Include="JoyData\shaders\sw_raytracing\debugImageCompose.hlsl" />
-    <None Include="JoyData\shaders\deferredshadingprocessor.hlsl" />
     <None Include="JoyData\shaders\skybox.hlsl" />
     <None Include="JoyData\shaders\sw_raytracing\debugDrawProbes.hlsl" />
     <None Include="JoyData\shaders\sw_raytracing\ProbeIrradiance.hlsl" />
@@ -533,5 +532,6 @@
     <FxCompile Include="JoyData\shaders\sw_raytracing\Raytracing.hlsl" />
     <FxCompile Include="JoyData\shaders\standardShader.hlsl" />
     <FxCompile Include="JoyData\shaders\standard\standardPhong.hlsl" />
+    <FxCompile Include="JoyData\shaders\deferredshadingprocessor.hlsl" />
   </ItemGroup>
 </Project>

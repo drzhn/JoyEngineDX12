@@ -4,17 +4,17 @@
 
 #include <vector>
 
-#include "ModelLoader.h"
+#include "ModelConverter.h"
 #include "TextureLoader.h"
 
 std::string errorMessage;
 
-ModelLoader* modelLoader = nullptr;
+JoyEngine::ModelConverter* modelLoader = nullptr;
 TextureLoader* textureLoader = nullptr;
 
 extern "C" __declspec(dllexport) int __cdecl InitializeBuilder()
 {
-	modelLoader = new ModelLoader();
+	modelLoader = new JoyEngine::ModelConverter();
 	textureLoader = new TextureLoader();
 
 	std::cout << "Builder initialized" << std::endl;
@@ -39,13 +39,15 @@ extern "C" __declspec(dllexport) int __cdecl BuildModel(
 	const std::string dataDirString = std::string(dataDir);
 	const std::string dataFilename = std::string(modelFileName) + ".data";
 
-	if (!modelLoader->LoadModel(modelFilename, dataDirString, errorMessage))
+	try
 	{
-		*errorMessageCStr = errorMessage.c_str();
-		return 1;
+		if (!modelLoader->ConvertModel(modelFilename, dataDirString, errorMessage))
+		{
+			*errorMessageCStr = errorMessage.c_str();
+			return 1;
+		}
 	}
-
-	if (!modelLoader->WriteData(dataFilename, errorMessage))
+	catch (const std::exception& e)
 	{
 		*errorMessageCStr = errorMessage.c_str();
 		return 1;

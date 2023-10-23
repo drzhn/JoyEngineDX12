@@ -43,6 +43,7 @@ namespace JoyEngine
 		mat4x4 trs(const xvec4& translation, const quat& rotation, const xvec4& scale);
 		xvec4 mul(const mat4x4& matrix, const xvec4& v);
 		xvec4 mul(const float f, const xvec4& v);
+		mat4x4 mul(const mat4x4& matrix1, const mat4x4& matrix2);
 		quat mul(const quat& a, const quat& b);
 		mat4x4 inverse(const mat4x4&);
 

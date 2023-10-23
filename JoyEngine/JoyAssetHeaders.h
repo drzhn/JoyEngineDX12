@@ -6,11 +6,18 @@
 
 namespace JoyEngine
 {
+	struct TreeEntry
+	{
+		uint64_t nameHash;
+		uint32_t childCount;
+		uint32_t childStartIndex;
+		uint64_t dataFileOffset;
+	};
+
 	struct MeshAssetHeader
 	{
-		uint32_t vertexDataSize;
-		uint32_t indexDataSize;
-		uint32_t materialIndex;
+		uint32_t vertexDataSize =  0;
+		uint32_t indexDataSize = 0;
 	};
 
 	enum TextureAssetFormat

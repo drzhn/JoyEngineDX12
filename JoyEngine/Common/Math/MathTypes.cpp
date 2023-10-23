@@ -65,6 +65,11 @@ namespace JoyEngine
 			return DirectX::XMVectorScale(v, f);
 		}
 
+		mat4x4 mul(const mat4x4& matrix1, const mat4x4& matrix2)
+		{
+			return DirectX::XMMatrixMultiply(matrix1, matrix2);
+		}
+
 		quat mul(const quat& a, const quat& b)
 		{
 			return DirectX::XMQuaternionMultiply(a, b);

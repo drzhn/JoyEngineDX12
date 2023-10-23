@@ -11,7 +11,7 @@ namespace JoyAssetBuilder
             int result = BuilderFacade.BuildModel(modelPath,  dataDir, out var buidlResult);
             if (result != 0)
             {
-                resultMessage = Path.GetFileName(modelPath) + ": Error building model\n" + buidlResult +
+                resultMessage = Path.GetFileName(modelPath) + ": Error building model! Message: " + buidlResult +
                                 Environment.NewLine;
                 return false;
             }

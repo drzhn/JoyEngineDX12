@@ -192,6 +192,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)JoyEngine;$(SolutionDir)ThirdParty\rapidjson\include;$(SolutionDir)ThirdParty\DirectXMath\Inc;$(SolutionDir)ThirdParty\imgui;$(SolutionDir)ThirdParty\dxc;$(SolutionDir)ThirdParty\pixruntime\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -563,9 +564,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="JoyData\shaders\deferredshadingprocessor.hlsl">
+    <FxCompile Include="JoyData\shaders\deferredshadingprocessor.hlsl">
       <FileType>Document</FileType>
-    </None>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GraphicsDebug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="JoyData\shaders\skybox.hlsl">

@@ -34,9 +34,9 @@ namespace JoyEngine
 	Material::Material(const char* materialPath) :
 		Resource(materialPath),
 		m_materialIndex(s_currentMaterialIndex++),
-		m_sharedMaterial(EngineDataProvider::Get()->GetStandardPhongSharedMaterial()) // We will only use standard material for serialized materials
+		m_sharedMaterial(EngineDataProvider::Get()->GetStandardPhongSharedMaterial()) // We will only use standard Material for serialized materials
 	{
-		rapidjson::Document json = DataManager::Get()->GetSerializedData(materialPath, material);
+		rapidjson::Document json = DataManager::Get()->GetSerializedData(materialPath, AssetType::Material);
 
 		InitMaterial(json);
 	}

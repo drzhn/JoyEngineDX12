@@ -78,7 +78,7 @@ namespace JoyEngine
 	}
 
 	// TODO rewrite using template<ResourceT>
-	rapidjson::Document DataManager::GetSerializedData(const std::string& path, DataType type) const
+	rapidjson::Document DataManager::GetSerializedData(const std::string& path, AssetType type) const
 	{
 		const std::vector<char> data = GetData(path);
 		rapidjson::Document json;
@@ -88,26 +88,26 @@ namespace JoyEngine
 		std::string s;
 		switch (type)
 		{
-		case mesh:
+		case AssetType::Mesh:
 			s = "mesh";
 			break;
-		case texture:
+		case AssetType::Texture:
 			s = "texture";
 			break;
-		case shader:
+		case AssetType::Shader:
 			s = "shader";
 			break;
-		case material:
+		case AssetType::Material:
 			s = "material";
 			break;
-		case sharedMaterial:
+		case AssetType::SharedMaterial:
 			s = "sharedMaterial";
 			break;
-		case scene:
+		case AssetType::Scene:
 			s = "scene";
 			break;
-		case standard_material_list:
-			s = "standard_material_list";
+		case AssetType::GameObject:
+			s = "game_object";
 			break;
 		default:
 			ASSERT(false);

@@ -42,7 +42,7 @@ namespace JoyEngine
 		}
 	}
 
-	void ParseGameObjectJson(rapidjson::Value& obj, GameObject* parent)
+	GameObject* ParseGameObjectJson(rapidjson::Value& obj, GameObject* parent)
 	{
 		std::string objType = obj["asset_type"].GetString();
 
@@ -169,7 +169,23 @@ namespace JoyEngine
 			{
 				ParseGameObjectJson(child, go);
 			}
+			return go;
 		}
+		else if (objType == "prefab")
+		{
+			ASSERT(obj.HasMember("path"));
+			rapidjson::Document json = DataManager::Get()->GetSerializedData(obj["path"].GetString(), AssetType::GameObject);
+			GameObject* go = ParseGameObjectJson(json, parent);
+			rapidjson::Value& transformValue = obj["transform"];
+			ParseTransform(go, transformValue);
+			return go;
+		}
+		else
+		{
+			ASSERT(false);
+		}
+
+		return nullptr;
 	}
 
 	Scene::Scene(const char* path):
@@ -178,7 +194,7 @@ namespace JoyEngine
 			SceneManager::Get()->GetTransformProvider().Allocate(),
 			SceneManager::Get()->GetTransformProvider())
 	{
-		rapidjson::Document json = DataManager::Get()->GetSerializedData(path, scene);
+		rapidjson::Document json = DataManager::Get()->GetSerializedData(path, AssetType::Scene);
 		m_name = json["name"].GetString();
 
 		rapidjson::Value& val = json["objects"];

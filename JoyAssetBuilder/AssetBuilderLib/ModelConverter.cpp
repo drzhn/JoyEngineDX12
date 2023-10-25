@@ -51,6 +51,8 @@ namespace JoyEngine
 {
 	struct MaterialData
 	{
+		std::string materialRelativePath;
+
 		std::string DiffuseMap;
 		std::string EmissiveMap;
 		float EmissiveFactor;
@@ -80,10 +82,19 @@ namespace JoyEngine
 
 		std::string materialName;
 
+		bool hasMesh = false;
+		std::string meshPath;
+
 		ShapeData shape;
 	};
 
-	void CreateGameObjectJson(const NodeData* data, rapidjson::Value& gameObjectEntry, rapidjson::Document::AllocatorType& alloc)
+	void CreateGameObjectJson(
+		const NodeData* data,
+		const std::filesystem::path& modelRelativePath,
+		const std::map<std::string, MaterialData>& materialData,
+		rapidjson::Value& gameObjectEntry,
+		rapidjson::Document::AllocatorType& alloc
+	)
 	{
 		gameObjectEntry.AddMember("name", rapidjson::Value(data->name.c_str(), alloc), alloc);
 		gameObjectEntry.AddMember("asset_type", rapidjson::Value("game_object", alloc), alloc);
@@ -104,11 +115,27 @@ namespace JoyEngine
 			gameObjectEntry.AddMember("transform", transformEntry, alloc);
 		}
 
+		rapidjson::Value componentsArray(rapidjson::kArrayType);
+		if (data->hasMesh)
+		{
+			rapidjson::Value componentEntry(rapidjson::kObjectType);
+			componentEntry.AddMember("asset_type", rapidjson::Value("renderer"), alloc);
+			componentEntry.AddMember("model", rapidjson::Value(
+				                         (modelRelativePath.generic_string() + ":" + data->meshPath).c_str(), alloc
+			                         ), alloc);
+			componentEntry.AddMember("material", rapidjson::Value(
+				                         materialData.at(data->materialName).materialRelativePath.c_str(), alloc
+			                         ), alloc);
+			componentEntry.AddMember("static", false, alloc);
+			componentsArray.PushBack(componentEntry, alloc);
+		}
+		gameObjectEntry.AddMember("components", componentsArray, alloc);
+
 		rapidjson::Value childrenArray(rapidjson::kArrayType);
 		for (const auto& child : data->children)
 		{
 			rapidjson::Value childrenEntry(rapidjson::kObjectType);
-			CreateGameObjectJson(child, childrenEntry, alloc);
+			CreateGameObjectJson(child, modelRelativePath, materialData, childrenEntry, alloc);
 			childrenArray.PushBack(childrenEntry, alloc);
 		}
 		gameObjectEntry.AddMember("children", childrenArray, alloc);
@@ -164,6 +191,9 @@ namespace JoyEngine
 
 			materialData.insert({
 				materialSafeName, {
+					.materialRelativePath = std::filesystem::relative(
+						modelDirectory / (materialSafeName + ".json"),
+						dataDirectory).generic_string(),
 					.DiffuseMap = GetTextureNameByProperty(FbxSurfaceMaterial::sDiffuse),
 					.EmissiveMap = GetTextureNameByProperty(FbxSurfaceMaterial::sEmissive),
 					.EmissiveFactor = GetFloatByProperty(FbxSurfaceMaterial::sEmissiveFactor),
@@ -214,6 +244,7 @@ namespace JoyEngine
 
 		nodeData.shape.m_vertices = std::vector<Vertex>(polygonsCount * 3);
 		nodeData.shape.m_indices = std::vector<Index>(polygonsCount * 3);
+
 		for (int i = 0; i < polygonsCount; i++)
 		{
 			for (int vi = 0; vi < 3; vi++)
@@ -242,19 +273,19 @@ namespace JoyEngine
 					break; // other reference modes not shown here!
 				}
 
-				nodeData.shape.m_vertices[i * 3 + vi] = Vertex{
+				nodeData.shape.m_vertices[i * 3 + (3 - vi) % 3] = Vertex{
 					.pos = {
-						static_cast<float>(position[0]),
+						-static_cast<float>(position[0]),
 						static_cast<float>(position[1]),
 						static_cast<float>(position[2])
 					},
 					.normal = {
-						static_cast<float>(normal[0]),
+						-static_cast<float>(normal[0]),
 						static_cast<float>(normal[1]),
 						static_cast<float>(normal[2])
 					},
 					.tangent = {
-						static_cast<float>(tangent[0]),
+						-static_cast<float>(tangent[0]),
 						static_cast<float>(tangent[1]),
 						static_cast<float>(tangent[2])
 					},
@@ -291,7 +322,7 @@ namespace JoyEngine
 		nodeData->name = node->GetName();
 		nodeData->childCount = node->GetChildCount();
 		nodeData->localPosition = {
-			static_cast<float>(node->LclTranslation.Get()[0]),
+			-static_cast<float>(node->LclTranslation.Get()[0]),
 			static_cast<float>(node->LclTranslation.Get()[1]),
 			static_cast<float>(node->LclTranslation.Get()[2])
 		};
@@ -305,6 +336,7 @@ namespace JoyEngine
 			static_cast<float>(node->LclScaling.Get()[1]),
 			static_cast<float>(node->LclScaling.Get()[2]),
 		};
+
 
 		if (parent != nullptr)
 		{
@@ -335,11 +367,16 @@ namespace JoyEngine
 			}
 		}
 
+		nodeData->meshPath = (parent == nullptr ? "" : parent->meshPath + "/") + nodeData->name;
+
 		for (int i = 0; i < node->GetNodeAttributeCount(); i++)
 		{
 			FbxNodeAttribute* attr = node->GetNodeAttributeByIndex(i);
+
 			if (attr->GetAttributeType() == FbxNodeAttribute::eMesh)
 			{
+				nodeData->hasMesh = true;
+
 				ProcessMesh(static_cast<FbxMesh*>(attr), *nodeData, geometryConverter);
 			}
 		}
@@ -385,10 +422,11 @@ namespace JoyEngine
 
 	bool ModelConverter::ConvertModel(const std::string& modelPath, const std::string& dataDir, std::string& errorMessage)
 	{
-		std::filesystem::path modelDirectory = std::filesystem::path(modelPath).parent_path();
+		std::filesystem::path modelAbsoluteDirectory = std::filesystem::path(modelPath).parent_path();
 		std::filesystem::path convertedModelPath = modelPath + ".data";
 		std::filesystem::path convertedModelPrefabPath = modelPath + ".json";
-		std::filesystem::path dataRootDirectory = std::filesystem::path(dataDir);
+		std::filesystem::path dataAbsoluteDirectory = std::filesystem::path(dataDir);
+		std::filesystem::path modelRelativePath = std::filesystem::relative(modelPath, dataAbsoluteDirectory);
 
 		if (!m_lImporter->Initialize(modelPath.c_str(), -1, m_lSdkManager->GetIOSettings()))
 		{
@@ -423,8 +461,8 @@ namespace JoyEngine
 			lRootNode,
 			nodeData,
 			materialData,
-			modelDirectory,
-			dataRootDirectory,
+			modelAbsoluteDirectory,
+			dataAbsoluteDirectory,
 			m_lGeometryConverter.get(),
 			nullptr,
 			0,
@@ -468,7 +506,7 @@ namespace JoyEngine
 				const auto& materialName = data.first;
 				const auto& mat = data.second;
 
-				std::filesystem::path materialPath = modelDirectory / (materialName + ".json");
+				std::filesystem::path materialAbsolutePath = dataAbsoluteDirectory / mat.materialRelativePath;
 
 				rapidjson::Document json;
 				json.SetObject();
@@ -520,7 +558,7 @@ namespace JoyEngine
 				rapidjson::StringBuffer buffer;
 				rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);
 				json.Accept(writer);
-				std::ofstream materialStream(materialPath, std::ofstream::trunc);
+				std::ofstream materialStream(materialAbsolutePath, std::ofstream::trunc);
 
 				materialStream.write(buffer.GetString(), buffer.GetSize());
 
@@ -534,7 +572,7 @@ namespace JoyEngine
 			json.SetObject();
 			rapidjson::Document::AllocatorType& alloc = json.GetAllocator();
 
-			CreateGameObjectJson(nodeData[0][0].get(), json, alloc);
+			CreateGameObjectJson(nodeData[0][0].get(), modelRelativePath, materialData, json, alloc);
 
 			rapidjson::StringBuffer buffer;
 			rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);

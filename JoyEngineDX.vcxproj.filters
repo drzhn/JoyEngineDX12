@@ -490,48 +490,46 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="JoyData\shaders\vikingShader.hlsl" />
-    <None Include="JoyData\shaders\lightprocessing.hlsl" />
-    <None Include="JoyData\shaders\directionlightprocessing.hlsl" />
-    <None Include="JoyData\shaders\shadowpointprocessing.hlsl" />
-    <None Include="JoyData\shaders\annaShader.hlsl" />
-    <None Include="JoyData\shaders\generateMipMaps.hlsl" />
-    <None Include="JoyData\shaders\particles.hlsl" />
-    <None Include="JoyData\shaders\particlesbuffergeneration.hlsl" />
-    <None Include="JoyData\shaders\dynamiccubemapreflections.hlsl" />
-    <None Include="JoyData\shaders\fogpostprocess.hlsl" />
-    <None Include="JoyData\shaders\hdrDownscaleFirstPass.hlsl" />
-    <None Include="JoyData\shaders\hdrDownscaleSecondPass.hlsl" />
-    <None Include="JoyData\shaders\hdrToLdrTransition.hlsl" />
-    <None Include="JoyData\shaders\bloomBrightPass.hlsl" />
-    <None Include="JoyData\shaders\bloomVerticalFilter.hlsl" />
-    <None Include="JoyData\shaders\bloomHorizontalFilter.hlsl" />
-    <None Include="JoyData\shaders\dynamiccubemapconvolition.hlsl" />
-    <None Include="JoyData\shaders\ssaopostprocess.hlsl" />
-    <None Include="JoyData\shaders\ssaoappend.hlsl" />
-    <None Include="JoyData\shaders\ssaoblur.hlsl" />
-    <None Include="JoyData\shaders\sslrpostprocess.hlsl" />
-    <None Include="JoyData\shaders\gizmoAxisDrawer.hlsl" />
-    <None Include="JoyData\shaders\sw_raytracing\LocalRadixSort.hlsl" />
-    <None Include="JoyData\shaders\sw_raytracing\GlobalScan.hlsl" />
-    <None Include="JoyData\shaders\sw_raytracing\BlockSum.hlsl" />
-    <None Include="JoyData\shaders\sw_raytracing\PreScan.hlsl" />
-    <None Include="JoyData\shaders\sw_raytracing\GlobalRadixSort.hlsl" />
-    <None Include="JoyData\shaders\sw_raytracing\BVHTreeConstructor.hlsl" />
-    <None Include="JoyData\shaders\sw_raytracing\BVHAABBMerger.hlsl" />
-    <None Include="JoyData\shaders\sw_raytracing\gizmoAABBDrawer.hlsl" />
-    <None Include="JoyData\shaders\sw_raytracing\debugImageCompose.hlsl" />
-    <None Include="JoyData\shaders\skybox.hlsl" />
-    <None Include="JoyData\shaders\sw_raytracing\debugDrawProbes.hlsl" />
-    <None Include="JoyData\shaders\sw_raytracing\ProbeIrradiance.hlsl" />
-    <None Include="JoyData\shaders\CommonInclude.hlsl" />
-  </ItemGroup>
-  <ItemGroup>
     <FxCompile Include="JoyData\shaders\hw_raytracing\Raytracing.hlsl" />
     <FxCompile Include="JoyData\shaders\sw_raytracing\Raytracing.hlsl" />
     <FxCompile Include="JoyData\shaders\standardShader.hlsl" />
     <FxCompile Include="JoyData\shaders\standard\standardPhong.hlsl" />
     <FxCompile Include="JoyData\shaders\deferredshadingprocessor.hlsl" />
     <FxCompile Include="JoyData\shaders\shadowprocessing.hlsl" />
+    <FxCompile Include="JoyData\shaders\sw_raytracing\BlockSum.hlsl" />
+    <FxCompile Include="JoyData\shaders\sw_raytracing\BVHAABBMerger.hlsl" />
+    <FxCompile Include="JoyData\shaders\sw_raytracing\BVHTreeConstructor.hlsl" />
+    <FxCompile Include="JoyData\shaders\sw_raytracing\debugDrawProbes.hlsl" />
+    <FxCompile Include="JoyData\shaders\sw_raytracing\debugImageCompose.hlsl" />
+    <FxCompile Include="JoyData\shaders\sw_raytracing\gizmoAABBDrawer.hlsl" />
+    <FxCompile Include="JoyData\shaders\sw_raytracing\GlobalRadixSort.hlsl" />
+    <FxCompile Include="JoyData\shaders\sw_raytracing\GlobalScan.hlsl" />
+    <FxCompile Include="JoyData\shaders\sw_raytracing\LocalRadixSort.hlsl" />
+    <FxCompile Include="JoyData\shaders\sw_raytracing\PreScan.hlsl" />
+    <FxCompile Include="JoyData\shaders\sw_raytracing\ProbeIrradiance.hlsl" />
+    <FxCompile Include="JoyData\shaders\annaShader.hlsl" />
+    <FxCompile Include="JoyData\shaders\bloomBrightPass.hlsl" />
+    <FxCompile Include="JoyData\shaders\bloomHorizontalFilter.hlsl" />
+    <FxCompile Include="JoyData\shaders\bloomVerticalFilter.hlsl" />
+    <FxCompile Include="JoyData\shaders\CommonInclude.hlsl" />
+    <FxCompile Include="JoyData\shaders\directionlightprocessing.hlsl" />
+    <FxCompile Include="JoyData\shaders\dynamiccubemapconvolition.hlsl" />
+    <FxCompile Include="JoyData\shaders\dynamiccubemapreflections.hlsl" />
+    <FxCompile Include="JoyData\shaders\fogpostprocess.hlsl" />
+    <FxCompile Include="JoyData\shaders\generateMipMaps.hlsl" />
+    <FxCompile Include="JoyData\shaders\gizmoAxisDrawer.hlsl" />
+    <FxCompile Include="JoyData\shaders\hdrDownscaleFirstPass.hlsl" />
+    <FxCompile Include="JoyData\shaders\hdrDownscaleSecondPass.hlsl" />
+    <FxCompile Include="JoyData\shaders\hdrToLdrTransition.hlsl" />
+    <FxCompile Include="JoyData\shaders\lightprocessing.hlsl" />
+    <FxCompile Include="JoyData\shaders\particles.hlsl" />
+    <FxCompile Include="JoyData\shaders\particlesbuffergeneration.hlsl" />
+    <FxCompile Include="JoyData\shaders\shadowpointprocessing.hlsl" />
+    <FxCompile Include="JoyData\shaders\skybox.hlsl" />
+    <FxCompile Include="JoyData\shaders\ssaoappend.hlsl" />
+    <FxCompile Include="JoyData\shaders\ssaoblur.hlsl" />
+    <FxCompile Include="JoyData\shaders\ssaopostprocess.hlsl" />
+    <FxCompile Include="JoyData\shaders\sslrpostprocess.hlsl" />
+    <FxCompile Include="JoyData\shaders\vikingShader.hlsl" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,21 @@
+{
+    "asset_type": "material",
+    "name": "Std_Upper_Teeth",
+    "material_type": "standard",
+    "bindings": {
+        "DiffuseMap": "Anna_FBX/Std_Upper_Teeth_Diffuse.jpg",
+        "EmissiveMap": "",
+        "EmissiveFactor": 0.0,
+        "AmbientMap": "",
+        "AmbientFactor": 1.0,
+        "NormalMap": "Anna_FBX/Std_Upper_Teeth_Normal.jpg",
+        "TransparentColor": "",
+        "TransparencyFactor": 0.0,
+        "SpecularMap": "",
+        "SpecularFactor": 0.0,
+        "ReflectionMap": "",
+        "ReflectionFactor": 1.0,
+        "ShininessMap": "",
+        "TextureSampler": "linearWrap"
+    }
+}

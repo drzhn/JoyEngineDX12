@@ -93,6 +93,7 @@ namespace JoyAssetBuilder
                     case ".jpeg":
                     case ".hdr":
                     case ".tga":
+                    case ".dds":
                         //case ".dds":
                         fileItem = new AssetTreeNode(AssetType.Texture, file, m_dataPath);
                         break;

@@ -20,7 +20,7 @@ namespace JoyEngine
 	{
 		GraphicsPipelineArgs args = {};
 
-		rapidjson::Document json = DataManager::Get()->GetSerializedData(path, sharedMaterial);
+		rapidjson::Document json = DataManager::Get()->GetSerializedData(path, AssetType::SharedMaterial);
 
 		args.hasVertexInput = json["hasVertexInput"].GetBool();
 		args.depthTest = json["depthTest"].GetBool();

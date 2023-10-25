@@ -1,0 +1,21 @@
+{
+    "asset_type": "material",
+    "name": "Female_Trimmed",
+    "material_type": "standard_transparent",
+    "bindings": {
+        "DiffuseMap": "Anna_FBX/Female_Trimmed_Diffuse.jpg",
+        "EmissiveMap": "",
+        "EmissiveFactor": 0.0,
+        "AmbientMap": "",
+        "AmbientFactor": 1.0,
+        "NormalMap": "",
+        "TransparentColor": "Anna_FBX/Female_Trimmed_Opacity.jpg",
+        "TransparencyFactor": 0.10000002384185791,
+        "SpecularMap": "Anna_FBX/Female_Trimmed_Specular.jpg",
+        "SpecularFactor": 0.0,
+        "ReflectionMap": "",
+        "ReflectionFactor": 1.0,
+        "ShininessMap": "",
+        "TextureSampler": "linearWrap"
+    }
+}

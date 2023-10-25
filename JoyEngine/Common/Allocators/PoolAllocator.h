@@ -24,6 +24,7 @@ namespace JoyEngine
 
 		uint32_t Allocate()
 		{
+			ASSERT(!m_freeItems.empty())
 			uint32_t index = m_freeItems.top();
 			m_freeItems.pop();
 			m_allocatedItems[index] = true;

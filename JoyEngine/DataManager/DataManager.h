@@ -12,15 +12,15 @@
 
 namespace JoyEngine
 {
-	enum DataType
+	enum class AssetType
 	{
-		mesh,
-		texture,
-		shader,
-		material,
-		standard_material_list,
-		sharedMaterial,
-		scene,
+		Mesh,
+		Texture,
+		Shader,
+		Material,
+		SharedMaterial,
+		Scene,
+		GameObject
 	};
 
 	class DataManager : public Singleton<DataManager>
@@ -32,7 +32,7 @@ namespace JoyEngine
 		[[nodiscard]] std::vector<char> GetData(const std::string& path, bool shouldReadRawData = false, uint32_t offset = 0) const;
 		bool HasRawData(const std::string& path) const;
 		[[nodiscard]] std::ifstream GetFileStream(const std::string& path, bool shouldReadRawData = false) const;
-		[[nodiscard]] rapidjson::Document GetSerializedData(const std::string& path, DataType) const;
+		[[nodiscard]] rapidjson::Document GetSerializedData(const std::string& path, AssetType) const;
 	private:
 		const std::filesystem::path m_dataPath;
 	};

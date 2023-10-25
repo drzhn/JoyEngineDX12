@@ -2,19 +2,19 @@
 #define TRANSFORM_H
 
 #include "Common/Math/MathTypes.h"
-#include "RenderManager/TransformProvider.h"
 
 namespace JoyEngine
 {
 	class TransformProvider;
+	class GameObject;
 
 	class Transform
 	{
 	public:
 		Transform() = delete;
 
-		explicit Transform(uint32_t transformIndex, TransformProvider& transformProvider);
-		explicit Transform(uint32_t transformIndex, TransformProvider& transformProvider, jmath::vec3 pos, jmath::vec3 rot, jmath::vec3 scale);
+		explicit Transform(GameObject& gameObject, uint32_t transformIndex, TransformProvider& transformProvider);
+		explicit Transform(GameObject& gameObject, uint32_t transformIndex, TransformProvider& transformProvider, jmath::vec3 pos, jmath::vec3 rot, jmath::vec3 scale);
 
 		[[nodiscard]] uint32_t GetTransformIndex() const noexcept { return m_transformIndex; }
 		[[nodiscard]] uint32_t const* GetTransformIndexPtr() const noexcept { return &m_transformIndex; }
@@ -42,11 +42,14 @@ namespace JoyEngine
 		[[nodiscard]] jmath::xvec4 GetXUp() const noexcept;
 		[[nodiscard]] jmath::xvec4 GetXRight() const noexcept;
 
-		void UpdateMatrix();
-		[[nodiscard]] const jmath::mat4x4& GetModelMatrix() const noexcept
-		{
-			return m_transformProvider.GetMatrix(m_transformIndex);
-		}
+		void UpdateMatrix() const;
+
+		[[nodiscard]] const jmath::mat4x4& GetModelMatrix() const noexcept;
+
+	private:
+		void UpdateThisTransformMatrix() const;
+
+		static void UpdateChildrenMatrix(GameObject* object);
 
 	private:
 		jmath::xvec4 m_localPosition;
@@ -56,7 +59,8 @@ namespace JoyEngine
 		const uint32_t m_transformIndex;
 
 		// There is no scene object without Transform and no Transform without the scene object
-		// I moved all math to separate class just because of nicer code style 
+		// I moved all math to separate class just because of nicer code style
+		GameObject& m_gameObject;
 		TransformProvider& m_transformProvider;
 	};
 }

@@ -24,7 +24,8 @@
                         "m_speed": 8.0
                     }
                 }
-            ]
+            ],
+            "children": []
         },
         {
             "name": "directional_light",
@@ -42,7 +43,8 @@
                     "ambient": 0.0,
                     "color": [ 1.0, 1.0, 1.0, 1.0 ]
                 }
-            ]
+            ],
+            "children": []
         },
         {
             "name": "point_light_test1",
@@ -69,7 +71,8 @@
                         "m_amplitude": 20.0
                     }
                 }
-            ]
+            ],
+            "children": []
         },
         {
             "name": "point_light_test2",
@@ -96,7 +99,8 @@
                         "m_amplitude": 20.0
                     }
                 }
-            ]
+            ],
+            "children": []
         },
         {
             "name": "hierarchy_test",
@@ -117,10 +121,79 @@
                     "asset_type": "component",
                     "component": "RoomBehaviour",
                     "fields": {
+                        "m_speed": 1.0,
+                        "m_color": [ 0.4, 0.5, 0.8, 1.0 ]
+                    }
+                }
+            ],
+            "children": [
+                {
+                    "name": "hierarchy_test2",
+                    "asset_type": "game_object",
+                    "transform": {
+                        "localPosition": [ 0.0, 8.0, -5.0 ],
+                        "localRotation": [ 0.0, 0.0, 0.0 ],
+                        "localScale": [ 1.0, 1.0, 1.0 ]
+                    },
+                    "components": [
+                        {
+                            "asset_type": "renderer",
+                            "model": "hierarchy_test/TestHierarchy.fbx:RootNode/Root/Parent1",
+                            "material": "materials/Anna_Skin_Head.json",
+                            "static": false
+                        }
+                    ],
+                    "children": [
+
+                    ]
+                },
+                {
+                    "name": "hierarchy_test22",
+                    "asset_type": "game_object",
+                    "transform": {
+                        "localPosition": [ 0.0, 8.0, 5.0 ],
+                        "localRotation": [ 0.0, 0.0, 0.0 ],
+                        "localScale": [ 1.0, 1.0, 1.0 ]
+                    },
+                    "components": [
+                        {
+                            "asset_type": "renderer",
+                            "model": "hierarchy_test/TestHierarchy.fbx:RootNode/Root/Parent1",
+                            "material": "materials/Anna_Skin_Head.json",
+                            "static": false
+                        }
+                    ],
+                    "children": [
+
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "hierarchy_test3",
+            "asset_type": "game_object",
+            "transform": {
+                "localPosition": [ 0.0, 8.0, 10.0 ],
+                "localRotation": [ 0.0, 0.0, 0.0 ],
+                "localScale": [ 1.0, 1.0, 1.0 ]
+            },
+            "components": [
+                {
+                    "asset_type": "renderer",
+                    "model": "hierarchy_test/TestHierarchy.fbx:RootNode/Root/Parent2/Chld4",
+                    "material": "materials/Anna_Skin_Head.json",
+                    "static": false
+                },
+                {
+                    "asset_type": "component",
+                    "component": "RoomBehaviour",
+                    "fields": {
                         "m_speed": 0.0,
                         "m_color": [ 0.4, 0.5, 0.8, 1.0 ]
                     }
                 }
+            ],
+            "children": [
             ]
         }
     ]

@@ -1,9 +1,13 @@
 #include "Transform.h"
 
+#include "RenderManager/TransformProvider.h"
+#include "SceneManager/GameObject.h"
+
 namespace JoyEngine
 {
-	Transform::Transform(uint32_t transformIndex, TransformProvider& transformProvider) :
+	Transform::Transform(GameObject& gameObject, uint32_t transformIndex, TransformProvider& transformProvider) :
 		Transform(
+			gameObject,
 			transformIndex,
 			transformProvider,
 			jmath::vec3(0.f, 0.f, 0.f),
@@ -12,7 +16,8 @@ namespace JoyEngine
 	{
 	}
 
-	Transform::Transform(uint32_t transformIndex, TransformProvider& transformProvider, jmath::vec3 pos, jmath::vec3 rot, jmath::vec3 scale):
+	Transform::Transform(GameObject& gameObject, uint32_t transformIndex, TransformProvider& transformProvider, jmath::vec3 pos, jmath::vec3 rot, jmath::vec3 scale):
+		m_gameObject(gameObject),
 		m_transformIndex(transformIndex),
 		m_transformProvider(transformProvider)
 	{
@@ -59,9 +64,41 @@ namespace JoyEngine
 		UpdateMatrix();
 	}
 
-	void Transform::UpdateMatrix()
+	void Transform::UpdateChildrenMatrix(GameObject* object)
 	{
-		m_transformProvider.GetMatrix(m_transformIndex) = jmath::trs(m_localPosition, m_localRotation, m_localScale);
+		if (object == nullptr) return;
+
+		object->GetTransform().UpdateThisTransformMatrix();
+
+		UpdateChildrenMatrix(object->GetNextSibling());
+		UpdateChildrenMatrix(object->GetFirstChild());
+	}
+
+	void Transform::UpdateThisTransformMatrix() const
+	{
+		jmath::mat4x4 mat = jmath::trs(m_localPosition, m_localRotation, m_localScale);
+
+		if (m_gameObject.GetParent() != nullptr)
+		{
+			mat = jmath::mul(
+				mat,
+				m_transformProvider.GetMatrix(m_gameObject.GetParent()->GetTransform().m_transformIndex)
+			);
+		}
+
+		m_transformProvider.GetMatrix(m_gameObject.GetTransform().GetTransformIndex()) = mat;
+	}
+
+	void Transform::UpdateMatrix() const
+	{
+		UpdateThisTransformMatrix();
+
+		UpdateChildrenMatrix(m_gameObject.GetFirstChild());
+	}
+
+	const jmath::mat4x4& Transform::GetModelMatrix() const noexcept
+	{
+		return m_transformProvider.GetMatrix(m_transformIndex);
 	}
 
 	jmath::vec3 Transform::GetPosition() const noexcept { return jmath::toVec3(m_localPosition); }

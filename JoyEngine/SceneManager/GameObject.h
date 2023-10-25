@@ -21,7 +21,7 @@ namespace JoyEngine
 	public:
 		explicit GameObject(const char* name, uint32_t transformIndex, TransformProvider& transformProvider) :
 			m_name(name),
-			m_transform(transformIndex, transformProvider)
+			m_transform(*this, transformIndex, transformProvider)
 		{
 		}
 

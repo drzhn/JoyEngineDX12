@@ -1,7 +1,15 @@
 #include "GameObject.h"
 
 namespace JoyEngine {
-    
+
+	GameObject::~GameObject()
+	{
+		for (const auto& component : m_components)
+		{
+			component->Disable();
+		}
+	}
+
     void GameObject::Update()
     {
         for (const auto& c : m_components)

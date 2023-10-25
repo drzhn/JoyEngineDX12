@@ -3,56 +3,58 @@
 
 #include <cstdint>
 #include <array>
-#include <stack>
-#include <bitset>
 
 #include "DynamicCpuBuffer.h"
-#include "Utils/Assert.h"
+#include "Common/Allocators/PoolAllocator.h"
 
 namespace JoyEngine
 {
-	template <typename ElemT, typename GpuT, uint32_t Size>
+	template <typename T, uint32_t Size>
 	class DynamicBufferPool
 	{
 	public:
-		explicit DynamicBufferPool(uint32_t bufferSize)
-			: m_buffer(bufferSize)
+		DynamicBufferPool() = delete;
+
+		explicit DynamicBufferPool(uint32_t frameCount):
+			m_frameCount(frameCount),
+			m_buffer(frameCount)
 		{
-			for (uint32_t i = 0; i < Size; i++)
-			{
-				m_freeItems.push(i);
-				m_usedItems[i] = false;
-			}
 		}
 
 		uint32_t Allocate()
 		{
-			uint32_t index = m_freeItems.top();
-			m_freeItems.pop();
-			m_usedItems[index] = true;
-
-			return index;
+			return m_allocator.Allocate();
 		}
 
 		void Free(uint32_t index)
 		{
-			ASSERT(index < Size);
-			m_freeItems.push(index);
-			m_usedItems[index] = false;
+			m_allocator.Free(index);
 		}
 
+		void SetValue(uint32_t elementIndex, const T& value)
+		{
+			m_array[elementIndex] = value;
+		}
 
-		ElemT& GetElem(uint32_t index) { return m_data[index]; }
-		DynamicCpuBuffer<GpuT>& GetDynamicBuffer() { return m_buffer; }
-		std::array<ElemT, Size>& GetDataArray() { return m_data; }
-		std::bitset<Size>& GetUsedItems() { return m_usedItems; }
+		T& GetValue(uint32_t elementIndex)
+		{
+			return m_array[elementIndex];
+		}
+
+		void Update(uint32_t frameIndex)
+		{
+			memcpy(m_buffer.GetPtr(frameIndex, 0), m_array.data(), sizeof(T) * Size);
+		}
+
+		DynamicCpuBuffer<T, Size>& GetDynamicBuffer() { return m_buffer; }
 
 	private:
-		std::stack<uint32_t> m_freeItems;
-		std::bitset<Size> m_usedItems;
+		const uint32_t m_frameCount;
+		PoolAllocator<Size> m_allocator;
 
-		std::array<ElemT, Size> m_data;
-		DynamicCpuBuffer<GpuT> m_buffer;
+		std::array<T, Size> m_array;
+
+		DynamicCpuBuffer<T, Size> m_buffer;
 	};
 }
 #endif // OBJECT_POOL_H

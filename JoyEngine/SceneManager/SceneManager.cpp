@@ -7,9 +7,8 @@ namespace JoyEngine
 {
 	void SceneManager::Init()
 	{
-		TIME_PERF("SceneManager init")
-
-		m_scene = std::make_unique<Scene>("scenes/room.json");
+		TIME_PERF("SceneManager init");
+		m_scene = m_sceneTree.Create<Scene>("scenes/room.json");
 	}
 
 	void SceneManager::Start()
@@ -24,6 +23,7 @@ namespace JoyEngine
 	void SceneManager::Update()
 	{
 		m_scene->Update();
+		m_transformProvider.Update(m_renderManager->GetCurrentFrameIndex());
 	}
 
 	SceneManager::~SceneManager()

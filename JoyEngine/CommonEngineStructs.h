@@ -215,42 +215,11 @@ struct ObjectIndexData
 	UINT1 data;
 };
 
-struct ObjectMatricesData
-{
-	MAT4 data[OBJECT_SIZE];
-};
-
-struct LightData
-{
-	LightInfo data[LIGHT_SIZE];
-};
-
 struct ClusterEntry // TODO WTF
 {
 	UINT1 offset;
 	UINT1 numLight;
-	UINT1 _dummy0;
-	UINT1 _dummy1;
 };
-
-struct ClusterEntryData
-{
-	ClusterEntry data[NUM_CLUSTERS_X * NUM_CLUSTERS_Y * NUM_CLUSTERS_Z];
-};
-
-struct ClusterItem
-{
-	UINT1 lightIndex; // TODO WTF
-	UINT1 _dummy0;
-	UINT1 _dummy1;
-	UINT1 _dummy2;
-};
-
-struct ClusterItemData
-{
-	ClusterItem data[CLUSTER_ITEM_DATA_SIZE];
-};
-
 
 struct HDRDownScaleConstants
 {

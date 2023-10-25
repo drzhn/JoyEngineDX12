@@ -19,8 +19,8 @@ namespace JoyEngine
 	class DescriptorManager : public Singleton<DescriptorManager>
 	{
 	public:
-		DescriptorManager() = default;
-		void Init();
+		DescriptorManager();
+
 		void AllocateDescriptor(
 			D3D12_DESCRIPTOR_HEAP_TYPE type,
 			uint32_t& index,

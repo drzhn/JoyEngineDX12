@@ -8,7 +8,7 @@
 
 namespace JoyEngine
 {
-	void DescriptorManager::Init()
+	DescriptorManager::DescriptorManager()
 	{
 		TIME_PERF("DescriptorManager init")
 
@@ -47,6 +47,7 @@ namespace JoyEngine
 			});
 		}
 	}
+
 
 	void DescriptorManager::AllocateDescriptor(
 		const D3D12_DESCRIPTOR_HEAP_TYPE type,

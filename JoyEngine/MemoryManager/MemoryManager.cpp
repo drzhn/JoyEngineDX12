@@ -51,7 +51,7 @@ namespace JoyEngine
 			", used " + std::to_string(static_cast<float>(aligned) / static_cast<float>(allocator->GetSize()) * 100) + "%\n";
 	}
 
-	void MemoryManager::Init()
+	MemoryManager::MemoryManager()
 	{
 		TIME_PERF("MemoryManager init")
 

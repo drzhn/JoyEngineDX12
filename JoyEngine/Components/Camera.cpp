@@ -39,8 +39,8 @@ namespace JoyEngine
 	jmath::mat4x4 Camera::GetViewMatrix() const
 	{
 		return m_cameraUnit.GetViewMatrix(
-			m_gameObject.GetTransform()->GetXPosition(),
-			m_gameObject.GetTransform()->GetRotation()
+			m_gameObject.GetTransform().GetXPosition(),
+			m_gameObject.GetTransform().GetRotation()
 		);
 	}
 

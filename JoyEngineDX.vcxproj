@@ -299,6 +299,7 @@
     <ClCompile Include="JoyEngine\WindowHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="JoyEngine\Common\Allocators\PoolAllocator.h" />
     <ClInclude Include="JoyEngine\Common\Math\MathTypes.h" />
     <ClInclude Include="JoyEngine\Common\Math\MathUtils.h" />
     <ClInclude Include="JoyEngine\EngineDataProvider\MeshContainer.h" />
@@ -367,6 +368,7 @@
     <ClInclude Include="JoyEngine\SceneManager\Scene.h" />
     <ClInclude Include="JoyEngine\SceneManager\SceneManager.h" />
     <ClInclude Include="JoyEngine\SceneManager\Transform.h" />
+    <ClInclude Include="JoyEngine\SceneManager\TreeStorage.h" />
     <ClInclude Include="JoyEngine\Utils\Assert.h" />
     <ClInclude Include="JoyEngine\EngineDataProvider\EngineDataProvider.h" />
     <ClInclude Include="JoyEngine\Utils\FileUtils.h" />
@@ -409,9 +411,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="JoyData\shaders\shadowprocessing.hlsl">
+    <FxCompile Include="JoyData\shaders\shadowprocessing.hlsl">
       <FileType>Document</FileType>
-    </None>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GraphicsDebug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="JoyData\shaders\shadowpointprocessing.hlsl">

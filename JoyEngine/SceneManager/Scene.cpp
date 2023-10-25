@@ -1,5 +1,6 @@
 #include "Scene.h"
 
+#include "SceneManager.h"
 #include "rapidjson/document.h"
 
 
@@ -11,18 +12,19 @@
 #include "Components/Light.h"
 #include "DataManager/DataManager.h"
 #include "RenderManager/RenderManager.h"
+#include "Utils/TimeCounter.h"
 
 namespace JoyEngine
 {
-	inline void ParseTransform(const std::unique_ptr<GameObject>& go, const rapidjson::Value& transformValue)
+	inline void ParseTransform(GameObject* go, const rapidjson::Value& transformValue)
 	{
 		jmath::vec3 vec;
 		SerializationUtils::DeserializeToPtr(StrHash32("vec3"), transformValue["localPosition"], &vec, 1);
-		go->GetTransform()->SetPosition(vec);
+		go->GetTransform().SetPosition(vec);
 		SerializationUtils::DeserializeToPtr(StrHash32("vec3"), transformValue["localRotation"], &vec, 1);
-		go->GetTransform()->SetRotation(vec);
+		go->GetTransform().SetRotation(vec);
 		SerializationUtils::DeserializeToPtr(StrHash32("vec3"), transformValue["localScale"], &vec, 1);
-		go->GetTransform()->SetScale(vec);
+		go->GetTransform().SetScale(vec);
 	}
 
 	inline void ParseColor(float color[4], const rapidjson::Value& colorValue)
@@ -40,7 +42,11 @@ namespace JoyEngine
 		}
 	}
 
-	Scene::Scene(const char* path)
+	Scene::Scene(const char* path):
+		GameObject(
+			path, 
+			SceneManager::Get()->GetTransformProvider().Allocate(),
+			SceneManager::Get()->GetTransformProvider())
 	{
 		rapidjson::Document json = DataManager::Get()->GetSerializedData(path, scene);
 		m_name = json["name"].GetString();
@@ -52,10 +58,10 @@ namespace JoyEngine
 
 			if (objType == "game_object")
 			{
-				std::unique_ptr<GameObject> go = std::make_unique<GameObject>(
+				GameObject* go = SceneManager::Get()->CreateGameObject(
 					obj["name"].GetString(),
-					RenderManager::Get()->GetTransformProvider()->Allocate(),
-					RenderManager::Get()->GetTransformProvider()
+					SceneManager::Get()->GetTransformProvider().Allocate(),
+					SceneManager::Get()->GetTransformProvider()
 				);
 
 				rapidjson::Value& transformValue = obj["transform"];
@@ -107,6 +113,7 @@ namespace JoyEngine
 							ParseColor(color, component["color"]);
 
 							std::unique_ptr<PointLight> light = std::make_unique<PointLight>(
+								0,
 								*go,
 								RenderManager::Get()->GetLightSystem(),
 								radius,
@@ -162,16 +169,26 @@ namespace JoyEngine
 					//	go->AddComponent(std::move(cr));
 					//}
 				}
-				m_objects.push_back(std::move(go));
+				AddChild(go);
 			}
+		}
+	}
+
+	void UpdateCycle(GameObject* object)
+	{
+		object->Update();
+		if (object->GetNextSibling() != nullptr)
+		{
+			UpdateCycle(object->GetNextSibling());
+		}
+		if (object->GetFirstChild() != nullptr)
+		{
+			UpdateCycle(object->GetFirstChild());
 		}
 	}
 
 	void Scene::Update()
 	{
-		for (const auto& object : m_objects)
-		{
-			object->Update();
-		}
+		UpdateCycle(this->m_firstChild);
 	}
 }

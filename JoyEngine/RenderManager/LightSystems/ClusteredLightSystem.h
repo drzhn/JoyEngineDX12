@@ -11,7 +11,6 @@
 #include "ResourceManager/Buffers/DynamicCpuBuffer.h"
 
 
-
 namespace JoyEngine
 {
 	class Camera;
@@ -45,14 +44,14 @@ namespace JoyEngine
 		uint32_t RegisterLight(LightBase* light) override;
 		void UnregisterLight(LightBase* light) override;
 
-		LightInfo& GetLightInfo(uint32_t lightIndex) override
+		LightInfo& GetLightInfo(const uint32_t frameIndex, const uint32_t lightIndex) override
 		{
-			return m_lightDataPool.GetElem(lightIndex);
+			return m_lightDataPool.GetValue(lightIndex);
 		}
 
 		[[nodiscard]] ResourceView* GetDirectionalLightDataView(const uint32_t frameIndex) const
 		{
-			return m_directionalLightDataBuffer->GetView(frameIndex);
+			return m_directionalLightDataBuffer.GetView(frameIndex);
 		}
 
 		[[nodiscard]] ResourceView* GetDirectionalShadowmapView() const
@@ -80,17 +79,17 @@ namespace JoyEngine
 		Camera* m_camera;
 
 		DirectionalLightInfo m_directionalLightData;
-		std::unique_ptr<DynamicCpuBuffer<DirectionalLightInfo>> m_directionalLightDataBuffer;
+		DynamicCpuBuffer<DirectionalLightInfo> m_directionalLightDataBuffer;
 		std::unique_ptr<DepthTexture> m_directionalShadowmap;
 
 
-		DynamicBufferPool<LightInfo, LightData, LIGHT_SIZE> m_lightDataPool;
+		DynamicBufferPool<LightInfo, LIGHT_SIZE> m_lightDataPool;
 		// TODO we store pointers to lights here for getting their positions during light clusterization
 		// TODO make something smarter than this
 		std::map<LightBase*, jmath::xvec4> m_lights;
 		std::array<uint32_t, NUM_CLUSTERS_X * NUM_CLUSTERS_Y * NUM_CLUSTERS_Z * LIGHTS_PER_CLUSTER> m_clusterLightIndices;
-		DynamicCpuBuffer<ClusterEntryData> m_clusterEntryData;
-		DynamicCpuBuffer<ClusterItemData> m_clusterItemData;
+		DynamicCpuBuffer<ClusterEntry, NUM_CLUSTERS_X * NUM_CLUSTERS_Y * NUM_CLUSTERS_Z> m_clusterEntryData;
+		DynamicCpuBuffer<UINT1, CLUSTER_ITEM_DATA_SIZE> m_clusterItemData;
 	};
 }
 #endif // CLUSTERED_LIGHT_SYSTEM_H

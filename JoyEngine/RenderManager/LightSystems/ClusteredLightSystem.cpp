@@ -32,15 +32,11 @@ namespace JoyEngine
 		return false;
 	}
 
-	//inline jmath::vec4 ToVec4(jmath::vec3 vec3)
-	//{
-	//	return {vec3.x, vec3.y, vec3.z, 1};
-	//}
-
 	ClusteredLightSystem::ClusteredLightSystem(const uint32_t frameCount) :
 		m_frameCount(frameCount),
 		m_camera(nullptr),
 		m_directionalLightData(),
+		m_directionalLightDataBuffer(frameCount),
 		m_lightDataPool(frameCount),
 		m_clusterEntryData(frameCount),
 		m_clusterItemData(frameCount)
@@ -51,20 +47,20 @@ namespace JoyEngine
 	{
 		ASSERT(m_camera != nullptr);
 
-		m_directionalLightDataBuffer->SetData(&m_directionalLightData, frameIndex);
+		m_directionalLightDataBuffer.SetData(&m_directionalLightData, frameIndex);
 
 
-		// update light info (intensity, color, etc)
-		{
-			auto& buffer = m_lightDataPool.GetDynamicBuffer();
+		//// update light info (intensity, color, etc)
+		//{
+		//	auto& buffer = m_lightDataPool.GetDynamicBuffer();
 
-			LightData* dataPtr = buffer.GetPtr(frameIndex);
-			const auto& dataArray = m_lightDataPool.GetDataArray();
-			for (uint32_t i = 0; i < dataArray.size(); ++i)
-			{
-				dataPtr->data[i] = dataArray[i];
-			}
-		}
+		//	LightData* dataPtr = buffer.GetPtr(frameIndex);
+		//	const auto& dataArray = m_lightDataPool.GetDataArray();
+		//	for (uint32_t i = 0; i < dataArray.size(); ++i)
+		//	{
+		//		dataPtr->data[i] = dataArray[i];
+		//	}
+		//}
 
 		const float cameraNear = m_camera->GetNear();
 		const float cameraFar = m_camera->GetFar();
@@ -89,7 +85,7 @@ namespace JoyEngine
 
 		for (auto& pair : m_lights) // TODO make it in parallel
 		{
-			jmath::xvec4 sphereCenter = pair.first->GetGameObject().GetTransform()->GetXPosition();
+			jmath::xvec4 sphereCenter = pair.first->GetGameObject().GetTransform().GetXPosition();
 			sphereCenter = jmath::mul(cameraViewMatrix, sphereCenter);
 			pair.second = sphereCenter;
 		}
@@ -130,7 +126,12 @@ namespace JoyEngine
 					{
 						uint32_t lightIndex = light.first->GetIndex();
 
-						if (SphereCubeIntersection(cubeMin, cubeMax, jmath::toVec3(light.second), m_lightDataPool.GetElem(lightIndex).radius))
+						if (SphereCubeIntersection(
+								cubeMin,
+								cubeMax,
+								jmath::toVec3(light.second),
+								m_lightDataPool.GetValue(lightIndex).radius)
+						)
 						{
 							ASSERT(currentLight < LIGHTS_PER_CLUSTER);
 							m_clusterLightIndices[clusterStartingPoint + currentLight] = lightIndex;
@@ -145,11 +146,6 @@ namespace JoyEngine
 				}
 			}
 		}
-
-		// Convolution
-		ClusterEntryData* entryDataPtr = m_clusterEntryData.GetPtr(frameIndex);
-
-		ClusterItemData* itemDataPtr = m_clusterItemData.GetPtr(frameIndex);
 
 		uint32_t currentOffset = 0;
 		for (int z = 0; z < NUM_CLUSTERS_Z; z++)
@@ -172,19 +168,21 @@ namespace JoyEngine
 						{
 							break;
 						}
-						itemDataPtr->data[currentOffset].lightIndex = m_clusterLightIndices[clusterIndex * LIGHTS_PER_CLUSTER + i];
+						*m_clusterItemData.GetPtr(frameIndex, currentOffset) = m_clusterLightIndices[clusterIndex * LIGHTS_PER_CLUSTER + i];
 						numLight++;
 						currentOffset++;
 						ASSERT(currentOffset < CLUSTER_ITEM_DATA_SIZE); // Pls, increase CLUSTER_ITEM_DATA_SIZE
 					}
 
-					entryDataPtr->data[clusterIndex] = {
+					*m_clusterEntryData.GetPtr(frameIndex, clusterIndex) = {
 						.offset = prevOffset,
 						.numLight = numLight
 					};
 				}
 			}
 		}
+
+		m_lightDataPool.Update(frameIndex);
 	}
 
 	void ClusteredLightSystem::RenderDirectionalShadows(
@@ -225,7 +223,7 @@ namespace JoyEngine
 				commandList,
 				sm->GetGraphicsPipeline(),
 				frameIndex,
-				mr->GetGameObject().GetTransformIndexPtr(),
+				mr->GetGameObject().GetTransform().GetTransformIndexPtr(),
 				&viewProjectionMatrixData);
 
 			commandList->DrawIndexedInstanced(
@@ -250,8 +248,6 @@ namespace JoyEngine
 			DXGI_FORMAT_R32_TYPELESS,
 			D3D12_RESOURCE_STATE_GENERIC_READ,
 			D3D12_HEAP_TYPE_DEFAULT);
-
-		m_directionalLightDataBuffer = std::make_unique<DynamicCpuBuffer<DirectionalLightInfo>>(m_frameCount);
 
 		return 0;
 	}

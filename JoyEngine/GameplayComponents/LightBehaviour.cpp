@@ -24,8 +24,8 @@ namespace JoyEngine
 
 	void LightBehaviour::Update()
 	{
-		jmath::vec3 position = GetGameObject().GetTransform()->GetPosition();
+		jmath::vec3 position = GetGameObject().GetTransform().GetPosition();
 		position.x = sin(Time::GetTime() * m_speed + m_phase) * m_amplitude;
-		GetGameObject().GetTransform()->SetPosition(position);
+		GetGameObject().GetTransform().SetPosition(position);
 	}
 }

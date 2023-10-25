@@ -65,7 +65,7 @@ namespace JoyEngine
 			}
 			else if (name == "objectMatricesData")
 			{
-				ranges[rangesIndex].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, input.BindPoint, input.Space,
+				ranges[rangesIndex].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, input.BindPoint, input.Space,
 				                         D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
 				params[paramsIndex].InitAsDescriptorTable(1, &ranges[rangesIndex], input.Visibility);
 				m_engineBindings.insert({paramsIndex, EngineBindingType::ModelMatrixData});

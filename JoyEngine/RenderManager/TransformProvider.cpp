@@ -2,17 +2,9 @@
 
 namespace JoyEngine
 {
-	void TransformProvider::Update(uint32_t frameIndex)
+	void TransformProvider::Update(const uint32_t frameIndex)
 	{
-		ObjectMatricesData* data = m_pool.GetDynamicBuffer().GetPtr(frameIndex);
-
-		for (uint32_t i =0; i < m_pool.GetDataArray().size(); i++)
-		{
-			if (!m_pool.GetUsedItems()[i]) continue;
-
-			data->data[i] = m_pool.GetElem(i).GetModelMatrix();
-		}
-
+		m_pool.Update(frameIndex);
 	}
 
 	uint32_t TransformProvider::Allocate()
@@ -25,9 +17,9 @@ namespace JoyEngine
 		m_pool.Free(index);
 	}
 
-	Transform& TransformProvider::GetTransform(const uint32_t transformIndex)
+	jmath::mat4x4& TransformProvider::GetMatrix(const uint32_t transformIndex)
 	{
-		return m_pool.GetElem(transformIndex);
+		return m_pool.GetValue(transformIndex);
 	}
 
 	ResourceView* TransformProvider::GetObjectMatricesBufferView(uint32_t frameIndex)

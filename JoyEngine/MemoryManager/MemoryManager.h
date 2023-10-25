@@ -18,9 +18,7 @@ namespace JoyEngine
 	class MemoryManager : public Singleton<MemoryManager>
 	{
 	public:
-		MemoryManager() = default;
-
-		void Init();
+		MemoryManager();
 
 		void PrintStats() const;
 

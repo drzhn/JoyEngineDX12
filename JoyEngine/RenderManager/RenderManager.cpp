@@ -14,7 +14,6 @@
 #include "Components/Camera.h"
 #include "ResourceManager/SharedMaterial.h"
 #include "Tonemapping.h"
-#include "Common/HashDefs.h"
 
 #include "Common/Time.h"
 #include "Components/MeshRenderer.h"
@@ -141,7 +140,6 @@ namespace JoyEngine
 			m_height
 		);
 
-		m_transformProvider = std::make_unique<TransformProvider>(FRAME_COUNT);
 		m_lightSystem = std::make_unique<ClusteredLightSystem>(FRAME_COUNT);
 
 		// IMGUI initialization
@@ -264,7 +262,7 @@ namespace JoyEngine
 			const DynamicCpuBuffer<EngineData>* engineDataBuffer = EngineDataProvider::Get()->GetEngineDataBuffer();
 
 			const auto data = static_cast<EngineData*>(engineDataBuffer->GetPtr(m_currentFrameIndex));
-			data->cameraWorldPos = m_currentCamera->GetGameObject().GetTransform()->GetPosition();
+			data->cameraWorldPos = m_currentCamera->GetGameObject().GetTransform().GetPosition();
 			data->time = Time::GetTime();
 			data->cameraInvProj = jmath::inverse(mainCameraProjMatrix);
 			data->cameraInvView = jmath::inverse(mainCameraViewMatrix);
@@ -276,7 +274,6 @@ namespace JoyEngine
 			data->cameraAspect = GetAspect();
 		}
 
-		m_transformProvider->Update(m_currentFrameIndex);
 		m_lightSystem->Update(m_currentFrameIndex);
 
 		ID3D12DescriptorHeap* heaps[2]
@@ -505,7 +502,7 @@ namespace JoyEngine
 			ImGui::Begin("Stats:");
 			//ImGui::Text("Screen: %dx%d", m_width, m_height);
 			ImGui::Text("Num triangles %d", m_trianglesCount);
-			const jmath::vec3 camPos = m_currentCamera->GetGameObject().GetTransform()->GetPosition();
+			const jmath::vec3 camPos = m_currentCamera->GetGameObject().GetTransform().GetPosition();
 			ImGui::Text("Camera: %.3f %.3f %.3f", camPos.x, camPos.y, camPos.z);
 			ImGui::Checkbox("Debug draw raytraced image", &g_drawRaytracedImage);
 
@@ -571,7 +568,7 @@ namespace JoyEngine
 					commandList,
 					sm->GetGraphicsPipeline(),
 					m_currentFrameIndex,
-					mr->GetGameObject().GetTransformIndexPtr(),
+					mr->GetGameObject().GetTransform().GetTransformIndexPtr(),
 					viewProjectionData);
 
 				commandList->DrawIndexedInstanced(
@@ -608,7 +605,7 @@ namespace JoyEngine
 				commandList,
 				sharedMaterial->GetGraphicsPipeline(),
 				m_currentFrameIndex,
-				mr->GetGameObject().GetTransformIndexPtr(),
+				mr->GetGameObject().GetTransform().GetTransformIndexPtr(),
 				viewProjectionData);
 
 			commandList->DrawIndexedInstanced(

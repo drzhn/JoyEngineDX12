@@ -19,7 +19,7 @@ namespace JoyEngine
 
 		virtual uint32_t RegisterLight(LightBase* light) = 0;
 		virtual void UnregisterLight(LightBase* light) = 0;
-		virtual LightInfo& GetLightInfo(uint32_t lightIndex) = 0;
+		virtual LightInfo& GetLightInfo(const uint32_t frameIndex, const uint32_t lightIndex) = 0;
 	};
 }
 #endif // LIGHT_SYSTEM_H

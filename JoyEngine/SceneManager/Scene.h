@@ -1,23 +1,16 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-#include <vector>
-#include <string>
-#include <memory>
-
 #include "GameObject.h"
 
-
-namespace JoyEngine {
-    class Scene {
-    public :
-        Scene(const char* path);
-
-        void Update();
-    private:
-        std::string m_name;
-        std::vector<std::unique_ptr<GameObject>> m_objects;
-    };
+namespace JoyEngine
+{
+	class Scene : public GameObject
+	{
+	public :
+		Scene(const char* path);
+		void Update();
+	};
 }
 
 #endif //SCENE_H

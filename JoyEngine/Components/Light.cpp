@@ -184,24 +184,24 @@ namespace JoyEngine
 	void DirectionalLight::Update()
 	{
 		// TODO this should be controlled by behaviour class
-		m_gameObject.GetTransform()->SetRotation(jmath::vec3(m_currentAngle, 180.f, 0.f));
-		m_gameObject.GetTransform()->SetPosition(jmath::vec3(
+		m_gameObject.GetTransform().SetRotation(jmath::vec3(m_currentAngle, 180.f, 0.f));
+		m_gameObject.GetTransform().SetPosition(jmath::vec3(
 			0.f,
 			70 * jmath::cos(jmath::toRadians(90 - m_currentAngle)),
 			70 * jmath::sin(jmath::toRadians(90 - m_currentAngle))));
 
 		DirectionalLightInfo& lightData = m_lightSystem.GetDirectionalLightData();
 
-		lightData.direction = m_gameObject.GetTransform()->GetForward();
+		lightData.direction = m_gameObject.GetTransform().GetForward();
 		lightData.proj = m_cameraUnit.GetProjMatrix();
 		lightData.view = m_cameraUnit.GetViewMatrix(
-			m_gameObject.GetTransform()->GetXPosition(), 
-			m_gameObject.GetTransform()->GetRotation());
+			m_gameObject.GetTransform().GetXPosition(),
+			m_gameObject.GetTransform().GetRotation());
 
 		float tempColor[4];
 		UnpackColor(tempColor, lightData.packedColor);
 		ImGui::SetNextWindowPos({0, 300}); // move to DrawGui()?...
-		ImGui::SetNextWindowSize({ 300, 100 }); // move to DrawGui()?...
+		ImGui::SetNextWindowSize({300, 100}); // move to DrawGui()?...
 		{
 			ImGui::Begin("Directional Light:");
 			ImGui::SliderFloat("Angle", &m_currentAngle, 0.f, 90.f);
@@ -212,17 +212,17 @@ namespace JoyEngine
 		lightData.packedColor = PackColor(tempColor);
 	}
 
-	PointLight::PointLight(GameObject& go, ILightSystem& lightSystem, float radius, float intensity, float color[4]):
+	PointLight::PointLight(uint32_t frameIndex, GameObject& go, ILightSystem& lightSystem, float radius, float intensity, float color[4]):
 		LightBase(
 			go,
 			lightSystem,
 			lightSystem.RegisterLight(this))
 	{
-		auto& lightInfo = m_lightSystem.GetLightInfo(m_lightIndex);
+		auto& lightInfo = m_lightSystem.GetLightInfo(frameIndex, m_lightIndex);
 		lightInfo.radius = radius;
 		lightInfo.intensity = intensity;
 		lightInfo.packedColor = PackColor(color);
-		lightInfo.transformIndex = GetGameObject().GetTransformIndex();
+		lightInfo.transformIndex = GetGameObject().GetTransform().GetTransformIndex();
 	}
 
 	void PointLight::Enable()

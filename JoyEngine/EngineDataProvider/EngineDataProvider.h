@@ -15,11 +15,10 @@ namespace JoyEngine
 	class EngineDataProvider : public Singleton<EngineDataProvider>
 	{
 	public:
-		EngineDataProvider() = default;
+		EngineDataProvider();
 		~EngineDataProvider() = default;
-		void Init();
 
-		[[nodiscard]] ResourceHandle<SharedMaterial> GetStandardSharedMaterial() const noexcept { return m_standardSharedMaterial; }
+		//[[nodiscard]] ResourceHandle<SharedMaterial> GetStandardSharedMaterial() const noexcept { return m_standardSharedMaterial; }
 		//[[nodiscard]] ResourceHandle<ComputePipeline> GetMipsGenerationComputePipeline() const noexcept { return m_generateMipsComputePipeline; }
 		[[nodiscard]] ResourceHandle<SharedMaterial> GetGizmoAxisDrawerSharedMaterial() const noexcept { return m_gizmoAxisDrawerSharedMaterial; }
 		[[nodiscard]] ResourceHandle<SharedMaterial> GetStandardPhongSharedMaterial() const noexcept { return m_standardPhongSharedMaterial; }
@@ -52,7 +51,7 @@ namespace JoyEngine
 		//[[nodiscard]] ResourceHandle<SharedMaterial> GetCubemapConvolutionSharedMaterial() const noexcept { return m_cubemapConvolutionSharedMaterial; }
 
 	private:
-		ResourceHandle<SharedMaterial> m_standardSharedMaterial;
+		//ResourceHandle<SharedMaterial> m_standardSharedMaterial;
 
 		ResourceHandle<SharedMaterial> m_gizmoAxisDrawerSharedMaterial;
 

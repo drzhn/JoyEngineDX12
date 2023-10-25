@@ -1,47 +1,52 @@
 #ifndef GAME_OBJECT_H
 #define GAME_OBJECT_H
 
-#include <string>
 #include <vector>
 #include <memory>
 
-#include "Transform.h"
-#include "Components/Component.h"
-#include "Components/MeshRenderer.h"
 #include "RenderManager/TransformProvider.h"
+#include "SceneManager/Transform.h"
+
+#include "GameObject.h"
+#include "TreeStorage.h"
+#include "Components/Component.h"
 
 namespace JoyEngine
 {
-	class GameObject
+	class Transform;
+	class TransformProvider;
+
+	class GameObject : public TreeEntry<GameObject>
 	{
 	public:
-		explicit GameObject(const char* name, uint32_t transformIndex, TransformProvider* provider) :
-			m_transformIndex(transformIndex),
-			m_provider(provider),
-			m_name(name)
+		explicit GameObject(const char* name, uint32_t transformIndex, TransformProvider& transformProvider) :
+			m_name(name),
+			m_transform(transformIndex, transformProvider)
 		{
 		}
 
-		~GameObject()
+		void AddChild(GameObject* child)
 		{
-			for (const auto& component : m_components)
-			{
-				component->Disable();
-			}
+			child->m_parent = this;
+			child->m_nextSibling = this->m_firstChild;
+			this->m_firstChild = child;
+
+			child->GetTransform().UpdateMatrix();
 		}
+
+		[[nodiscard]] Transform& GetTransform() noexcept { return m_transform; }
+
+		~GameObject();
 
 		void Update();
 
-		[[nodiscard]] Transform* GetTransform() const noexcept { return &m_provider->GetTransform(m_transformIndex); }
-		[[nodiscard]] uint32_t GetTransformIndex() const noexcept { return m_transformIndex; }
-		[[nodiscard]] uint32_t const* GetTransformIndexPtr() const noexcept { return &m_transformIndex; }
 		void AddComponent(std::unique_ptr<Component> component);
 
-	private:
-		const uint32_t m_transformIndex;
-		TransformProvider* m_provider;
-
+	protected:
 		std::string m_name;
+		Transform m_transform;
+
+	private:
 		std::vector<std::unique_ptr<Component>> m_components;
 	};
 }

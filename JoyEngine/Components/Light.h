@@ -52,7 +52,13 @@ namespace JoyEngine
 	class PointLight: public LightBase
 	{
 	public:
-		explicit PointLight(GameObject& go, ILightSystem& lightSystem, float radius, float intensity, float color[4]);
+		explicit PointLight(
+			uint32_t frameIndex,
+			GameObject& go, 
+			ILightSystem& lightSystem, 
+			float radius, 
+			float intensity, 
+			float color[4]);
 		
 		void Enable() override;
 		void Disable() override;

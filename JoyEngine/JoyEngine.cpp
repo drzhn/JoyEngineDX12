@@ -35,9 +35,9 @@ namespace JoyEngine
 		m_dataManager(new DataManager()),
 		m_descriptorSetManager(new DescriptorManager()),
 		m_resourceManager(new ResourceManager()),
-		m_sceneManager(new SceneManager()),
+		m_engineMaterials(new EngineDataProvider()),
 		m_renderManager(new RenderManager()),
-		m_engineMaterials(new EngineDataProvider())
+		m_sceneManager(new SceneManager(m_renderManager.get()))
 	{
 		ASSERT(m_inputManager != nullptr);
 		ASSERT(m_graphicsManager != nullptr);
@@ -68,11 +68,11 @@ namespace JoyEngine
 		Time::Init(m_deltaTimeHandler);
 
 		// allocating memory for rendering and creating allocators
-		m_memoryManager->Init();
+		//m_memoryManager->Init();
 		// allocating descriptors
-		m_descriptorSetManager->Init();
+		//m_descriptorSetManager->Init();
 		// creating internal engine materials
-		m_engineMaterials->Init();
+		//m_engineMaterials->Init();
 		// creating render resources
 		m_renderManager->Init();
 		// loading scene from disk

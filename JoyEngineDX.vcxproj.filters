@@ -482,12 +482,17 @@
     <ClInclude Include="JoyEngine\Common\Math\MathUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="JoyEngine\SceneManager\TreeStorage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JoyEngine\Common\Allocators\PoolAllocator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="JoyData\shaders\vikingShader.hlsl" />
     <None Include="JoyData\shaders\lightprocessing.hlsl" />
     <None Include="JoyData\shaders\directionlightprocessing.hlsl" />
-    <None Include="JoyData\shaders\shadowprocessing.hlsl" />
     <None Include="JoyData\shaders\shadowpointprocessing.hlsl" />
     <None Include="JoyData\shaders\annaShader.hlsl" />
     <None Include="JoyData\shaders\generateMipMaps.hlsl" />
@@ -527,5 +532,6 @@
     <FxCompile Include="JoyData\shaders\standardShader.hlsl" />
     <FxCompile Include="JoyData\shaders\standard\standardPhong.hlsl" />
     <FxCompile Include="JoyData\shaders\deferredshadingprocessor.hlsl" />
+    <FxCompile Include="JoyData\shaders\shadowprocessing.hlsl" />
   </ItemGroup>
 </Project>

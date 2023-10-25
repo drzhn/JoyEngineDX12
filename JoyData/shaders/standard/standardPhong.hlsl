@@ -5,7 +5,7 @@ Texture2D NormalMap : register(t1);
 SamplerState TextureSampler : register(s0);
 ConstantBuffer<ObjectIndexData> objectIndex : register(b0);
 ConstantBuffer<ViewProjectionMatrixData> viewProjectionData : register(b1);
-ConstantBuffer<ObjectMatricesData> objectMatricesData : register(b2);
+StructuredBuffer<MAT4> objectMatricesData : register(t2);
 
 
 struct PSInput
@@ -37,17 +37,17 @@ PSInput VSMain(float3 position : POSITION, float3 tangent: TANGENT, float3 norma
 {
 	PSInput result;
 
-	const float4x4 resMatrix = mul(viewProjectionData.proj, mul(viewProjectionData.view, objectMatricesData.data[objectIndex.data]));
+	const float4x4 resMatrix = mul(viewProjectionData.proj, mul(viewProjectionData.view, objectMatricesData[objectIndex.data]));
 
-	float4 transformedNormal = normalize(mul(objectMatricesData.data[objectIndex.data], float4(normal, 0)));
-	float4 transformedTangent = normalize(mul(objectMatricesData.data[objectIndex.data], float4(tangent, 0)));
+	float4 transformedNormal = normalize(mul(objectMatricesData[objectIndex.data], float4(normal, 0)));
+	float4 transformedTangent = normalize(mul(objectMatricesData[objectIndex.data], float4(tangent, 0)));
 
 	// todo Get sign of tangent from .w component of vertex input
 	float3 transformedBitangent = cross(transformedTangent.xyz, transformedNormal.xyz);
 
 	result.position = mul(resMatrix, float4(position, 1));
 	result.worldNormal = transformedNormal;
-	result.worldPosition = mul(objectMatricesData.data[objectIndex.data], float4(position, 1));
+	result.worldPosition = mul(objectMatricesData[objectIndex.data], float4(position, 1));
 	result.uv = uv;
 	result.TBN = transpose(float3x3(transformedTangent.xyz, transformedBitangent, transformedNormal.xyz));
 

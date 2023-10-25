@@ -53,16 +53,16 @@ namespace JoyEngine
 
 		const jmath::xvec4 vecWorld = jmath::rotate3(
 			jmath::loadVec4(jmath::vec4(deltaX, deltaY, deltaZ, 1)),
-			m_gameObject.GetTransform()->GetRotation()
+			m_gameObject.GetTransform().GetRotation()
 		);
 
-		m_gameObject.GetTransform()->SetXPosition(
-			m_gameObject.GetTransform()->GetXPosition() + jmath::mul(m_speed, vecWorld)
+		m_gameObject.GetTransform().SetXPosition(
+			m_gameObject.GetTransform().GetXPosition() + jmath::mul(m_speed, vecWorld)
 		);
 
-		m_gameObject.GetTransform()->SetRotation(
-			jmath::mul(m_gameObject.GetTransform()->GetRotation(),
-			           jmath::mul(jmath::angleAxis(m_gameObject.GetTransform()->GetXRight(), deltaXRotation),
+		m_gameObject.GetTransform().SetRotation(
+			jmath::mul(m_gameObject.GetTransform().GetRotation(),
+			           jmath::mul(jmath::angleAxis(m_gameObject.GetTransform().GetXRight(), deltaXRotation),
 			                      jmath::angleAxis(jmath::xup, deltaYRotation)))
 		);
 	}

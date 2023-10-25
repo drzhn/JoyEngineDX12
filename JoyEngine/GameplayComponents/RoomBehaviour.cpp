@@ -38,7 +38,7 @@ namespace JoyEngine
 		//		m_transform->GetPosition() + glm::vec3(-Time::GetDeltaTime(), 0, 0)
 		//	);
 		//}
-		m_gameObject.GetTransform()->SetRotation( // glm::angleAxis(glm::pi<float>() / 2, glm::vec3(-1, 0, 0)));// *
+		m_gameObject.GetTransform().SetRotation( // glm::angleAxis(glm::pi<float>() / 2, glm::vec3(-1, 0, 0)));// *
 			jmath::angleAxis(jmath::xup, Time::GetTime() * m_speed));
 	}
 }

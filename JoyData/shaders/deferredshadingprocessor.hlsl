@@ -8,12 +8,13 @@ struct PSInput
 ConstantBuffer<EngineData> engineData: register(b0);
 ConstantBuffer<DirectionalLightInfo> directionalLightData: register(b1);
 ConstantBuffer<RaytracedProbesData> raytracedProbesData: register(b2);
-ConstantBuffer<ClusterEntryData> clusteredEntryData: register(b3);
-ConstantBuffer<ClusterItemData> clusteredItemData: register(b4);
-ConstantBuffer<LightData> lightData: register(b5);
+ConstantBuffer<ViewProjectionMatrixData> viewProjectionData : register(b3);
 
-ConstantBuffer<ObjectMatricesData> objectMatricesData : register(b6);
-ConstantBuffer<ViewProjectionMatrixData> viewProjectionData : register(b7);
+StructuredBuffer<ClusterEntry> clusteredEntryData: register(t0);
+StructuredBuffer<UINT1> clusteredItemData : register(t1);
+StructuredBuffer<LightInfo> lightData : register(t2);
+StructuredBuffer<MAT4> objectMatricesData : register(t3);
+
 
 Texture2D<float4> colorTexture;
 Texture2D<float4> normalsTexture;
@@ -214,11 +215,11 @@ float4 PSMain(PSInput input) : SV_Target
 		uint clusterX = floor((viewPos.x + nearW / 2) / nearW * NUM_CLUSTERS_X);
 		uint clusterY = floor((viewPos.y + nearH / 2) / nearH * NUM_CLUSTERS_Y);
 
-		ClusterEntry entry = clusteredEntryData.data[clusterY + clusterX * NUM_CLUSTERS_Y + clusterZ * NUM_CLUSTERS_Y * NUM_CLUSTERS_X];
+		ClusterEntry entry = clusteredEntryData[clusterY + clusterX * NUM_CLUSTERS_Y + clusterZ * NUM_CLUSTERS_Y * NUM_CLUSTERS_X];
 		for (int i = 0; i < entry.numLight; i++)
 		{
-			LightInfo info = lightData.data[clusteredItemData.data[entry.offset + i].lightIndex];
-			float4 lightViewPos = mul(viewProjectionData.view, mul(objectMatricesData.data[info.transformIndex], float4(0, 0, 0, 1)));
+			LightInfo info = lightData[clusteredItemData[entry.offset + i]];
+			float4 lightViewPos = mul(viewProjectionData.view, mul(objectMatricesData[info.transformIndex], float4(0, 0, 0, 1)));
 			const float d = length(viewPos.xyz - lightViewPos.xyz);
 			const float pointLightAttenuation = PointLightAttenuation(d, info.radius, info.intensity, 4);
 			lightColor += UnpackColor(info.packedColor).rgb * pointLightAttenuation;

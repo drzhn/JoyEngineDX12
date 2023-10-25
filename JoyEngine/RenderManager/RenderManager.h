@@ -17,7 +17,6 @@
 #include "Common/Singleton.h"
 
 #include "Tonemapping.h"
-#include "TransformProvider.h"
 #include "LightSystems/ClusteredLightSystem.h"
 #include "Raytracing/AbstractRaytracedDDGI.h"
 #include "Raytracing/RaytracedDDGIDataContainer.h"
@@ -73,9 +72,9 @@ namespace JoyEngine
 		[[nodiscard]] uint32_t GetWidth() const noexcept override;
 		[[nodiscard]] uint32_t GetHeight() const noexcept override;
 
-		[[nodiscard]] uint32_t GetFrameCount() const noexcept override { return FRAME_COUNT; }
+		[[nodiscard]] const uint32_t GetFrameCount() const noexcept override { return FRAME_COUNT; }
+		[[nodiscard]] const uint32_t GetCurrentFrameIndex() const noexcept override { return m_currentFrameIndex; }
 
-		[[nodiscard]] TransformProvider* GetTransformProvider() const noexcept override { return m_transformProvider.get(); }
 		[[nodiscard]] ILightSystem& GetLightSystem() const noexcept override { return *m_lightSystem; }
 
 		[[nodiscard]] static DXGI_FORMAT GetMainColorFormat() noexcept { return hdrRTVFormat; }
@@ -131,7 +130,6 @@ namespace JoyEngine
 		std::unique_ptr<RaytracedDDGIDataContainer> m_raytracingDataContainer;
 		std::unique_ptr<AbstractRaytracedDDGI> m_softwareRaytracedDDGI;
 		std::unique_ptr<AbstractRaytracedDDGI> m_hardwareRaytracedDDGI;
-		std::unique_ptr<TransformProvider> m_transformProvider;
 		std::unique_ptr<ClusteredLightSystem> m_lightSystem;
 		std::set<SharedMaterial*> m_sharedMaterials;
 

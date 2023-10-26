@@ -53,7 +53,7 @@ namespace JoyEngine
 
 	MemoryManager::MemoryManager()
 	{
-		TIME_PERF("MemoryManager init")
+		TIME_PERF("MemoryManager ctor")
 
 		m_queue = std::make_unique<CommandQueue>(D3D12_COMMAND_LIST_TYPE_DIRECT, GraphicsManager::Get()->GetDevice());
 

@@ -23,7 +23,7 @@ namespace JoyEngine
 	void SceneManager::Update()
 	{
 		m_scene->Update();
-		m_transformProvider.Update(m_renderManager->GetCurrentFrameIndex());
+		m_transformProvider.Update();
 	}
 
 	SceneManager::~SceneManager()

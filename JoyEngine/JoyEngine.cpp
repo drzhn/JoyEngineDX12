@@ -15,7 +15,6 @@
 #include "GraphicsManager/GraphicsManager.h"
 #include "Common/Time.h"
 #include "InputManager/InputManager.h"
-#include "Utils/Assert.h"
 #include "Utils/TimeCounter.h"
 
 #include "dxgidebug.h"
@@ -35,20 +34,10 @@ namespace JoyEngine
 		m_dataManager(new DataManager()),
 		m_descriptorSetManager(new DescriptorManager()),
 		m_resourceManager(new ResourceManager()),
-		m_engineMaterials(new EngineDataProvider()),
 		m_renderManager(new RenderManager()),
-		m_sceneManager(new SceneManager(m_renderManager.get()))
+		m_engineData(new EngineDataProvider()),
+		m_sceneManager(new SceneManager())
 	{
-		ASSERT(m_inputManager != nullptr);
-		ASSERT(m_graphicsManager != nullptr);
-		ASSERT(m_memoryManager != nullptr);
-		ASSERT(m_dataManager != nullptr);
-		ASSERT(m_descriptorSetManager != nullptr);
-		ASSERT(m_resourceManager != nullptr);
-		ASSERT(m_sceneManager != nullptr);
-		ASSERT(m_renderManager != nullptr);
-		ASSERT(m_engineMaterials != nullptr);
-
 		{
 			// Setup Dear ImGui context
 			IMGUI_CHECKVERSION();
@@ -72,7 +61,7 @@ namespace JoyEngine
 		// allocating descriptors
 		//m_descriptorSetManager->Init();
 		// creating internal engine materials
-		//m_engineMaterials->Init();
+		m_engineData->Init();
 		// creating render resources
 		m_renderManager->Init();
 		// loading scene from disk
@@ -113,7 +102,7 @@ namespace JoyEngine
 		// will destroy managers in certain order
 		m_inputManager = nullptr;
 		m_sceneManager = nullptr; // unregister mesh renderers, remove descriptor set, pipelines, pipeline layouts
-		m_engineMaterials = nullptr; //delete all internal engine resources
+		m_engineData = nullptr; //delete all internal engine resources
 		m_renderManager = nullptr; //delete swapchain, synchronisation, framebuffers
 		m_resourceManager = nullptr; //delete all scene render data (buffers, textures)
 		m_descriptorSetManager = nullptr;

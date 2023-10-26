@@ -102,7 +102,7 @@ namespace JoyEngine
 		m_mainColorRenderTarget = std::make_unique<RenderTexture>(
 			m_width,
 			m_height,
-			hdrRTVFormat,
+			hdrRenderTextureFormat,
 			D3D12_RESOURCE_STATE_RENDER_TARGET,
 			D3D12_HEAP_TYPE_DEFAULT
 		);
@@ -114,19 +114,19 @@ namespace JoyEngine
 		m_tonemapping = std::make_unique<Tonemapping>(
 			this,
 			m_mainColorRenderTarget.get(),
-			hdrRTVFormat, swapchainFormat, depthFormat
+			hdrRenderTextureFormat, swapchainFormat, depthFormat
 		);
 
 		m_raytracingDataContainer = std::make_unique<RaytracedDDGIDataContainer>(
 			m_sharedMaterials,
 			FRAME_COUNT,
-			GetMainColorFormat(),
+			GetHDRRenderTextureFormat(),
 			GetDepthFormat()
 		);
 
 		m_softwareRaytracedDDGI = std::make_unique<SoftwareRaytracedDDGI>(
 			*m_raytracingDataContainer,
-			GetMainColorFormat(),
+			GetHDRRenderTextureFormat(),
 			GetSwapchainFormat(),
 			m_width,
 			m_height
@@ -134,7 +134,7 @@ namespace JoyEngine
 
 		m_hardwareRaytracedDDGI = std::make_unique<HardwareRaytracedDDGI>(
 			*m_raytracingDataContainer,
-			GetMainColorFormat(),
+			GetHDRRenderTextureFormat(),
 			GetSwapchainFormat(),
 			m_width,
 			m_height

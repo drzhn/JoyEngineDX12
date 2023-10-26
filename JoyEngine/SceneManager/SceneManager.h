@@ -5,20 +5,13 @@
 #include "Scene.h"
 #include "TreeStorage.h"
 #include "Common/Singleton.h"
-#include "RenderManager/IRenderManager.h"
 
 namespace JoyEngine
 {
 	class SceneManager : public Singleton<SceneManager>
 	{
 	public:
-		SceneManager() = delete;
-
-		SceneManager(const IRenderManager* rm):
-			m_renderManager(rm),
-			m_transformProvider(rm)
-		{
-		};
+		SceneManager() = default;
 
 		void Init();
 
@@ -39,7 +32,6 @@ namespace JoyEngine
 		~SceneManager();
 
 	private:
-		const IRenderManager* m_renderManager;
 		TransformProvider m_transformProvider;
 		TreeStorage<GameObject, 512> m_sceneTree;
 		Scene* m_scene = nullptr;

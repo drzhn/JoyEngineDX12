@@ -5,7 +5,6 @@
 #include "Common/HashDefs.h"
 #include "Common/SerializationUtils.h"
 #include "DataManager/DataManager.h"
-#include "RenderManager/RenderManager.h"
 
 #include "SharedMaterial.h"
 #include "EngineDataProvider/EngineDataProvider.h"

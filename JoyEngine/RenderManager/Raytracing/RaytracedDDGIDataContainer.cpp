@@ -1,7 +1,6 @@
 #include "RaytracedDDGIDataContainer.h"
 
 #include "Components/MeshRenderer.h"
-#include "RenderManager/RenderManager.h"
 #include "ResourceManager/Material.h"
 #include "Utils/GraphicsUtils.h"
 #include "Utils/TimeCounter.h"

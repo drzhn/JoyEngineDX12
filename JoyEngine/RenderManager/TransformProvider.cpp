@@ -2,9 +2,9 @@
 
 namespace JoyEngine
 {
-	void TransformProvider::Update(const uint32_t frameIndex)
+	void TransformProvider::Update()
 	{
-		m_pool.Update(frameIndex);
+		m_pool.Update(IRenderManager::Get()->GetCurrentFrameIndex());
 	}
 
 	uint32_t TransformProvider::Allocate()

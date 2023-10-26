@@ -5,22 +5,21 @@
 #include "d3dx12.h"
 #include "DescriptorManager/DescriptorManager.h"
 #include "GraphicsManager/GraphicsManager.h"
-#include "RenderManager/RenderManager.h"
+#include "RenderManager/IRenderManager.h"
 #include "Utils/TimeCounter.h"
 #include "ResourceManager/ResourceManager.h"
 
 namespace JoyEngine
 {
-	EngineDataProvider::EngineDataProvider()
+	void EngineDataProvider::Init()
 	{
 		TIME_PERF("EngineDataProvider init")
 
 		EngineSamplersProvider::InitSamplers();
-		DXGI_FORMAT mainRTVFormat = RenderManager::Get()->GetHdrRTVFormat();
-		DXGI_FORMAT swapchainLdrFormat = RenderManager::Get()->GetSwapchainFormat();
-		DXGI_FORMAT mainGBufferFormat = RenderManager::Get()->GetGBufferFormat();
-		DXGI_FORMAT mainDSVFormat = RenderManager::Get()->GetDepthFormat();
-		DXGI_FORMAT ssaoFormat = RenderManager::Get()->GetSSAOFormat();
+		DXGI_FORMAT mainRTVFormat = IRenderManager::Get()->GetHDRRenderTextureFormat();
+		DXGI_FORMAT swapchainFormat = IRenderManager::Get()->GetSwapchainFormat();
+		DXGI_FORMAT mainGBufferFormat = IRenderManager::Get()->GetGBufferFormat();
+		DXGI_FORMAT mainDSVFormat = IRenderManager::Get()->GetDepthFormat();
 
 
 		// Standard shared material
@@ -57,7 +56,7 @@ namespace JoyEngine
 					D3D12_COMPARISON_FUNC_NEVER,
 					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 					{
-						swapchainLdrFormat
+						swapchainFormat
 					},
 					1,
 					mainDSVFormat,
@@ -87,7 +86,7 @@ namespace JoyEngine
 		}
 
 		{
-			m_engineDataBuffer = std::make_unique<DynamicCpuBuffer<EngineData>>(RenderManager::Get()->GetFrameCount());
+			m_engineDataBuffer = std::make_unique<DynamicCpuBuffer<EngineData>>(IRenderManager::Get()->GetFrameCount());
 		}
 
 		{

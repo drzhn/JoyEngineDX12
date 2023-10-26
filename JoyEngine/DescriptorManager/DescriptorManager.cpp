@@ -10,7 +10,7 @@ namespace JoyEngine
 {
 	DescriptorManager::DescriptorManager()
 	{
-		TIME_PERF("DescriptorManager init")
+		TIME_PERF("DescriptorManager ctor")
 
 		for (uint32_t typeIndex = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 		     typeIndex < D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES;

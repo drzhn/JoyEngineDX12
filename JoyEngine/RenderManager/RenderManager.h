@@ -14,7 +14,6 @@
 #include "GBuffer.h"
 #include "IRenderManager.h"
 #include "Skybox.h"
-#include "Common/Singleton.h"
 
 #include "Tonemapping.h"
 #include "LightSystems/ClusteredLightSystem.h"
@@ -37,7 +36,7 @@ namespace JoyEngine
 	class ResourceView;
 	class DepthTexture;
 
-	class RenderManager final : public Singleton<RenderManager>, public IRenderManager
+	class RenderManager final : public IRenderManager
 	{
 	public:
 		RenderManager() = default;
@@ -77,14 +76,6 @@ namespace JoyEngine
 
 		[[nodiscard]] ILightSystem& GetLightSystem() const noexcept override { return *m_lightSystem; }
 
-		[[nodiscard]] static DXGI_FORMAT GetMainColorFormat() noexcept { return hdrRTVFormat; }
-		[[nodiscard]] static DXGI_FORMAT GetHdrRTVFormat() noexcept { return hdrRTVFormat; }
-		[[nodiscard]] static DXGI_FORMAT GetSwapchainFormat() noexcept { return swapchainFormat; }
-		[[nodiscard]] static DXGI_FORMAT GetGBufferFormat() noexcept { return gBufferFormat; }
-		[[nodiscard]] static DXGI_FORMAT GetDepthFormat() noexcept { return depthFormat; }
-		[[nodiscard]] static DXGI_FORMAT GetDepthUAVFormat() noexcept { return depthUavFormat; }
-		[[nodiscard]] static DXGI_FORMAT GetSSAOFormat() noexcept { return ssaoFormat; }
-
 	private:
 		void RenderEntireSceneWithMaterials(
 			ID3D12GraphicsCommandList* commandList,
@@ -109,12 +100,7 @@ namespace JoyEngine
 		static constexpr uint32_t FRAME_COUNT = 3;
 
 
-		static constexpr DXGI_FORMAT hdrRTVFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
-		static constexpr DXGI_FORMAT swapchainFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-		static constexpr DXGI_FORMAT gBufferFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
-		static constexpr DXGI_FORMAT depthFormat = DXGI_FORMAT_D32_FLOAT;
-		static constexpr DXGI_FORMAT depthUavFormat = DXGI_FORMAT_R32_FLOAT;
-		static constexpr DXGI_FORMAT ssaoFormat = DXGI_FORMAT_R16_FLOAT;
+
 
 
 		ComPtr<IDXGISwapChain3> m_swapChain;

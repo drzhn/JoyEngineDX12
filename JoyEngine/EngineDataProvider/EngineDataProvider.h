@@ -15,8 +15,10 @@ namespace JoyEngine
 	class EngineDataProvider : public Singleton<EngineDataProvider>
 	{
 	public:
-		EngineDataProvider();
+		EngineDataProvider() = default;
 		~EngineDataProvider() = default;
+
+		void Init();
 
 		//[[nodiscard]] ResourceHandle<SharedMaterial> GetStandardSharedMaterial() const noexcept { return m_standardSharedMaterial; }
 		//[[nodiscard]] ResourceHandle<ComputePipeline> GetMipsGenerationComputePipeline() const noexcept { return m_generateMipsComputePipeline; }

@@ -10,15 +10,12 @@ namespace JoyEngine
 	class TransformProvider
 	{
 	public:
-		TransformProvider() = delete;
-
-		explicit TransformProvider(const IRenderManager* renderManager):
-			m_renderManager(renderManager),
-			m_pool(m_renderManager->GetFrameCount())
+		TransformProvider():
+			m_pool(IRenderManager::Get()->GetFrameCount())
 		{
 		}
 
-		void Update(uint32_t frameIndex);
+		void Update();
 		uint32_t Allocate();
 		void Free(uint32_t index);
 
@@ -26,7 +23,6 @@ namespace JoyEngine
 		ResourceView* GetObjectMatricesBufferView(uint32_t frameIndex);
 
 	private:
-		const IRenderManager* m_renderManager;
 		DynamicBufferPool<jmath::mat4x4, OBJECT_SIZE> m_pool;
 	};
 }

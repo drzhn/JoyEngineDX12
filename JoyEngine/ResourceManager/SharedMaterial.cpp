@@ -5,12 +5,11 @@
 #include "Common/SerializationUtils.h"
 #include "DataManager/DataManager.h"
 #include "GraphicsManager/GraphicsManager.h"
-#include "RenderManager/RenderManager.h"
-
 
 #include <d3d12.h>
 
 #include "Common/HashDefs.h"
+#include "RenderManager/IRenderManager.h"
 #include "Utils/Log.h"
 
 namespace JoyEngine
@@ -103,15 +102,15 @@ namespace JoyEngine
 
 		args.shaderPath = json["shader"].GetString();
 
-		args.depthFormat = RenderManager::Get()->GetDepthFormat();
+		args.depthFormat = IRenderManager::Get()->GetDepthFormat();
 		args.blendDesc = blendDesc;
 		args.topology = topology;
-		args.renderTargetsFormats[0] = RenderManager::Get()->GetMainColorFormat();
+		args.renderTargetsFormats[0] = IRenderManager::Get()->GetHDRRenderTextureFormat();
 		args.renderTargetsFormatsSize = 1;
 
 		m_graphicsPipeline = std::make_unique<GraphicsPipeline>(args);
 
-		RenderManager::Get()->RegisterSharedMaterial(this);
+		IRenderManager::Get()->RegisterSharedMaterial(this);
 	}
 
 	SharedMaterial::SharedMaterial(uint64_t id, GraphicsPipelineArgs args) :
@@ -119,12 +118,12 @@ namespace JoyEngine
 	{
 		m_graphicsPipeline = std::make_unique<GraphicsPipeline>(args);
 
-		RenderManager::Get()->RegisterSharedMaterial(this);
+		IRenderManager::Get()->RegisterSharedMaterial(this);
 	}
 
 	SharedMaterial::~SharedMaterial()
 	{
-		RenderManager::Get()->UnregisterSharedMaterial(this);
+		IRenderManager::Get()->UnregisterSharedMaterial(this);
 	}
 
 

@@ -3,7 +3,6 @@
 #include "CommonEngineStructs.h"
 #include "Common/HashDefs.h"
 #include "EngineDataProvider/EngineDataProvider.h"
-#include "RenderManager/RenderManager.h"
 #include "ResourceManager/ResourceView.h"
 #include "SceneManager/SceneManager.h"
 

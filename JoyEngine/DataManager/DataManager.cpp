@@ -14,7 +14,7 @@ namespace JoyEngine
 {
 	DataManager::DataManager() : m_dataPath(std::filesystem::absolute(R"(JoyData/)"))
 	{
-		TIME_PERF("DataManager init")
+		TIME_PERF("DataManager ctor")
 	}
 
 	std::vector<char> DataManager::GetData(const std::string& path, bool shouldReadRawData, uint32_t offset) const

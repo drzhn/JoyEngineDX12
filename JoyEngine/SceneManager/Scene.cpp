@@ -75,7 +75,7 @@ namespace JoyEngine
 					ASSERT(SerializableClassFactory::GetInstance() != nullptr);
 					std::unique_ptr<Serializable> s = SerializableClassFactory::GetInstance()->Deserialize(
 						*go, component["fields"], component["component"].GetString());
-					auto* c_ptr = dynamic_cast<Component*>(s.release());
+					auto* c_ptr = JoyCast<Component>(s.release());
 					ASSERT(c_ptr != nullptr);
 					std::unique_ptr<Component> c(c_ptr);
 					go->AddComponent(std::move(c));

@@ -85,6 +85,8 @@ namespace JoyEngine
 
 	class Texture : public Resource, public AbstractSingleTexture
 	{
+		DECLARE_JOY_OBJECT(Texture, Resource);
+
 	public:
 		explicit Texture() = delete;
 

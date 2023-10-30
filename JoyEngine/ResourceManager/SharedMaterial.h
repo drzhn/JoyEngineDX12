@@ -13,6 +13,8 @@ namespace JoyEngine
 
 	class SharedMaterial final : public Resource
 	{
+		DECLARE_JOY_OBJECT(SharedMaterial, Resource);
+
 	public :
 		SharedMaterial() = delete;
 

@@ -36,6 +36,8 @@ namespace JoyEngine
 
 	class Buffer final : public Resource
 	{
+		DECLARE_JOY_OBJECT(Buffer, Resource);
+
 	public:
 		Buffer() = delete;
 		Buffer(const Buffer& other) = delete;

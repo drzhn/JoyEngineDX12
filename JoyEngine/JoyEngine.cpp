@@ -17,7 +17,9 @@
 #include "InputManager/InputManager.h"
 #include "Utils/TimeCounter.h"
 
+#ifdef _DEBUG
 #include "dxgidebug.h"
+#endif
 
 // Forward declare message handler from imgui_impl_win32.cpp
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -52,14 +54,37 @@ namespace JoyEngine
 		}
 	}
 
+
+
+	class Base
+	{
+	public:
+		virtual constexpr const char* GetID()
+		{
+			return __FUNCSIG__;
+		};
+	};
+
+	class Child : public Base
+	{
+	//public:
+	//	constexpr const char* GetID() override
+	//	{
+	//		return __FUNCSIG__;
+	//	};
+	};
+
+	template <typename T>
+	class SomeClass
+	{
+	};
+
 	void JoyEngine::Init() const noexcept
 	{
+		auto c = Base().GetID();
+		auto cd = Child().GetID();
 		Time::Init(m_deltaTimeHandler);
 
-		// allocating memory for rendering and creating allocators
-		//m_memoryManager->Init();
-		// allocating descriptors
-		//m_descriptorSetManager->Init();
 		// creating internal engine materials
 		m_engineData->Init();
 		// creating render resources

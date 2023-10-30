@@ -20,6 +20,11 @@ constexpr uint64_t StrHash64(const char* str, const uint64_t value = val_64_cons
 	return !*str ? value : StrHash64(&str[1], (value ^ static_cast<uint64_t>(static_cast<uint8_t>(str[0]))) * prime_64_const);
 }
 
+constexpr uint64_t StrnHash64(const char* str, size_t count, const uint64_t value = val_64_const) noexcept
+{
+	return !*str || count == 0 ? value : StrnHash64(&str[1], count - 1, (value ^ static_cast<uint64_t>(static_cast<uint8_t>(str[0]))) * prime_64_const);
+}
+
 inline uint64_t RandomHash64()
 {
 	return generator(gen);

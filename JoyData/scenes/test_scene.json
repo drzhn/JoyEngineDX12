@@ -1,6 +1,6 @@
 {
     "asset_type": "scene",
-    "name": "roomScene",
+    "name": "test_scene",
     "objects": [
         {
             "name": "camera",

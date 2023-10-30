@@ -14,7 +14,7 @@
 //
 //    class SomeClass : public Serializable {
 //
-//        DECLARE_CLASS_NAME(SomeClass)
+//        DECLARE_JOY_OBJECT(SomeClass,Serializable)
 //
 //        REFLECT_FIELD(float, a);
 //        REFLECT_FIELD(int, b);
@@ -27,12 +27,9 @@
 class className; \
 inline SerializedObjectCreator<className> className##_creator = SerializedObjectCreator<className>(#className);
 
-#define DECLARE_CLASS_NAME(T) \
-static constexpr const char* className = #T;
-
 // TODO correct check for Serializable class !
 #define REFLECT_FIELD(T, v) FieldRegistrator v##_registrator = FieldRegistrator \
-(className, #v, FieldInfo(HASH(T) != HASH(Serializable)? HASH(T) : HASH(Serializable), &(v))); T v;
+(typeInfo.typeName, #v, FieldInfo(HASH(T) != HASH(Serializable)? HASH(T) : HASH(Serializable), &(v))); T v;
 
 namespace JoyEngine
 {

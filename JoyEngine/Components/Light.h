@@ -13,6 +13,8 @@ namespace JoyEngine
 
 	class LightBase : public Component
 	{
+		DECLARE_JOY_OBJECT(LightBase, Component);
+
 	public:
 		LightBase() = delete;
 
@@ -51,6 +53,8 @@ namespace JoyEngine
 
 	class PointLight: public LightBase
 	{
+		DECLARE_JOY_OBJECT(PointLight, LightBase);
+
 	public:
 		explicit PointLight(
 			uint32_t frameIndex,

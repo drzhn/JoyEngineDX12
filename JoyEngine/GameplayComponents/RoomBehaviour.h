@@ -2,6 +2,7 @@
 #define ROOM_BEHAVIOUR_H
 
 #include "Common/Color.h"
+#include "Common/JoyObject.h"
 #include "Common/Serialization.h"
 #include "Components/Component.h"
 
@@ -11,7 +12,7 @@ namespace JoyEngine {
 
     class RoomBehaviour : public Component {
 
-        DECLARE_CLASS_NAME(RoomBehaviour);
+        DECLARE_JOY_OBJECT(RoomBehaviour, Component);
 
         REFLECT_FIELD(float, m_speed);
         REFLECT_FIELD(Color, m_color);

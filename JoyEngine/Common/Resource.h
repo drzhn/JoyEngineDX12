@@ -1,11 +1,15 @@
 #ifndef RESOURCE_H
 #define RESOURCE_H
+
 #include "HashDefs.h"
+#include "JoyObject.h"
 
 namespace JoyEngine
 {
-	class Resource
+	class Resource : public JoyObject
 	{
+		DECLARE_JOY_OBJECT(Resource, JoyObject);
+
 	public:
 		Resource() = delete;
 
@@ -17,7 +21,7 @@ namespace JoyEngine
 		{
 		}
 
-		virtual ~Resource() = default;
+		~Resource() override = default;
 
 		[[nodiscard]] int32_t GetRefCount() const { return m_refCount; }
 

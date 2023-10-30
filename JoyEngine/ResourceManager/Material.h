@@ -20,6 +20,8 @@ namespace JoyEngine
 
 	class Material final : public Resource
 	{
+		DECLARE_JOY_OBJECT(Material, Resource);
+
 	public :
 		Material() = delete;
 		explicit Material(const char* materialPath);

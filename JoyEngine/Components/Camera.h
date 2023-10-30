@@ -11,6 +11,8 @@ namespace JoyEngine
 
 	class Camera : public Component
 	{
+		DECLARE_JOY_OBJECT(Camera, Component);
+
 	public:
 		Camera() = delete;
 		explicit Camera(GameObject& go, IRenderManager* manager, float cameraNear, float cameraFar, float cameraFov);

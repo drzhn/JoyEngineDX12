@@ -14,6 +14,7 @@ namespace JoyEngine
 {
 	class Mesh final : public Resource
 	{
+		DECLARE_JOY_OBJECT(Mesh, Resource);
 	public:
 		Mesh() = delete;
 

@@ -9,6 +9,8 @@ namespace JoyEngine
 
 	class Component : public Serializable
 	{
+		DECLARE_JOY_OBJECT(Component, Serializable);
+
 	public:
 		Component() = delete;
 

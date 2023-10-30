@@ -5,12 +5,12 @@
 #include <map>
 #include <set>
 #include <Utils/Assert.h>
-#include <memory>
 
 #include "ResourceHandle.h"
 #include "Common/HashDefs.h"
 #include "Common/Resource.h"
 #include "Common/Singleton.h"
+#include "Common/JoyObject.h"
 
 namespace JoyEngine
 {
@@ -76,7 +76,8 @@ namespace JoyEngine
 		{
 			ASSERT(IsResourceLoaded(id));
 #ifdef _DEBUG
-			T* ptr = dynamic_cast<T*>(m_isResourceInUse[id]);
+			auto classname = m_isResourceInUse[id]->GetClassname();
+			T* ptr = JoyCast<T>(m_isResourceInUse[id]);
 			ASSERT(ptr != nullptr);
 #else
             T *ptr = reinterpret_cast<T *>(m_isResourceInUse[id]);

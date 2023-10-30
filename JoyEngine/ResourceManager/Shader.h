@@ -14,6 +14,8 @@ namespace JoyEngine
 {
 	class Shader final : public Resource
 	{
+		DECLARE_JOY_OBJECT(Shader, Resource);
+
 	public :
 		Shader() = delete;
 

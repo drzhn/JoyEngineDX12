@@ -99,10 +99,6 @@ namespace JoyEngine
 	private:
 		static constexpr uint32_t FRAME_COUNT = 3;
 
-
-
-
-
 		ComPtr<IDXGISwapChain3> m_swapChain;
 
 		std::array<std::unique_ptr<RenderTexture>, FRAME_COUNT> m_swapchainRenderTargets;

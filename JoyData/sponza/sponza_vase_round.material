@@ -1,0 +1,21 @@
+{
+    "asset_type": "material",
+    "name": "sponza_vase_round",
+    "material_type": "standard_transparent",
+    "bindings": {
+        "DiffuseMap": "sponza/vase_round.tga",
+        "EmissiveMap": "",
+        "EmissiveFactor": 1.0,
+        "AmbientMap": "",
+        "AmbientFactor": 1.0,
+        "NormalMap": "",
+        "TransparentColor": "",
+        "TransparencyFactor": 1.0,
+        "SpecularMap": "",
+        "SpecularFactor": 1.0,
+        "ReflectionMap": "",
+        "ReflectionFactor": 1.0,
+        "ShininessMap": "",
+        "TextureSampler": "linearWrap"
+    }
+}

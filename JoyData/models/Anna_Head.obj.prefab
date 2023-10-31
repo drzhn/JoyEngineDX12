@@ -1,0 +1,36 @@
+{
+    "name": "RootNode",
+    "asset_type": "game_object",
+    "transform": {
+        "localPosition": [-0.0, 0.0, 0.0],
+        "localRotation": [0.0, 0.0, 0.0],
+        "localScale": [1.0, 1.0, 1.0]
+    },
+    "components": [],
+    "children": [{
+            "name": "Anna_Head_root",
+            "asset_type": "game_object",
+            "transform": {
+                "localPosition": [-0.0, 0.0, 0.0],
+                "localRotation": [0.0, 0.0, 0.0],
+                "localScale": [1.0, 1.0, 1.0]
+            },
+            "components": [],
+            "children": [{
+                    "name": "Anna_OBJ:Anna_Head",
+                    "asset_type": "game_object",
+                    "transform": {
+                        "localPosition": [-0.0, 0.0, 0.0],
+                        "localRotation": [0.0, 0.0, 0.0],
+                        "localScale": [1.0, 1.0, 1.0]
+                    },
+                    "components": [{
+                            "asset_type": "renderer",
+                            "model": "models/Anna_Head.obj:RootNode/Anna_Head_root/Anna_OBJ:Anna_Head",
+                            "material": "models/Anna_OBJ_Anna_HeadMat.material",
+                            "static": false
+                        }],
+                    "children": []
+                }]
+        }]
+}

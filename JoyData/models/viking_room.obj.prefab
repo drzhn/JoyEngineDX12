@@ -1,0 +1,36 @@
+{
+    "name": "RootNode",
+    "asset_type": "game_object",
+    "transform": {
+        "localPosition": [-0.0, 0.0, 0.0],
+        "localRotation": [0.0, 0.0, 0.0],
+        "localScale": [1.0, 1.0, 1.0]
+    },
+    "components": [],
+    "children": [{
+            "name": "viking_room_root",
+            "asset_type": "game_object",
+            "transform": {
+                "localPosition": [-0.0, 0.0, 0.0],
+                "localRotation": [0.0, 0.0, 0.0],
+                "localScale": [1.0, 1.0, 1.0]
+            },
+            "components": [],
+            "children": [{
+                    "name": "default",
+                    "asset_type": "game_object",
+                    "transform": {
+                        "localPosition": [-0.0, 0.0, 0.0],
+                        "localRotation": [0.0, 0.0, 0.0],
+                        "localScale": [1.0, 1.0, 1.0]
+                    },
+                    "components": [{
+                            "asset_type": "renderer",
+                            "model": "models/viking_room.obj:RootNode/viking_room_root/default",
+                            "material": "models/defaultMat.material",
+                            "static": false
+                        }],
+                    "children": []
+                }]
+        }]
+}

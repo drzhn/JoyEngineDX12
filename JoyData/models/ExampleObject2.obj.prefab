@@ -1,0 +1,36 @@
+{
+    "name": "RootNode",
+    "asset_type": "game_object",
+    "transform": {
+        "localPosition": [-0.0, 0.0, 0.0],
+        "localRotation": [0.0, 0.0, 0.0],
+        "localScale": [1.0, 1.0, 1.0]
+    },
+    "components": [],
+    "children": [{
+            "name": "ExampleObject2_root",
+            "asset_type": "game_object",
+            "transform": {
+                "localPosition": [-0.0, 0.0, 0.0],
+                "localRotation": [0.0, 0.0, 0.0],
+                "localScale": [1.0, 1.0, 1.0]
+            },
+            "components": [],
+            "children": [{
+                    "name": "pCube1",
+                    "asset_type": "game_object",
+                    "transform": {
+                        "localPosition": [-0.0, 0.0, 0.0],
+                        "localRotation": [0.0, 0.0, 0.0],
+                        "localScale": [1.0, 1.0, 1.0]
+                    },
+                    "components": [{
+                            "asset_type": "renderer",
+                            "model": "models/ExampleObject2.obj:RootNode/ExampleObject2_root/pCube1",
+                            "material": "models/pCube1Mat.material",
+                            "static": false
+                        }],
+                    "children": []
+                }]
+        }]
+}

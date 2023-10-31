@@ -1,0 +1,15 @@
+{
+    "asset_type": "sharedMaterial",
+    "shader": "shaders/standardShader.hlsl",
+    "hasVertexInput": true,
+    "depthTest": true,
+    "depthWrite": true,
+    "cull": "back",
+    "comparison": "less_equal",
+    "blend": "default",
+    "topology": "triangle",
+    "shaderTypes": [
+        "vertex",
+        "pixel"
+    ]
+}

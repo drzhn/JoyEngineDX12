@@ -192,7 +192,7 @@ namespace JoyEngine
 			materialData.insert({
 				materialSafeName, {
 					.materialRelativePath = std::filesystem::relative(
-						modelDirectory / (materialSafeName + ".json"),
+						modelDirectory / (materialSafeName + ".material"),
 						dataDirectory).generic_string(),
 					.DiffuseMap = GetTextureNameByProperty(FbxSurfaceMaterial::sDiffuse),
 					.EmissiveMap = GetTextureNameByProperty(FbxSurfaceMaterial::sEmissive),
@@ -424,7 +424,7 @@ namespace JoyEngine
 	{
 		std::filesystem::path modelAbsoluteDirectory = std::filesystem::path(modelPath).parent_path();
 		std::filesystem::path convertedModelPath = modelPath + ".data";
-		std::filesystem::path convertedModelPrefabPath = modelPath + ".json";
+		std::filesystem::path convertedModelPrefabPath = modelPath + ".prefab";
 		std::filesystem::path dataAbsoluteDirectory = std::filesystem::path(dataDir);
 		std::filesystem::path modelRelativePath = std::filesystem::relative(modelPath, dataAbsoluteDirectory);
 

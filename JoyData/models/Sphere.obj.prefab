@@ -1,0 +1,36 @@
+{
+    "name": "RootNode",
+    "asset_type": "game_object",
+    "transform": {
+        "localPosition": [-0.0, 0.0, 0.0],
+        "localRotation": [0.0, 0.0, 0.0],
+        "localScale": [1.0, 1.0, 1.0]
+    },
+    "components": [],
+    "children": [{
+            "name": "Sphere_root",
+            "asset_type": "game_object",
+            "transform": {
+                "localPosition": [-0.0, 0.0, 0.0],
+                "localRotation": [0.0, 0.0, 0.0],
+                "localScale": [1.0, 1.0, 1.0]
+            },
+            "components": [],
+            "children": [{
+                    "name": "pSphere1",
+                    "asset_type": "game_object",
+                    "transform": {
+                        "localPosition": [-0.0, 0.0, 0.0],
+                        "localRotation": [0.0, 0.0, 0.0],
+                        "localScale": [1.0, 1.0, 1.0]
+                    },
+                    "components": [{
+                            "asset_type": "renderer",
+                            "model": "models/Sphere.obj:RootNode/Sphere_root/pSphere1",
+                            "material": "models/pSphere1Mat.material",
+                            "static": false
+                        }],
+                    "children": []
+                }]
+        }]
+}

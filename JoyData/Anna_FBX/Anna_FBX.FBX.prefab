@@ -1,0 +1,131 @@
+{
+    "name": "RootNode",
+    "asset_type": "game_object",
+    "transform": {
+        "localPosition": [-0.0, 0.0, 0.0],
+        "localRotation": [0.0, 0.0, 0.0],
+        "localScale": [1.0, 1.0, 1.0]
+    },
+    "components": [],
+    "children": [{
+            "name": "Anna_Tongue",
+            "asset_type": "game_object",
+            "transform": {
+                "localPosition": [-0.0, 0.0, 0.0],
+                "localRotation": [0.0, 0.0, 0.0],
+                "localScale": [1.0, 1.0, 1.0]
+            },
+            "components": [{
+                    "asset_type": "renderer",
+                    "model": "Anna_FBX/Anna_FBX.FBX:RootNode/Anna_Tongue",
+                    "material": "Anna_FBX/Std_Tongue.material",
+                    "static": false
+                }],
+            "children": []
+        }, {
+            "name": "Anna_Head",
+            "asset_type": "game_object",
+            "transform": {
+                "localPosition": [-0.0, 0.0, 0.0],
+                "localRotation": [0.0, 0.0, 0.0],
+                "localScale": [1.0, 1.0, 1.0]
+            },
+            "components": [{
+                    "asset_type": "renderer",
+                    "model": "Anna_FBX/Anna_FBX.FBX:RootNode/Anna_Head",
+                    "material": "Anna_FBX/Std_Skin_Head.material",
+                    "static": false
+                }],
+            "children": []
+        }, {
+            "name": "Anna_Eyes",
+            "asset_type": "game_object",
+            "transform": {
+                "localPosition": [-0.0, 0.0, 0.0],
+                "localRotation": [0.0, 0.0, 0.0],
+                "localScale": [1.0, 1.0, 1.0]
+            },
+            "components": [{
+                    "asset_type": "renderer",
+                    "model": "Anna_FBX/Anna_FBX.FBX:RootNode/Anna_Eyes",
+                    "material": "Anna_FBX/Std_Eye_R.material",
+                    "static": false
+                }],
+            "children": []
+        }, {
+            "name": "Anna__EyeOcclusion",
+            "asset_type": "game_object",
+            "transform": {
+                "localPosition": [-0.0, 0.0, 0.0],
+                "localRotation": [0.0, 0.0, 0.0],
+                "localScale": [1.0, 1.0, 1.0]
+            },
+            "components": [{
+                    "asset_type": "renderer",
+                    "model": "Anna_FBX/Anna_FBX.FBX:RootNode/Anna__EyeOcclusion",
+                    "material": "Anna_FBX/Std_Eye_Occlusion_R.material",
+                    "static": false
+                }],
+            "children": []
+        }, {
+            "name": "Anna_TearLine",
+            "asset_type": "game_object",
+            "transform": {
+                "localPosition": [-0.0, 0.0, 0.0],
+                "localRotation": [0.0, 0.0, 0.0],
+                "localScale": [1.0, 1.0, 1.0]
+            },
+            "components": [{
+                    "asset_type": "renderer",
+                    "model": "Anna_FBX/Anna_FBX.FBX:RootNode/Anna_TearLine",
+                    "material": "Anna_FBX/Std_Tearline_R.material",
+                    "static": false
+                }],
+            "children": []
+        }, {
+            "name": "Anna_Eyebrows",
+            "asset_type": "game_object",
+            "transform": {
+                "localPosition": [-0.0, 0.0, 0.0],
+                "localRotation": [0.0, 0.0, 0.0],
+                "localScale": [1.0, 1.0, 1.0]
+            },
+            "components": [{
+                    "asset_type": "renderer",
+                    "model": "Anna_FBX/Anna_FBX.FBX:RootNode/Anna_Eyebrows",
+                    "material": "Anna_FBX/Female_Trimmed.material",
+                    "static": false
+                }],
+            "children": []
+        }, {
+            "name": "Anna_Teeth",
+            "asset_type": "game_object",
+            "transform": {
+                "localPosition": [-0.0, 0.0, 0.0],
+                "localRotation": [0.0, 0.0, 0.0],
+                "localScale": [1.0, 1.0, 1.0]
+            },
+            "components": [{
+                    "asset_type": "renderer",
+                    "model": "Anna_FBX/Anna_FBX.FBX:RootNode/Anna_Teeth",
+                    "material": "Anna_FBX/Std_Upper_Teeth.material",
+                    "static": false
+                }],
+            "children": []
+        }, {
+            "name": "Anna_Hair",
+            "asset_type": "game_object",
+            "transform": {
+                "localPosition": [-0.0, 0.0, 0.0],
+                "localRotation": [0.0, 0.0, 0.0],
+                "localScale": [1.0, 1.0, 1.0]
+            },
+            "components": [{
+                    "asset_type": "renderer",
+                    "model": "Anna_FBX/Anna_FBX.FBX:RootNode/Anna_Hair",
+                    "material": "Anna_FBX/Hair.material",
+                    "static": false
+                }],
+            "children": []
+        }]
+}

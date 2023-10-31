@@ -1,0 +1,36 @@
+{
+    "name": "RootNode",
+    "asset_type": "game_object",
+    "transform": {
+        "localPosition": [-0.0, 0.0, 0.0],
+        "localRotation": [0.0, 0.0, 0.0],
+        "localScale": [1.0, 1.0, 1.0]
+    },
+    "components": [],
+    "children": [{
+            "name": "male_head_root",
+            "asset_type": "game_object",
+            "transform": {
+                "localPosition": [-0.0, 0.0, 0.0],
+                "localRotation": [0.0, 0.0, 0.0],
+                "localScale": [1.0, 1.0, 1.0]
+            },
+            "components": [],
+            "children": [{
+                    "name": "object0",
+                    "asset_type": "game_object",
+                    "transform": {
+                        "localPosition": [-0.0, 0.0, 0.0],
+                        "localRotation": [0.0, 0.0, 0.0],
+                        "localScale": [1.0, 1.0, 1.0]
+                    },
+                    "components": [{
+                            "asset_type": "renderer",
+                            "model": "models/male_head.obj:RootNode/male_head_root/object0",
+                            "material": "models/object0Mat.material",
+                            "static": false
+                        }],
+                    "children": []
+                }]
+        }]
+}

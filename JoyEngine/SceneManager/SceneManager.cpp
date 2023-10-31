@@ -8,7 +8,7 @@ namespace JoyEngine
 	void SceneManager::Init()
 	{
 		TIME_PERF("SceneManager init");
-		m_scene = m_sceneTree.Create<Scene>("scenes/test_scene.json");
+		m_scene = m_sceneTree.Create<Scene>("scenes/test_scene.scene");
 	}
 
 	void SceneManager::Start()

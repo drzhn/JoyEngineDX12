@@ -10,7 +10,7 @@ struct TypeInfo
 	const uint64_t typeId;
 };
 
-#define DECLARE_JOY_OBJECT(T, BASE) \
+#define DECLARE_JOY_OBJECT(T, BASE)                                                    \
 protected:																			   \
 static constexpr TypeInfo typeInfo{		   											   \
 	.parentInfo = &(BASE##::typeInfo),				   								   \

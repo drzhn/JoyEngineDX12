@@ -64,24 +64,6 @@ namespace JoyEngine
 
 		MemoryManager::Get()->LoadDataToBuffer(m_verticesData, vertexDataSize, mc->GetVertexBuffer(), m_meshView.vertexBufferOffset);
 		MemoryManager::Get()->LoadDataToBuffer(m_indicesData, indexDataSize, mc->GetIndexBuffer(), m_meshView.indexBufferOffset);
-
-		m_raytracingGeometryDesc = {
-			.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES,
-			.Flags = D3D12_RAYTRACING_GEOMETRY_FLAG_OPAQUE,
-			.Triangles = {
-				.Transform3x4 = 0, // TODO Dont forget to store here transform data. 
-				.IndexFormat = DXGI_FORMAT_R32_UINT,
-				.VertexFormat = DXGI_FORMAT_R32G32B32_FLOAT,
-				.IndexCount = m_indexCount,
-				.VertexCount = m_vertexCount,
-				.IndexBuffer = m_meshView.indexBufferView.BufferLocation,
-				.VertexBuffer =
-				{
-					.StartAddress = m_meshView.vertexBufferView.BufferLocation,
-					.StrideInBytes = sizeof(Vertex)
-				}
-			}
-		};
 	}
 
 	Mesh::~Mesh()

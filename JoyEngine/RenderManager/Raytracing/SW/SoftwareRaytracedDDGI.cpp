@@ -16,8 +16,8 @@
 namespace JoyEngine
 {
 	const AABB g_sceneAabb = {
-		.min = jmath::vec3(-40.0f, -3.0f, -25.0f),
-		.max = jmath::vec3(40.0f, 30.0f, 25.0f),
+		.min = jmath::vec3(-50.0f, -30.0f, -50.0f),
+		.max = jmath::vec3(50.0f, 50.0f, 50.0f),
 	};
 
 	uint32_t ExpandBits(uint32_t v)
@@ -192,11 +192,19 @@ namespace JoyEngine
 					const Vertex* vertices = mr->GetMesh()->GetVertices();
 					const uint32_t* indices = mr->GetMesh()->GetIndices();
 
+					const auto& modelMatrix = mr->GetGameObject().GetTransform().GetModelMatrix();
+
 					for (uint32_t i = 0; i < meshTrianglesLength; i++, m_trianglesLength++)
 					{
-						jmath::vec3 a = vertices[indices[i * 3 + 0]].pos;
-						jmath::vec3 b = vertices[indices[i * 3 + 1]].pos;
-						jmath::vec3 c = vertices[indices[i * 3 + 2]].pos;
+						jmath::vec3 a = jmath::toVec3(jmath::mul(
+							modelMatrix,
+							jmath::loadPosition(vertices[indices[i * 3 + 0]].pos)));
+						jmath::vec3 b = jmath::toVec3(jmath::mul(
+							modelMatrix,
+							jmath::loadPosition(vertices[indices[i * 3 + 1]].pos)));
+						jmath::vec3 c = jmath::toVec3(jmath::mul(
+							modelMatrix,
+							jmath::loadPosition(vertices[indices[i * 3 + 2]].pos)));
 
 						jmath::vec3 centroid;
 						AABB aabb = {};

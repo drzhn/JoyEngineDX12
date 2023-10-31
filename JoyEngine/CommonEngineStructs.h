@@ -306,7 +306,7 @@ struct MeshData
 	UINT1 materialIndex;
 	UINT1 verticesIndex;
 	UINT1 indicesIndex;
-	UINT1 _dummy;
+	UINT1 transformIndex;
 };
 
 struct InternalNode

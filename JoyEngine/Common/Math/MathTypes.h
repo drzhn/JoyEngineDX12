@@ -47,8 +47,8 @@ namespace JoyEngine
 		quat mul(const quat& a, const quat& b);
 		mat4x4 inverse(const mat4x4&);
 
-		xvec4 loadPosition(const vec3* position);
-		xvec4 loadRotation(const vec3* rotation);
+		xvec4 loadPosition(const vec3& position);
+		xvec4 loadRotation(const vec3& rotation);
 		xvec4 loadVec4(const vec4& v);
 		vec3 toVec3(xvec4 v);
 

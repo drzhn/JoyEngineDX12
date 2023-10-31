@@ -26,9 +26,9 @@ namespace JoyEngine
 		SetScale(scale);
 	}
 
-	void Transform::SetPosition(jmath::vec3 pos) noexcept
+	void Transform::SetPosition(const jmath::vec3 pos) noexcept
 	{
-		SetXPosition(jmath::loadPosition(&pos));
+		SetXPosition(jmath::loadPosition(pos));
 	}
 
 
@@ -47,9 +47,9 @@ namespace JoyEngine
 		UpdateMatrix();
 	}
 
-	void Transform::SetScale(jmath::vec3 scale) noexcept
+	void Transform::SetScale(const jmath::vec3 scale) noexcept
 	{
-		SetXScale(jmath::loadPosition(&scale));
+		SetXScale(jmath::loadPosition(scale));
 	}
 
 	void Transform::SetXPosition(jmath::xvec4 pos) noexcept

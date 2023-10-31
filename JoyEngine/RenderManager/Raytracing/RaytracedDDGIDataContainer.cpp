@@ -2,6 +2,7 @@
 
 #include "Components/MeshRenderer.h"
 #include "ResourceManager/Material.h"
+#include "SceneManager/GameObject.h"
 #include "Utils/GraphicsUtils.h"
 #include "Utils/TimeCounter.h"
 
@@ -108,6 +109,7 @@ namespace JoyEngine
 					.materialIndex = mr->GetMaterial()->GetMaterialIndex(),
 					.verticesIndex = mr->GetMesh()->GetVerticesBufferOffsetInBytes() / static_cast<uint32_t>(sizeof(Vertex)),
 					.indicesIndex = mr->GetMesh()->GetIndicesBufferOffsetInBytes() / static_cast<uint32_t>(sizeof(Index)),
+					.transformIndex = mr->GetGameObject().GetTransform().GetTransformIndex()
 				};
 
 				meshCount++;

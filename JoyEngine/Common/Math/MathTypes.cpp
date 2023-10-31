@@ -80,15 +80,15 @@ namespace JoyEngine
 			return DirectX::XMMatrixInverse(nullptr, val);
 		}
 
-		xvec4 loadPosition(const vec3* position)
+		xvec4 loadPosition(const vec3& position)
 		{
-			const auto val = DirectX::XMLoadFloat3(position);
+			const auto val = DirectX::XMLoadFloat3(&position);
 			return DirectX::XMVectorSetW(val, 1);
 		}
 
-		xvec4 loadRotation(const vec3* rotation)
+		xvec4 loadRotation(const vec3& rotation)
 		{
-			const auto val = DirectX::XMLoadFloat3(rotation);
+			const auto val = DirectX::XMLoadFloat3(&rotation);
 			return DirectX::XMVectorSetW(val, 0);
 		}
 

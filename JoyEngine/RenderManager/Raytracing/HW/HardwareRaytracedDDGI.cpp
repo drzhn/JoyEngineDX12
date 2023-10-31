@@ -64,7 +64,7 @@ namespace JoyEngine
 	{
 		TIME_PERF("Uploading hardware DDGI scene data");
 
-		std::vector<D3D12_RAYTRACING_GEOMETRY_DESC*> raytracingGeometryDescs;
+		std::vector<D3D12_RAYTRACING_GEOMETRY_DESC> raytracingGeometryDescs;
 
 		raytracingGeometryDescs.reserve(1000); // TODO more pretty way to store this data. 
 		for (auto const& sm : m_dataContainer.GetSceneSharedMaterials())
@@ -72,7 +72,24 @@ namespace JoyEngine
 			for (const auto& mr : sm->GetMeshRenderers())
 			{
 				if (!mr->IsStatic()) continue;
-				raytracingGeometryDescs.push_back(mr->GetMesh()->GetRaytracingGeometryDescPtr());
+				Mesh* mesh = mr->GetMesh();
+				raytracingGeometryDescs.push_back({
+					.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES,
+					.Flags = D3D12_RAYTRACING_GEOMETRY_FLAG_OPAQUE,
+					.Triangles = {
+						.Transform3x4 = 0, // TODO Dont forget to store here transform data. 
+						.IndexFormat = DXGI_FORMAT_R32_UINT,
+						.VertexFormat = DXGI_FORMAT_R32G32B32_FLOAT,
+						.IndexCount = mesh->GetIndexCount(),
+						.VertexCount = mesh->GetVertexCount(),
+						.IndexBuffer = mesh->GetIndexBufferView()->BufferLocation,
+						.VertexBuffer =
+						{
+							.StartAddress = mesh->GetVertexBufferView()->BufferLocation,
+							.StrideInBytes = sizeof(Vertex)
+						}
+					}
+				});
 			}
 		}
 
@@ -98,8 +115,8 @@ namespace JoyEngine
 			.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL,
 			.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_NONE,
 			.NumDescs = static_cast<uint32_t>(raytracingGeometryDescs.size()),
-			.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY_OF_POINTERS,
-			.ppGeometryDescs = raytracingGeometryDescs.data()
+			.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY,
+			.pGeometryDescs = raytracingGeometryDescs.data()
 		};
 		GraphicsManager::Get()->GetDevice()->GetRaytracingAccelerationStructurePrebuildInfo(&bottomLevelInputs, &bottomLevelPrebuildInfo);
 		ASSERT(bottomLevelPrebuildInfo.ScratchDataSizeInBytes > 0);

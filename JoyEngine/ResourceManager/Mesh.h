@@ -39,8 +39,6 @@ namespace JoyEngine
 
 		[[nodiscard]] D3D12_INDEX_BUFFER_VIEW* GetIndexBufferView() noexcept { return &m_meshView.indexBufferView; }
 
-		[[nodiscard]] D3D12_RAYTRACING_GEOMETRY_DESC* GetRaytracingGeometryDescPtr() noexcept { return &m_raytracingGeometryDesc; }
-
 		[[nodiscard]] uint32_t GetVerticesBufferOffsetInBytes() const { return m_meshView.vertexBufferOffset; }
 		[[nodiscard]] uint32_t GetIndicesBufferOffsetInBytes() const { return m_meshView.indexBufferOffset; }
 
@@ -54,8 +52,6 @@ namespace JoyEngine
 		uint32_t m_vertexCount = 0;
 
 		MeshView m_meshView;
-
-		D3D12_RAYTRACING_GEOMETRY_DESC m_raytracingGeometryDesc;
 
 		Vertex* m_verticesData; // TODO Get rid of storing cpu vertex and index data
 		uint32_t* m_indicesData;

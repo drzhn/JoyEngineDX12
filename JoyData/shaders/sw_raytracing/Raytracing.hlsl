@@ -13,6 +13,8 @@ StructuredBuffer<AABB> bvhData; // size = THREADS_PER_BLOCK * BLOCK_SIZE - 1
 StructuredBuffer<TrianglePayload> trianglePayloadData; // size = THREADS_PER_BLOCK * BLOCK_SIZE
 StructuredBuffer<MeshData> meshData; // size = THREADS_PER_BLOCK * BLOCK_SIZE
 
+StructuredBuffer<MAT4> objectMatricesData;
+
 // using of multiple spaces is the hack to bind bindless srv of different types
 StructuredBuffer<Vertex> objectVertices : register(t0, space1);
 StructuredBuffer<Index> objectIndices : register(t0, space2);
@@ -98,7 +100,11 @@ RaycastResult CheckTriangle(uint triangleIndex, Ray ray, RaycastResult result)
 		const Vertex v1 = objectVertices[md.verticesIndex + objectIndices[md.indicesIndex + tri.triangleIndex * 3 + 1]];
 		const Vertex v2 = objectVertices[md.verticesIndex + objectIndices[md.indicesIndex + tri.triangleIndex * 3 + 2]];
 
-		RaycastResult newResult = RayTriangleIntersection(ray.origin, ray.dir, v0.pos, v1.pos, v2.pos);
+		RaycastResult newResult = RayTriangleIntersection(
+			ray.origin, ray.dir,
+			mul(objectMatricesData[md.transformIndex], float4(v0.pos, 1)),
+			mul(objectMatricesData[md.transformIndex], float4(v1.pos, 1)),
+			mul(objectMatricesData[md.transformIndex], float4(v2.pos, 1)));
 		if (newResult.distance < result.distance)
 		{
 			newResult.triangleIndex = triangleIndex;

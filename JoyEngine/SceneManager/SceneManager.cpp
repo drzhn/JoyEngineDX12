@@ -9,6 +9,7 @@ namespace JoyEngine
 	{
 		TIME_PERF("SceneManager init");
 		m_scene = m_sceneTree.Create<Scene>("scenes/test_scene.scene");
+		m_transformProvider.Init();
 	}
 
 	void SceneManager::Start()

@@ -15,6 +15,8 @@ namespace JoyEngine
 		{
 		}
 
+		void Init();
+
 		void Update();
 		uint32_t Allocate();
 		void Free(uint32_t index);

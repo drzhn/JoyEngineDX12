@@ -91,7 +91,8 @@ namespace JoyEngine
 		xvec4 loadPosition(const vec3& position);
 		xvec4 loadRotation(const vec3& rotation);
 		xvec4 loadVec4(const vec4& v);
-		vec3 toVec3(xvec4 v);
+		vec3 toVec3(const xvec4& v);
+		vec3 toVec3(const half4& v);
 
 		xvec4 rotate3(xvec4 v, quat q);
 		quat eulerToQuat(const vec3& euler);

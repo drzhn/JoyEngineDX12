@@ -249,7 +249,7 @@ namespace JoyEngine
 		{
 			for (int vi = 0; vi < 3; vi++)
 			{
-				int index = mesh->GetPolygonVertex(i, vi);
+				const int index = mesh->GetPolygonVertex(i, vi);
 				FbxVector4 position = mesh->GetControlPointAt(index);
 				FbxVector4 normal;
 				mesh->GetPolygonVertexNormal(i, vi, normal);
@@ -275,19 +275,22 @@ namespace JoyEngine
 
 				nodeData.shape.m_vertices[i * 3 + (3 - vi) % 3] = Vertex{
 					.pos = {
-						-static_cast<float>(position[0]),
-						static_cast<float>(position[1]),
-						static_cast<float>(position[2])
+						DirectX::PackedVector::XMConvertFloatToHalf(-static_cast<float>(position[0])),
+						DirectX::PackedVector::XMConvertFloatToHalf(static_cast<float>(position[1])),
+						DirectX::PackedVector::XMConvertFloatToHalf(static_cast<float>(position[2])),
+						DirectX::PackedVector::XMConvertFloatToHalf(1)
 					},
 					.normal = {
-						-static_cast<float>(normal[0]),
-						static_cast<float>(normal[1]),
-						static_cast<float>(normal[2])
+						(1 - static_cast<float>(normal[0])) * 0.5f,
+						(1 + static_cast<float>(normal[1])) * 0.5f,
+						(1 + static_cast<float>(normal[2])) * 0.5f,
+						1.0f
 					},
 					.tangent = {
-						-static_cast<float>(tangent[0]),
-						static_cast<float>(tangent[1]),
-						static_cast<float>(tangent[2])
+						(1 - static_cast<float>(tangent[0])) * 0.5f,
+						(1 + static_cast<float>(tangent[1])) * 0.5f,
+						(1 + static_cast<float>(tangent[2])) * 0.5f,
+						1.0f
 					},
 					.texCoord = {
 						static_cast<float>(uv[0]),

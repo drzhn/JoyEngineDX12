@@ -109,7 +109,10 @@ void MyClosestHitShader(inout HardwareRayPayload payload, in MyAttributes attr)
 	const Vertex v2 = objectVertices[md.verticesIndex + objectIndices[md.indicesIndex + PrimitiveIndex() * 3 + 2]];
 
 	const float2 uv = barycentrics.x * v0.texCoord + barycentrics.y * v1.texCoord + barycentrics.z * v2.texCoord;
-	const float3 normal = barycentrics.x * v0.normal + barycentrics.y * v1.normal + barycentrics.z * v2.normal;
+	const float3 normal =
+		barycentrics.x * unpackRGB10A2Unorm(v0.normal).xyz +
+		barycentrics.y * unpackRGB10A2Unorm(v1.normal).xyz +
+		barycentrics.z * unpackRGB10A2Unorm(v2.normal).xyz;
 	const uint materialIndex = md.materialIndex;
 
 	float4 color = textures[materials.data[materialIndex].DiffuseMap].SampleLevel(linearClampSampler, uv, 2);

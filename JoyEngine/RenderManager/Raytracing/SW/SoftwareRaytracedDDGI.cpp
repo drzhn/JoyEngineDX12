@@ -198,13 +198,13 @@ namespace JoyEngine
 					{
 						jmath::vec3 a = jmath::toVec3(jmath::mul(
 							modelMatrix,
-							jmath::loadPosition(vertices[indices[i * 3 + 0]].pos)));
+							jmath::loadPosition(jmath::toVec3(vertices[indices[i * 3 + 0]].pos))));
 						jmath::vec3 b = jmath::toVec3(jmath::mul(
 							modelMatrix,
-							jmath::loadPosition(vertices[indices[i * 3 + 1]].pos)));
+							jmath::loadPosition(jmath::toVec3(vertices[indices[i * 3 + 1]].pos))));
 						jmath::vec3 c = jmath::toVec3(jmath::mul(
 							modelMatrix,
-							jmath::loadPosition(vertices[indices[i * 3 + 2]].pos)));
+							jmath::loadPosition(jmath::toVec3(vertices[indices[i * 3 + 2]].pos))));
 
 						jmath::vec3 centroid;
 						AABB aabb = {};
@@ -312,7 +312,7 @@ namespace JoyEngine
 	void SoftwareRaytracedDDGI::DebugDrawRaytracedImage(ID3D12GraphicsCommandList* commandList) const
 	{
 #if defined(CAMERA_TRACE)
-		m_dataContainer.DebugDrawRaytracedImage(commandList, m_shadedRenderTexture->GetSRV());
+		m_dataContainer.DebugDrawRaytracedImage(commandList, m_gbuffer->GetColorSRV());
 #else
 		m_dataContainer.DebugDrawRaytracedImage(commandList, m_probeIrradianceTexture->GetSRV());
 #endif

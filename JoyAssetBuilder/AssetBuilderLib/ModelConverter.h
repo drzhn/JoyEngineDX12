@@ -15,7 +15,7 @@ namespace JoyEngine
 	{
 		MeshAssetHeader m_header;
 		std::vector<Vertex> m_vertices;
-		std::vector<uint32_t> m_indices;
+		std::vector<Index> m_indices;
 		size_t GetSizeInBytes() const
 		{
 			if (m_header.vertexDataSize == 0 || m_header.indexDataSize == 0)

@@ -102,9 +102,11 @@ RaycastResult CheckTriangle(uint triangleIndex, Ray ray, RaycastResult result)
 
 		RaycastResult newResult = RayTriangleIntersection(
 			ray.origin, ray.dir,
-			mul(objectMatricesData[md.transformIndex], float4(v0.pos, 1)),
-			mul(objectMatricesData[md.transformIndex], float4(v1.pos, 1)),
-			mul(objectMatricesData[md.transformIndex], float4(v2.pos, 1)));
+			mul(objectMatricesData[md.transformIndex], unpackVertexPosition(v0.pos)),
+			mul(objectMatricesData[md.transformIndex], unpackVertexPosition(v1.pos)),
+			mul(objectMatricesData[md.transformIndex], unpackVertexPosition(v2.pos))
+		);
+
 		if (newResult.distance < result.distance)
 		{
 			newResult.triangleIndex = triangleIndex;
@@ -234,7 +236,10 @@ void CSMain(uint3 groupId : SV_GroupID, uint3 groupThreadId : SV_GroupThreadID)
 	const Vertex v2 = objectVertices[md.verticesIndex + objectIndices[md.indicesIndex + tri.triangleIndex * 3 + 2]];
 
 	const float2 uv = (1 - result.uv.x - result.uv.y) * v0.texCoord + result.uv.x * v1.texCoord + result.uv.y * v2.texCoord;
-	const float3 normal = (1 - result.uv.x - result.uv.y) * v0.normal + result.uv.x * v1.normal + result.uv.y * v2.normal;
+	const float3 normal =
+		(1 - result.uv.x - result.uv.y) * unpackRGB10A2Unorm(v0.normal).xyz +
+		result.uv.x * unpackRGB10A2Unorm(v1.normal).xyz +
+		result.uv.y * unpackRGB10A2Unorm(v2.normal).xyz;
 	const uint materialIndex = md.materialIndex;
 
 	const float hasResult = result.distance != MAX_FLOAT;

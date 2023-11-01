@@ -39,8 +39,8 @@ PSInput VSMain(float3 position : POSITION, float3 tangent: TANGENT, float3 norma
 
 	const float4x4 resMatrix = mul(viewProjectionData.proj, mul(viewProjectionData.view, objectMatricesData[objectIndex.data]));
 
-	float4 transformedNormal = normalize(mul(objectMatricesData[objectIndex.data], float4(normal, 0)));
-	float4 transformedTangent = normalize(mul(objectMatricesData[objectIndex.data], float4(tangent, 0)));
+	float4 transformedNormal = normalize(mul(objectMatricesData[objectIndex.data], float4(normal * 2 - 1, 0)));
+	float4 transformedTangent = normalize(mul(objectMatricesData[objectIndex.data], float4(tangent * 2 - 1, 0)));
 
 	// todo Get sign of tangent from .w component of vertex input
 	float3 transformedBitangent = cross(transformedTangent.xyz, transformedNormal.xyz);
@@ -58,9 +58,9 @@ PSOutput PSMain(PSInput input)
 {
 	PSOutput output;
 
-    float3 normal = NormalMap.Sample(TextureSampler, input.uv);
-    normal = length(normal) < FLT_EPSILON ? float3(0, 0, 1) : normalize(normal * 2.0 - 1.0);
-    normal = mul(input.TBN, normal);
+	float3 normal = NormalMap.Sample(TextureSampler, input.uv);
+	normal = length(normal) < FLT_EPSILON ? float3(0, 0, 1) : normalize(normal * 2.0 - 1.0);
+	normal = mul(input.TBN, normal);
 	output.Normal = float4(normal, 1);
 
 	output.Color = DiffuseMap.Sample(TextureSampler, input.uv);

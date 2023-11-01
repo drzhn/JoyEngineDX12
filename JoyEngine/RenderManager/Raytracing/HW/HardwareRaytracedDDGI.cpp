@@ -243,7 +243,7 @@ namespace JoyEngine
 	void HardwareRaytracedDDGI::DebugDrawRaytracedImage(ID3D12GraphicsCommandList* commandList) const
 	{
 #if defined(HW_CAMERA_TRACE)
-		m_dataContainer.DebugDrawRaytracedImage(commandList, m_shadedRenderTexture->GetSRV());
+		m_dataContainer.DebugDrawRaytracedImage(commandList, m_gbuffer->GetNormalsSRV());
 #else
 		m_dataContainer.DebugDrawRaytracedImage(commandList, m_probeIrradianceTexture->GetSRV());
 #endif

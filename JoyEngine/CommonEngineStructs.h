@@ -14,6 +14,8 @@
 #define UINT2 JoyEngine::jmath::uvec2
 #define UINT3 JoyEngine::jmath::uvec3
 
+#define USHORT uint16_t
+
 #define PACKED_HALF4 JoyEngine::jmath::half4
 #define PACKED_RGB10A2_UNORM JoyEngine::jmath::rgb10a2unorm
 
@@ -27,6 +29,8 @@
 #define UINT1 uint
 #define UINT2 uint2
 #define UINT3 uint3
+
+#define USHORT uint16_t
 
 #define PACKED_HALF4 UINT2
 #define PACKED_RGB10A2_UNORM UINT1
@@ -127,9 +131,9 @@ struct Color
 
 struct Vertex
 {
-	VEC3 pos;
-	VEC3 normal;
-	VEC3 tangent;
+	PACKED_HALF4 pos;
+	PACKED_RGB10A2_UNORM normal;
+	PACKED_RGB10A2_UNORM tangent;
 	VEC2 texCoord;
 };
 

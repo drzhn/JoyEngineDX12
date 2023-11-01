@@ -100,11 +100,20 @@ namespace JoyEngine
 			return DirectX::XMLoadFloat4(&v);
 		}
 
-		vec3 toVec3(xvec4 v)
+		vec3 toVec3(const xvec4& v)
 		{
 			vec3 data;
 			DirectX::XMStoreFloat3(&data, v);
 			return data;
+		}
+
+		vec3 toVec3(const half4& v)
+		{
+			return {
+				DirectX::PackedVector::XMConvertHalfToFloat(v.x),
+				DirectX::PackedVector::XMConvertHalfToFloat(v.y),
+				DirectX::PackedVector::XMConvertHalfToFloat(v.z),
+			};
 		}
 
 		xvec4 rotate3(xvec4 v, quat q)

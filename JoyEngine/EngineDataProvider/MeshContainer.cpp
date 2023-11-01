@@ -1,6 +1,7 @@
 #include "MeshContainer.h"
 
 #include "CommonEngineStructs.h"
+#include "ResourceManager/Pipelines/GraphicsPipeline.h"
 
 #define TRIANGLE_LIMIT (512*1024)
 #define MESH_CONTAINER_ALIGNMENT 1
@@ -38,7 +39,7 @@ namespace JoyEngine
 			.indexBufferView = {
 				.BufferLocation = GetIndexBuffer()->GetBufferResource()->GetGPUVirtualAddress() + indexBufferOffset,
 				.SizeInBytes = static_cast<uint32_t>(indexBufferSize),
-				.Format = DXGI_FORMAT_R32_UINT
+				.Format = INDEX_FORMAT
 			}
 		};
 	}

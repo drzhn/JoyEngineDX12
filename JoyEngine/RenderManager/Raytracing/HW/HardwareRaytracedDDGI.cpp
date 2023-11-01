@@ -78,8 +78,8 @@ namespace JoyEngine
 					.Flags = D3D12_RAYTRACING_GEOMETRY_FLAG_OPAQUE,
 					.Triangles = {
 						.Transform3x4 = 0, // TODO Dont forget to store here transform data. 
-						.IndexFormat = DXGI_FORMAT_R32_UINT,
-						.VertexFormat = DXGI_FORMAT_R32G32B32_FLOAT,
+						.IndexFormat = INDEX_FORMAT,
+						.VertexFormat = VERTEX_POSITION_FORMAT,
 						.IndexCount = mesh->GetIndexCount(),
 						.VertexCount = mesh->GetVertexCount(),
 						.IndexBuffer = mesh->GetIndexBufferView()->BufferLocation,

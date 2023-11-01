@@ -1,10 +1,17 @@
 #ifndef GRAPHICS_PIPELINE_H
 #define GRAPHICS_PIPELINE_H
 
-#include "AbstractPipelineObject.h"
 #include "d3dx12.h"
+
+#include "AbstractPipelineObject.h"
 #include "ResourceManager/ShaderCompiler.h"
 
+constexpr DXGI_FORMAT VERTEX_POSITION_FORMAT = DXGI_FORMAT_R32G32B32_FLOAT;
+constexpr DXGI_FORMAT VERTEX_NORMAL_FORMAT = DXGI_FORMAT_R32G32B32_FLOAT;
+constexpr DXGI_FORMAT VERTEX_TANGENT_FORMAT = DXGI_FORMAT_R32G32B32_FLOAT;
+constexpr DXGI_FORMAT VERTEX_TEXCOORD_FORMAT = DXGI_FORMAT_R32G32_FLOAT;
+
+constexpr DXGI_FORMAT INDEX_FORMAT = DXGI_FORMAT_R32_UINT;
 
 namespace JoyEngine
 {

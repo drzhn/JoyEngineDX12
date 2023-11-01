@@ -5,28 +5,31 @@ namespace JoyEngine
 {
 	namespace jmath
 	{
-		DirectX::XMFLOAT2 operator+(const DirectX::XMFLOAT2& v1, const DirectX::XMFLOAT2& v2)
-		{
-			return {v1.x + v2.x, v1.y + v2.y};
-		}
+		//DirectX::XMFLOAT2 operator+(const DirectX::XMFLOAT2& v1, const DirectX::XMFLOAT2& v2)
+		//{
+		//	return {v1.x + v2.x, v1.y + v2.y};
+		//}
 
-		float flt3::operator[](int i) const
-		{
-			return *(&x + i);
-		}
+		//float flt3::operator[](int i) const
+		//{
+		//	return *(&x + i);
+		//}
 
-		jmath::flt3 flt3::operator+(const flt3& a) const
-		{
-			return {a.x + x, a.y + y, a.z + z};
-		}
+		//jmath::flt3 flt3::operator+(const flt3& a) const
+		//{
+		//	return {a.x + x, a.y + y, a.z + z};
+		//}
 
-		jmath::flt3 flt3::operator*(const float a) const
-		{
-			return {x * a, y * a, z * a};
-		}
+		//jmath::flt3 flt3::operator*(const float a) const
+		//{
+		//	return {x * a, y * a, z * a};
+		//}
 
-		vec1 toRadians(vec1 degree)
+		float toRadians(float degree)
 		{
+			vec3 a;
+			vec3 b;
+			vec3 c = (a + b) * 0.5f;
 			return DirectX::XMConvertToRadians(degree);
 		}
 

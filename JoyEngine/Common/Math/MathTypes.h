@@ -9,23 +9,57 @@ namespace JoyEngine
 {
 	namespace jmath
 	{
-		struct flt3 : DirectX::XMFLOAT3
+		template <typename T>
+		struct PODVector : public T
 		{
 			template <typename... Args>
-			flt3(Args&&... args):
-				DirectX::XMFLOAT3(std::forward<Args>(args)...)
+			PODVector(Args&&... args) :
+				T(std::forward<Args>(args)...)
 			{
 			}
 
-			float operator[](int i) const;
-			jmath::flt3 operator+(const flt3& a) const;
-			jmath::flt3 operator*(const float a) const;
+			float operator[](int i) const
+			{
+				return *(reinterpret_cast<const float*>(this) + i);
+			}
+
+			PODVector<T> operator+(const PODVector<T>& a) const
+			{
+				T result;
+				for (int i = 0; i < sizeof(T) / sizeof(float); i++)
+				{
+					*(reinterpret_cast<float*>(&result) + i) =
+						this->operator[](i) + a[i];
+				}
+				return result;
+			}
+
+			PODVector<T> operator*(const PODVector<T>& a) const
+			{
+				T result;
+				for (int i = 0; i < sizeof(T) / sizeof(float); i++)
+				{
+					*(reinterpret_cast<float*>(&result) + i) =
+						this->operator[](i) * a[i];
+				}
+				return result;
+			}
+
+			PODVector<T> operator*(float val) const
+			{
+				T result;
+				for (int i = 0; i < sizeof(T) / sizeof(float); i++)
+				{
+					*(reinterpret_cast<float*>(&result) + i) =
+						this->operator[](i) * val;
+				}
+				return result;
+			}
 		};
 
-		typedef float vec1;
-		typedef DirectX::XMFLOAT2 vec2;
-		typedef flt3 vec3;
-		typedef DirectX::XMFLOAT4 vec4;
+		typedef PODVector<DirectX::XMFLOAT2> vec2;
+		typedef PODVector<DirectX::XMFLOAT3> vec3;
+		typedef PODVector<DirectX::XMFLOAT4> vec4;
 
 		typedef DirectX::XMINT2 uvec2;
 		typedef DirectX::XMINT3 uvec3;
@@ -34,7 +68,7 @@ namespace JoyEngine
 		typedef DirectX::XMVECTOR xvec4;
 		typedef DirectX::XMVECTOR quat;
 
-		vec1 toRadians(vec1 degree);
+		float toRadians(float degree);
 
 		mat4x4 perspectiveFovLH_ZO(float fovRadians, float width, float height, float nearPlane, float farPlane);
 		mat4x4 orthoLH_ZO(float left, float right, float bottom, float top, float nearPlane, float farPlane);

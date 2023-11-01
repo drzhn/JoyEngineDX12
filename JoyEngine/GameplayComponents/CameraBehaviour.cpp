@@ -52,7 +52,7 @@ namespace JoyEngine
 		jmath::vec3 vec = jmath::vec3(deltaX, deltaY, deltaZ);
 
 		const jmath::xvec4 vecWorld = jmath::rotate3(
-			jmath::loadVec4(jmath::vec4(deltaX, deltaY, deltaZ, 1)),
+			jmath::loadVec4(jmath::vec4(deltaX, deltaY, deltaZ, 1.f)),
 			m_gameObject.GetTransform().GetRotation()
 		);
 

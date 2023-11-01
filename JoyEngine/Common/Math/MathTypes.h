@@ -4,6 +4,7 @@
 #include <utility>
 
 #include "directxmath.h"
+#include "DirectXPackedVector.h"
 
 namespace JoyEngine
 {
@@ -60,6 +61,12 @@ namespace JoyEngine
 		typedef PODVector<DirectX::XMFLOAT2> vec2;
 		typedef PODVector<DirectX::XMFLOAT3> vec3;
 		typedef PODVector<DirectX::XMFLOAT4> vec4;
+
+		typedef DirectX::PackedVector::HALF half;
+		typedef DirectX::PackedVector::XMHALF2 half2;
+		typedef DirectX::PackedVector::XMHALF4 half4;
+
+		typedef DirectX::PackedVector::XMUDECN4 rgb10a2unorm;
 
 		typedef DirectX::XMINT2 uvec2;
 		typedef DirectX::XMINT3 uvec3;

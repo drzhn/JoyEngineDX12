@@ -13,6 +13,10 @@
 #define UINT1 uint32_t
 #define UINT2 JoyEngine::jmath::uvec2
 #define UINT3 JoyEngine::jmath::uvec3
+
+#define PACKED_HALF4 JoyEngine::jmath::half4
+#define PACKED_RGB10A2_UNORM JoyEngine::jmath::rgb10a2unorm
+
 #endif
 
 #ifdef SHADER
@@ -23,6 +27,9 @@
 #define UINT1 uint
 #define UINT2 uint2
 #define UINT3 uint3
+
+#define PACKED_HALF4 UINT2
+#define PACKED_RGB10A2_UNORM UINT1
 #endif
 
 // ========= COMMON DEFINES ========

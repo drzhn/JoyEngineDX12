@@ -56,7 +56,7 @@ namespace JoyEngine
 			{
 				m_isResourceInUse.insert({id, new T(id, std::forward<Args>(args)...)});
 			}
-			m_isResourceInUse[id]->AddRef();
+			m_isResourceInUse.at(id)->AddRef();
 			return ResourceHandle<T>(GetResource<T>(id), &m_unregisterResourceAction);
 		}
 
@@ -72,16 +72,11 @@ namespace JoyEngine
 
 	private:
 		template <class T>
-		T* GetResource(uint64_t id)
+		T* GetResource(const uint64_t id) const
 		{
 			ASSERT(IsResourceLoaded(id));
-#ifdef _DEBUG
-			auto classname = m_isResourceInUse[id]->GetClassname();
-			T* ptr = JoyCast<T>(m_isResourceInUse[id]);
+			T* ptr = JoyCast<T>(m_isResourceInUse.at(id));
 			ASSERT(ptr != nullptr);
-#else
-            T *ptr = reinterpret_cast<T *>(m_isResourceInUse[id]);
-#endif //DEBUG
 			return ptr;
 		}
 

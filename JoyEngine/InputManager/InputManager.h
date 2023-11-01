@@ -55,7 +55,7 @@ namespace JoyEngine
 		bool GetKeyUp(KeyCode code) const;
 
 	private:
-		std::map<KeyCode, std::atomic<bool>> m_keyStates;
+		std::atomic<bool> m_keyStates[1 << (sizeof(KeyCode) * 8)];
 	};
 }
 

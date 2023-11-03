@@ -15,6 +15,8 @@
 #include "GraphicsManager/GraphicsManager.h"
 #include "Common/Time.h"
 #include "InputManager/InputManager.h"
+#include "ThreadManager/LockFreeFlag.h"
+#include "ThreadManager/ThreadManager.h"
 #include "Utils/TimeCounter.h"
 
 #ifdef _DEBUG
@@ -30,6 +32,7 @@ namespace JoyEngine
 
 	JoyEngine::JoyEngine(HINSTANCE instance, HWND windowHandle, uint32_t width, uint32_t height) :
 		m_windowHandle(windowHandle),
+		m_threadManager(new ThreadManager()),
 		m_inputManager(new InputManager()),
 		m_graphicsManager(new GraphicsManager(instance, windowHandle, width, height)),
 		m_memoryManager(new MemoryManager()),
@@ -54,35 +57,8 @@ namespace JoyEngine
 		}
 	}
 
-
-
-	class Base
-	{
-	public:
-		virtual constexpr const char* GetID()
-		{
-			return __FUNCSIG__;
-		};
-	};
-
-	class Child : public Base
-	{
-	//public:
-	//	constexpr const char* GetID() override
-	//	{
-	//		return __FUNCSIG__;
-	//	};
-	};
-
-	template <typename T>
-	class SomeClass
-	{
-	};
-
 	void JoyEngine::Init() const noexcept
 	{
-		auto c = Base().GetID();
-		auto cd = Child().GetID();
 		Time::Init(m_deltaTimeHandler);
 
 		// creating internal engine materials
@@ -102,23 +78,33 @@ namespace JoyEngine
 		Logger::Log("==================================================================\n");
 	}
 
+	LockFreeFlag g_finishFlag;
+
 	void JoyEngine::Start() const noexcept
 	{
 		m_renderManager->Start();
+
+		m_threadManager->StartTask(&JoyEngine::UpdateTask, this);
 	}
 
-	void JoyEngine::Update() const noexcept
+	void JoyEngine::UpdateTask() const noexcept
 	{
-		Time::Update();
+		while (!g_finishFlag)
+		{
+			Time::Update();
 
-		m_renderManager->PreUpdate();
+			m_renderManager->PreUpdate();
 
-		m_sceneManager->Update();
-		m_renderManager->Update();
+			m_sceneManager->Update();
+			m_renderManager->Update();
+		}
 	}
 
 	void JoyEngine::Stop() const noexcept
 	{
+		g_finishFlag = true;
+		m_threadManager->Stop();
+
 		m_renderManager->Stop();
 	}
 
@@ -150,6 +136,7 @@ namespace JoyEngine
 		Logger::Log("Context destroyed\n");
 	}
 
+	// always main GUI thread
 	void JoyEngine::HandleMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam);

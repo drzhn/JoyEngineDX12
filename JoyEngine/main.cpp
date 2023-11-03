@@ -68,7 +68,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 	graphicsContext->Init();
 	graphicsContext->Start();
 
-
 	ShowWindow(hwnd, nCmdShow);
 
 	MSG msg = {};
@@ -84,7 +83,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 		{
 			break;
 		}
-		graphicsContext->Update();
 	}
 
 	graphicsContext->Stop();

@@ -286,6 +286,8 @@
     <ClCompile Include="JoyEngine\SceneManager\SceneManager.cpp" />
     <ClCompile Include="JoyEngine\SceneManager\Transform.cpp" />
     <ClCompile Include="JoyEngine\EngineDataProvider\EngineDataProvider.cpp" />
+    <ClCompile Include="JoyEngine\ThreadManager\LockFreeFlag.cpp" />
+    <ClCompile Include="JoyEngine\ThreadManager\ThreadManager.cpp" />
     <ClCompile Include="JoyEngine\Utils\GraphicsUtils.cpp" />
     <ClCompile Include="JoyEngine\Utils\Log.cpp" />
     <ClCompile Include="JoyEngine\main.cpp" />
@@ -373,6 +375,8 @@
     <ClInclude Include="JoyEngine\SceneManager\SceneManager.h" />
     <ClInclude Include="JoyEngine\SceneManager\Transform.h" />
     <ClInclude Include="JoyEngine\SceneManager\TreeStorage.h" />
+    <ClInclude Include="JoyEngine\ThreadManager\LockFreeFlag.h" />
+    <ClInclude Include="JoyEngine\ThreadManager\ThreadManager.h" />
     <ClInclude Include="JoyEngine\Utils\Assert.h" />
     <ClInclude Include="JoyEngine\EngineDataProvider\EngineDataProvider.h" />
     <ClInclude Include="JoyEngine\Utils\FileUtils.h" />

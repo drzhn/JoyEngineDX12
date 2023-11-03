@@ -11,6 +11,8 @@ namespace JoyEngine
 {
 	class InputManager;
 
+	class ThreadManager;
+
 	class GraphicsManager;
 
 	class MemoryManager;
@@ -54,7 +56,7 @@ namespace JoyEngine
 
 		void Start() const noexcept;
 
-		void Update() const noexcept;
+		void UpdateTask() const noexcept;
 
 		void Stop() const noexcept;
 
@@ -68,6 +70,7 @@ namespace JoyEngine
 		HWND m_windowHandle;
 
 		std::unique_ptr<InputManager> m_inputManager;
+		std::unique_ptr<ThreadManager> m_threadManager;
 		std::unique_ptr<GraphicsManager> m_graphicsManager;
 		std::unique_ptr<MemoryManager> m_memoryManager;
 		std::unique_ptr<DataManager> m_dataManager;

@@ -31,6 +31,7 @@ namespace JoyEngine
 
 		[[nodiscard]] std::vector<char> GetData(const std::string& path, bool shouldReadRawData = false, uint32_t offset = 0) const;
 		bool HasRawData(const std::string& path) const;
+		void GetWFilename(const std::string& path, std::wstring& filename);
 		[[nodiscard]] std::ifstream GetFileStream(const std::string& path, bool shouldReadRawData = false) const;
 		[[nodiscard]] rapidjson::Document GetSerializedData(const std::string& path, AssetType) const;
 	private:

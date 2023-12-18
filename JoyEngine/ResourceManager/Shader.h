@@ -73,7 +73,11 @@ namespace JoyEngine
 		std::map<D3D12_SHADER_VERSION_TYPE, std::wstring> m_typeFunctionNameMap;
 
 	private:
-		void CompileShader(ShaderType type, const std::vector<char>& shaderData, ComPtr<ID3DBlob>& module);
+		void CompileShader(
+			ShaderType type, 
+			const std::wstring& shaderName,
+			const std::vector<char>& shaderData, 
+			ComPtr<ID3DBlob>& module);
 	};
 }
 

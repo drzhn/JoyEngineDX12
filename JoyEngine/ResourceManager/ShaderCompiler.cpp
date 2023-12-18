@@ -103,6 +103,7 @@ namespace JoyEngine
 
 	void ShaderCompiler::Compile(
 		ShaderType type,
+		const std::wstring& shaderName,
 		const std::vector<char>& shaderData,
 		ID3DBlob** module,
 		ShaderInputMap& globalInputMap,
@@ -215,7 +216,7 @@ namespace JoyEngine
 
 		HRESULT res = s_dxcCompiler->Compile(
 			sourceBlob.Get(), // pSource
-			entryPointL, // pSourceName
+			shaderName.c_str(), // pSourceName
 			entryPointL, // pEntryPoint
 			targetL, // pTargetProfile
 			arguments, argCount, // pArguments, argCount

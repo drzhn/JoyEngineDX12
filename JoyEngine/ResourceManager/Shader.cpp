@@ -10,11 +10,14 @@ namespace JoyEngine
 		m_shaderType(shaderType)
 	{
 		const std::vector<char> shaderData = DataManager::Get()->GetData(shaderPath);
+		std::wstring shaderName;
+		DataManager::Get()->GetWFilename(shaderPath, shaderName);
 
 		if (m_shaderType & JoyShaderTypeCompute)
 		{
 			CompileShader(
 				JoyShaderTypeCompute,
+				shaderName,
 				shaderData,
 				m_computeModule
 			);
@@ -24,6 +27,7 @@ namespace JoyEngine
 		{
 			CompileShader(
 				JoyShaderTypeVertex,
+				shaderName,
 				shaderData,
 				m_vertexModule
 			);
@@ -33,6 +37,7 @@ namespace JoyEngine
 		{
 			CompileShader(
 				JoyShaderTypeGeometry,
+				shaderName,
 				shaderData,
 				m_geometryModule
 			);
@@ -42,6 +47,7 @@ namespace JoyEngine
 		{
 			CompileShader(
 				JoyShaderTypePixel,
+				shaderName,
 				shaderData,
 				m_fragmentModule
 			);
@@ -51,16 +57,18 @@ namespace JoyEngine
 		{
 			CompileShader(
 				JoyShaderTypeRaytracing,
+				shaderName,
 				shaderData,
 				m_raytracingModule
 			);
 		}
 	}
 
-	void Shader::CompileShader(ShaderType type, const std::vector<char>& shaderData, ComPtr<ID3DBlob>& module)
+	void Shader::CompileShader(ShaderType type, const std::wstring& shaderName, const std::vector<char>& shaderData, ComPtr<ID3DBlob>& module)
 	{
 		ShaderCompiler::Compile(
 			type,
+			shaderName,
 			shaderData,
 			&module,
 			m_globalInputMap,

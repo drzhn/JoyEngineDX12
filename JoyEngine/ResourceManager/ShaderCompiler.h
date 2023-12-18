@@ -71,6 +71,7 @@ namespace JoyEngine
 	public:
 		static void Compile(
 			ShaderType type,
+			const std::wstring& shaderName,
 			const std::vector<char>& shaderData,
 			ID3DBlob** module,
 			ShaderInputMap& globalInputMap,

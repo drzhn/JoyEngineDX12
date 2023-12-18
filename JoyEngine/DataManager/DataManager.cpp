@@ -34,6 +34,11 @@ namespace JoyEngine
 		return std::filesystem::exists(m_dataPath / (path + ".data"));
 	}
 
+	void DataManager::GetWFilename(const std::string& path, std::wstring& filename)
+	{
+		filename = std::filesystem::path(path).stem().generic_wstring();
+	}
+
 	std::ifstream DataManager::GetFileStream(const std::string& path, bool shouldReadRawData) const
 	{
 		const auto delimiterPos = path.find_first_of(':');

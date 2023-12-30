@@ -1,6 +1,6 @@
 #include "Scene.h"
 
-#include "SceneManager.h"
+#include "WorldManager.h"
 #include "rapidjson/document.h"
 
 
@@ -48,10 +48,10 @@ namespace JoyEngine
 
 		if (objType == "game_object")
 		{
-			GameObject* go = SceneManager::Get()->CreateGameObject(
+			GameObject* go = WorldManager::Get()->CreateGameObject(
 				obj["name"].GetString(),
-				SceneManager::Get()->GetTransformProvider().Allocate(),
-				SceneManager::Get()->GetTransformProvider()
+				WorldManager::Get()->GetTransformProvider().Allocate(),
+				WorldManager::Get()->GetTransformProvider()
 			);
 
 			rapidjson::Value& transformValue = obj["transform"];
@@ -191,8 +191,8 @@ namespace JoyEngine
 	Scene::Scene(const char* path):
 		GameObject(
 			path,
-			SceneManager::Get()->GetTransformProvider().Allocate(),
-			SceneManager::Get()->GetTransformProvider())
+			WorldManager::Get()->GetTransformProvider().Allocate(),
+			WorldManager::Get()->GetTransformProvider())
 	{
 		rapidjson::Document json = DataManager::Get()->GetSerializedData(path, AssetType::Scene);
 		m_name = json["name"].GetString();

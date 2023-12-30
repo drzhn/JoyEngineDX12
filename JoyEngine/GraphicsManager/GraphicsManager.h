@@ -18,30 +18,18 @@ namespace JoyEngine
 	class GraphicsManager : public Singleton<GraphicsManager>
 	{
 	public:
-		GraphicsManager() = delete;
-
-		explicit GraphicsManager(HINSTANCE instance, HWND windowHandle, uint32_t width, uint32_t height);
+		GraphicsManager();
 
 		~GraphicsManager() = default;
 
-		[[nodiscard]] HINSTANCE GetHINSTANCE() const noexcept { return m_windowInstance; }
-		[[nodiscard]] HWND GetHWND() const noexcept { return m_windowHandle; }
 		[[nodiscard]] IDXGIAdapter4* GetPhysicalDevice() const noexcept { return m_physicalDevice.Get(); }
 		[[nodiscard]] ID3D12Device5* GetDevice() const noexcept { return m_logicalDevice.Get(); }
 		[[nodiscard]] IDXGIFactory5* GetFactory() const noexcept { return m_dxgiFactory.Get(); }
-		[[nodiscard]] uint32_t GetWidth() const noexcept { return m_width; }
-		[[nodiscard]] uint32_t GetHeight() const noexcept { return m_height; }
 		[[nodiscard]] bool GetTearingSupport() const noexcept { return m_allowTearing; }
 
 		[[nodiscard]] D3D_ROOT_SIGNATURE_VERSION GetHighestRootSignatureVersion() const noexcept { return m_highestRootSignatureVersion; }
 
 	private:
-		uint32_t m_width;
-		uint32_t m_height;
-
-		HINSTANCE m_windowInstance;
-		HWND m_windowHandle;
-
 		ComPtr<IDXGIFactory5> m_dxgiFactory = nullptr;
 		ComPtr<IDXGIAdapter4> m_physicalDevice = nullptr;
 		ComPtr<ID3D12Device5> m_logicalDevice = nullptr;

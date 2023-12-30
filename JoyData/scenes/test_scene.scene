@@ -1,6 +1,7 @@
 {
     "asset_type": "scene",
     "name": "test_scene",
+    "renderer": "simple_ddgi",
     "objects": [
         {
             "name": "camera",

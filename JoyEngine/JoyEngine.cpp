@@ -5,7 +5,7 @@
 #include "imgui.h"
 #include "backends/imgui_impl_win32.h"
 
-#include "SceneManager/SceneManager.h"
+#include "SceneManager/WorldManager.h"
 #include "RenderManager/RenderManager.h"
 #include "EngineDataProvider/EngineDataProvider.h"
 #include "MemoryManager/MemoryManager.h"
@@ -30,18 +30,17 @@ namespace JoyEngine
 {
 	auto g_startTime = std::chrono::high_resolution_clock::now();
 
-	JoyEngine::JoyEngine(HINSTANCE instance, HWND windowHandle, uint32_t width, uint32_t height) :
-		m_windowHandle(windowHandle),
+	JoyEngine::JoyEngine(HWND gameWindowHandle):
 		m_threadManager(new ThreadManager()),
 		m_inputManager(new InputManager()),
-		m_graphicsManager(new GraphicsManager(instance, windowHandle, width, height)),
+		m_graphicsManager(new GraphicsManager()),
 		m_memoryManager(new MemoryManager()),
 		m_dataManager(new DataManager()),
 		m_descriptorSetManager(new DescriptorManager()),
 		m_resourceManager(new ResourceManager()),
-		m_renderManager(new RenderManager()),
+		m_renderManager(new RenderManager(gameWindowHandle)),
 		m_engineData(new EngineDataProvider()),
-		m_sceneManager(new SceneManager())
+		m_worldManager(new WorldManager())
 	{
 		{
 			// Setup Dear ImGui context
@@ -53,7 +52,7 @@ namespace JoyEngine
 			//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
 			ImGui::StyleColorsDark();
-			ImGui_ImplWin32_Init(windowHandle);
+			ImGui_ImplWin32_Init(gameWindowHandle);
 		}
 	}
 
@@ -66,7 +65,7 @@ namespace JoyEngine
 		// creating render resources
 		m_renderManager->Init();
 		// loading scene from disk
-		m_sceneManager->Init();
+		m_worldManager->Init();
 
 		const auto currentTime = std::chrono::high_resolution_clock::now();
 		const float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - g_startTime).count();
@@ -95,7 +94,7 @@ namespace JoyEngine
 
 			m_renderManager->PreUpdate();
 
-			m_sceneManager->Update();
+			m_worldManager->Update();
 			m_renderManager->Update();
 		}
 	}
@@ -112,7 +111,7 @@ namespace JoyEngine
 	{
 		// will destroy managers in certain order
 		m_inputManager = nullptr;
-		m_sceneManager = nullptr; // unregister mesh renderers, remove descriptor set, pipelines, pipeline layouts
+		m_worldManager = nullptr; // unregister mesh renderers, remove descriptor set, pipelines, pipeline layouts
 		m_engineData = nullptr; //delete all internal engine resources
 		m_renderManager = nullptr; //delete swapchain, synchronisation, framebuffers
 		m_resourceManager = nullptr; //delete all scene render data (buffers, textures)

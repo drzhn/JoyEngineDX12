@@ -39,7 +39,9 @@ namespace JoyEngine
 	class RenderManager final : public IRenderManager
 	{
 	public:
-		RenderManager() = default;
+		RenderManager() = delete;
+
+		explicit RenderManager(HWND windowHandle);
 
 		~RenderManager() override = default;
 

@@ -39,7 +39,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 	RegisterClass(&wc);
 
 	RECT wr = {0, 0, windowWidth, windowHeight};
-	AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE);
+	AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW | WS_VISIBLE | WS_SYSMENU | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, FALSE);
 	HWND hwnd = CreateWindowEx(
 		0, // Optional window styles.
 		CLASS_NAME, // Window class
@@ -62,7 +62,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
 	Logger::Log("=========== JOY ENGINE ===========\n");
 
-	JoyEngine::JoyEngine* graphicsContext = new JoyEngine::JoyEngine(hInstance, hwnd, windowWidth, windowHeight);
+	JoyEngine::JoyEngine* graphicsContext = new JoyEngine::JoyEngine(hwnd);
 	WindowHandler::RegisterMessageHandler(graphicsContext, hwnd);
 
 	graphicsContext->Init();

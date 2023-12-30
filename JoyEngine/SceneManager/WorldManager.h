@@ -8,10 +8,10 @@
 
 namespace JoyEngine
 {
-	class SceneManager : public Singleton<SceneManager>
+	class WorldManager : public Singleton<WorldManager>
 	{
 	public:
-		SceneManager() = default;
+		WorldManager() = default;
 
 		void Init();
 
@@ -29,7 +29,7 @@ namespace JoyEngine
 
 		void Update();
 
-		~SceneManager();
+		~WorldManager();
 
 	private:
 		TransformProvider m_transformProvider;

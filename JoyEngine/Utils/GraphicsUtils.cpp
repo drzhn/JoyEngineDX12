@@ -4,7 +4,7 @@
 #include "Common/HashDefs.h"
 #include "EngineDataProvider/EngineDataProvider.h"
 #include "ResourceManager/ResourceView.h"
-#include "SceneManager/SceneManager.h"
+#include "SceneManager/WorldManager.h"
 
 #include "WinPixEventRuntime/pix3.h"
 
@@ -174,7 +174,7 @@ namespace JoyEngine
 				{
 					commandList->SetGraphicsRootDescriptorTable(
 						rootIndex,
-						SceneManager::Get()->GetTransformProvider().GetObjectMatricesBufferView(frameIndex)->GetGPUHandle()
+						WorldManager::Get()->GetTransformProvider().GetObjectMatricesBufferView(frameIndex)->GetGPUHandle()
 					);
 					break;
 				}
@@ -230,7 +230,7 @@ namespace JoyEngine
 				{
 					commandList->SetComputeRootDescriptorTable(
 						rootIndex,
-						SceneManager::Get()->GetTransformProvider().GetObjectMatricesBufferView(frameIndex)->GetGPUHandle()
+						WorldManager::Get()->GetTransformProvider().GetObjectMatricesBufferView(frameIndex)->GetGPUHandle()
 					);
 					break;
 				}

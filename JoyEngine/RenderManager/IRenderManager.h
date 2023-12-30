@@ -12,9 +12,15 @@ namespace JoyEngine
 	class ILightSystem;
 	class SharedMaterial;
 
-	class IRenderManager: public Singleton<IRenderManager>
+	class IRenderManager : public Singleton<IRenderManager>
 	{
 	public:
+		IRenderManager(HWND windowHandle):
+		m_windowHandle(windowHandle)
+		{
+			
+		}
+
 		virtual ~IRenderManager() = default;
 		virtual void RegisterSharedMaterial(SharedMaterial*) = 0;
 		virtual void UnregisterSharedMaterial(SharedMaterial*) = 0;
@@ -43,6 +49,8 @@ namespace JoyEngine
 		static constexpr DXGI_FORMAT gBufferFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
 		static constexpr DXGI_FORMAT depthFormat = DXGI_FORMAT_D32_FLOAT;
 		static constexpr DXGI_FORMAT depthUavFormat = DXGI_FORMAT_R32_FLOAT;
+
+		HWND m_windowHandle{};
 	};
 }
 #endif // IRENDERMANAGER_H

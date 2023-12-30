@@ -69,7 +69,7 @@
     <ClCompile Include="JoyEngine\SceneManager\Scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JoyEngine\SceneManager\SceneManager.cpp">
+    <ClCompile Include="JoyEngine\SceneManager\WorldManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="JoyEngine\SceneManager\Transform.cpp">
@@ -302,7 +302,7 @@
     <ClInclude Include="JoyEngine\SceneManager\Scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JoyEngine\SceneManager\SceneManager.h">
+    <ClInclude Include="JoyEngine\SceneManager\WorldManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JoyEngine\SceneManager\Transform.h">

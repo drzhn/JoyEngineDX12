@@ -42,14 +42,26 @@ namespace JoyEngine
 	bool g_drawProbes = true;
 	CurrentDDGIRaytracer g_currentRaytracer = CurrentDDGIRaytracer::Software;
 
+	RenderManager::RenderManager(HWND windowHandle):
+		IRenderManager(windowHandle)
+	{
+		RECT rect;
+		if (GetWindowRect(windowHandle, &rect))
+		{
+			m_width = 1280;// rect.right - rect.left;
+			m_height = 720;// rect.bottom - rect.top;
+		}
+		else
+		{
+			ASSERT(false);
+		}
+	}
+
 	void RenderManager::Init()
 	{
 		TIME_PERF("RenderManager init")
 
 		static_assert(sizeof(EngineData) == 176);
-
-		m_width = GraphicsManager::Get()->GetWidth();
-		m_height = GraphicsManager::Get()->GetHeight();
 
 		ASSERT(m_width != 0 && m_height != 0);
 
@@ -69,17 +81,19 @@ namespace JoyEngine
 		//swapChainDesc.SampleDesc.Quality = 0;
 
 		ComPtr<IDXGISwapChain1> swapChain;
-		ASSERT_SUCC(GraphicsManager::Get()->GetFactory()->CreateSwapChainForHwnd(
-			m_queue->GetQueue(), // Swap chain needs the queue so that it can force a flush on it.
-			GraphicsManager::Get()->GetHWND(),
-			&swapChainDesc,
-			nullptr,
-			nullptr,
-			&swapChain
-		));
+		ASSERT_SUCC(
+			GraphicsManager::Get()->GetFactory()->CreateSwapChainForHwnd(
+				m_queue->GetQueue(), // Swap chain needs the queue so that it can force a flush on it.
+				m_windowHandle,
+				&swapChainDesc,
+				nullptr,
+				nullptr,
+				&swapChain
+			));
 
 		ASSERT_SUCC(
-			GraphicsManager::Get()->GetFactory()->MakeWindowAssociation(GraphicsManager::Get()->GetHWND(),
+			GraphicsManager::Get()->GetFactory()->MakeWindowAssociation(
+				m_windowHandle,
 				DXGI_MWA_NO_ALT_ENTER));
 		ASSERT_SUCC(swapChain.As(&m_swapChain));
 

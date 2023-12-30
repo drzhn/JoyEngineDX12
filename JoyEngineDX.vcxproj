@@ -283,7 +283,7 @@
     <ClCompile Include="JoyEngine\ResourceManager\Buffers\UAVGpuBuffer.cpp" />
     <ClCompile Include="JoyEngine\SceneManager\GameObject.cpp" />
     <ClCompile Include="JoyEngine\SceneManager\Scene.cpp" />
-    <ClCompile Include="JoyEngine\SceneManager\SceneManager.cpp" />
+    <ClCompile Include="JoyEngine\SceneManager\WorldManager.cpp" />
     <ClCompile Include="JoyEngine\SceneManager\Transform.cpp" />
     <ClCompile Include="JoyEngine\EngineDataProvider\EngineDataProvider.cpp" />
     <ClCompile Include="JoyEngine\ThreadManager\LockFreeFlag.cpp" />
@@ -372,7 +372,7 @@
     <ClInclude Include="JoyEngine\ResourceManager\Buffers\UAVGpuBuffer.h" />
     <ClInclude Include="JoyEngine\SceneManager\GameObject.h" />
     <ClInclude Include="JoyEngine\SceneManager\Scene.h" />
-    <ClInclude Include="JoyEngine\SceneManager\SceneManager.h" />
+    <ClInclude Include="JoyEngine\SceneManager\WorldManager.h" />
     <ClInclude Include="JoyEngine\SceneManager\Transform.h" />
     <ClInclude Include="JoyEngine\SceneManager\TreeStorage.h" />
     <ClInclude Include="JoyEngine\ThreadManager\LockFreeFlag.h" />

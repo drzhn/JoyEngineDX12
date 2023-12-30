@@ -23,7 +23,7 @@ namespace JoyEngine
 
 	class ResourceManager;
 
-	class SceneManager;
+	class WorldManager;
 
 	class RenderManager;
 
@@ -48,9 +48,7 @@ namespace JoyEngine
 	class JoyEngine final : public IWindowHandler
 	{
 	public:
-		JoyEngine() = delete;
-
-		JoyEngine(HINSTANCE instance, HWND windowHandle, uint32_t width, uint32_t height);
+		JoyEngine(HWND gameWindowHandle);
 
 		void Init() const noexcept;
 
@@ -78,7 +76,7 @@ namespace JoyEngine
 		std::unique_ptr<ResourceManager> m_resourceManager;
 		std::unique_ptr<RenderManager> m_renderManager;
 		std::unique_ptr<EngineDataProvider> m_engineData;
-		std::unique_ptr<SceneManager> m_sceneManager;
+		std::unique_ptr<WorldManager> m_worldManager;
 	};
 }
 

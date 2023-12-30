@@ -5,11 +5,7 @@
 
 namespace JoyEngine
 {
-	GraphicsManager::GraphicsManager(HINSTANCE instance, HWND windowHandle, uint32_t width, uint32_t height) :
-		m_width(width),
-		m_height(height),
-		m_windowInstance(instance),
-		m_windowHandle(windowHandle)
+	GraphicsManager::GraphicsManager() 
 	{
 		TIME_PERF("GraphicsManager ctor")
 		UINT createFactoryFlags = 0;

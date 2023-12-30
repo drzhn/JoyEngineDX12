@@ -1,33 +1,33 @@
-#include "SceneManager.h"
+#include "WorldManager.h"
 
 #include "Utils/TimeCounter.h"
 
 
 namespace JoyEngine
 {
-	void SceneManager::Init()
+	void WorldManager::Init()
 	{
-		TIME_PERF("SceneManager init");
+		TIME_PERF("WorldManager init");
 		m_scene = m_sceneTree.Create<Scene>("scenes/test_scene.scene");
 		m_transformProvider.Init();
 	}
 
-	void SceneManager::Start()
+	void WorldManager::Start()
 	{
 	}
 
-	void SceneManager::Stop()
+	void WorldManager::Stop()
 	{
 		m_scene = nullptr;
 	}
 
-	void SceneManager::Update()
+	void WorldManager::Update()
 	{
 		m_scene->Update();
 		m_transformProvider.Update();
 	}
 
-	SceneManager::~SceneManager()
+	WorldManager::~WorldManager()
 	{
 		if (m_scene != nullptr)
 		{

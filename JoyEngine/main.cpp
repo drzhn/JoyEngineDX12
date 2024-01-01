@@ -39,7 +39,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 	RegisterClass(&wc);
 
 	RECT wr = {0, 0, windowWidth, windowHeight};
-	AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW | WS_VISIBLE | WS_SYSMENU | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, FALSE);
+	AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE);
 	HWND hwnd = CreateWindowEx(
 		0, // Optional window styles.
 		CLASS_NAME, // Window class

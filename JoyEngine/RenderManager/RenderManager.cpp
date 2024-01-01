@@ -46,10 +46,10 @@ namespace JoyEngine
 		IRenderManager(windowHandle)
 	{
 		RECT rect;
-		if (GetWindowRect(windowHandle, &rect))
+		if (GetClientRect(windowHandle, &rect))
 		{
-			m_width = 1280;// rect.right - rect.left;
-			m_height = 720;// rect.bottom - rect.top;
+			m_width = rect.right - rect.left;
+			m_height = rect.bottom - rect.top;
 		}
 		else
 		{

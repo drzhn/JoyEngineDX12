@@ -1,6 +1,6 @@
 #include "GBuffer.h"
 
-#include "IRenderManager.h"
+#include "IRenderer.h"
 #include "Utils/GraphicsUtils.h"
 
 namespace JoyEngine
@@ -16,7 +16,7 @@ namespace JoyEngine
 		m_colorTexture = std::make_unique<UAVTexture>(
 			m_width,
 			m_height,
-			IRenderManager::GetGBufferFormat(),
+			IRenderer::GetGBufferFormat(),
 			D3D12_RESOURCE_STATE_GENERIC_READ,
 			D3D12_HEAP_TYPE_DEFAULT
 		);
@@ -24,7 +24,7 @@ namespace JoyEngine
 		m_normalsTexture = std::make_unique<UAVTexture>(
 			m_width,
 			m_height,
-			IRenderManager::GetGBufferFormat(),
+			IRenderer::GetGBufferFormat(),
 			D3D12_RESOURCE_STATE_GENERIC_READ,
 			D3D12_HEAP_TYPE_DEFAULT
 		);
@@ -32,7 +32,7 @@ namespace JoyEngine
 		m_positionTexture = std::make_unique<UAVTexture>(
 			m_width,
 			m_height,
-			IRenderManager::GetGBufferFormat(),
+			IRenderer::GetGBufferFormat(),
 			D3D12_RESOURCE_STATE_GENERIC_READ,
 			D3D12_HEAP_TYPE_DEFAULT
 		);
@@ -41,7 +41,7 @@ namespace JoyEngine
 		m_depthTexture = std::make_unique<UAVTexture>(
 			m_width,
 			m_height,
-			IRenderManager::GetDepthUAVFormat(),
+			IRenderer::GetDepthUAVFormat(),
 			D3D12_RESOURCE_STATE_GENERIC_READ,
 			D3D12_HEAP_TYPE_DEFAULT
 		);
@@ -76,7 +76,7 @@ namespace JoyEngine
 		m_colorTexture = std::make_unique<RenderTexture>(
 			m_width,
 			m_height,
-			IRenderManager::GetGBufferFormat(),
+			IRenderer::GetGBufferFormat(),
 			D3D12_RESOURCE_STATE_GENERIC_READ,
 			D3D12_HEAP_TYPE_DEFAULT
 		);
@@ -84,7 +84,7 @@ namespace JoyEngine
 		m_normalsTexture = std::make_unique<RenderTexture>(
 			m_width,
 			m_height,
-			IRenderManager::GetGBufferFormat(),
+			IRenderer::GetGBufferFormat(),
 			D3D12_RESOURCE_STATE_GENERIC_READ,
 			D3D12_HEAP_TYPE_DEFAULT
 		);
@@ -92,7 +92,7 @@ namespace JoyEngine
 		m_positionTexture = std::make_unique<RenderTexture>(
 			m_width,
 			m_height,
-			IRenderManager::GetGBufferFormat(),
+			IRenderer::GetGBufferFormat(),
 			D3D12_RESOURCE_STATE_GENERIC_READ,
 			D3D12_HEAP_TYPE_DEFAULT
 		);
@@ -100,7 +100,7 @@ namespace JoyEngine
 		m_depthTexture = std::make_unique<DepthTexture>(
 			m_width,
 			m_height,
-			IRenderManager::GetDepthFormat(),
+			IRenderer::GetDepthFormat(),
 			D3D12_RESOURCE_STATE_DEPTH_WRITE,
 			D3D12_HEAP_TYPE_DEFAULT
 		);

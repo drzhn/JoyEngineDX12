@@ -11,7 +11,7 @@
 
 #include "CommonEngineStructs.h"
 #include "RenderManager/GBuffer.h"
-#include "RenderManager/IRenderManager.h"
+#include "RenderManager/IRenderer.h"
 #include "RenderManager/Skybox.h"
 
 #include "RenderManager/Tonemapping.h"
@@ -35,7 +35,7 @@ namespace JoyEngine
 	class ResourceView;
 	class DepthTexture;
 
-	class RaytracedDDGIRenderer final : public IRenderManager
+	class RaytracedDDGIRenderer final : public IRenderer
 	{
 	public:
 		RaytracedDDGIRenderer() = delete;

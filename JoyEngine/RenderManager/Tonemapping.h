@@ -12,7 +12,7 @@
 
 namespace JoyEngine
 {
-	class IRenderManager;
+	class IRenderer;
 	class RenderTexture;
 	class ComputePipeline;
 	class SharedMaterial;
@@ -26,7 +26,7 @@ namespace JoyEngine
 	public:
 		Tonemapping() = delete;
 		explicit Tonemapping(
-			IRenderManager* renderManager,
+			IRenderer* renderManager,
 			RenderTexture* hdrRenderTarget,
 			DXGI_FORMAT hdrRTVFormat,
 			DXGI_FORMAT ldrRTVFormat,

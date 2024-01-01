@@ -1,6 +1,6 @@
 #include "Tonemapping.h"
 
-#include "IRenderManager.h"
+#include "IRenderer.h"
 #include "Common/HashDefs.h"
 #include "EngineDataProvider/EngineDataProvider.h"
 #include "ResourceManager/ResourceManager.h"
@@ -13,7 +13,7 @@
 namespace JoyEngine
 {
 	Tonemapping::Tonemapping(
-		IRenderManager* renderManager,
+		IRenderer* renderManager,
 		RenderTexture* hdrRenderTarget,
 		DXGI_FORMAT hdrRTVFormat,
 		DXGI_FORMAT ldrRTVFormat,

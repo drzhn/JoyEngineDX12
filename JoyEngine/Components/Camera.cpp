@@ -1,12 +1,12 @@
 #include "Camera.h"
 
-#include "RenderManager/IRenderManager.h"
+#include "RenderManager/IRenderer.h"
 #include "SceneManager/GameObject.h"
 #include "SceneManager/Transform.h"
 
 namespace JoyEngine
 {
-	Camera::Camera(GameObject& go, IRenderManager* manager, float cameraNear, float cameraFar, float cameraFov) :
+	Camera::Camera(GameObject& go, IRenderer* manager, float cameraNear, float cameraFar, float cameraFov) :
 		Component(go),
 		m_cameraUnit(CameraUnit(manager->GetAspect(),
 		                        manager->GetWidth_f(),

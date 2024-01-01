@@ -29,7 +29,7 @@
 
 namespace JoyEngine
 {
-	BasicRenderer::BasicRenderer(HWND windowHandle) : IRenderManager(windowHandle)
+	BasicRenderer::BasicRenderer(HWND windowHandle) : IRenderer(windowHandle)
 	{
 		RECT rect;
 		if (GetClientRect(windowHandle, &rect))

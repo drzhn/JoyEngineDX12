@@ -509,6 +509,9 @@
     <ClInclude Include="JoyEngine\RenderManager\BasicRenderer\BasicRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="JoyEngine\RenderManager\IRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="JoyData\shaders\ddgi\hw_raytracing\Raytracing.hlsl" />

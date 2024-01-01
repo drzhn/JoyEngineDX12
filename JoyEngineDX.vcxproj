@@ -311,6 +311,7 @@
     <ClInclude Include="JoyEngine\Common\Math\MathTypes.h" />
     <ClInclude Include="JoyEngine\Common\Math\MathUtils.h" />
     <ClInclude Include="JoyEngine\EngineDataProvider\MeshContainer.h" />
+    <ClInclude Include="JoyEngine\RenderManager\IRenderer.h" />
     <ClInclude Include="JoyEngine\RenderManager\RaytracedDDGIRenderer\AbstractRaytracedDDGIController.h" />
     <ClInclude Include="JoyEngine\RenderManager\RaytracedDDGIRenderer\HW\HardwareRaytracedDDGIController.h" />
     <ClInclude Include="JoyEngine\Common\CameraUnit.h" />

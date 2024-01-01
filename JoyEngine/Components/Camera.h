@@ -7,7 +7,7 @@
 
 namespace JoyEngine
 {
-	class IRenderManager;
+	class IRenderer;
 
 	class Camera : public Component
 	{
@@ -15,7 +15,7 @@ namespace JoyEngine
 
 	public:
 		Camera() = delete;
-		explicit Camera(GameObject& go, IRenderManager* manager, float cameraNear, float cameraFar, float cameraFov);
+		explicit Camera(GameObject& go, IRenderer* manager, float cameraNear, float cameraFar, float cameraFov);
 		void Enable() override;
 		void Disable() override;
 		void Update() override;
@@ -28,7 +28,7 @@ namespace JoyEngine
 		[[nodiscard]] float GetAspect() const;
 	private:
 		CameraUnit m_cameraUnit;
-		IRenderManager* m_manager;
+		IRenderer* m_manager;
 	};
 }
 

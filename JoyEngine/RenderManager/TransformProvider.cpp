@@ -4,13 +4,13 @@ namespace JoyEngine
 {
 	void TransformProvider::Init()
 	{
-		for (int i = 0; i < IRenderManager::Get()->GetFrameCount(); i++)
+		for (int i = 0; i < IRenderer::Get()->GetFrameCount(); i++)
 			m_pool.Update(i);
 	}
 
 	void TransformProvider::Update()
 	{
-		m_pool.Update(IRenderManager::Get()->GetCurrentFrameIndex());
+		m_pool.Update(IRenderer::Get()->GetCurrentFrameIndex());
 	}
 
 

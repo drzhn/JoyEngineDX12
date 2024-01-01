@@ -42,7 +42,7 @@ namespace JoyEngine
 	bool g_drawProbes = true;
 	CurrentDDGIRaytracer g_currentRaytracer = CurrentDDGIRaytracer::Software;
 
-	RaytracedDDGIRenderer::RaytracedDDGIRenderer(HWND windowHandle): IRenderManager(windowHandle)
+	RaytracedDDGIRenderer::RaytracedDDGIRenderer(HWND windowHandle): IRenderer(windowHandle)
 	{
 		RECT rect;
 		if (GetClientRect(windowHandle, &rect))

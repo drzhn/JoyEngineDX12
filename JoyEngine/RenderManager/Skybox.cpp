@@ -1,6 +1,6 @@
 #include "Skybox.h"
 
-#include "IRenderManager.h"
+#include "IRenderer.h"
 #include "ResourceManager/ResourceManager.h"
 #include "Utils/GraphicsUtils.h"
 
@@ -44,10 +44,10 @@ namespace JoyEngine
 				D3D12_COMPARISON_FUNC_GREATER_EQUAL,
 				CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 				{
-					IRenderManager::GetHDRRenderTextureFormat(),
+					IRenderer::GetHDRRenderTextureFormat(),
 				},
 				1,
-				IRenderManager::GetDepthFormat(),
+				IRenderer::GetDepthFormat(),
 				D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 			});
 	}

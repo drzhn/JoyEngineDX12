@@ -12,16 +12,16 @@ namespace JoyEngine
 	class ILightSystem;
 	class SharedMaterial;
 
-	class IRenderManager : public Singleton<IRenderManager>
+	class IRenderer : public Singleton<IRenderer>
 	{
 	public:
-		IRenderManager(HWND windowHandle):
+		IRenderer(HWND windowHandle):
 		m_windowHandle(windowHandle)
 		{
 			
 		}
 
-		virtual ~IRenderManager() = default;
+		virtual ~IRenderer() = default;
 		virtual void RegisterSharedMaterial(SharedMaterial*) = 0;
 		virtual void UnregisterSharedMaterial(SharedMaterial*) = 0;
 		virtual void RegisterCamera(Camera* camera) = 0;

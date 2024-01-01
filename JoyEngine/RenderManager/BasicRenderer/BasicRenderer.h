@@ -11,7 +11,7 @@
 
 #include "CommonEngineStructs.h"
 #include "RenderManager/GBuffer.h"
-#include "RenderManager/IRenderManager.h"
+#include "RenderManager/IRenderer.h"
 #include "RenderManager/Skybox.h"
 
 #include "RenderManager/Tonemapping.h"
@@ -33,7 +33,7 @@ namespace JoyEngine
 	class ResourceView;
 	class DepthTexture;
 
-	class BasicRenderer final : public IRenderManager
+	class BasicRenderer final : public IRenderer
 	{
 	public:
 		BasicRenderer() = delete;

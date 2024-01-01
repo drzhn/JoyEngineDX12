@@ -5,7 +5,7 @@
 #include "d3dx12.h"
 #include "DescriptorManager/DescriptorManager.h"
 #include "GraphicsManager/GraphicsManager.h"
-#include "RenderManager/IRenderManager.h"
+#include "RenderManager/IRenderer.h"
 #include "Utils/TimeCounter.h"
 #include "ResourceManager/ResourceManager.h"
 
@@ -16,10 +16,10 @@ namespace JoyEngine
 		TIME_PERF("EngineDataProvider init")
 
 		EngineSamplersProvider::InitSamplers();
-		DXGI_FORMAT mainRTVFormat = IRenderManager::Get()->GetHDRRenderTextureFormat();
-		DXGI_FORMAT swapchainFormat = IRenderManager::Get()->GetSwapchainFormat();
-		DXGI_FORMAT mainGBufferFormat = IRenderManager::Get()->GetGBufferFormat();
-		DXGI_FORMAT mainDSVFormat = IRenderManager::Get()->GetDepthFormat();
+		DXGI_FORMAT mainRTVFormat = IRenderer::Get()->GetHDRRenderTextureFormat();
+		DXGI_FORMAT swapchainFormat = IRenderer::Get()->GetSwapchainFormat();
+		DXGI_FORMAT mainGBufferFormat = IRenderer::Get()->GetGBufferFormat();
+		DXGI_FORMAT mainDSVFormat = IRenderer::Get()->GetDepthFormat();
 
 
 		// Standard shared material
@@ -86,7 +86,7 @@ namespace JoyEngine
 		}
 
 		{
-			m_engineDataBuffer = std::make_unique<DynamicCpuBuffer<EngineData>>(IRenderManager::Get()->GetFrameCount());
+			m_engineDataBuffer = std::make_unique<DynamicCpuBuffer<EngineData>>(IRenderer::Get()->GetFrameCount());
 		}
 
 		{

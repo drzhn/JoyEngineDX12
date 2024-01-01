@@ -13,7 +13,7 @@ namespace JoyEngine
 	class ILightSystem;
 	class SharedMaterial;
 
-	class IRenderer : public Singleton<IRenderer>
+	class IRenderer 
 	{
 	public:
 		IRenderer(HWND windowHandle):

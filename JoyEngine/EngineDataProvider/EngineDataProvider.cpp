@@ -5,9 +5,9 @@
 #include "d3dx12.h"
 #include "DescriptorManager/DescriptorManager.h"
 #include "GraphicsManager/GraphicsManager.h"
-#include "RenderManager/IRenderer.h"
 #include "Utils/TimeCounter.h"
 #include "ResourceManager/ResourceManager.h"
+#include "SceneManager/WorldManager.h"
 
 namespace JoyEngine
 {
@@ -86,7 +86,7 @@ namespace JoyEngine
 		}
 
 		{
-			m_engineDataBuffer = std::make_unique<DynamicCpuBuffer<EngineData>>(IRenderer::Get()->GetFrameCount());
+			m_engineDataBuffer = std::make_unique<DynamicCpuBuffer<EngineData>>(WorldManager::Get()->GetRenderer().GetFrameCount());
 		}
 
 		{

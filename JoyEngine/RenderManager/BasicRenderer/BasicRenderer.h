@@ -42,15 +42,15 @@ namespace JoyEngine
 
 		~BasicRenderer() override = default;
 
-		void Init(Skybox* skybox);
+		void Init(Skybox* skybox) override;
 
-		void Start() const;
+		void Start() const override;
 
-		void Stop();
+		void Stop() override;
 
-		void PreUpdate();
+		void PreUpdate() override;
 
-		void Update();
+		void Update() override;
 
 		void DrawGui(ID3D12GraphicsCommandList* commandList, const ViewProjectionMatrixData* viewProjectionData) const;
 
@@ -93,7 +93,7 @@ namespace JoyEngine
 		) const;
 
 		static void CopyRTVResource(ID3D12GraphicsCommandList* commandList, ID3D12Resource* rtvResource,
-			ID3D12Resource* copyResource);
+		                            ID3D12Resource* copyResource);
 
 	private:
 		static constexpr uint32_t FRAME_COUNT = 3;

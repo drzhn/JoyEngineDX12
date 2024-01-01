@@ -3,6 +3,7 @@
 #include <rapidjson/document.h>
 
 #include "DataManager/DataManager.h"
+#include "RenderManager/RaytracedDDGIRenderer/RaytracedDDGIRenderer.h"
 #include "Utils/TimeCounter.h"
 
 

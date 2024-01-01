@@ -88,7 +88,7 @@ namespace JoyEngine
 					ASSERT(component.HasMember("fov"));
 					const float cameraFov = component["fov"].GetFloat();
 
-					go->AddComponent(std::make_unique<Camera>(*go, RaytracedDDGIRenderer::Get(), cameraNear, cameraFar, cameraFov));
+					go->AddComponent(std::make_unique<Camera>(*go, IRenderer::Get(), cameraNear, cameraFar, cameraFov));
 				}
 				else if (type == "light")
 				{
@@ -104,7 +104,7 @@ namespace JoyEngine
 						std::unique_ptr<PointLight> light = std::make_unique<PointLight>(
 							0,
 							*go,
-							RaytracedDDGIRenderer::Get()->GetLightSystem(),
+							IRenderer::Get()->GetLightSystem(),
 							radius,
 							intensity,
 							color);
@@ -136,7 +136,7 @@ namespace JoyEngine
 
 						std::unique_ptr<DirectionalLight> light = std::make_unique<DirectionalLight>(
 							*go,
-							RaytracedDDGIRenderer::Get()->GetLightSystem(),
+							IRenderer::Get()->GetLightSystem(),
 							intensity,
 							ambient,
 							color);

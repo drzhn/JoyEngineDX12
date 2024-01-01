@@ -44,15 +44,15 @@ namespace JoyEngine
 
 		~RaytracedDDGIRenderer() override = default;
 
-		void Init(Skybox* skybox);
+		void Init(Skybox* skybox) override;
 
-		void Start() const;
+		void Start() const override;
 
-		void Stop();
+		void Stop() override;
 
-		void PreUpdate();
+		void PreUpdate() override;
 
-		void Update();
+		void Update() override;
 
 		void DrawGui(ID3D12GraphicsCommandList* commandList, const ViewProjectionMatrixData* viewProjectionData) const;
 

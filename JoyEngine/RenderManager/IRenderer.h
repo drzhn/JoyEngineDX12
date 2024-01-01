@@ -7,6 +7,7 @@
 
 namespace JoyEngine
 {
+	class Skybox;
 	class TransformProvider;
 	class Camera;
 	class ILightSystem;
@@ -16,12 +17,18 @@ namespace JoyEngine
 	{
 	public:
 		IRenderer(HWND windowHandle):
-		m_windowHandle(windowHandle)
+			m_windowHandle(windowHandle)
 		{
-			
 		}
 
 		virtual ~IRenderer() = default;
+
+		virtual void Init(Skybox* skybox) = 0;
+		virtual void Start() const = 0;
+		virtual void Stop() = 0;
+		virtual void PreUpdate() = 0;
+		virtual void Update() = 0;
+
 		virtual void RegisterSharedMaterial(SharedMaterial*) = 0;
 		virtual void UnregisterSharedMaterial(SharedMaterial*) = 0;
 		virtual void RegisterCamera(Camera* camera) = 0;

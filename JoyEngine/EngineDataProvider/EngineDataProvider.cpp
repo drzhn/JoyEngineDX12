@@ -16,10 +16,10 @@ namespace JoyEngine
 		TIME_PERF("EngineDataProvider init")
 
 		EngineSamplersProvider::InitSamplers();
-		DXGI_FORMAT mainRTVFormat = IRenderer::Get()->GetHDRRenderTextureFormat();
-		DXGI_FORMAT swapchainFormat = IRenderer::Get()->GetSwapchainFormat();
-		DXGI_FORMAT mainGBufferFormat = IRenderer::Get()->GetGBufferFormat();
-		DXGI_FORMAT mainDSVFormat = IRenderer::Get()->GetDepthFormat();
+		DXGI_FORMAT mainRTVFormat = IRenderer::GetHDRRenderTextureFormat();
+		DXGI_FORMAT swapchainFormat = IRenderer::GetSwapchainFormat();
+		DXGI_FORMAT mainGBufferFormat = IRenderer::GetGBufferFormat();
+		DXGI_FORMAT mainDSVFormat = IRenderer::GetDepthFormat();
 
 
 		// Standard shared material

@@ -28,6 +28,7 @@ namespace JoyEngine
 		}
 
 		[[nodiscard]] TransformProvider& GetTransformProvider() const noexcept { return *m_transformProvider; }
+		[[nodiscard]] IRenderer& GetRenderer() const noexcept { return *m_renderManager; }
 
 		void Stop();
 

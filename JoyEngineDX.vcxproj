@@ -232,9 +232,10 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="JoyEngine\RenderManager\BasicRenderer\BasicRenderer.cpp" />
     <ClCompile Include="JoyEngine\Common\Math\MathTypes.cpp" />
     <ClCompile Include="JoyEngine\EngineDataProvider\MeshContainer.cpp" />
-    <ClCompile Include="JoyEngine\RenderManager\Raytracing\HW\HardwareRaytracedDDGI.cpp" />
+    <ClCompile Include="JoyEngine\RenderManager\RaytracedDDGIRenderer\HW\HardwareRaytracedDDGIController.cpp" />
     <ClCompile Include="JoyEngine\Common\CameraUnit.cpp" />
     <ClCompile Include="JoyEngine\Components\Camera.cpp" />
     <ClCompile Include="JoyEngine\Components\Component.cpp" />
@@ -247,11 +248,11 @@
     <ClCompile Include="JoyEngine\RenderManager\LightSystems\ClusteredLightSystem.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\ComputeDispatcher.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\GBuffer.cpp" />
-    <ClCompile Include="JoyEngine\RenderManager\Raytracing\RaytracedDDGIDataContainer.cpp" />
+    <ClCompile Include="JoyEngine\RenderManager\RaytracedDDGIRenderer\RaytracedDDGIDataContainer.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\TransformProvider.cpp" />
-    <ClCompile Include="JoyEngine\RenderManager\Raytracing\SW\BufferSorter.cpp" />
-    <ClCompile Include="JoyEngine\RenderManager\Raytracing\SW\BVHConstructor.cpp" />
-    <ClCompile Include="JoyEngine\RenderManager\Raytracing\SW\SoftwareRaytracedDDGI.cpp" />
+    <ClCompile Include="JoyEngine\RenderManager\RaytracedDDGIRenderer\SW\BufferSorter.cpp" />
+    <ClCompile Include="JoyEngine\RenderManager\RaytracedDDGIRenderer\SW\BVHConstructor.cpp" />
+    <ClCompile Include="JoyEngine\RenderManager\RaytracedDDGIRenderer\SW\SoftwareRaytracedDDGIController.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\RenderState.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\Skybox.cpp" />
     <ClCompile Include="JoyEngine\RenderManager\Tonemapping.cpp" />
@@ -266,7 +267,7 @@
     <ClCompile Include="JoyEngine\InputManager\InputManager.cpp" />
     <ClCompile Include="JoyEngine\JoyEngine.cpp" />
     <ClCompile Include="JoyEngine\MemoryManager\MemoryManager.cpp" />
-    <ClCompile Include="JoyEngine\RenderManager\RenderManager.cpp" />
+    <ClCompile Include="JoyEngine\RenderManager\RaytracedDDGIRenderer\RaytracedDDGIRenderer.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\Buffers\ConstantCpuBuffer.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\Buffers\DynamicCpuBuffer.cpp" />
     <ClCompile Include="JoyEngine\ResourceManager\Pipelines\AbstractPipelineObject.cpp" />
@@ -304,13 +305,14 @@
     <ClCompile Include="JoyEngine\WindowHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="JoyEngine\RenderManager\BasicRenderer\BasicRenderer.h" />
     <ClInclude Include="JoyEngine\Common\Allocators\PoolAllocator.h" />
     <ClInclude Include="JoyEngine\Common\JoyObject.h" />
     <ClInclude Include="JoyEngine\Common\Math\MathTypes.h" />
     <ClInclude Include="JoyEngine\Common\Math\MathUtils.h" />
     <ClInclude Include="JoyEngine\EngineDataProvider\MeshContainer.h" />
-    <ClInclude Include="JoyEngine\RenderManager\Raytracing\AbstractRaytracedDDGI.h" />
-    <ClInclude Include="JoyEngine\RenderManager\Raytracing\HW\HardwareRaytracedDDGI.h" />
+    <ClInclude Include="JoyEngine\RenderManager\RaytracedDDGIRenderer\AbstractRaytracedDDGIController.h" />
+    <ClInclude Include="JoyEngine\RenderManager\RaytracedDDGIRenderer\HW\HardwareRaytracedDDGIController.h" />
     <ClInclude Include="JoyEngine\Common\CameraUnit.h" />
     <ClInclude Include="JoyEngine\Common\Singleton.h" />
     <ClInclude Include="JoyEngine\Components\Camera.h" />
@@ -328,12 +330,12 @@
     <ClInclude Include="JoyEngine\RenderManager\GBuffer.h" />
     <ClInclude Include="JoyEngine\RenderManager\IRenderManager.h" />
     <ClInclude Include="JoyEngine\RenderManager\LightSystems\ILightSystem.h" />
-    <ClInclude Include="JoyEngine\RenderManager\Raytracing\RaytracedDDGIDataContainer.h" />
+    <ClInclude Include="JoyEngine\RenderManager\RaytracedDDGIRenderer\RaytracedDDGIDataContainer.h" />
     <ClInclude Include="JoyEngine\RenderManager\TransformProvider.h" />
-    <ClInclude Include="JoyEngine\RenderManager\Raytracing\SW\BufferSorter.h" />
-    <ClInclude Include="JoyEngine\RenderManager\Raytracing\SW\BVHConstructor.h" />
-    <ClInclude Include="JoyEngine\RenderManager\Raytracing\DataBuffer.h" />
-    <ClInclude Include="JoyEngine\RenderManager\Raytracing\SW\SoftwareRaytracedDDGI.h" />
+    <ClInclude Include="JoyEngine\RenderManager\RaytracedDDGIRenderer\SW\BufferSorter.h" />
+    <ClInclude Include="JoyEngine\RenderManager\RaytracedDDGIRenderer\SW\BVHConstructor.h" />
+    <ClInclude Include="JoyEngine\RenderManager\RaytracedDDGIRenderer\DataBuffer.h" />
+    <ClInclude Include="JoyEngine\RenderManager\RaytracedDDGIRenderer\SW\SoftwareRaytracedDDGIController.h" />
     <ClInclude Include="JoyEngine\RenderManager\RenderState.h" />
     <ClInclude Include="JoyEngine\RenderManager\Skybox.h" />
     <ClInclude Include="JoyEngine\RenderManager\Tonemapping.h" />
@@ -352,7 +354,7 @@
     <ClInclude Include="JoyEngine\InputManager\InputManager.h" />
     <ClInclude Include="JoyEngine\JoyEngine.h" />
     <ClInclude Include="JoyEngine\MemoryManager\MemoryManager.h" />
-    <ClInclude Include="JoyEngine\RenderManager\RenderManager.h" />
+    <ClInclude Include="JoyEngine\RenderManager\RaytracedDDGIRenderer\RaytracedDDGIRenderer.h" />
     <ClInclude Include="JoyEngine\CommonEngineStructs.h" />
     <ClInclude Include="JoyEngine\ResourceManager\Buffers\ConstantCpuBuffer.h" />
     <ClInclude Include="JoyEngine\ResourceManager\Buffers\DynamicCpuBuffer.h" />
@@ -398,6 +400,11 @@
     <ClInclude Include="JoyEngine\WindowHandler.h" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="JoyData\shaders\basic_renderer\deferred_shading.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GraphicsDebug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="JoyData\shaders\standard\standardPhong.hlsl">
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -594,7 +601,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="JoyData\shaders\sw_raytracing\LocalRadixSort.hlsl">
+    <FxCompile Include="JoyData\shaders\ddgi\sw_raytracing\LocalRadixSort.hlsl">
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GraphicsDebug|x64'">true</ExcludedFromBuild>
@@ -602,27 +609,19 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="JoyData\shaders\sw_raytracing\BlockSum.hlsl">
+    <FxCompile Include="JoyData\shaders\ddgi\sw_raytracing\BlockSum.hlsl">
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GraphicsDebug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="JoyData\shaders\sw_raytracing\GlobalScan.hlsl">
+    <FxCompile Include="JoyData\shaders\ddgi\sw_raytracing\GlobalScan.hlsl">
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GraphicsDebug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="JoyData\shaders\sw_raytracing\PreScan.hlsl">
-      <FileType>Document</FileType>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GraphicsDebug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="JoyData\shaders\sw_raytracing\GlobalRadixSort.hlsl">
+    <FxCompile Include="JoyData\shaders\ddgi\sw_raytracing\PreScan.hlsl">
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GraphicsDebug|x64'">true</ExcludedFromBuild>
@@ -630,13 +629,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="JoyData\shaders\sw_raytracing\BVHAABBMerger.hlsl">
-      <FileType>Document</FileType>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GraphicsDebug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="JoyData\shaders\sw_raytracing\BVHTreeConstructor.hlsl">
+    <FxCompile Include="JoyData\shaders\ddgi\sw_raytracing\GlobalRadixSort.hlsl">
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GraphicsDebug|x64'">true</ExcludedFromBuild>
@@ -644,7 +637,13 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="JoyData\shaders\sw_raytracing\gizmoAABBDrawer.hlsl">
+    <FxCompile Include="JoyData\shaders\ddgi\sw_raytracing\BVHAABBMerger.hlsl">
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GraphicsDebug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="JoyData\shaders\ddgi\sw_raytracing\BVHTreeConstructor.hlsl">
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GraphicsDebug|x64'">true</ExcludedFromBuild>
@@ -652,7 +651,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="JoyData\shaders\sw_raytracing\Raytracing.hlsl">
+    <FxCompile Include="JoyData\shaders\ddgi\sw_raytracing\gizmoAABBDrawer.hlsl">
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GraphicsDebug|x64'">true</ExcludedFromBuild>
@@ -660,7 +659,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="JoyData\shaders\sw_raytracing\debugImageCompose.hlsl">
+    <FxCompile Include="JoyData\shaders\ddgi\sw_raytracing\Raytracing.hlsl">
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GraphicsDebug|x64'">true</ExcludedFromBuild>
@@ -668,7 +667,15 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="JoyData\shaders\deferredshadingprocessor.hlsl">
+    <FxCompile Include="JoyData\shaders\ddgi\sw_raytracing\debugImageCompose.hlsl">
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GraphicsDebug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="JoyData\shaders\ddgi\ddgi_deferred_shading.hlsl">
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GraphicsDebug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -684,7 +691,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="JoyData\shaders\sw_raytracing\debugDrawProbes.hlsl">
+    <FxCompile Include="JoyData\shaders\ddgi\sw_raytracing\debugDrawProbes.hlsl">
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GraphicsDebug|x64'">true</ExcludedFromBuild>
@@ -692,7 +699,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="JoyData\shaders\sw_raytracing\ProbeIrradiance.hlsl">
+    <FxCompile Include="JoyData\shaders\ddgi\sw_raytracing\ProbeIrradiance.hlsl">
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GraphicsDebug|x64'">true</ExcludedFromBuild>
@@ -708,7 +715,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="JoyData\shaders\hw_raytracing\Raytracing.hlsl">
+    <FxCompile Include="JoyData\shaders\ddgi\hw_raytracing\Raytracing.hlsl">
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='GraphicsDebug|x64'">true</ExcludedFromBuild>

@@ -39,7 +39,7 @@
     <ClCompile Include="JoyEngine\GraphicsManager\GraphicsManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JoyEngine\RenderManager\RenderManager.cpp">
+    <ClCompile Include="JoyEngine\RenderManager\RaytracedDDGIRenderer\RaytracedDDGIRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="JoyEngine\Common\CommandQueue.cpp">
@@ -129,10 +129,10 @@
     <ClCompile Include="JoyEngine\ResourceManager\Buffers\ConstantCpuBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JoyEngine\RenderManager\Raytracing\SW\SoftwareRaytracedDDGI.cpp">
+    <ClCompile Include="JoyEngine\RenderManager\RaytracedDDGIRenderer\SW\SoftwareRaytracedDDGIController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JoyEngine\RenderManager\Raytracing\SW\BufferSorter.cpp">
+    <ClCompile Include="JoyEngine\RenderManager\RaytracedDDGIRenderer\SW\BufferSorter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="JoyEngine\ResourceManager\ShaderCompiler.cpp">
@@ -144,7 +144,7 @@
     <ClCompile Include="JoyEngine\Utils\Log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JoyEngine\RenderManager\Raytracing\SW\BVHConstructor.cpp">
+    <ClCompile Include="JoyEngine\RenderManager\RaytracedDDGIRenderer\SW\BVHConstructor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="JoyEngine\ResourceManager\Buffers\UAVGpuBuffer.cpp">
@@ -189,7 +189,7 @@
     <ClCompile Include="JoyEngine\GameplayComponents\LightBehaviour.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JoyEngine\RenderManager\Raytracing\HW\HardwareRaytracedDDGI.cpp">
+    <ClCompile Include="JoyEngine\RenderManager\RaytracedDDGIRenderer\HW\HardwareRaytracedDDGIController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="JoyEngine\ResourceManager\Pipelines\RaytracingPipeline.cpp">
@@ -207,7 +207,7 @@
     <ClCompile Include="JoyEngine\ResourceManager\Pipelines\GraphicsPipeline.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JoyEngine\RenderManager\Raytracing\RaytracedDDGIDataContainer.cpp">
+    <ClCompile Include="JoyEngine\RenderManager\RaytracedDDGIRenderer\RaytracedDDGIDataContainer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="JoyEngine\Common\Math\MathTypes.cpp">
@@ -223,6 +223,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="JoyEngine\ThreadManager\LockFreeFlag.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JoyEngine\RenderManager\BasicRenderer\BasicRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -266,7 +269,7 @@
     <ClInclude Include="JoyEngine\GraphicsManager\GraphicsManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JoyEngine\RenderManager\RenderManager.h">
+    <ClInclude Include="JoyEngine\RenderManager\RaytracedDDGIRenderer\RaytracedDDGIRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JoyEngine\CommonEngineStructs.h">
@@ -371,16 +374,16 @@
     <ClInclude Include="JoyEngine\ResourceManager\Buffers\ConstantCpuBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JoyEngine\RenderManager\Raytracing\SW\SoftwareRaytracedDDGI.h">
+    <ClInclude Include="JoyEngine\RenderManager\RaytracedDDGIRenderer\SW\SoftwareRaytracedDDGIController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JoyEngine\Utils\TimeCounter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JoyEngine\RenderManager\Raytracing\SW\BufferSorter.h">
+    <ClInclude Include="JoyEngine\RenderManager\RaytracedDDGIRenderer\SW\BufferSorter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JoyEngine\RenderManager\Raytracing\DataBuffer.h">
+    <ClInclude Include="JoyEngine\RenderManager\RaytracedDDGIRenderer\DataBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JoyEngine\ResourceManager\ShaderCompiler.h">
@@ -392,7 +395,7 @@
     <ClInclude Include="JoyEngine\Utils\Log.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JoyEngine\RenderManager\Raytracing\SW\BVHConstructor.h">
+    <ClInclude Include="JoyEngine\RenderManager\RaytracedDDGIRenderer\SW\BVHConstructor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JoyEngine\ResourceManager\Buffers\UAVGpuBuffer.h">
@@ -452,7 +455,7 @@
     <ClInclude Include="JoyEngine\GameplayComponents\LightBehaviour.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JoyEngine\RenderManager\Raytracing\HW\HardwareRaytracedDDGI.h">
+    <ClInclude Include="JoyEngine\RenderManager\RaytracedDDGIRenderer\HW\HardwareRaytracedDDGIController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JoyEngine\ResourceManager\Pipelines\RaytracingPipeline.h">
@@ -470,10 +473,10 @@
     <ClInclude Include="JoyEngine\ResourceManager\Pipelines\GraphicsPipeline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JoyEngine\RenderManager\Raytracing\RaytracedDDGIDataContainer.h">
+    <ClInclude Include="JoyEngine\RenderManager\RaytracedDDGIRenderer\RaytracedDDGIDataContainer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JoyEngine\RenderManager\Raytracing\AbstractRaytracedDDGI.h">
+    <ClInclude Include="JoyEngine\RenderManager\RaytracedDDGIRenderer\AbstractRaytracedDDGIController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JoyEngine\Common\Math\MathTypes.h">
@@ -503,25 +506,28 @@
     <ClInclude Include="JoyEngine\ThreadManager\LockFreeFlag.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="JoyEngine\RenderManager\BasicRenderer\BasicRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="JoyData\shaders\hw_raytracing\Raytracing.hlsl" />
-    <FxCompile Include="JoyData\shaders\sw_raytracing\Raytracing.hlsl" />
+    <FxCompile Include="JoyData\shaders\ddgi\hw_raytracing\Raytracing.hlsl" />
+    <FxCompile Include="JoyData\shaders\ddgi\sw_raytracing\Raytracing.hlsl" />
     <FxCompile Include="JoyData\shaders\standardShader.hlsl" />
     <FxCompile Include="JoyData\shaders\standard\standardPhong.hlsl" />
-    <FxCompile Include="JoyData\shaders\deferredshadingprocessor.hlsl" />
+    <FxCompile Include="JoyData\shaders\ddgi\ddgi_deferred_shading.hlsl" />
     <FxCompile Include="JoyData\shaders\shadowprocessing.hlsl" />
-    <FxCompile Include="JoyData\shaders\sw_raytracing\BlockSum.hlsl" />
-    <FxCompile Include="JoyData\shaders\sw_raytracing\BVHAABBMerger.hlsl" />
-    <FxCompile Include="JoyData\shaders\sw_raytracing\BVHTreeConstructor.hlsl" />
-    <FxCompile Include="JoyData\shaders\sw_raytracing\debugDrawProbes.hlsl" />
-    <FxCompile Include="JoyData\shaders\sw_raytracing\debugImageCompose.hlsl" />
-    <FxCompile Include="JoyData\shaders\sw_raytracing\gizmoAABBDrawer.hlsl" />
-    <FxCompile Include="JoyData\shaders\sw_raytracing\GlobalRadixSort.hlsl" />
-    <FxCompile Include="JoyData\shaders\sw_raytracing\GlobalScan.hlsl" />
-    <FxCompile Include="JoyData\shaders\sw_raytracing\LocalRadixSort.hlsl" />
-    <FxCompile Include="JoyData\shaders\sw_raytracing\PreScan.hlsl" />
-    <FxCompile Include="JoyData\shaders\sw_raytracing\ProbeIrradiance.hlsl" />
+    <FxCompile Include="JoyData\shaders\ddgi\sw_raytracing\BlockSum.hlsl" />
+    <FxCompile Include="JoyData\shaders\ddgi\sw_raytracing\BVHAABBMerger.hlsl" />
+    <FxCompile Include="JoyData\shaders\ddgi\sw_raytracing\BVHTreeConstructor.hlsl" />
+    <FxCompile Include="JoyData\shaders\ddgi\sw_raytracing\debugDrawProbes.hlsl" />
+    <FxCompile Include="JoyData\shaders\ddgi\sw_raytracing\debugImageCompose.hlsl" />
+    <FxCompile Include="JoyData\shaders\ddgi\sw_raytracing\gizmoAABBDrawer.hlsl" />
+    <FxCompile Include="JoyData\shaders\ddgi\sw_raytracing\GlobalRadixSort.hlsl" />
+    <FxCompile Include="JoyData\shaders\ddgi\sw_raytracing\GlobalScan.hlsl" />
+    <FxCompile Include="JoyData\shaders\ddgi\sw_raytracing\LocalRadixSort.hlsl" />
+    <FxCompile Include="JoyData\shaders\ddgi\sw_raytracing\PreScan.hlsl" />
+    <FxCompile Include="JoyData\shaders\ddgi\sw_raytracing\ProbeIrradiance.hlsl" />
     <FxCompile Include="JoyData\shaders\annaShader.hlsl" />
     <FxCompile Include="JoyData\shaders\bloomBrightPass.hlsl" />
     <FxCompile Include="JoyData\shaders\bloomHorizontalFilter.hlsl" />
@@ -546,5 +552,6 @@
     <FxCompile Include="JoyData\shaders\ssaopostprocess.hlsl" />
     <FxCompile Include="JoyData\shaders\sslrpostprocess.hlsl" />
     <FxCompile Include="JoyData\shaders\vikingShader.hlsl" />
+    <FxCompile Include="JoyData\shaders\basic_renderer\deferred_shading.hlsl" />
   </ItemGroup>
 </Project>

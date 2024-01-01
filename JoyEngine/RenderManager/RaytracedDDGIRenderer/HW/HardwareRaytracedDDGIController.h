@@ -3,8 +3,8 @@
 #include <memory>
 
 #include "RenderManager/GBuffer.h"
-#include "RenderManager/Raytracing/AbstractRaytracedDDGI.h"
-#include "RenderManager/Raytracing/RaytracedDDGIDataContainer.h"
+#include "RenderManager/RaytracedDDGIRenderer/AbstractRaytracedDDGIController.h"
+#include "RenderManager/RaytracedDDGIRenderer/RaytracedDDGIDataContainer.h"
 #include "ResourceManager/Texture.h"
 #include "ResourceManager/Buffers/UAVGpuBuffer.h"
 #include "ResourceManager/Pipelines/RaytracingPipeline.h"
@@ -12,10 +12,10 @@
 
 namespace JoyEngine
 {
-	class HardwareRaytracedDDGI : public AbstractRaytracedDDGI
+	class HardwareRaytracedDDGIController : public AbstractRaytracedDDGIController
 	{
 	public:
-		HardwareRaytracedDDGI(
+		HardwareRaytracedDDGIController(
 			const RaytracedDDGIDataContainer& dataContainer,
 			DXGI_FORMAT mainColorFormat,
 			DXGI_FORMAT swapchainFormat,

@@ -8,10 +8,10 @@
 
 namespace JoyEngine
 {
-	class AbstractRaytracedDDGI
+	class AbstractRaytracedDDGIController
 	{
 	public:
-		virtual ~AbstractRaytracedDDGI() = default;
+		virtual ~AbstractRaytracedDDGIController() = default;
 
 		virtual void UploadSceneData() = 0;
 		virtual void ProcessRaytracing(ID3D12GraphicsCommandList4* commandList, uint32_t frameIndex) const = 0;

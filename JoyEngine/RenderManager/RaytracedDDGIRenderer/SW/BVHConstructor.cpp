@@ -34,7 +34,7 @@ namespace JoyEngine
 		{
 			m_bvhTreeConstructorPipeline = std::make_unique<ComputePipeline>(ComputePipelineArgs
 				{
-					"shaders/sw_raytracing/BVHTreeConstructor.hlsl",
+					"shaders/ddgi/sw_raytracing/BVHTreeConstructor.hlsl",
 					D3D_SHADER_MODEL_6_5
 				});
 		}
@@ -43,7 +43,7 @@ namespace JoyEngine
 		{
 			m_bvhMergerPipeline = std::make_unique<ComputePipeline>(ComputePipelineArgs
 				{
-					"shaders/sw_raytracing/BVHAABBMerger.hlsl",
+					"shaders/ddgi/sw_raytracing/BVHAABBMerger.hlsl",
 					D3D_SHADER_MODEL_6_5
 				});
 		}

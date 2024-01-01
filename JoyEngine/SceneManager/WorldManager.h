@@ -5,7 +5,7 @@
 #include "Scene.h"
 #include "TreeStorage.h"
 #include "Common/Singleton.h"
-#include "RenderManager/RenderManager.h"
+#include "RenderManager/RaytracedDDGIRenderer/RaytracedDDGIRenderer.h"
 #include "RenderManager/Skybox.h"
 
 namespace JoyEngine
@@ -41,7 +41,7 @@ namespace JoyEngine
 
 		std::unique_ptr<TransformProvider> m_transformProvider;
 		std::unique_ptr<Skybox> m_skybox;
-		std::unique_ptr<RenderManager> m_renderManager;
+		std::unique_ptr<RaytracedDDGIRenderer> m_renderManager;
 	};
 }
 

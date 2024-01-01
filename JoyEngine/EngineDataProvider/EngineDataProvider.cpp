@@ -118,12 +118,34 @@ namespace JoyEngine
 				});
 		}
 
-		// Deferred shading processing
+		// DDGI Deferred shading processing
 		{
-			m_deferredShadingProcessorSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, GraphicsPipelineArgs>(
+			m_ddgiDeferredShadingSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, GraphicsPipelineArgs>(
 				RandomHash64(),
 				{
-					"shaders/deferredshadingprocessor.hlsl",
+					"shaders/ddgi/ddgi_deferred_shading.hlsl",
+					JoyShaderTypeVertex | JoyShaderTypePixel,
+					false,
+					false,
+					false,
+					D3D12_CULL_MODE_NONE,
+					D3D12_COMPARISON_FUNC_GREATER_EQUAL,
+					CD3DX12_BLEND_DESC(D3D12_DEFAULT),
+					{
+						mainGBufferFormat,
+					},
+					1,
+					mainDSVFormat,
+					D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
+				});
+		}
+
+		// Deferred shading processing
+		{
+			m_deferredShadingSharedMaterial = ResourceManager::Get()->LoadResource<SharedMaterial, GraphicsPipelineArgs>(
+				RandomHash64(),
+				{
+					"shaders/basic_renderer/deferred_shading.hlsl",
 					JoyShaderTypeVertex | JoyShaderTypePixel,
 					false,
 					false,

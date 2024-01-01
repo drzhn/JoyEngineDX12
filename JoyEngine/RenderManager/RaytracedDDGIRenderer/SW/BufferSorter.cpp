@@ -20,7 +20,7 @@ namespace JoyEngine
 			{
 				m_localRaidxSortPipeline = std::make_unique<ComputePipeline>(ComputePipelineArgs
 					{
-						"shaders/sw_raytracing/LocalRadixSort.hlsl",
+						"shaders/ddgi/sw_raytracing/LocalRadixSort.hlsl",
 						D3D_SHADER_MODEL_6_5
 					});
 			}
@@ -30,21 +30,21 @@ namespace JoyEngine
 			{
 				m_preScanPipeline = std::make_unique<ComputePipeline>(ComputePipelineArgs
 					{
-						"shaders/sw_raytracing/PreScan.hlsl",
+						"shaders/ddgi/sw_raytracing/PreScan.hlsl",
 						D3D_SHADER_MODEL_6_5
 					});
 			}
 			{
 				m_blockSumSortPipeline = std::make_unique<ComputePipeline>(ComputePipelineArgs
 					{
-						"shaders/sw_raytracing/BlockSum.hlsl",
+						"shaders/ddgi/sw_raytracing/BlockSum.hlsl",
 						D3D_SHADER_MODEL_6_5
 					});
 			}
 			{
 				m_globalScanPipeline = std::make_unique<ComputePipeline>(ComputePipelineArgs
 					{
-						"shaders/sw_raytracing/GlobalScan.hlsl",
+						"shaders/ddgi/sw_raytracing/GlobalScan.hlsl",
 						D3D_SHADER_MODEL_6_5
 					});
 			}
@@ -55,7 +55,7 @@ namespace JoyEngine
 			{
 				m_globalRadixSortPipeline = std::make_unique<ComputePipeline>(ComputePipelineArgs
 					{
-						"shaders/sw_raytracing/GlobalRadixSort.hlsl",
+						"shaders/ddgi/sw_raytracing/GlobalRadixSort.hlsl",
 						D3D_SHADER_MODEL_6_5
 					});
 			}

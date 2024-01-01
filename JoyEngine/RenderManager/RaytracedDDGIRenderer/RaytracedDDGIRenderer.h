@@ -3,7 +3,6 @@
 
 #include <array>
 #include <set>
-#include <map>
 #include <memory>
 
 #include <d3d12.h>
@@ -11,14 +10,14 @@
 #include <wrl.h>
 
 #include "CommonEngineStructs.h"
-#include "GBuffer.h"
-#include "IRenderManager.h"
-#include "Skybox.h"
+#include "RenderManager/GBuffer.h"
+#include "RenderManager/IRenderManager.h"
+#include "RenderManager/Skybox.h"
 
-#include "Tonemapping.h"
-#include "LightSystems/ClusteredLightSystem.h"
-#include "Raytracing/AbstractRaytracedDDGI.h"
-#include "Raytracing/RaytracedDDGIDataContainer.h"
+#include "RenderManager/Tonemapping.h"
+#include "RenderManager/LightSystems/ClusteredLightSystem.h"
+#include "RenderManager/RaytracedDDGIRenderer/AbstractRaytracedDDGIController.h"
+#include "RenderManager/RaytracedDDGIRenderer/RaytracedDDGIDataContainer.h"
 
 
 using Microsoft::WRL::ComPtr;
@@ -36,16 +35,16 @@ namespace JoyEngine
 	class ResourceView;
 	class DepthTexture;
 
-	class RenderManager final : public IRenderManager
+	class RaytracedDDGIRenderer final : public IRenderManager
 	{
 	public:
-		RenderManager() = delete;
+		RaytracedDDGIRenderer() = delete;
 
-		explicit RenderManager(HWND windowHandle);
+		explicit RaytracedDDGIRenderer(HWND windowHandle);
 
-		~RenderManager() override = default;
+		~RaytracedDDGIRenderer() override = default;
 
-		void Init( Skybox* skybox);
+		void Init(Skybox* skybox);
 
 		void Start() const;
 
@@ -92,7 +91,7 @@ namespace JoyEngine
 
 		void RenderDeferredShading(
 			ID3D12GraphicsCommandList* commandList,
-			const AbstractGBuffer* gBuffer, const ViewProjectionMatrixData* cameraVP, const AbstractRaytracedDDGI* raytracer
+			const AbstractGBuffer* gBuffer, const ViewProjectionMatrixData* cameraVP, const AbstractRaytracedDDGIController* raytracer
 		) const;
 
 		static void CopyRTVResource(ID3D12GraphicsCommandList* commandList, ID3D12Resource* rtvResource,
@@ -111,8 +110,8 @@ namespace JoyEngine
 
 		std::unique_ptr<Tonemapping> m_tonemapping;
 		std::unique_ptr<RaytracedDDGIDataContainer> m_raytracingDataContainer;
-		std::unique_ptr<AbstractRaytracedDDGI> m_softwareRaytracedDDGI;
-		std::unique_ptr<AbstractRaytracedDDGI> m_hardwareRaytracedDDGI;
+		std::unique_ptr<AbstractRaytracedDDGIController> m_softwareRaytracedDDGI;
+		std::unique_ptr<AbstractRaytracedDDGIController> m_hardwareRaytracedDDGI;
 		std::unique_ptr<ClusteredLightSystem> m_lightSystem;
 		std::set<SharedMaterial*> m_sharedMaterials;
 

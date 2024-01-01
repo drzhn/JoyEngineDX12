@@ -11,7 +11,6 @@
 #include "Components/Camera.h"
 #include "Components/Light.h"
 #include "DataManager/DataManager.h"
-#include "RenderManager/RenderManager.h"
 #include "Utils/TimeCounter.h"
 
 namespace JoyEngine
@@ -89,7 +88,7 @@ namespace JoyEngine
 					ASSERT(component.HasMember("fov"));
 					const float cameraFov = component["fov"].GetFloat();
 
-					go->AddComponent(std::make_unique<Camera>(*go, RenderManager::Get(), cameraNear, cameraFar, cameraFov));
+					go->AddComponent(std::make_unique<Camera>(*go, RaytracedDDGIRenderer::Get(), cameraNear, cameraFar, cameraFov));
 				}
 				else if (type == "light")
 				{
@@ -105,7 +104,7 @@ namespace JoyEngine
 						std::unique_ptr<PointLight> light = std::make_unique<PointLight>(
 							0,
 							*go,
-							RenderManager::Get()->GetLightSystem(),
+							RaytracedDDGIRenderer::Get()->GetLightSystem(),
 							radius,
 							intensity,
 							color);
@@ -137,7 +136,7 @@ namespace JoyEngine
 
 						std::unique_ptr<DirectionalLight> light = std::make_unique<DirectionalLight>(
 							*go,
-							RenderManager::Get()->GetLightSystem(),
+							RaytracedDDGIRenderer::Get()->GetLightSystem(),
 							intensity,
 							ambient,
 							color);

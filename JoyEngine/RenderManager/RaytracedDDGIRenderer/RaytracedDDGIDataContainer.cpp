@@ -25,7 +25,7 @@ namespace JoyEngine
 			// generate texture w = probesCount, h = DDGI_RAYS_COUNT
 			m_probeIrradiancePipeline = std::make_unique<ComputePipeline>(ComputePipelineArgs
 				{
-					"shaders/sw_raytracing/ProbeIrradiance.hlsl"
+					"shaders/ddgi/sw_raytracing/ProbeIrradiance.hlsl"
 				});
 		}
 
@@ -33,7 +33,7 @@ namespace JoyEngine
 		{
 			m_debugRaytracingTextureDrawGraphicsPipeline = std::make_unique<GraphicsPipeline>(GraphicsPipelineArgs
 				{
-					"shaders/sw_raytracing/debugImageCompose.hlsl",
+					"shaders/ddgi/sw_raytracing/debugImageCompose.hlsl",
 					JoyShaderTypeVertex | JoyShaderTypePixel,
 					false,
 					false,
@@ -59,7 +59,7 @@ namespace JoyEngine
 		{
 			m_debugDrawProbesGraphicsPipeline = std::make_unique<GraphicsPipeline>(GraphicsPipelineArgs
 				{
-					"shaders/sw_raytracing/debugDrawProbes.hlsl",
+					"shaders/ddgi/sw_raytracing/debugDrawProbes.hlsl",
 					JoyShaderTypeVertex | JoyShaderTypePixel,
 					true,
 					true,

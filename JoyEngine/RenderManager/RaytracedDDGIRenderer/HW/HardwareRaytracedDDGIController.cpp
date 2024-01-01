@@ -1,4 +1,4 @@
-#include "HardwareRaytracedDDGI.h"
+#include "HardwareRaytracedDDGIController.h"
 
 #include "CommonEngineStructs.h"
 #include "Common/HashDefs.h"
@@ -6,14 +6,14 @@
 #include "DescriptorManager/DescriptorManager.h"
 #include "EngineDataProvider/EngineDataProvider.h"
 #include "GraphicsManager/GraphicsManager.h"
-#include "RenderManager/Raytracing/SW/SoftwareRaytracedDDGI.h"
+#include "RenderManager/RaytracedDDGIRenderer/SW/SoftwareRaytracedDDGIController.h"
 #include "ResourceManager/ResourceManager.h"
 #include "Utils/GraphicsUtils.h"
 #include "Utils/TimeCounter.h"
 
 namespace JoyEngine
 {
-	HardwareRaytracedDDGI::HardwareRaytracedDDGI(
+	HardwareRaytracedDDGIController::HardwareRaytracedDDGIController(
 		const RaytracedDDGIDataContainer& dataContainer,
 		DXGI_FORMAT mainColorFormat,
 		DXGI_FORMAT swapchainFormat,
@@ -56,11 +56,11 @@ namespace JoyEngine
 		}
 
 		m_raytracingPipeline = std::make_unique<RaytracingPipeline>(RaytracingPipelineArgs{
-			"shaders/hw_raytracing/Raytracing.hlsl"
+			"shaders/ddgi/hw_raytracing/Raytracing.hlsl"
 		});
 	}
 
-	void HardwareRaytracedDDGI::UploadSceneData()
+	void HardwareRaytracedDDGIController::UploadSceneData()
 	{
 		TIME_PERF("Uploading hardware DDGI scene data");
 
@@ -188,7 +188,7 @@ namespace JoyEngine
 		m_dataContainer.GetDispatcher()->ExecuteAndWait();
 	}
 
-	void HardwareRaytracedDDGI::ProcessRaytracing(ID3D12GraphicsCommandList4* commandList, uint32_t frameIndex) const
+	void HardwareRaytracedDDGIController::ProcessRaytracing(ID3D12GraphicsCommandList4* commandList, uint32_t frameIndex) const
 	{
 		commandList->SetComputeRootSignature(m_raytracingPipeline->GetGlobalInputContainer()->GetRootSignature().Get());
 
@@ -240,7 +240,7 @@ namespace JoyEngine
 		m_gbuffer->BarrierColorToRead(commandList);
 	}
 
-	void HardwareRaytracedDDGI::DebugDrawRaytracedImage(ID3D12GraphicsCommandList* commandList) const
+	void HardwareRaytracedDDGIController::DebugDrawRaytracedImage(ID3D12GraphicsCommandList* commandList) const
 	{
 #if defined(HW_CAMERA_TRACE)
 		m_dataContainer.DebugDrawRaytracedImage(commandList, m_gbuffer->GetNormalsSRV());
@@ -249,7 +249,7 @@ namespace JoyEngine
 #endif
 	}
 
-	void HardwareRaytracedDDGI::GenerateProbeIrradiance(ID3D12GraphicsCommandList4* commandList, uint32_t frameIndex) const
+	void HardwareRaytracedDDGIController::GenerateProbeIrradiance(ID3D12GraphicsCommandList4* commandList, uint32_t frameIndex) const
 	{
 		m_dataContainer.GenerateProbeIrradiance(
 			commandList,
@@ -260,7 +260,7 @@ namespace JoyEngine
 			m_probeDepthTexture.get());
 	}
 
-	void HardwareRaytracedDDGI::DebugDrawProbes(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, const ViewProjectionMatrixData* viewProjectionMatrixData) const
+	void HardwareRaytracedDDGIController::DebugDrawProbes(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, const ViewProjectionMatrixData* viewProjectionMatrixData) const
 	{
 		m_dataContainer.DebugDrawProbes(commandList, frameIndex, viewProjectionMatrixData, m_probeIrradianceTexture->GetSRV());
 	}

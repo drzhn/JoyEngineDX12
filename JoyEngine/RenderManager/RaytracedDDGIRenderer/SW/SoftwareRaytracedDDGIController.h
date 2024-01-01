@@ -8,17 +8,17 @@
 #include "BufferSorter.h"
 #include "BVHConstructor.h"
 #include "RenderManager/GBuffer.h"
-#include "RenderManager/Raytracing/AbstractRaytracedDDGI.h"
-#include "RenderManager/Raytracing/RaytracedDDGIDataContainer.h"
+#include "RenderManager/RaytracedDDGIRenderer/AbstractRaytracedDDGIController.h"
+#include "RenderManager/RaytracedDDGIRenderer/RaytracedDDGIDataContainer.h"
 #include "ResourceManager/SharedMaterial.h"
 
 namespace JoyEngine
 {
-	class SoftwareRaytracedDDGI : public AbstractRaytracedDDGI
+	class SoftwareRaytracedDDGIController : public AbstractRaytracedDDGIController
 	{
 	public:
-		SoftwareRaytracedDDGI() = delete;
-		explicit SoftwareRaytracedDDGI(
+		SoftwareRaytracedDDGIController() = delete;
+		explicit SoftwareRaytracedDDGIController(
 			const RaytracedDDGIDataContainer& dataContainer,
 			DXGI_FORMAT mainColorFormat,
 			DXGI_FORMAT swapchainFormat,

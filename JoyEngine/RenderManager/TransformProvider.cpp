@@ -1,16 +1,18 @@
 #include "TransformProvider.h"
 
+#include "SceneManager/WorldManager.h"
+
 namespace JoyEngine
 {
 	void TransformProvider::Init()
 	{
-		for (int i = 0; i < IRenderer::Get()->GetFrameCount(); i++)
+		for (int i = 0; i < m_pool.GetFrameCount(); i++)
 			m_pool.Update(i);
 	}
 
 	void TransformProvider::Update()
 	{
-		m_pool.Update(IRenderer::Get()->GetCurrentFrameIndex());
+		m_pool.Update(WorldManager::Get()->GetRenderer().GetCurrentFrameIndex());
 	}
 
 

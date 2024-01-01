@@ -46,7 +46,8 @@ namespace JoyEngine
 			memcpy(m_buffer.GetPtr(frameIndex, 0), m_array.data(), sizeof(T) * Size);
 		}
 
-		DynamicCpuBuffer<T, Size>& GetDynamicBuffer() { return m_buffer; }
+		[[nodiscard]] DynamicCpuBuffer<T, Size>& GetDynamicBuffer() { return m_buffer; }
+		[[nodiscard]] uint32_t GetFrameCount() const { return  m_frameCount; }
 
 	private:
 		const uint32_t m_frameCount;

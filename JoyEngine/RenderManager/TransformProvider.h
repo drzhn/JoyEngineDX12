@@ -2,16 +2,17 @@
 #define MODEL_DATA_SYSTEM_H
 
 #include "CommonEngineStructs.h"
-#include "IRenderer.h"
 #include "ResourceManager/Buffers/DynamicBufferPool.h"
 
 namespace JoyEngine
 {
+	class WorldManager;
+
 	class TransformProvider
 	{
 	public:
-		TransformProvider():
-			m_pool(IRenderer::Get()->GetFrameCount())
+		TransformProvider(uint32_t frameCount):
+			m_pool(frameCount)
 		{
 		}
 

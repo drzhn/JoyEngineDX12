@@ -10,6 +10,8 @@
 
 namespace JoyEngine
 {
+	class TransformProvider;
+
 	class WorldManager : public Singleton<WorldManager>
 	{
 	public:

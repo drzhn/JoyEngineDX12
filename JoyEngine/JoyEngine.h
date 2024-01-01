@@ -25,8 +25,6 @@ namespace JoyEngine
 
 	class WorldManager;
 
-	class RenderManager;
-
 	class EngineDataProvider;
 
 	class IWindowHandler
@@ -38,8 +36,6 @@ namespace JoyEngine
 		{
 			m_deltaTimeHandler = handler;
 		}
-
-		virtual void GetScreenSize(uint32_t& width, uint32_t& height) = 0;
 
 	protected:
 		std::function<void(float)> m_deltaTimeHandler;
@@ -62,8 +58,6 @@ namespace JoyEngine
 
 		void HandleMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) override;
 
-		void GetScreenSize(uint32_t& width, uint32_t& height) override;
-
 	private:
 		HWND m_windowHandle;
 
@@ -74,7 +68,6 @@ namespace JoyEngine
 		std::unique_ptr<DataManager> m_dataManager;
 		std::unique_ptr<DescriptorManager> m_descriptorSetManager;
 		std::unique_ptr<ResourceManager> m_resourceManager;
-		std::unique_ptr<RenderManager> m_renderManager;
 		std::unique_ptr<EngineDataProvider> m_engineData;
 		std::unique_ptr<WorldManager> m_worldManager;
 	};

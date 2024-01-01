@@ -20,7 +20,10 @@ namespace JoyEngine
 		Material,
 		SharedMaterial,
 		Scene,
-		GameObject
+		GameObject,
+		Prefab,
+		Skybox,
+		World,
 	};
 
 	class DataManager : public Singleton<DataManager>

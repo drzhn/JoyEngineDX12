@@ -35,6 +35,11 @@ namespace JoyEngine
 			return ptr;
 		}
 
+		void Clear()
+		{
+			m_storage.clear();
+		}
+
 		void Remove(T* ptr)
 		{
 			// TODO

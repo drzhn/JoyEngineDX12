@@ -45,7 +45,7 @@ namespace JoyEngine
 
 		~RenderManager() override = default;
 
-		void Init();
+		void Init( Skybox* skybox);
 
 		void Start() const;
 
@@ -100,15 +100,14 @@ namespace JoyEngine
 
 	private:
 		static constexpr uint32_t FRAME_COUNT = 3;
+		Skybox* m_skybox;
 
 		ComPtr<IDXGISwapChain3> m_swapChain;
 
 		std::array<std::unique_ptr<RenderTexture>, FRAME_COUNT> m_swapchainRenderTargets;
 
 		std::unique_ptr<RTVGbuffer> m_gbuffer;
-		std::unique_ptr<Skybox> m_skybox;
 		std::unique_ptr<RenderTexture> m_mainColorRenderTarget;
-
 
 		std::unique_ptr<Tonemapping> m_tonemapping;
 		std::unique_ptr<RaytracedDDGIDataContainer> m_raytracingDataContainer;

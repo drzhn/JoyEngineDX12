@@ -8,9 +8,9 @@ namespace JoyEngine
 {
 	// we cannot use depth testing for paint skybox pixels because we cannot use UAVgbuffer.m_depthTexture as a depth target
 	// so we paint all pixels where color.a == 0;
-	Skybox::Skybox()
+	Skybox::Skybox(const char* texturePath)
 	{
-		m_skyboxTexture = ResourceManager::Get()->LoadResource<Texture>("textures/sunset2.hdr");
+		m_skyboxTexture = ResourceManager::Get()->LoadResource<Texture>(texturePath);
 		m_skyboxMesh = ResourceManager::Get()->LoadResource<Mesh>(
 			"models/DefaultSphere.obj:RootNode/DefaultSphere_root/pSphere1"); // DefaultSphere
 

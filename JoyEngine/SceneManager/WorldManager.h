@@ -5,13 +5,17 @@
 #include "Scene.h"
 #include "TreeStorage.h"
 #include "Common/Singleton.h"
+#include "RenderManager/RenderManager.h"
+#include "RenderManager/Skybox.h"
 
 namespace JoyEngine
 {
 	class WorldManager : public Singleton<WorldManager>
 	{
 	public:
-		WorldManager() = default;
+		WorldManager() = delete;
+
+		explicit WorldManager(HWND gameWindowHandle);
 
 		void Init();
 
@@ -23,7 +27,7 @@ namespace JoyEngine
 			return m_sceneTree.Create<GameObject>(std::forward<Args>(args)...);
 		}
 
-		[[nodiscard]] TransformProvider& GetTransformProvider() noexcept { return m_transformProvider; }
+		[[nodiscard]] TransformProvider& GetTransformProvider() const noexcept { return *m_transformProvider; }
 
 		void Stop();
 
@@ -32,9 +36,12 @@ namespace JoyEngine
 		~WorldManager();
 
 	private:
-		TransformProvider m_transformProvider;
 		TreeStorage<GameObject, 512> m_sceneTree;
 		Scene* m_scene = nullptr;
+
+		std::unique_ptr<TransformProvider> m_transformProvider;
+		std::unique_ptr<Skybox> m_skybox;
+		std::unique_ptr<RenderManager> m_renderManager;
 	};
 }
 

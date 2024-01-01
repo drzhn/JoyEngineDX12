@@ -188,15 +188,12 @@ namespace JoyEngine
 		return nullptr;
 	}
 
-	Scene::Scene(const char* path):
+	Scene::Scene(rapidjson::Value& json):
 		GameObject(
-			path,
+			json["name"].GetString(),
 			WorldManager::Get()->GetTransformProvider().Allocate(),
 			WorldManager::Get()->GetTransformProvider())
 	{
-		rapidjson::Document json = DataManager::Get()->GetSerializedData(path, AssetType::Scene);
-		m_name = json["name"].GetString();
-
 		rapidjson::Value& val = json["objects"];
 		for (auto& obj : val.GetArray())
 		{

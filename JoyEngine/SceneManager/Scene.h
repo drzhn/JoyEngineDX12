@@ -1,6 +1,8 @@
 #ifndef SCENE_H
 #define SCENE_H
 
+#include <rapidjson/document.h>
+
 #include "GameObject.h"
 
 namespace JoyEngine
@@ -8,7 +10,9 @@ namespace JoyEngine
 	class Scene : public GameObject
 	{
 	public :
-		Scene(const char* path);
+		Scene() = delete;
+
+		explicit Scene(rapidjson::Value& json);
 		void Update();
 	};
 }

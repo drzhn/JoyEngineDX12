@@ -114,6 +114,15 @@ namespace JoyEngine
 		case AssetType::GameObject:
 			s = "game_object";
 			break;
+		case AssetType::Prefab:
+			s = "prefab";
+			break;
+		case AssetType::Skybox:
+			s = "skybox";
+			break;
+		case AssetType::World:
+			s = "world";
+			break;
 		default:
 			ASSERT(false);
 		}

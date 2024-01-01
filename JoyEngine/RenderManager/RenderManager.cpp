@@ -42,8 +42,7 @@ namespace JoyEngine
 	bool g_drawProbes = true;
 	CurrentDDGIRaytracer g_currentRaytracer = CurrentDDGIRaytracer::Software;
 
-	RenderManager::RenderManager(HWND windowHandle):
-		IRenderManager(windowHandle)
+	RenderManager::RenderManager(HWND windowHandle): IRenderManager(windowHandle)
 	{
 		RECT rect;
 		if (GetClientRect(windowHandle, &rect))
@@ -57,7 +56,7 @@ namespace JoyEngine
 		}
 	}
 
-	void RenderManager::Init()
+	void RenderManager::Init(Skybox* skybox)
 	{
 		TIME_PERF("RenderManager init")
 
@@ -65,20 +64,31 @@ namespace JoyEngine
 
 		ASSERT(m_width != 0 && m_height != 0);
 
-		m_queue = std::make_unique<CommandQueue>(D3D12_COMMAND_LIST_TYPE_DIRECT, GraphicsManager::Get()->GetDevice(),
-		                                         FRAME_COUNT);
+		m_skybox = skybox;
+
+		m_queue = std::make_unique<CommandQueue>(
+			D3D12_COMMAND_LIST_TYPE_DIRECT,
+			GraphicsManager::Get()->GetDevice(),
+			FRAME_COUNT
+		);
 
 		// Describe and create the swap chain.
-		DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
-		swapChainDesc.BufferCount = FRAME_COUNT;
-		swapChainDesc.Width = m_width;
-		swapChainDesc.Height = m_height;
-		swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-		swapChainDesc.SampleDesc.Count = 1;
-		swapChainDesc.Flags = GraphicsManager::Get()->GetTearingSupport() ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
-		//swapChainDesc.SampleDesc.Quality = 0;
+		const DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {
+			.Width = m_width,
+			.Height = m_height,
+			.Format = DXGI_FORMAT_R8G8B8A8_UNORM,
+			.Stereo = false,
+			.SampleDesc = {
+				.Count = 1,
+				.Quality = 0
+			},
+			.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
+			.BufferCount = FRAME_COUNT,
+			.Scaling = DXGI_SCALING_STRETCH,
+			.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD,
+			.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED,
+			.Flags = GraphicsManager::Get()->GetTearingSupport() ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0u,
+		};
 
 		ComPtr<IDXGISwapChain1> swapChain;
 		ASSERT_SUCC(
@@ -123,7 +133,6 @@ namespace JoyEngine
 
 		m_gbuffer = std::make_unique<RTVGbuffer>(m_width, m_height);
 
-		m_skybox = std::make_unique<Skybox>();
 
 		m_tonemapping = std::make_unique<Tonemapping>(
 			this,

@@ -1,117 +1,124 @@
 {
-    "asset_type": "scene",
-    "name": "test_scene",
+    "asset_type": "world",
     "renderer": "simple_ddgi",
-    "objects": [
-        {
-            "name": "camera",
-            "asset_type": "game_object",
-            "transform": {
-                "localPosition": [ -15.0, 9.0, -1.0 ],
-                "localRotation": [ 0.0, 90.0, 0.0 ],
-                "localScale": [ 1.0, 1.0, 1.0 ]
-            },
-            "components": [
-                {
-                    "asset_type": "camera",
-                    "near": 0.1,
-                    "far": 1000,
-                    "fov": 60
+    "skybox": {
+        "asset_type": "skybox",
+        "texture": "textures/sunset2.hdr"
+    },
+    "scene": {
+        "asset_type": "scene",
+        "name": "test_scene",
+        "objects": [
+            {
+                "name": "camera",
+                "asset_type": "game_object",
+                "transform": {
+                    "localPosition": [ -15.0, 9.0, -1.0 ],
+                    "localRotation": [ 0.0, 90.0, 0.0 ],
+                    "localScale": [ 1.0, 1.0, 1.0 ]
                 },
-                {
-                    "asset_type": "component",
-                    "component": "CameraBehaviour",
-                    "fields": {
-                        "m_speed": 8.0
+                "components": [
+                    {
+                        "asset_type": "camera",
+                        "near": 0.1,
+                        "far": 1000,
+                        "fov": 60
+                    },
+                    {
+                        "asset_type": "component",
+                        "component": "CameraBehaviour",
+                        "fields": {
+                            "m_speed": 8.0
+                        }
                     }
-                }
-            ],
-            "children": []
-        },
-        {
-            "name": "directional_light",
-            "asset_type": "game_object",
-            "transform": {
-                "localPosition": [ -5.0, 40.0, 45.0 ],
-                "localRotation": [ 30.0, 180.0, 0.0 ],
-                "localScale": [ 1.0, 1.0, 1.0 ]
+                ],
+                "children": []
             },
-            "components": [
-                {
-                    "asset_type": "light",
-                    "lightType": "direction",
-                    "intensity": 1.0,
-                    "ambient": 0.0,
-                    "color": [ 1.0, 1.0, 1.0, 1.0 ]
-                }
-            ],
-            "children": []
-        },
-        {
-            "name": "point_light_test1",
-            "asset_type": "game_object",
-            "transform": {
-                "localPosition": [ 0.0, 1.0, 7.8 ],
-                "localRotation": [ 0.0, 0.0, 0.0 ],
-                "localScale": [ 1.0, 1.0, 1.0 ]
-            },
-            "components": [
-                {
-                    "asset_type": "light",
-                    "lightType": "point",
-                    "intensity": 1.0,
-                    "radius": 3.0,
-                    "color": [ 0.0, 1.0, 0.0, 1.0 ]
+            {
+                "name": "directional_light",
+                "asset_type": "game_object",
+                "transform": {
+                    "localPosition": [ -5.0, 40.0, 45.0 ],
+                    "localRotation": [ 30.0, 180.0, 0.0 ],
+                    "localScale": [ 1.0, 1.0, 1.0 ]
                 },
-                {
-                    "asset_type": "component",
-                    "component": "LightBehaviour",
-                    "fields": {
-                        "m_speed": 2.0,
-                        "m_phase": 0.0,
-                        "m_amplitude": 20.0
+                "components": [
+                    {
+                        "asset_type": "light",
+                        "lightType": "direction",
+                        "intensity": 1.0,
+                        "ambient": 0.0,
+                        "color": [ 1.0, 1.0, 1.0, 1.0 ]
                     }
-                }
-            ],
-            "children": []
-        },
-        {
-            "name": "point_light_test2",
-            "asset_type": "game_object",
-            "transform": {
-                "localPosition": [ 3.0, 1.0, 7.8 ],
-                "localRotation": [ 0.0, 0.0, 0.0 ],
-                "localScale": [ 1.0, 1.0, 1.0 ]
+                ],
+                "children": []
             },
-            "components": [
-                {
-                    "asset_type": "light",
-                    "lightType": "point",
-                    "intensity": 1.0,
-                    "radius": 3.0,
-                    "color": [ 1.0, 0.0, 0.0, 1.0 ]
+            {
+                "name": "point_light_test1",
+                "asset_type": "game_object",
+                "transform": {
+                    "localPosition": [ 0.0, 1.0, 7.8 ],
+                    "localRotation": [ 0.0, 0.0, 0.0 ],
+                    "localScale": [ 1.0, 1.0, 1.0 ]
                 },
-                {
-                    "asset_type": "component",
-                    "component": "LightBehaviour",
-                    "fields": {
-                        "m_speed": -2.0,
-                        "m_phase": 0.0,
-                        "m_amplitude": 20.0
+                "components": [
+                    {
+                        "asset_type": "light",
+                        "lightType": "point",
+                        "intensity": 1.0,
+                        "radius": 3.0,
+                        "color": [ 0.0, 1.0, 0.0, 1.0 ]
+                    },
+                    {
+                        "asset_type": "component",
+                        "component": "LightBehaviour",
+                        "fields": {
+                            "m_speed": 2.0,
+                            "m_phase": 0.0,
+                            "m_amplitude": 20.0
+                        }
                     }
-                }
-            ],
-            "children": []
-        },
-        {
-            "name": "Sponza",
-            "asset_type": "prefab",
-            "transform": {
-                "localPosition": [ 0.0, 0.0, 0.0 ],
-                "localRotation": [ 0.0, 0.0, 0.0 ],
-                "localScale": [ 1.0, 1.0, 1.0 ]
+                ],
+                "children": []
             },
-            "path": "sponza/sponza_static.prefab"
-        }
-    ]
+            {
+                "name": "point_light_test2",
+                "asset_type": "game_object",
+                "transform": {
+                    "localPosition": [ 3.0, 1.0, 7.8 ],
+                    "localRotation": [ 0.0, 0.0, 0.0 ],
+                    "localScale": [ 1.0, 1.0, 1.0 ]
+                },
+                "components": [
+                    {
+                        "asset_type": "light",
+                        "lightType": "point",
+                        "intensity": 1.0,
+                        "radius": 3.0,
+                        "color": [ 1.0, 0.0, 0.0, 1.0 ]
+                    },
+                    {
+                        "asset_type": "component",
+                        "component": "LightBehaviour",
+                        "fields": {
+                            "m_speed": -2.0,
+                            "m_phase": 0.0,
+                            "m_amplitude": 20.0
+                        }
+                    }
+                ],
+                "children": []
+            },
+            {
+                "name": "Sponza",
+                "asset_type": "prefab",
+                "transform": {
+                    "localPosition": [ 0.0, 0.0, 0.0 ],
+                    "localRotation": [ 0.0, 0.0, 0.0 ],
+                    "localScale": [ 1.0, 1.0, 1.0 ]
+                },
+                "path": "sponza/sponza_static.prefab"
+            }
+        ]
+    }
 }

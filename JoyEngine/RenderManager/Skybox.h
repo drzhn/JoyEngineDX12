@@ -14,7 +14,8 @@ namespace JoyEngine
 	class Skybox
 	{
 	public:
-		Skybox();
+		Skybox() = delete;
+		explicit Skybox(const char* texturePath);
 		void DrawSky(ID3D12GraphicsCommandList* commandList, uint32_t frameIndex, const ViewProjectionMatrixData* viewProjectionData) const;
 		[[nodiscard]] ResourceView* GetSkyboxTextureSrv() const { return m_skyboxTexture->GetSRV(); }
 

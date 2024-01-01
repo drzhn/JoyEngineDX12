@@ -8,6 +8,7 @@ namespace JoyEngine {
 		{
 			component->Disable();
 		}
+        // TODO delete children
 	}
 
     void GameObject::Update()

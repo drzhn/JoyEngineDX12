@@ -6,7 +6,6 @@
 #include "backends/imgui_impl_win32.h"
 
 #include "SceneManager/WorldManager.h"
-#include "RenderManager/RenderManager.h"
 #include "EngineDataProvider/EngineDataProvider.h"
 #include "MemoryManager/MemoryManager.h"
 #include "ResourceManager/ResourceManager.h"
@@ -38,9 +37,8 @@ namespace JoyEngine
 		m_dataManager(new DataManager()),
 		m_descriptorSetManager(new DescriptorManager()),
 		m_resourceManager(new ResourceManager()),
-		m_renderManager(new RenderManager(gameWindowHandle)),
 		m_engineData(new EngineDataProvider()),
-		m_worldManager(new WorldManager())
+		m_worldManager(new WorldManager(gameWindowHandle))
 	{
 		{
 			// Setup Dear ImGui context
@@ -62,8 +60,6 @@ namespace JoyEngine
 
 		// creating internal engine materials
 		m_engineData->Init();
-		// creating render resources
-		m_renderManager->Init();
 		// loading scene from disk
 		m_worldManager->Init();
 
@@ -81,7 +77,7 @@ namespace JoyEngine
 
 	void JoyEngine::Start() const noexcept
 	{
-		m_renderManager->Start();
+		m_worldManager->Start();
 
 		m_threadManager->StartTask(&JoyEngine::UpdateTask, this);
 	}
@@ -92,10 +88,7 @@ namespace JoyEngine
 		{
 			Time::Update();
 
-			m_renderManager->PreUpdate();
-
 			m_worldManager->Update();
-			m_renderManager->Update();
 		}
 	}
 
@@ -104,16 +97,15 @@ namespace JoyEngine
 		g_finishFlag = true;
 		m_threadManager->Stop();
 
-		m_renderManager->Stop();
+		m_worldManager->Stop(); // unregister mesh renderers, remove descriptor set, pipelines, pipeline layouts
 	}
 
 	JoyEngine::~JoyEngine()
 	{
 		// will destroy managers in certain order
 		m_inputManager = nullptr;
-		m_worldManager = nullptr; // unregister mesh renderers, remove descriptor set, pipelines, pipeline layouts
 		m_engineData = nullptr; //delete all internal engine resources
-		m_renderManager = nullptr; //delete swapchain, synchronisation, framebuffers
+		m_worldManager = nullptr; //delete swapchain, synchronisation, framebuffers
 		m_resourceManager = nullptr; //delete all scene render data (buffers, textures)
 		m_descriptorSetManager = nullptr;
 		m_dataManager = nullptr;
@@ -141,11 +133,5 @@ namespace JoyEngine
 		ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam);
 
 		m_inputManager->HandleWinMessage(hwnd, uMsg, wParam, lParam);
-	}
-
-	void JoyEngine::GetScreenSize(uint32_t& width, uint32_t& height)
-	{
-		width = m_renderManager->GetWidth();
-		height = m_renderManager->GetHeight();
 	}
 }

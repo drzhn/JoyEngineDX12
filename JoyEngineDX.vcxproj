@@ -170,7 +170,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;NOMINMAX;%(PreprocessorDefinitions);ENGINE</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)JoyEngine;$(SolutionDir)ThirdParty\rapidjson\include;$(SolutionDir)ThirdParty\DirectXMath\Inc;$(SolutionDir)ThirdParty\imgui;$(SolutionDir)ThirdParty\dxc;$(SolutionDir)ThirdParty\pixruntime\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)JoyEngine;$(SolutionDir)ThirdParty\rapidjson\include;$(SolutionDir)ThirdParty\DirectXMath\Inc;$(SolutionDir)ThirdParty\imgui;$(SolutionDir)ThirdParty\dxc;$(SolutionDir)ThirdParty\pixruntime\Include;$(SolutionDir)ThirdParty\AgilitySDK\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
@@ -191,7 +191,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;NOMINMAX;GRAPHICS_DEBUG;ENGINE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)JoyEngine;$(SolutionDir)ThirdParty\rapidjson\include;$(SolutionDir)ThirdParty\DirectXMath\Inc;$(SolutionDir)ThirdParty\imgui;$(SolutionDir)ThirdParty\dxc;$(SolutionDir)ThirdParty\pixruntime\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)JoyEngine;$(SolutionDir)ThirdParty\rapidjson\include;$(SolutionDir)ThirdParty\DirectXMath\Inc;$(SolutionDir)ThirdParty\imgui;$(SolutionDir)ThirdParty\dxc;$(SolutionDir)ThirdParty\pixruntime\Include;$(SolutionDir)ThirdParty\AgilitySDK\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -215,7 +215,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;NOMINMAX;%(PreprocessorDefinitions);ENGINE</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)JoyEngine;$(SolutionDir)ThirdParty\rapidjson\include;$(SolutionDir)ThirdParty\DirectXMath\Inc;$(SolutionDir)ThirdParty\imgui;$(SolutionDir)ThirdParty\dxc;$(SolutionDir)ThirdParty\pixruntime\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)JoyEngine;$(SolutionDir)ThirdParty\rapidjson\include;$(SolutionDir)ThirdParty\DirectXMath\Inc;$(SolutionDir)ThirdParty\imgui;$(SolutionDir)ThirdParty\dxc;$(SolutionDir)ThirdParty\pixruntime\Include;$(SolutionDir)ThirdParty\AgilitySDK\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>

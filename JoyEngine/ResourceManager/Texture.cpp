@@ -33,7 +33,7 @@ namespace JoyEngine
 		linearWrapSamplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
 		linearWrapSamplerDesc.MipLODBias = 0.0f;
 		linearWrapSamplerDesc.MaxAnisotropy = 1;
-		linearWrapSamplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+		linearWrapSamplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_NONE;
 		m_linearWrapSampler = std::make_unique<ResourceView>(linearWrapSamplerDesc);
 
 		D3D12_SAMPLER_DESC linearClampSamplerDesc = {};
@@ -45,7 +45,7 @@ namespace JoyEngine
 		linearClampSamplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
 		linearClampSamplerDesc.MipLODBias = 0.0f;
 		linearClampSamplerDesc.MaxAnisotropy = 1;
-		linearClampSamplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+		linearClampSamplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_NONE;
 		m_linearClampSampler = std::make_unique<ResourceView>(linearClampSamplerDesc);
 
 		D3D12_SAMPLER_DESC depthPCFSamplerDesc = {};
@@ -77,7 +77,7 @@ namespace JoyEngine
 		linearBorderWhiteSamplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
 		linearBorderWhiteSamplerDesc.MipLODBias = 0.0f;
 		linearBorderWhiteSamplerDesc.MaxAnisotropy = 1;
-		linearBorderWhiteSamplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+		linearBorderWhiteSamplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_NONE;
 		m_linearBlackBorderSampler = std::make_unique<ResourceView>(linearBorderWhiteSamplerDesc);
 
 		D3D12_SAMPLER_DESC pointClampDesc = {};
@@ -93,7 +93,7 @@ namespace JoyEngine
 		pointClampDesc.MaxLOD = D3D12_FLOAT32_MAX;
 		pointClampDesc.MipLODBias = 0.0f;
 		pointClampDesc.MaxAnisotropy = 1;
-		pointClampDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
+		pointClampDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_NONE;
 		m_pointClampSampler = std::make_unique<ResourceView>(pointClampDesc);
 	}
 

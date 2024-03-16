@@ -90,9 +90,9 @@ float4 PSMain(PSInput input) : SV_Target
 	}
 
 	shadowAttenuation /= (softShadowSize * 2 + 1) * (softShadowSize * 2 + 1);
-	shadowAttenuation = max(directionalLightData.ambient, shadowAttenuation);
+	shadowAttenuation = max(0.1, shadowAttenuation);
 
-	float lambertAttenuation = max(0, dot(worldNormal.rgb, -directionalLightData.direction));
+	float lambertAttenuation = max(1, dot(worldNormal.rgb, -directionalLightData.direction));
 
 	// we use world position alpha chanel as an info about if this pixel is skybox or not.
 	const float3 directionalLightAttenuation = worldPosition.a > 0 ? UnpackColor(directionalLightData.packedColor).rgb * shadowAttenuation : 1;

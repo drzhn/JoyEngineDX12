@@ -3,6 +3,7 @@
 #include <rapidjson/document.h>
 
 #include "DataManager/DataManager.h"
+#include "RenderManager/BasicRenderer/BasicRenderer.h"
 #include "RenderManager/RaytracedDDGIRenderer/RaytracedDDGIRenderer.h"
 #include "Utils/TimeCounter.h"
 
@@ -11,7 +12,7 @@ namespace JoyEngine
 {
 	WorldManager::WorldManager(HWND gameWindowHandle)
 	{
-		m_renderManager = std::make_unique<RaytracedDDGIRenderer>(gameWindowHandle);
+		m_renderManager = std::make_unique<BasicRenderer>(gameWindowHandle);
 		m_transformProvider = std::make_unique<TransformProvider>(m_renderManager->GetFrameCount());
 	}
 

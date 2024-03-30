@@ -12,7 +12,7 @@ namespace JoyEngine
 {
 	WorldManager::WorldManager(HWND gameWindowHandle)
 	{
-		m_renderManager = std::make_unique<BasicRenderer>(gameWindowHandle);
+		m_renderManager = std::make_unique<RaytracedDDGIRenderer>(gameWindowHandle);
 		m_transformProvider = std::make_unique<TransformProvider>(m_renderManager->GetFrameCount());
 	}
 

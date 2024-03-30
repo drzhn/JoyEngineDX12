@@ -1,4 +1,5 @@
 # JoyEngine
+This is a bracnh of the JoyEngine containig DDGI implementation with software and hardware raytracing
 Toy engine written in C++ and Directx 12. 
 
 Trello board with progress: 

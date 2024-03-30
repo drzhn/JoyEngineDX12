@@ -1,4 +1,7 @@
 # JoyEngine
+
+### INFORMATION: software/hardware DDGI raytracing has been moved to origin/DDGI_software_and_hardware_raytracing
+
 Toy engine written in C++ and Directx 12. 
 
 Trello board with progress: 

@@ -110,14 +110,14 @@
                 "children": []
             },
             {
-                "name": "Sponza",
+                "name": "Bistro",
                 "asset_type": "prefab",
                 "transform": {
                     "localPosition": [ 0.0, 0.0, 0.0 ],
                     "localRotation": [ 0.0, 0.0, 0.0 ],
                     "localScale": [ 1.0, 1.0, 1.0 ]
                 },
-                "path": "sponza/sponza_static.prefab"
+                "path": "bistro/BistroExterior.fbx.prefab"
             }
         ]
     }

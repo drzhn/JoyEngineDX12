@@ -178,10 +178,12 @@ namespace JoyEngine
 				std::string textureName;
 				if (texture != nullptr)
 				{
-					// fbx stores absolute path in the PC the file created
-					const std::filesystem::path textureAbsolutePath = texture->GetFileName();
+					// path relative to model;
+					std::filesystem::path textureRelativePath = modelDirectory;
+					textureRelativePath.append(texture->GetRelativeFileName());
+
 					textureName = std::filesystem::relative(
-						modelDirectory / textureAbsolutePath.filename(),
+						textureRelativePath,
 						dataDirectory
 					).generic_string();
 				}

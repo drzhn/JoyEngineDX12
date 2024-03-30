@@ -3,7 +3,7 @@
 #include "CommonEngineStructs.h"
 #include "ResourceManager/Pipelines/GraphicsPipeline.h"
 
-#define TRIANGLE_LIMIT (512*1024)
+#define TRIANGLE_LIMIT (3*1024*1024)
 #define MESH_CONTAINER_ALIGNMENT 1
 
 namespace JoyEngine

@@ -53,7 +53,7 @@
 #define LEAF_NODE 1
 
 #define MATERIAL_SIZE 512
-#define OBJECT_SIZE 512
+#define OBJECT_SIZE 2048
 #define LIGHT_SIZE 256
 
 #define DDGI_RAYS_COUNT 192

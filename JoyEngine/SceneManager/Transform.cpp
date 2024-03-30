@@ -26,13 +26,13 @@ namespace JoyEngine
 		SetScale(scale);
 	}
 
-	void Transform::SetPosition(const jmath::vec3 pos) noexcept
+	void Transform::SetPosition(const jmath::vec3& pos) noexcept
 	{
 		SetXPosition(jmath::loadPosition(pos));
 	}
 
 
-	void Transform::SetRotation(jmath::vec3 rot) noexcept
+	void Transform::SetRotation(const jmath::vec3& rot) noexcept
 	{
 		SetRotation(jmath::eulerToQuat(jmath::vec3(
 			jmath::toRadians(rot.x),

@@ -38,5 +38,6 @@ Newtonsoft.Json.dll
 .idea/
 .vs/
 Temp/
+JoyData/bistro/
 packages/
 JoyAssetBuilder/AssetBuilderGui/obj

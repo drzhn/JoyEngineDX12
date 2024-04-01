@@ -20,8 +20,24 @@ namespace JoyEngine
 		jmath::vec3 vec;
 		SerializationUtils::DeserializeToPtr(StrHash32("vec3"), transformValue["localPosition"], &vec, 1);
 		go->GetTransform().SetPosition(vec);
-		SerializationUtils::DeserializeToPtr(StrHash32("vec3"), transformValue["localRotation"], &vec, 1);
-		go->GetTransform().SetRotation(vec);
+
+		if (transformValue.HasMember("localQuaternion"))
+		{
+			jmath::quat rot;
+			SerializationUtils::DeserializeToPtr(StrHash32("vec4"), transformValue["localQuaternion"], &rot, 1);
+			go->GetTransform().SetRotation(rot);
+		}
+		else if (transformValue.HasMember("localRotation"))
+		{
+			SerializationUtils::DeserializeToPtr(StrHash32("vec3"), transformValue["localRotation"], &vec, 1);
+			go->GetTransform().SetRotation(vec);
+		}
+		else
+		{
+			Logger::LogFormat("Transform of object %s doesn't have rotation. Setting to default", go->GetName());
+			const jmath::quat rot{ 0,0,0,1 };
+			go->GetTransform().SetRotation(rot);
+		}
 		SerializationUtils::DeserializeToPtr(StrHash32("vec3"), transformValue["localScale"], &vec, 1);
 		go->GetTransform().SetScale(vec);
 	}

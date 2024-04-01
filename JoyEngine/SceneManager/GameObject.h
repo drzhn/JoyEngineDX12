@@ -42,6 +42,8 @@ namespace JoyEngine
 
 		void AddComponent(std::unique_ptr<Component> component);
 
+		const char* GetName() const { return m_name.c_str(); }
+
 	protected:
 		std::string m_name;
 		Transform m_transform;

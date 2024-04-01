@@ -1,4 +1,4 @@
-#include "ModelConverter.h"
+﻿#include "ModelConverter.h"
 
 #include <filesystem>
 #include <iostream>
@@ -73,6 +73,7 @@ namespace JoyEngine
 		std::string name;
 		jmath::vec3 localPosition;
 		jmath::vec3 localRotation;
+		jmath::vec4 localQuaternion;
 		jmath::vec3 localScale;
 		uint32_t childCount;
 		uint32_t childStartIndex;
@@ -107,9 +108,19 @@ namespace JoyEngine
 				arr.PushBack(rapidjson::Value(vec.z), alloc);
 				return arr;
 			};
+			auto SerializeFloat4 = [&](jmath::vec4 vec)
+			{
+				rapidjson::Value arr(rapidjson::kArrayType);
+				arr.PushBack(rapidjson::Value(vec.x), alloc);
+				arr.PushBack(rapidjson::Value(vec.y), alloc);
+				arr.PushBack(rapidjson::Value(vec.z), alloc);
+				arr.PushBack(rapidjson::Value(vec.w), alloc);
+				return arr;
+			};
 			rapidjson::Value transformEntry(rapidjson::kObjectType);
 			transformEntry.AddMember("localPosition", SerializeFloat3(data->localPosition), alloc);
 			transformEntry.AddMember("localRotation", SerializeFloat3(data->localRotation), alloc);
+			transformEntry.AddMember("localQuaternion", SerializeFloat4(data->localQuaternion), alloc);
 			transformEntry.AddMember("localScale", SerializeFloat3(data->localScale), alloc);
 
 			gameObjectEntry.AddMember("transform", transformEntry, alloc);
@@ -275,9 +286,9 @@ namespace JoyEngine
 					break; // other reference modes not shown here!
 				}
 
-				nodeData.shape.m_vertices[i * 3 + (3 - vi) % 3] = Vertex{
+				nodeData.shape.m_vertices[i * 3 + vi] = Vertex{
 					.pos = {
-						DirectX::PackedVector::XMConvertFloatToHalf(-static_cast<float>(position[0])),
+						DirectX::PackedVector::XMConvertFloatToHalf(static_cast<float>(position[0])),
 						DirectX::PackedVector::XMConvertFloatToHalf(static_cast<float>(position[1])),
 						DirectX::PackedVector::XMConvertFloatToHalf(static_cast<float>(position[2])),
 						DirectX::PackedVector::XMConvertFloatToHalf(1)
@@ -309,6 +320,11 @@ namespace JoyEngine
 		};
 	}
 
+	void PrintVector(const char* str, const FbxVector4& vec)
+	{
+		printf("%s: %.4f %.4f %.4f %.4f\n", str, vec[0], vec[1], vec[2], vec[3]);
+	}
+
 	void FindData(
 		FbxNode* node,
 		std::vector<std::vector<std::unique_ptr<NodeData>>>& nodeDataContainer,
@@ -326,22 +342,40 @@ namespace JoyEngine
 		std::cout << node->GetName() << std::endl;
 		nodeData->name = node->GetName();
 		nodeData->childCount = node->GetChildCount();
+		
+		FbxAMatrix geoMatrix;
+		geoMatrix.SetIdentity();
+		if (node->GetNodeAttribute())
+		{
+			const FbxVector4 T = node->GetGeometricTranslation(FbxNode::eSourcePivot);
+			const FbxVector4 R = node->GetGeometricRotation(FbxNode::eSourcePivot);
+			const FbxVector4 S = node->GetGeometricScaling(FbxNode::eSourcePivot);
+			geoMatrix.SetTRS(T, R, S);
+		}
+		const FbxAMatrix localMatrix = node->EvaluateLocalTransform();
+		const FbxAMatrix matrix = localMatrix * geoMatrix;
+
 		nodeData->localPosition = {
-			-static_cast<float>(node->LclTranslation.Get()[0]),
-			static_cast<float>(node->LclTranslation.Get()[1]),
-			static_cast<float>(node->LclTranslation.Get()[2])
+			static_cast<float>(matrix.GetT()[0]),
+			static_cast<float>(matrix.GetT()[1]),
+			static_cast<float>(matrix.GetT()[2])
 		};
 		nodeData->localRotation = {
-			static_cast<float>(node->LclRotation.Get()[0]),
-			static_cast<float>(node->LclRotation.Get()[1]),
-			static_cast<float>(node->LclRotation.Get()[2]),
+			static_cast<float>(matrix.GetR()[0]),
+			static_cast<float>(matrix.GetR()[1]),
+			static_cast<float>(matrix.GetR()[2]),
+		};
+		nodeData->localQuaternion = {
+			static_cast<float>(matrix.GetQ()[0]),
+			static_cast<float>(matrix.GetQ()[1]),
+			static_cast<float>(matrix.GetQ()[2]),
+			static_cast<float>(matrix.GetQ()[3]),
 		};
 		nodeData->localScale = {
-			static_cast<float>(node->LclScaling.Get()[0]),
-			static_cast<float>(node->LclScaling.Get()[1]),
-			static_cast<float>(node->LclScaling.Get()[2]),
+			static_cast<float>(matrix.GetS()[0]),
+			static_cast<float>(matrix.GetS()[1]),
+			static_cast<float>(matrix.GetS()[2]),
 		};
-
 
 		if (parent != nullptr)
 		{
@@ -447,6 +481,8 @@ namespace JoyEngine
 
 		// Import the contents of the file into the scene.
 		m_lImporter->Import(lScene);
+
+		FbxAxisSystem::DirectX.DeepConvertScene(lScene);
 
 		FbxNode* lRootNode = lScene->GetRootNode();
 

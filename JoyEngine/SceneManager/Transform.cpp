@@ -41,24 +41,24 @@ namespace JoyEngine
 		)));
 	}
 
-	void Transform::SetRotation(jmath::quat rot) noexcept
+	void Transform::SetRotation(const jmath::quat& rot) noexcept
 	{
 		m_localRotation = rot;
 		UpdateMatrix();
 	}
 
-	void Transform::SetScale(const jmath::vec3 scale) noexcept
+	void Transform::SetScale(const jmath::vec3& scale) noexcept
 	{
 		SetXScale(jmath::loadPosition(scale));
 	}
 
-	void Transform::SetXPosition(jmath::xvec4 pos) noexcept
+	void Transform::SetXPosition(const jmath::xvec4& pos) noexcept
 	{
 		m_localPosition = pos;
 		UpdateMatrix();
 	}
 
-	void Transform::SetXScale(jmath::xvec4 scale) noexcept
+	void Transform::SetXScale(const jmath::xvec4& scale) noexcept
 	{
 		m_localScale = scale;
 		UpdateMatrix();

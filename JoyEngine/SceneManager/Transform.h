@@ -20,13 +20,13 @@ namespace JoyEngine
 		[[nodiscard]] uint32_t const* GetTransformIndexPtr() const noexcept { return &m_transformIndex; }
 
 		void SetRotation(const jmath::vec3& rot) noexcept;
-		void SetRotation(jmath::quat rot) noexcept;
+		void SetRotation(const jmath::quat& rot) noexcept;
 
 		void SetPosition(const jmath::vec3& pos) noexcept;
-		void SetScale(jmath::vec3 scale) noexcept;
+		void SetScale(const jmath::vec3& scale) noexcept;
 
-		void SetXPosition(jmath::xvec4 pos) noexcept;
-		void SetXScale(jmath::xvec4 scale) noexcept;
+		void SetXPosition(const jmath::xvec4& pos) noexcept;
+		void SetXScale(const jmath::xvec4& scale) noexcept;
 
 		[[nodiscard]] jmath::quat GetRotation() const noexcept;
 
